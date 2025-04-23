@@ -6,10 +6,13 @@
  * @author Suharshana DsW
  * @web www.nysc.lk
  */
-class User {
+class User
+{
 
     public $id;
     public $name;
+
+    public $code;
     public $email;
     public $phone;
     public $image_name;
@@ -21,18 +24,22 @@ class User {
     public $username;
     public $resetCode;
     private $password;
+    public $show_password;
 
-    public function __construct($id) {
+
+    public function __construct($id)
+    {
 
         if ($id) {
 
-            $query = "SELECT `id`,`name`,`image_name`,`email`,`phone`,`createdAt`,`type`,`isActive`,`authToken`,`lastLogin`,`username`,`resetcode` FROM `user` WHERE `id`=" . $id;
+            $query = "SELECT * FROM `user` WHERE `id`=" . $id;
 
             $db = new Database();
 
             $result = mysqli_fetch_array($db->readQuery($query));
 
             $this->id = $result['id'];
+            $this->code = $result['code'];
             $this->name = $result['name'];
             $this->email = $result['email'];
             $this->phone = $result['phone'];
@@ -43,17 +50,20 @@ class User {
             $this->lastLogin = $result['lastLogin'];
             $this->username = $result['username'];
             $this->resetCode = $result['resetcode'];
+            $this->show_password = $result['show_password'];
+
 
             return $result;
         }
     }
 
-    public function create($name, $type, $active, $email, $phone, $username, $password) {
+    public function create($name, $code, $type, $active, $email, $phone, $username, $show_password, $password)
+    {
         $enPass = md5($password);
 
         date_default_timezone_set('Asia/Colombo');
         $createdAt = date('Y-m-d H:i:s');
-        $query = "INSERT INTO `user` (`name`,`type`,`isActive`,`email`,`phone`,`createdAt`,`username`,`password`) VALUES  ('" . $name . "', '" . $type . "','" . $active . "', '" . $email . "','" . $phone . "', '" . $createdAt . "', '" . $username . "', '" . $enPass . "')";
+        $query = "INSERT INTO `user` (`name`,code,`type`,`isActive`,`email`,`phone`,`createdAt`,`username`,`show_password`,`password`) VALUES  ('" . $name . "','" . $code . "',  '" . $type . "','" . $active . "', '" . $email . "','" . $phone . "', '" . $createdAt . "', '" . $username . "',  '" . $show_password . "', '" . $enPass . "')";
 
         $db = new Database();
 
@@ -67,7 +77,8 @@ class User {
         }
     }
 
-    public function login($username, $password) {
+    public function login($username, $password)
+    {
 
         $enPass = md5($password);
 
@@ -92,7 +103,8 @@ class User {
         }
     }
 
-    public function checkOldPass($id, $password) {
+    public function checkOldPass($id, $password)
+    {
 
         $enPass = md5($password);
 
@@ -111,15 +123,16 @@ class User {
         }
     }
 
-    public function changePassword($id, $password) {
+    public function changePassword($id, $password)
+    {
 
 
 
         $enPass = md5($password);
 
         $query = "UPDATE  `user` SET "
-                . "`password` ='" . $enPass . "' "
-                . "WHERE `id` = '" . $id . "'";
+            . "`password` ='" . $enPass . "' "
+            . "WHERE `id` = '" . $id . "'";
 
         $db = new Database();
 
@@ -134,7 +147,8 @@ class User {
         }
     }
 
-    public function all() {
+    public function all()
+    {
 
         $query = "SELECT * FROM `user` ";
 
@@ -148,7 +162,8 @@ class User {
         return $array_res;
     }
 
-    public function authenticate() {
+    public function authenticate()
+    {
 
         if (!isset($_SESSION)) {
 
@@ -189,7 +204,8 @@ class User {
         }
     }
 
-    public function logOut() {
+    public function logOut()
+    {
 
 
 
@@ -221,15 +237,16 @@ class User {
         return TRUE;
     }
 
-    public function update() {
+    public function update()
+    {
 
         $query = "UPDATE  `user` SET "
-                . "`name` ='" . $this->name . "', "
-                . "`username` ='" . $this->username . "', "
-                . "`type` ='" . $this->type . "', "
-                . "`email` ='" . $this->email . "', "
-                . "`phone` ='" . $this->phone . "'  "
-                . "WHERE `id` = '" . $this->id . "'";
+            . "`name` ='" . $this->name . "', "
+            . "`username` ='" . $this->username . "', "
+            . "`type` ='" . $this->type . "', "
+            . "`email` ='" . $this->email . "', "
+            . "`phone` ='" . $this->phone . "'  "
+            . "WHERE `id` = '" . $this->id . "'";
 
         $db = new Database();
 
@@ -244,7 +261,8 @@ class User {
         }
     }
 
-    private function setUserSession($user) {
+    private function setUserSession($user)
+    {
 
         if (!isset($_SESSION)) {
             session_start([
@@ -257,7 +275,7 @@ class User {
         $_SESSION["name"] = $user['name'];
 
         $_SESSION["email"] = $user['email'];
-        
+
         $_SESSION["phone"] = $user['phone'];
 
         $_SESSION["isActive"] = $user['isActive'];
@@ -271,7 +289,8 @@ class User {
         $_SESSION["username"] = $user['username'];
     }
 
-    private function setAuthToken($id) {
+    private function setAuthToken($id)
+    {
 
         $authToken = md5(uniqid(rand(), true));
 
@@ -287,7 +306,8 @@ class User {
         }
     }
 
-    private function setLastLogin($id) {
+    private function setLastLogin($id)
+    {
 
 
 
@@ -308,7 +328,8 @@ class User {
         }
     }
 
-    public function checkEmail($email) {
+    public function checkEmail($email)
+    {
 
 
 
@@ -327,13 +348,14 @@ class User {
         }
     }
 
-    public function GenarateCode($email) {
+    public function GenarateCode($email)
+    {
 
         $rand = rand(10000, 99999);
 
         $query = "UPDATE  `user` SET "
-                . "`resetcode` ='" . $rand . "' "
-                . "WHERE `email` = '" . $email . "'";
+            . "`resetcode` ='" . $rand . "' "
+            . "WHERE `email` = '" . $email . "'";
 
         $db = new Database();
 
@@ -348,7 +370,8 @@ class User {
         }
     }
 
-    public function SelectForgetUser($email) {
+    public function SelectForgetUser($email)
+    {
 
 
 
@@ -372,7 +395,8 @@ class User {
         }
     }
 
-    public function SelectResetCode($code) {
+    public function SelectResetCode($code)
+    {
 
 
 
@@ -393,15 +417,16 @@ class User {
         }
     }
 
-    public function updatePassword($password, $code) {
+    public function updatePassword($password, $code)
+    {
 
 
 
         $enPass = md5($password);
 
         $query = "UPDATE  `user` SET "
-                . "`password` ='" . $enPass . "' "
-                . "WHERE `resetcode` = '" . $code . "'";
+            . "`password` ='" . $enPass . "' "
+            . "WHERE `resetcode` = '" . $code . "'";
 
         $db = new Database();
 
@@ -414,6 +439,15 @@ class User {
 
             return FALSE;
         }
+    }
+
+
+    public function getLastID()
+    {
+        $query = "SELECT * FROM `user` ORDER BY `id` DESC LIMIT 1";
+        $db = new Database();
+        $result = mysqli_fetch_array($db->readQuery($query));
+        return $result['id'];
     }
 
 }
