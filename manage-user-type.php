@@ -1,13 +1,6 @@
 <!doctype html>
 <?php
-include 'class/include.php';
-
-
-$CATEGORY_MASTER = new CategoryMaster();
-
-// Get the last inserted package id
-$lastId = $CATEGORY_MASTER->getLastID();
-$category_id = 'CA00' . $lastId + 1;
+include 'class/include.php'; 
 ?>
 <html lang="en">
 
@@ -74,7 +67,7 @@ $category_id = 'CA00' . $lastId + 1;
                             <a href="#" class="btn btn-warning" id="update">
                                 <i class="uil uil-edit me-1"></i> Update
                             </a>
-                            <a href="#" class="btn btn-danger delete-category">
+                            <a href="#" class="btn btn-danger delete-user-type">
                                 <i class="uil uil-trash-alt me-1"></i> Delete
                             </a>
 
@@ -83,7 +76,7 @@ $category_id = 'CA00' . $lastId + 1;
                         <div class="col-md-4 text-md-end text-start mt-3 mt-md-0">
                             <ol class="breadcrumb m-0 justify-content-md-end">
                                 <li class="breadcrumb-item"><a href="javascript: void(0);">Dashboard</a></li>
-                                <li class="breadcrumb-item active">  UserType Management </li>
+                                <li class="breadcrumb-item active"> UserType Management </li>
                             </ol>
                         </div>
                     </div>
@@ -104,9 +97,9 @@ $category_id = 'CA00' . $lastId + 1;
                                             </div>
                                         </div>
                                         <div class="flex-grow-1 overflow-hidden">
-                                            <h5 class="font-size-16 mb-1">UserType Management   </h5>
+                                            <h5 class="font-size-16 mb-1">UserType Management </h5>
                                             <p class="text-muted text-truncate mb-0">Fill all information below to add
-                                            UserType Management </p>
+                                                UserType Management </p>
                                         </div>
                                         <div class="flex-shrink-0">
                                             <i class="mdi mdi-chevron-up accor-down-icon font-size-24"></i>
@@ -119,26 +112,17 @@ $category_id = 'CA00' . $lastId + 1;
                                     <form id="form-data" autocomplete="off">
                                         <div class="row">
                                             <div class="col-md-3">
-                                                <label class="form-label" for="itemCode">User Type Code</label>
+                                                <label class="form-label" for="itemCode">User Type Name</label>
                                                 <div class="input-group mb-3">
-                                                    <input id="code" name="code" type="text" class="form-control"
-                                                        placeholder="Enter Category Code" readonly
-                                                        value="<?php echo $category_id ?>">
+                                                    <input id="name" name="name" type="text" class="form-control"
+                                                        placeholder="Enter user type name"  >
                                                     <button class="btn btn-info" type="button" data-bs-toggle="modal"
                                                         data-bs-target=".bs-example-modal-xl">
-                                                        <i class="uil uil-search me-1"></i> Find Category
+                                                        <i class="uil uil-search me-1"></i> Find User Type
                                                     </button>
                                                 </div>
                                             </div>
-
-                                            <!-- Branch Name -->
-                                            <div class="col-md-3">
-                                                <label for="name" class="form-label">Category Name</label>
-                                                <div class="input-group mb-3">
-                                                    <input id="name" name="name" type="text" class="form-control"
-                                                        placeholder="Enter Category Name">
-                                                </div>
-                                            </div>
+ 
 
                                             <!-- Active Status -->
                                             <div class="col-md-1 d-flex justify-content-center align-items-center">
@@ -154,7 +138,7 @@ $category_id = 'CA00' . $lastId + 1;
 
                                         </div>
 
-                                        <input type="hidden" id="category_id" name="category_id">
+                                        <input type="hidden" id="user_type_id" name="user_type_id">
                                     </form>
                                 </div>
                             </div>
@@ -168,23 +152,76 @@ $category_id = 'CA00' . $lastId + 1;
             <?php include 'footer.php' ?>
 
         </div>
-        <!-- end main content-->
-
     </div>
-    <!-- END layout-wrapper -->
+
+    <!-- user type model start -->
+    <div class="modal fade bs-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myExtraLargeModalLabel">Manage User Types <h5>   
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+
+                            </p>
+
+                            <table id="datatable" class="table table-bordered dt-responsive nowrap"
+                                style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>#Id</th> 
+                                        <th>User Type</th>
+                                        <th>Status</th>
+
+                                    </tr>
+                                </thead>
 
 
+                                <tbody>
+                                    <?php
+                                    $USER_TYPE = new UserType(null);
+                                    foreach ($USER_TYPE->all() as $key => $user_type) {
+                                        $key++;
+                                       
+                                        ?>
+                                        <tr class="select-user-type" data-id="<?php echo $user_type['id']; ?>"  
+                                            data-name="<?php echo htmlspecialchars($user_type['name']); ?>" 
+                                            data-active="<?php echo $user_type['is_active']; ?>">
 
-    <?php include 'category-master-model.php' ?>
+                                            <td><?php echo $key; ?></td>  
+                                            <td><?php echo htmlspecialchars($user_type['name']); ?></td> 
+                                            <td>
+                                                <?php if ($user_type['is_active'] == 1): ?>
+                                                    <span class="badge bg-soft-success font-size-12">Active</span>
+                                                <?php else: ?>
+                                                    <span class="badge bg-soft-danger font-size-12">Inactive</span>
+                                                <?php endif; ?>
+                                            </td>
+                                        </tr>
 
 
-    <!-- Right bar overlay-->
+                                    <?php } ?>
+                                </tbody>
+                            </table>
+                        </div> <!-- end col -->
+                    </div> <!-- end row -->
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+
+    <!-- user type model end-->
     <div class="rightbar-overlay"></div>
 
     <!-- JAVASCRIPT -->
     <script src="assets/libs/jquery/jquery.min.js"></script>
     <!-- /////////////////////////// -->
-    <script src="ajax/js/category-master.js"></script>
+    <script src="ajax/js/user-type.js"></script>
 
 
     <script src="assets/libs/sweetalert/sweetalert-dev.js"></script>
