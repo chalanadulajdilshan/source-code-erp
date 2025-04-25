@@ -29,6 +29,11 @@ include_once(dirname(__FILE__) . '/PageCategory.php');
 include_once(dirname(__FILE__) . '/Pages.php');
 include_once(dirname(__FILE__) . '/Permission.php');
 include_once(dirname(__FILE__) . '/UserPermission.php');
+include_once(dirname(__FILE__) . '/MarketingExecutive.php');
+include_once(dirname(__FILE__) . '/Quotation.php'); 
+include_once(dirname(__FILE__) . '/QuotationItem.php');
+
+
 
 
 
