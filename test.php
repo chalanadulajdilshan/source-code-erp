@@ -1,670 +1,399 @@
-<?php
-session_start();
-date_default_timezone_set('Asia/Colombo');
-?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<title>Unsold Rep Wise Report</title>
-		<style>
-			table {
-				border-collapse: collapse;
-			}
-			table, td, th {
-
-				font-family: Arial, Helvetica, sans-serif;
-				padding: 5px;
-			}
-			th {
-				font-weight: bold;
-				font-size: 14px;
-			}
-			td {
-				font-size: 14px;
-				border-bottom: none;
-				border-top: none;
-			}
-		</style>
-	</head>
-
-	<body>
-		<!-- Progress bar holder -->
-		<!-- Progress information -->
-		<div id="information" style="width"></div>
-
-		<?php
-		require_once ("connectioni.php");
-                
-                if(isset($_SESSION["UserName"])){
-
-		$daysover = $_GET["txtdays"];
-		$daysbel = $_GET["txtbel"];
-
-		$sql = "delete from tmparmove where user_id = '" . $_SESSION["CURRENT_USER"] . "'";
-		$result = mysqli_query($GLOBALS['dbinv'], $sql);
-
-		if ($_GET["cmbbrand"] == "All") {
-			$sql_smas = "select * from viewsubmas1 where STO_CODE='" . $_GET["com_dep"] . "' AND  QTY1> 0  limit 500";
-		}
-		if ($_GET["cmbbrand"] != "All") {
-
-			$sql_smas = "select * from viewsubmas1 where STO_CODE='" . $_GET["com_dep"] . "'  AND QTY1> 0";
-		}
-
-		if ($_GET["cmbbrand"] != "All") {
-			$sql_smas = $sql_smas . " and BRAND_NAME ='" . $_GET["cmbbrand"] . "'";
-		}
-		$i = 0;
-		$result_smas = mysqli_query($GLOBALS['dbinv'], $sql_smas);
-		while ($row_smas = mysqli_fetch_array($result_smas)) {
-
-			$balqty = $row_smas["QTY1"];
-			$totarqty = 0;
-			$totbalqty = 0;
-
-			$totbalqty = $row_smas["QTYINHAND"];
-			while ($balqty != 0) {
-				$sqlm = "select * from viewpur where STK_NO='" . $row_smas["STK_NO"] . "' and CANCEL='0' order by sdate desc limit 30";
-				$result_artrn = mysqli_query($GLOBALS['dbinv'], $sqlm);
-				
-				$rowco = mysqli_num_rows($result_artrn);
-				if ($rowco==0) {
-					
-
-					$userData[] = "('', '', '" . trim($row_smas["STK_NO"]) . "', '" . $row_smas["DESCRIPT"] . "', '" . $row_smas["PART_NO"] . "', '" . $row_smas["QTYINHAND"] . "', 0, '" . trim($row_smas["BRAND_NAME"]) . "', '', '', 0, 0, '" . $balqty . "', '" . $row_smas["acc_cost"] . "', 0, '" . $_SESSION["CURRENT_USER"] . "')";
-					$balqty=0;
-				}
-					
-				while ($row_artrn = mysqli_fetch_array($result_artrn)) {
-					if ($balqty == 0) {
-						break;
-					}
-					
-
-					$sql = "select * from view_repwise where STK_NO='" . $row_smas["STK_NO"] . "' and refno='" . trim($row_artrn["REFNO"]) . "' and CANCEL='0' and DEP_TO = '" . $_GET["com_dep"] . "' limit 15";
-					$result_artrn1 = mysqli_query($GLOBALS['dbinv'], $sql);
-					$rowc = mysqli_num_rows($result_artrn1);
-					$totarqty = $totarqty + $row_artrn["REC_QTY"];
-
-					
-					
-					if ($rowc <> 0) {
-
-						while ($row_artrn1 = mysqli_fetch_array($result_artrn1)) {
-							if ($balqty != 0) {
-								
-								 
-								$totar = $row_artrn1["QTY"];
-
-								$ardate = $row_artrn["SDATE"];
-								$AR_NO = trim($row_artrn["REFNO"]);
-								$STK_NO = trim($row_smas["STK_NO"]);
-								$des = trim($row_smas["DESCRIPT"]);
-								$PART_NO = trim($row_smas["PART_NO"]);
-								$qty_hnd = $row_smas["QTY1"];
-								$AR_QTY = $row_artrn1["REC_QTY"];
-								$brand = $row_smas["BRAND_NAME"];
-
-								$SUPPLIER = trim($row_artrn["SUP_NAME"]);
-								$LC_NO = trim($row_artrn["LCNO"]);
-
-								if ($_SESSION['dev'] == '1') {
-									$ARVALUE = $row_artrn1["COST"] * $row_artrn1["REC_QTY"];
-								} else if ($_SESSION['dev'] == '0') {
-									$ARVALUE = $row_artrn1["acc_cost"] * $row_artrn1["REC_QTY"];
-								}
-													
-								if ($balqty > $row_artrn1['QTY']) {
-									$balqty = $balqty - $row_artrn1['QTY'];
-									$totar = $totar - $row_artrn1['QTY'];
-									$UN_QTY = $row_artrn1["QTY"];
-
-									if ($row_smas["QTYINHAND"] < $totarqty) {
-										$UN_QTY = $UN_QTY + $balqty;
-										$balqty = 0;
-									}
-								} else {
-									$totar = 0;
-									$UN_QTY = $balqty;
-									$balqty = 0;
-								}
-
-								if ($totbalqty <= 0 and $balqty > 0) {
-									$date = date("Y-m-d");
-									$date = strtotime(date("Y-m-d", strtotime($date)) . " -91 days");
-									$caldate = date("Y-m-d", $date);
-									$sqlm = "select sum(rec_qty) as recqty from s_purtrn where STK_NO='" . $row_smas["STK_NO"] . "' and CANCEL='0' and SDATE > '" . $caldate . "' order by sdate desc ";
-
-									$result_rs = mysqli_query($GLOBALS['dbinv'], $sqlm);
-									$row_rs = mysqli_fetch_array($result_rs);
-
-									$txtunsold = 0;
-
-									if (is_null($row_rs["recqty"]) == false) {
-										$mnewstk = $row_rs["recqty"];
-									}
-
-									if ($row_smas["QTYINHAND"] > $mnewstk) {
-										$txtunsold = $row_smas["QTYINHAND"] - $mnewstk;
-									}
-
-									If ($txtunsold > 0) {
-										$UN_QTY = $balqty;
-									} else {
-										$UN_QTY = "0";
-										$monsales = "0";
-										$sold = "0";
-									}
-
-								}
-
-								if ($_SESSION['dev'] == '1') {
-									$sold = $row_smas["COST"];
-								} else if ($_SESSION['dev'] == '0') {
-									$sold = $row_smas["acc_cost"];
-								}
-								$monsales = $sold;
-								$period = (strtotime(date("Y-m-d")) - strtotime($row_artrn["SDATE"])) / (60 * 60 * 24);
-								 
-
-								$userData[] = " ('" . $ardate . "','" . $AR_NO . "','" . $STK_NO . "','" . $des . "','" . $PART_NO . "','" . $qty_hnd . "','" . $AR_QTY . "','" . $brand . "','" . $SUPPLIER . "','" . $LC_NO . "','" . $ARVALUE . "','" . $period . "','" . $UN_QTY . "','" . $sold . "','" . $monsales . "','" . $_SESSION["CURRENT_USER"] . "')";
-								$totbalqty = $totbalqty - $row_artrn1['QTY'];				
-							}
-						}
-					} else {
-
-						if ($balqty != 0) {
-		
-							 
-
-							$ardate = $row_artrn["SDATE"];
-							$AR_NO = trim($row_artrn["REFNO"]);
-							$STK_NO = trim($row_smas["STK_NO"]);
-							$des = trim($row_smas["DESCRIPT"]);
-							$PART_NO = trim($row_smas["PART_NO"]);
-							$qty_hnd = $row_smas["QTY1"];
-							$AR_QTY = $row_artrn["REC_QTY"];
-							$brand = $row_smas["BRAND_NAME"];
-
-							$SUPPLIER = trim($row_artrn["SUP_NAME"]);
-							$LC_NO = trim($row_artrn["LCNO"]);
-
-							if ($_SESSION['dev'] == '1') {
-								$ARVALUE = $row_artrn["COST"] * $row_artrn["REC_QTY"];
-							} else if ($_SESSION['dev'] == '0') {
-								$ARVALUE = $row_artrn["acc_cost"] * $row_artrn["REC_QTY"];
-							}
-							
-							$UN_QTY = 0;
-							
-							if ($_SESSION['dev'] == '1') {
-									$sold = $row_smas["COST"];
-								} else if ($_SESSION['dev'] == '0') {
-									$sold = $row_smas["acc_cost"];
-								}
-									
-							If (($totbalqty <= $row_artrn["REC_QTY"])) {
-                               	$UN_QTY = $balqty;
-                                $balqty = 0;
-                            } elseif ($row_smas["QTYINHAND"] < $totarqty) {
-								$UN_QTY = $balqty;
-								$balqty = 0;
-							}
-							
-							
-							
-							
-							$monsales = $sold;
-							$period = (strtotime(date("Y-m-d")) - strtotime($row_artrn["SDATE"])) / (60 * 60 * 24);
-							$userData[] = " ('" . $ardate . "','" . $AR_NO . "','" . $STK_NO . "','" . $des . "','" . $PART_NO . "','" . $qty_hnd . "','" . $AR_QTY . "','" . $brand . "','" . $SUPPLIER . "','" . $LC_NO . "','" . $ARVALUE . "','" . $period . "','" . $UN_QTY . "','" . $sold . "','" . $monsales . "','" . $_SESSION["CURRENT_USER"] . "')";
-							$totbalqty = $totbalqty - $row_artrn["REC_QTY"];					
-							
-
-						}
-					}
-				}
-			}
-
-		}
-
-		$sqls = 'insert into tmparmove(ardate, AR_NO, STK_NO, des, PART_NO, qty_hnd, AR_QTY, brand, SUPPLIER,LC_NO,ARVALUE, period,UN_QTY,sold,monsales,user_id) values ' . implode(',', $userData);
-		$res = mysqli_query($GLOBALS['dbinv'], $sqls);
-
-		if ($_GET["cmbtype"] == "All") {
-			$sql_rst = "select * from tmparmove  where user_id = '" . $_SESSION["CURRENT_USER"] . "' ";
-		}
-		if ($_GET["cmbtype"] == "Over") {
-			$sql_rst = "select * from tmparmove where period>" . $daysover . " and user_id = '" . $_SESSION["CURRENT_USER"] . "'";
-		}
-		if ($_GET["cmbtype"] == "Between") {
-			$sql_rst = "select * from tmparmove where period>" . $daysover . " and period<" . $daysbel . " and user_id = '" . $_SESSION["CURRENT_USER"] . "'";
-		}
-		//echo $sql_rst;
-
-		$b30 = 0;
-		$o36b45 = 0;
-		$o46b60 = 0;
-		$o61b75 = 0;
-		$o76b91 = 0;
-		$o91 = 0;
-		$total = 0;
-
-		$result_rst = mysqli_query($GLOBALS['dbinv'], $sql_rst);
-		while ($row_rst = mysqli_fetch_array($result_rst)) {
-
-			if ($row_rst["period"] < 31) {
-				$b30 = $b30 + $row_rst["UN_QTY"] * $row_rst["sold"];
-			}
-			if (($row_rst["period"] > 30) and ($row_rst["period"] < 46)) {
-				$o36b45 = $o36b45 + $row_rst["UN_QTY"] * $row_rst["sold"];
-			}
-			if (($row_rst["period"] > 45) and ($row_rst["period"] < 61)) {
-				$o46b60 = $o46b60 + $row_rst["UN_QTY"] * $row_rst["sold"];
-			}
-			if (($row_rst["period"] > 60) and ($row_rst["period"] < 76)) {
-				$o61b75 = $o61b75 + $row_rst["UN_QTY"] * $row_rst["sold"];
-			}
-			if (($row_rst["period"] > 75) and ($row_rst["period"] < 91)) {
-				$o76b91 = $o76b91 + $row_rst["UN_QTY"] * $row_rst["sold"];
-			}
-			if ($row_rst["period"] > 90) {
-				$o91 = $o91 + $row_rst["UN_QTY"] * $row_rst["sold"];
-			}
-			if ((is_null($row_rst["sold"]) == false) and (is_null($row_rst["UN_QTY"]) == false)) {
-				$total = $total + $row_rst["UN_QTY"] * $row_rst["sold"];
-			}
-		}
-
-		if ($_GET["unsold"] == "summery") {
-
-			printSummery();
-			exit();
-		}
-
-		if ($_GET["unsold"] == "soldsummery") {
-			sold_sum();
-			PRINT_WEEKS();
-			exit();
-		}
-
-		$sql_head = "select * from invpara";
-		$result_head = mysqli_query($GLOBALS['dbinv'], $sql_head);
-		$row_head = mysqli_fetch_array($result_head);
-
-		$txtrepono = $_SESSION["CURRENT_USER"] . " " . date("Y-m-d") . "  " . date("H:i:s");
-
-		if ($_GET["cmbtype"] == "All") {
-			$sql = "SELECT * from tmparmove where UN_QTY > 0 and user_id = '" . $_SESSION["CURRENT_USER"] . "' order by brand,stk_no,period";
-			$txtdays = " All Stock";
-		}
-
-		if ($_GET["cmbtype"] == "Over") {
-			$sql = "SELECT * from tmparmove where period>" . $daysover . " and UN_QTY > 0 and user_id = '" . $_SESSION["CURRENT_USER"] . "' order by brand,stk_no,period";
-			$txtdays = " Over  " . $daysover . "  days Stock";
-		}
-
-		if ($_GET["cmbtype"] == "Between") {
-			$sql = "SELECT * from tmparmove where period>" . $daysover . " and period<" . $daysbel . " and UN_QTY > 0 and user_id = '" . $_SESSION["CURRENT_USER"] . "' order by brand,stk_no,period";
-			$txtdays = " Over  " . $daysover . "  Bellow   " . $daysbel . "  days Stock";
-		}
-		?>
-
-		<center>
-			<table width="1200">
-				<tr>
-					<th colspan="13" scope="col"><?php echo $row_head["COMPANY"]; ?></th>
-				</tr>
-				<tr>
-					<th colspan="13" scope="col"><?php echo $row_head["ADD1"] . " , " . $row_head["ADD2"]; ?></th>
-				</tr>
-				<tr>
-					<?php
-					$sql_dep = "select * from s_stomas where CODE='" . $_GET["com_dep"] . "'";
-					$result_dep = mysqli_query($GLOBALS['dbinv'], $sql_dep);
-					$rows_dep = mysqli_fetch_array($result_dep);
-					?>
-					<td colspan="3">AR Moving Report - Department : <?php echo $_GET["com_dep"] . " - " . $rows_dep["DESCRIPTION"]; ?></td> 
-					<td colspan="7" align="center"><?php echo $txtdays; ?></td>
-					<td colspan="3" align="right"><?php echo date("Y-m-d"); ?></td>
-				</tr>
-			</table>
-			<table width="1200" border="1">
-				<tr>
-					<th>Stock No</th><th width="250">Description</th><th>Part No</th><th>Qty In Ha</th><th>No of Days</th><th>Un Sold Stock</th><th>L/C No</td> <th>AR Date</th><th>AR No</th><th>AR Qty</th>
-                                        <?php if ($_SESSION["CURRENT_REP"]=="") echo "<th>Total Value</th><th>Cost Value</th><th>Unsold Value</th>";?>
-				</tr>
-				<?php
-				$brand = "";
-				$STK_NO = "";
-				$tot = 0;
-$arqty=0;
-				$result = mysqli_query($GLOBALS['dbinv'], $sql);
-				while ($rows = mysqli_fetch_array($result)) {
-
-					if ($brand != $rows["brand"]) {
-						echo "<tr>
-<td align=\"left\" colspan=13><b>" . $rows["brand"] . "</b></td></tr>";
-						$brand = $rows["brand"];
-					}
-					if ($STK_NO != $rows["STK_NO"]) {
-
-						echo "<tr>";
-						echo "<td>" . $rows["STK_NO"] . "</td>";
-						echo "<td>" . $rows["des"] . "</td>";
-						echo "<td>" . $rows["PART_NO"] . "</td>";
-						echo "<td align=\"right\">" . $rows["qty_hnd"] . "</td>";
-						echo "<td>&nbsp;</td>";
-						echo "<td align=\"right\">&nbsp;</td>";
-						echo "<td>&nbsp;</td>";
-						echo "<td>&nbsp;</td>";
-						echo "<td>&nbsp;</td>";
-						echo "<td align=\"right\">&nbsp;</td>";
-                                                if ($_SESSION["CURRENT_REP"]==""){
-                                                    echo "<td align=\"right\">&nbsp;</td>";
-                                                    echo "<td align=\"right\">&nbsp;</td>";
-                                                    echo "<td align=\"right\">&nbsp;</td>";
-                                                }
-						echo "</tr>";
-						$STK_NO = $rows["STK_NO"];
-					}
-					echo "<tr>";
-					echo "<td>&nbsp;</td>";
-					echo "<td>&nbsp;</td>";
-					echo "<td>&nbsp;</td>";
-					echo "<td align=\"right\">&nbsp;</td>";
-					echo "<td>" . $rows["period"] . "</td>";
-					echo "<td align=\"right\"><b>" . $rows["UN_QTY"] . "</b></td>";
-					echo "<td>" . $rows["LC_NO"] . "</td>";
-					echo "<td>" . $rows["ardate"] . "</td>";
-					echo "<td>" . $rows["AR_NO"] . "</td>";
-					echo "<td align=\"right\">" . $rows["AR_QTY"] . "</td>";
-                                        if ($_SESSION["CURRENT_REP"]==""){
-                                            echo "<td align=\"right\">" . number_format($rows["ARVALUE"], 2, ".", ",") . "</td>";
-                                            echo "<td align=\"right\">" . number_format($rows["sold"], 2, ".", ",") . "</td>";
-                                            echo "<td align=\"right\">" . number_format($rows["sold"] * $rows["UN_QTY"], 2, ".", ",") . "</td>";
-                                        }
-					echo "</tr>";
-					$tot = $tot + ($rows["sold"] * $rows["UN_QTY"]);
-					$arqty +=$rows["UN_QTY"];
-				}
-
-				echo "<tr>";
-                                if ($_SESSION["CURRENT_REP"]==""){
-                                    echo "<td colspan=5>&nbsp;</td>";
-                                     echo "<td align=\"right\"><b>" . number_format($arqty, 2, ".", ",") . "</b></td>";
-                                     echo "<td colspan=4>&nbsp;</td>";
-                                    echo "<td align=\"right\"><b>" . number_format($tot, 2, ".", ",") . "</b></td>";
-                                }
-				echo "</tr>";
-				?>
-			</table>
-                        <?php if ($_SESSION["CURRENT_REP"]==""){?>
-			<table width='1200'>
-				<tr>
-					<td width='400'><b>Total Value Rs.</b></td>
-					<td align="right" width='200'><b><?php echo number_format($total, 2, ".", ","); ?></b></td>
-					<td width='600'></td>
-
-				</tr>
-				<tr>
-					<td width='400'><b>Below 30 Days Stock Rs.</b></td>
-					<td align="right"><b><?php echo number_format($b30, 2, ".", ","); ?></b></td>
-					<td width='600'></td>
-
-				</tr>
-				<tr>
-					<td width='400'><b>Over 31 and Below 45 Days Stock Rs.</b></td>
-					<td align="right"><b><?php echo number_format($o36b45, 2, ".", ","); ?></b></td>
-					<td width='600'></td>
-
-				</tr>
-				<tr>
-					<td width='400'><b>Over 46 and Below 60 Days Stock Rs.</b></td>
-					<td align="right"><b><?php echo number_format($o46b60, 2, ".", ","); ?></b></td>
-					<td width='600'></td>
-
-				</tr>
-				<tr>
-					<td width='400'><b>Over 61 and Below 75 Days Stock Rs.</b></td>
-					<td align="right"><b><?php echo number_format($o61b75, 2, ".", ","); ?></b></td>
-					<td width='600'></td>
-
-				</tr>
-				<tr>
-					<td width='400'><b>Over 76  and Below 90 Days Stock Rs.</b></td>
-					<td align="right"><b><?php echo number_format($o76b91, 2, ".", ","); ?></b></td>
-					<td width='600'></td>
-
-				</tr>
-				<tr>
-					<td width='400'><b>Over 90 Days Stock Rs.</b></td>
-					<td align="right"><b><?php echo number_format($o91, 2, ".", ","); ?></b></td>
-					<td width='600'></td>
-				</tr>
-			</table>
-                        
-
-			<?php
-                        }
-                        }else{
-                            echo "invalid user";
-                        }
-			function printSummery() {
-
-				require_once ("connectioni.php");
-
-				$sql_head = "select * from invpara";
-				$result_head = mysqli_query($GLOBALS['dbinv'], $sql_head);
-				$row_head = mysqli_fetch_array($result_head);
-
-				//$txtrepono= $_SESSION["CURRENT_USER"] . " " . date("Y-m-d") . "  " . date("H:i:s");
-
-				$sql_dep = "select * from s_stomas where CODE='" . $_GET["com_dep"] . "'";
-				$result_dep = mysqli_query($GLOBALS['dbinv'], $sql_dep);
-				$rows_dep = mysqli_fetch_array($result_dep);
-
-				$TXTREP = "Sales Rep : " . $_GET["com_dep"] . " - " . $rows_dep["DESCRIPTION"];
-
-				$daysover = $_GET["txtdays"];
-				$daysbel = $_GET["txtbel"];
-
-				if ($_GET["cmbtype"] == "All") {
-					$txtdays = " All Stock";
-				}
-
-				if ($_GET["cmbtype"] == "Over") {
-					$txtdays = " Over  " . $daysover . "  days Stock";
-				}
-				if ($_GET["cmbtype"] == "Between") {
-					$txtdays = " Over  " . $daysover . "  Bellow   " . $daysbel . "  days Stock";
-				}
-
-				echo "<center><table width=\"1000\" border=\"0\">
-<tr>
-<th colspan=\"13\" scope=\"col\">" . $row_head["COMPANY"] . "</th>
-</tr>
-<tr>
-<th colspan=\"13\" scope=\"col\">" . $row_head["ADD1"] . " , " . $row_head["ADD2"] . "</th>
-</tr>
-<tr>
-<td colspan=\"3\">AR Moving Report</td>
-<td colspan=\"7\" align=\"center\">" . $txtdays . "</td>
-<td colspan=\"3\" align=\"right\">" . date("Y-m-d") . "</td>
-</tr>
-<tr>
-<td colspan=\"3\">" . $TXTREP . "</td>
-<td colspan=\"7\" align=\"center\"></td>
-<td colspan=\"3\" align=\"right\"></td>
-</tr>
-</table><br>";
-
-				echo "<center><table border=1  width=\"1000\" cellpadding=\"5\" cellspacing=\"0\"><tr>
-<th>Brand</th><th>Bellow 60</th><th>60 to 90</th><th>90 to 120</th><th>Over 120</th><th>Total Stock</th>
-<th>Total Over 90</th><th>%</th></tr>";
-
-				$sql1 = "SELECT distinct brand from tmparmove where user_id = '" . $_SESSION["CURRENT_USER"] . "' order by brand";
-				$result1 = mysqli_query($GLOBALS['dbinv'], $sql1);
-
-				$all_totbel60 = 0;
-				$all_toto60_90 = 0;
-				$all_toto90to120 = 0;
-				$all_toto120 = 0;
-				$all_totunsold = 0;
-				$all_tottotover90 = 0;
-				while ($row1 = mysqli_fetch_array($result1)) {
-
-					if ($_GET["cmbtype"] == "All") {
-						$sql = "SELECT * from tmparmove where brand='" . $row1["brand"] . "' and user_id = '" . $_SESSION["CURRENT_USER"] . "' ";
-					}
-
-					if ($_GET["cmbtype"] == "Over") {
-						$sql = "SELECT * from tmparmove where period>" . $daysover . " and brand='" . $row1["brand"] . "' and user_id = '" . $_SESSION["CURRENT_USER"] . "'";
-					}
-					if ($_GET["cmbtype"] == "Between") {
-						$sql = "SELECT * from tmparmove where period>" . $daysover . " and period<" . $daysbel . " and brand='" . $row1["brand"] . "' and user_id = '" . $_SESSION["CURRENT_USER"] . "'";
-					}
-
-					$totbel60 = 0;
-					$toto60_90 = 0;
-					$toto90to120 = 0;
-					$toto120 = 0;
-					$totunsold = 0;
-					$tottotover90 = 0;
-					$totsubpr = 0;
-
-					$result = mysqli_query($GLOBALS['dbinv'], $sql);
-					while ($row = mysqli_fetch_array($result)) {
-
-						$bel60 = 0;
-						$o60_9 = 0;
-						$o90to120 = 0;
-						$o120 = 0;
-						$unsold = 0;
-						$totover90 = 0;
-						$subpr = 0;
-
-
-                        $qty60 = 0;
-
-						$unsold = $row["sold"] * $row["UN_QTY"];
-
-						if ($row["period"] <= 30) {
-							$b30 = $row["sold"] * $row["UN_QTY"];
-                            $qty30 = $row["UN_QTY"];
-						} else {
-							$b30 = 0;
-                            $qty30 = 0;
-
-						}
-						if (($row["period"] > 30) and ($row["period"] <= 45)) {
-							$o31to45 = $row["sold"] * $row["UN_QTY"];
-                            $o31to45qty =  $row["UN_QTY"];
-						} else {
-							$o31to45 = 0;
-                            $o31to45qty = 0;
-						}
-
-						if (($row["period"] > 45) and ($row["period"] <= 60)) {
-							$o45to60 = $row["sold"] * $row["UN_QTY"];
-                            $o45to60qty = $row["UN_QTY"];
-						} else {
-							$o45to60 = 0;
-                            $o45to60qty=0;
-						}
-
-						if (($row["period"] > 60) and ($row["period"] <= 75)) {
-							$o60to75 = $row["sold"] * $row["UN_QTY"];
-						} else {
-							$o60to75 = 0;
-						}
-
-						if (($row["period"] > 75) and ($row["period"] <= 90)) {
-							$o75to90 = $row["sold"] * $row["UN_QTY"];
-						} else {
-							$o75to90 = 0;
-						}
-
-						if (($row["period"] > 90) and ($row["period"] <= 120)) {
-							$o90to120 = $row["sold"] * $row["UN_QTY"];
-						} else {
-							$o90to120 = 0;
-						}
-
-						if ($row["period"] > 120) {
-							$o120 = $row["sold"] * $row["UN_QTY"];
-						} else {
-							$o120 = 0;
-						}
-
-						$totover90 = $o120 + $o90to120;
-
-						//if Sum ({@unsold}, {ado.brand})>0 then
-						//Sum ({@totOver90}, {ado.brand})/Sum ({@unsold}, {ado.brand})*100
-
-						if ($unsold > 0) {
-							$subpr = $totover90 / $unsold * 100;
-						}
-
-						//if Sum ({@unsold})>0 then
-						//Sum ({@totOver90})/Sum ({@unsold})*100
-						if ($unsold > 0) {
-							$totpr = ($totover90) / $unsold * 100;
-						}
-
-						$bel60 = $b30 + $o31to45 + $o45to60;
-
-						$o60_90 = $o60to75 + $o75to90;
-
-						//$result =mysqli_query($GLOBALS['dbinv'],$sql) ;
-						//while($row = mysqli_fetch_array($result)){
-
-						$totbel60 = $totbel60 + $bel60;
-						$toto60_90 = $toto60_90 + $o60_90;
-						$toto90to120 = $toto90to120 + $o90to120;
-						$toto120 = $toto120 + $o120;
-						$totunsold = $totunsold + $unsold;
-						$tottotover90 = $tottotover90 + $totover90;
-
-
-                        $qty60 =$qty30+ $o31to45qty +$o45to60qty;
-
-
-
-						//$totsubpr=$totsubpr+$subpr;
-						//echo "<tr>
-						//<td>".$row1["brand"]."</td><td>".number_format($bel60, 2, ".", ",")."</td><td>".number_format($o60_90, 2, ".", ",")."</td><td>".number_format($o90to120, 2, ".", ",")."</td><td>".number_format($o120, 2, ".", ",")."</td><td>".number_format($unsold, 2, ".", ",")."</td><td>".number_format($totover90, 2, ".", ",")."</td><td>".number_format($subpr, 2, ".", ",")."</td></tr>";
-					}
-
-					if ($totunsold > 0) {
-						$totsubpr = $tottotover90 / $totunsold * 100;
-					}
-
-					echo "<tr>
-<td>" . $row1["brand"] . "</td><td>" . number_format($totbel60, 2, ".", ",") . "</td><td>" . number_format($toto60_90, 2, ".", ",") . "</td><td>" . number_format($toto90to120, 2, ".", ",") . "</td><td>" . number_format($toto120, 2, ".", ",") . "</td><td>" . number_format($totunsold, 2, ".", ",") . "</td><td>" . number_format($tottotover90, 2, ".", ",") . "</td><td>" . number_format($totsubpr, 2, ".", ",") . "</td></tr>";
-
-					$all_totbel60 = $all_totbel60 + $totbel60;
-					$all_toto60_90 = $all_toto60_90 + $toto60_90;
-					$all_toto90to120 = $all_toto90to120 + $toto90to120;
-					$all_toto120 = $all_toto120 + $toto120;
-					$all_totunsold = $all_totunsold + $totunsold;
-					$all_tottotover90 = $all_tottotover90 + $tottotover90;
-				}
-
-				if ($all_totunsold > 0) {
-					$all_totsubpr = $all_tottotover90 / $all_totunsold * 100;
-				}
-
-				echo "<tr>
-<td>&nbsp;</td>
-<td>" . $qty60 ." -" . number_format($all_totbel60, 2, ".", ",") . "</td>
-<td><b>" . number_format($all_toto60_90, 2, ".", ",") . "</b></td>
-<td><b>" . number_format($all_toto90to120, 2, ".", ",") . "</b></td>
-<td><b>" . number_format($all_toto120, 2, ".", ",") . "</b></td>
-<td><b>" . number_format($all_totunsold, 2, ".", ",") . "</b></td>
-<td><b>" . number_format($all_tottotover90, 2, ".", ",") . "</b></td>
-<td><b>" . number_format($all_totsubpr, 2, ".", ",") . "</b></td></tr>";
-			}
-			?>
-	</body>
-</html>
+<form id="form1" name="form1" action="report_sales_summery.php" target="_blank" method="get">
+	<div class="row">
+		<div class="col-md-3">
+			<label> Customer Wise</label>
+			<input type="checkbox" name="chkcus" id="chkcus">
+		</div>
+		<div class="col-md-3">
+			<label>Customer Code</label>
+			<input type="text" name="cuscode" id="cuscode" class="text_purchase3">
+		</div>
+		<div class="col-md-3">
+			<a href="" onclick="NewWindow('serach_customer.php','mywin','800','700','yes','center');return false"
+				onfocus="this.blur()">
+				<input type="text" name="cusname" id="cusname" class="text_purchase3">
+			</a>
+			<input type="text" class="text_purchase3" disabled="disabled" id="cus_address" name="cus_address">
+
+			|
+			<a href="serach_customer.php?stname=rep_outstand_state"
+				onclick="NewWindow(this.href,'mywin','800','700','yes','center');return false" onfocus="this.blur()">
+				<input type="button" name="searchcust" id="searchcust" value="..." class="btn_purchase1">
+			</a>
+		</div>
+
+		<div class="row mb-3">
+			<div class="col-md-3">
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="radio" id="optsales" value="optsales" checked
+						onclick="chk_sales();">
+					<label class="form-check-label" for="optsales">Sales</label>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="radio" id="optreturn" value="optreturn"
+						onclick="chk_return();">
+					<label class="form-check-label" for="optreturn">Return</label>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="radio" id="optsummery" value="optsummery"
+						onclick="chk_summery();">
+					<label class="form-check-label" for="optsummery">Summary</label>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="radio" id="optscrap" value="optscrap">
+					<label class="form-check-label" for="optscrap">Scrap</label>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-3">
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="radio" id="optreceipt" value="optreceipt"
+						onclick="chk_rec();">
+					<label class="form-check-label" for="optreceipt">Receipt</label>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="radio" id="optitem" value="optitem">
+					<label class="form-check-label" for="optitem">Item Sales</label>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="radio" id="opttraget" value="opttraget">
+					<label class="form-check-label" for="opttraget">Target</label>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="radio" id="optgrninv" value="optgrninv">
+					<label class="form-check-label" for="optgrninv">GRN With Inv No</label>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<table width="928" border="0">
+		<tbody>
+			<tr>
+				<td colspan="2" rowspan="2" align="left">
+					<table width="500" border="0">
+						<tbody>
+							<tr>
+								<th width="403" scope="col">
+									<table width="400" border="0">
+										<tbody>
+											<tr>
+												<th scope="col"><input type="radio" name="radio" id="optsales"
+														value="optsales" checked="checked" onclick="chk_sales();"> Sales
+												</th>
+												<th scope="col"><input type="radio" name="radio" id="optreturn"
+														value="optreturn" onclick="chk_return();"> Return</th>
+												<th scope="col"><input type="radio" name="radio" id="optsummery"
+														value="optsummery" onclick="chk_summery();"> Summery</th>
+												<th scope="col"><input type="radio" name="radio" id="optscrap"
+														value="optscrap"> Screap</th>
+											</tr>
+											<tr>
+												<td><input type="radio" name="radio" id="radio" value="optreceipt"
+														onclick="chk_rec();"> Reciept</td>
+												<td><input type="radio" name="radio" id="optitem" value="optitem"> Item
+													Sales</td>
+												<td><input type="radio" name="radio" id="OPttraget" value="OPttraget">
+													Target</td>
+												<td><input type="radio" name="radio" id="optgrninv" value="optgrninv">
+													GRN With Inv No</td>
+											</tr>
+										</tbody>
+									</table>
+								</th>
+								<th width="87" scope="col">
+									<table width="300" border="0">
+										<tbody>
+											<tr>
+												<th scope="col">
+													<div id="type">
+														<select name="cmbtype" id="cmbtype" class="text_purchase3">
+															<option value="All">All</option>
+															<option value="GRN">GRN</option>
+															<option value="DGRN">DGRN</option>
+															<option value="Credit Note">Credit Note</option>
+														</select>
+													</div>
+												</th>
+												<th scope="col">
+													<div id="dev">
+														<select name="cmbdev" id="cmbdev" class="text_purchase3">
+															<option value="Computer">Office Sale</option>
+														</select>
+													</div>
+												</th>
+											</tr>
+											<tr>
+												<td>
+													<div id="summery">
+														<select name="cmbsummerytype" id="cmbsummerytype"
+															class="text_purchase3">
+															<option value="All">All</option>
+															<option value="Seperate">Seperate</option>
+															<option value="Deffective">Deffective</option>
+														</select>
+													</div>
+												</td>
+												<td>
+													<div id="cashdis"><input type="checkbox" name="chk_cash"
+															id="chk_cash">Cash Dis</div>
+													<div id="svat"><input type="checkbox" name="chk_svat"
+															id="chk_svat">SVAT</div>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</th>
+							</tr>
+						</tbody>
+					</table>
+				</td>
+				<td width="128" rowspan="2" align="left">
+					<table width="100" border="0">
+						<tbody>
+							<tr>
+								<th scope="col">
+									<div id="rectype">
+										<select name="cmbRECtype" id="cmbRECtype" class="text_purchase3">
+											<option value="All">All</option>
+											<option value="Normal">Normal</option>
+											<option value="Ret.ch">Ret.ch</option>
+										</select>
+									</div>
+								</th>
+							</tr>
+							<tr>
+								<td>
+									<div id="chkrettype">
+										<select name="cmbretchktype" id="cmbretchktype" class="text_purchase3">
+											<option value="All">All</option>
+											<option value="Cash">Cash</option>
+											<option value="J/Entry">J/Entry</option>
+											<option value="R/Deposit">R/Deposit</option>
+											<option value="C/TT">C/TT</option>
+										</select>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</td>
+				<td><input type="checkbox" name="chk_stamp" id="chk_stamp"> Stamp Duty</td>
+				<td><input type="checkbox" name="chk_stamp1" id="chk_stamp1"> Summery</td>
+				<td width="76" align="left"><input type="checkbox" name="chk_discount" id="chk_discount"> Discount</td>
+			</tr>
+			<tr>
+				<td align="left"><input type="text" name="txt_disper" id="txt_disper" class="text_purchase3"></td>
+			</tr>
+			<tr>
+				<td colspan="4" align="left">
+					<fieldset>
+						<table width="821" border="0">
+							<tbody>
+								<tr>
+									<th width="147" scope="col"><input type="radio" name="radio2" id="optdaily"
+											value="optdaily" checked="checked"> Daily</th>
+									<th width="59" scope="col">&nbsp;</th>
+									<th width="84" scope="col">&nbsp;</th>
+									<th width="144" scope="col">&nbsp;</th>
+									<th width="162" scope="col">
+										<input type="text" class="label_purchase" value="Marketing Executive"
+											disabled="disabled">
+									</th>
+									<th colspan="2" scope="col">
+										<select name="cmbrep" id="cmbrep" onkeypress="keyset('dte_dor',event);"
+											onchange="custno('cash_rec_rep');" class="text_purchase3">
+											<option value="All">All</option>
+											<option value="1">1 Office Sales</option>
+											<option value="32">32 Chaminda Nawarathna</option>
+											<option value="47">47 Wasantha Kodithuwakku</option>
+											<option value="57">57 C. PUSHPAKUMARA</option>
+											<option value="63">63 Ravindra Weerasekara</option>
+											<option value="73">73 Chaminda Nawarathna (Tender)</option>
+											<option value="90">90 Thusitha Kumara</option>
+											<option value="91">91 Ruwan Gamage</option>
+											<option value="92">92 Uditha Anuradha</option>
+											<option value="95">95 Dulan Devnaka</option>
+											<option value="96">96 Dennis Priyanga</option>
+											<option value="97">97 Wasantha Kodithuwakku</option>
+											<option value="100">100 K.G.G. Jayanath</option>
+											<option value="101">101 Lasantha Bandara</option>
+											<option value="102">102 Dilshan Malindu</option>
+											<option value="103">103 Malaka Godakumbura</option>
+											<option value="104">104 Kushan Thennakoone</option>
+											<option value="105">105 Prasad Nilupul</option>
+											<option value="107">107 Lalinda Saranga</option>
+											<option value="108">108 Lahiru Shanaka</option>
+											<option value="110">110 Manoj Priyantha</option>
+											<option value="111">111 Janahitha Kumara</option>
+											<option value="112">112 Darshana Priyankara</option>
+											<option value="113">113 Dilshan Malindu (L)</option>
+											<option value="114">114 Shiron Rangana</option>
+											<option value="115">115 Jagath Deshapriya</option>
+											<option value="116">116 Manjula Sampath</option>
+											<option value="117">117 Aminda Udayanga</option>
+											<option value="118">118 Janith Perera</option>
+											<option value="119">119 Mevan Thanuja</option>
+											<option value="120">120 Prabuddha Tharupathi</option>
+											<option value="121">121 Wasantha Rathnayake</option>
+											<option value="122">122 Rajitha Subashana</option>
+											<option value="123">123 Northern Sale</option>
+										</select>
+									</th>
+								</tr>
+								<tr>
+									<td><input type="radio" name="radio2" id="optperiod" value="optperiod"> For Given
+										Period</td>
+									<td>&nbsp;</td>
+									<td>&nbsp;</td>
+									<td>&nbsp;</td>
+									<td>
+										<input type="text" class="label_purchase" value="Brand" disabled="disabled">
+									</td>
+									<td colspan="2">
+										<select name="CmbBrand" id="CmbBrand" onkeypress="keyset('searchitem',event);"
+											class="text_purchase3" onchange="setord();">
+											<option value="All">All</option>
+											<option value="AGATE">AGATE</option>
+											<option value="ALCEED">ALCEED</option>
+											<option value="AONAITE">AONAITE</option>
+											<option value="ATLANDER">ATLANDER</option>
+											<option value="ATLASBX">ATLASBX</option>
+											<option value="BATTERY TESTER">BATTERY TESTER</option>
+											<option value="BRAVIA">BRAVIA</option>
+											<option value="CANTOP">CANTOP</option>
+											<option value="CHENGSHAN">CHENGSHAN</option>
+											<option value="COMFORSER">COMFORSER</option>
+											<option value="COMPASAL">COMPASAL</option>
+											<option value="COMPASAL TBR">COMPASAL TBR</option>
+											<option value="CONDOR">CONDOR</option>
+											<option value="CONSTANCY">CONSTANCY</option>
+											<option value="CONTINENTAL">CONTINENTAL</option>
+											<option value="COOPER">COOPER</option>
+											<option value="DELTA PACE">DELTA PACE</option>
+											<option value="DOUBLE ROAD">DOUBLE ROAD</option>
+											<option value="DUNLOP">DUNLOP</option>
+											<option value="ETERNITY">ETERNITY</option>
+											<option value="EXOCELL">EXOCELL</option>
+											<option value="FESITE">FESITE</option>
+											<option value="GENEX">GENEX</option>
+											<option value="GLOBAL RACE">GLOBAL RACE</option>
+											<option value="GLOBATT ACE">GLOBATT ACE</option>
+											<option value="GLOBATT PACE">GLOBATT PACE</option>
+											<option value="GLOBATT RACE">GLOBATT RACE</option>
+											<option value="GOALSTAR">GOALSTAR</option>
+											<option value="GREENTOUR">GREENTOUR</option>
+											<option value="HHO">HHO</option>
+											<option value="HOPSON">HOPSON</option>
+											<option value="HYUNDAI">HYUNDAI</option>
+											<option value="KAPSEN">KAPSEN</option>
+											<option value="KONTROL">KONTROL</option>
+											<option value="LANDE">LANDE</option>
+											<option value="LANDSAIL">LANDSAIL</option>
+											<option value="LINGLONG">LINGLONG</option>
+											<option value="LINGLONG TL">LINGLONG TL</option>
+											<option value="LINGLONG/N">LINGLONG/N</option>
+											<option value="LIONSTONE">LIONSTONE</option>
+											<option value="LOCAL BATTERY">LOCAL BATTERY</option>
+											<option value="LOCAL TYRE">LOCAL TYRE</option>
+											<option value="LONGLIFE">LONGLIFE</option>
+											<option value="LUHE">LUHE</option>
+											<option value="MAXXIS MC">MAXXIS MC</option>
+											<option value="MINERVA">MINERVA</option>
+											<option value="MIRAGE">MIRAGE</option>
+											<option value="MIRAGE TBR">MIRAGE TBR</option>
+											<option value="MRL">MRL</option>
+											<option value="OHNICE">OHNICE</option>
+											<option value="OKAYA">OKAYA</option>
+											<option value="ORNET">ORNET</option>
+											<option value="OTANI">OTANI</option>
+											<option value="OTANI TBR">OTANI TBR</option>
+											<option value="PLATIN">PLATIN</option>
+											<option value="POWERTRAC">POWERTRAC</option>
+											<option value="POWERTRAC TBR">POWERTRAC TBR</option>
+											<option value="PRESA">PRESA</option>
+											<option value="PYTHON">PYTHON</option>
+											<option value="RAPID">RAPID</option>
+											<option value="ROADMARCH">ROADMARCH</option>
+											<option value="ROADSHINE">ROADSHINE</option>
+											<option value="ROADSTONE">ROADSTONE</option>
+											<option value="ROADSTONE CHINA">ROADSTONE CHINA</option>
+											<option value="ROADSTONE TUBE">ROADSTONE TUBE</option>
+											<option value="RYDANZ">RYDANZ</option>
+											<option value="SONIX">SONIX</option>
+											<option value="SONIX TBR">SONIX TBR</option>
+											<option value="STUCCO HOPPER">STUCCO HOPPER</option>
+											<option value="SUNFUL">SUNFUL</option>
+											<option value="SUNFUL TBR">SUNFUL TBR</option>
+											<option value="TAITONG">TAITONG</option>
+											<option value="TEXXAN">TEXXAN</option>
+											<option value="THREE-A">THREE-A</option>
+											<option value="TRANSTONE">TRANSTONE</option>
+											<option value="TUBE MASTER">TUBE MASTER</option>
+											<option value="ULTRA MILE">ULTRA MILE</option>
+											<option value="VAYU">VAYU</option>
+											<option value="VEEDOL">VEEDOL</option>
+											<option value="VOLTA">VOLTA</option>
+											<option value="WIDEWAY">WIDEWAY</option>
+											<option value="WILLFLY">WILLFLY</option>
+											<option value="ZEETEX">ZEETEX</option>
+										</select>
+									</td>
+								</tr>
+								<tr>
+									<td><input type="text" class="label_purchase" value="Date" disabled="disabled"></td>
+									<td colspan="2">
+										<input type="text" size="20" name="dtfrom" id="dtfrom" value="2025-04-25"
+											onfocus="load_calader('dtfrom')" class="text_purchase3">
+									</td>
+									<td>
+										<div id="dateto_name">
+											<input type="text" class="label_purchase" value="To" disabled="disabled">
+										</div>
+									</td>
+									<td>
+										<div id="dateto">
+											<input type="text" size="20" name="dtto" id="dtto" value="2025-04-25"
+												onfocus="load_calader('dtto')" class="text_purchase3">
+										</div>
+									</td>
+									<td width="109"></td>
+									<td width="86">&nbsp;</td>
+								</tr>
+							</tbody>
+						</table>
+					</fieldset>
+				</td>
+			</tr>
+			<tr>
+				<td align="left">&nbsp;</td>
+				<td align="left">&nbsp;</td>
+				<td colspan="2" align="left">&nbsp;</td>
+			</tr>
+			<tr>
+				<td width="392" align="left">&nbsp;</td>
+				<td width="314" align="left"></td>
+				<td colspan="2" align="left">&nbsp;</td>
+			</tr>
+			<tr>
+				<td width="392" align="left"></td>
+				<td><input type="submit" name="button" id="button" value="View" class="btn_purchase1"></td>
+			</tr>
+		</tbody>
+	</table>
+</form>
