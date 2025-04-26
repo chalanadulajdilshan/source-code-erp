@@ -26,6 +26,9 @@ class User
     private $password;
     public $show_password;
 
+    public $company_id;
+
+
 
     public function __construct($id)
     {
@@ -51,19 +54,19 @@ class User
             $this->username = $result['username'];
             $this->resetCode = $result['resetcode'];
             $this->show_password = $result['show_password'];
-
+            $this->company_id = $result['company_id'];
 
             return $result;
         }
     }
 
-    public function create($name, $code, $type, $active, $email, $phone, $username, $show_password, $password)
+    public function create($name, $code, $type,$company_id, $active, $email, $phone, $username, $show_password, $password)
     {
         $enPass = md5($password);
 
         date_default_timezone_set('Asia/Colombo');
         $createdAt = date('Y-m-d H:i:s');
-        $query = "INSERT INTO `user` (`name`,code,`type`,`isActive`,`email`,`phone`,`createdAt`,`username`,`show_password`,`password`) VALUES  ('" . $name . "','" . $code . "',  '" . $type . "','" . $active . "', '" . $email . "','" . $phone . "', '" . $createdAt . "', '" . $username . "',  '" . $show_password . "', '" . $enPass . "')";
+        $query = "INSERT INTO `user` (`name`,code,`type`,`company_id`,`isActive`,`email`,`phone`,`createdAt`,`username`,`show_password`,`password`) VALUES  ('" . $name . "','" . $code . "',  '" . $type . "',  '" . $company_id . "','" . $active . "', '" . $email . "','" . $phone . "', '" . $createdAt . "', '" . $username . "',  '" . $show_password . "', '" . $enPass . "')";
 
         $db = new Database();
 
@@ -82,12 +85,12 @@ class User
 
         $enPass = md5($password);
 
-        $query = "SELECT `id`,`name`,`email`,`phone`,`createdAt`,`type`,`isActive`,`lastLogin`,`username` FROM `user` WHERE `username`= '" . $username . "' AND `password`= '" . $enPass . "'";
-
+        $query = "SELECT * FROM `user` WHERE `username`= '" . $username . "' AND `password`= '" . $enPass . "'";
+ 
         $db = new Database();
 
         $result = mysqli_fetch_array($db->readQuery($query));
-
+       
         if (!$result) {
 
             return FALSE;
@@ -95,8 +98,8 @@ class User
 
             $this->id = $result['id'];
             $this->setAuthToken($result['id']);
-            $this->setLastLogin($this->id);
-            $user = $this->__construct($this->id);
+            $this->setLastLogin($result['id']);
+            $user = $this->__construct($result['id']);
             $this->setUserSession($user);
 
             return $user;
@@ -245,6 +248,7 @@ class User
             . "`username` ='" . $this->username . "', "
             . "`type` ='" . $this->type . "', "
             . "`email` ='" . $this->email . "', "
+            . "`company_id` ='" . $this->company_id . "', " 
             . "`phone` ='" . $this->phone . "'  "
             . "WHERE `id` = '" . $this->id . "'";
 

@@ -1,7 +1,7 @@
 <!doctype html>
 <?php
 include 'class/include.php';
-
+include 'auth.php';
 
 $CATEGORY_MASTER = new CategoryMaster();
 

@@ -15,10 +15,12 @@ if (isset($_POST['create'])) {
     $phone = $_POST['phone'];
     $username = $_POST['username'];
     $password = $_POST['password'];
+    $company_id = $_POST['company_id'];
+
 
     $USER = new User(NULL); // Assume there's a User class like USER
 
-    $res = $USER->create($name,$code, $type, $active, $email, $phone, $username,$_POST['password'], $password);
+    $res = $USER->create($name,$code, $type, $company_id,$active, $email, $phone, $username,$_POST['password'], $password);
 
     echo json_encode([
         "status" => $res ? 'success' : 'error'
@@ -37,6 +39,8 @@ if (isset($_POST['update'])) {
     $USER->email = $_POST['email'];
     $USER->phone = $_POST['phone'];
     $USER->username = $_POST['username']; 
+    $USER->company_id = $_POST['company_id']; 
+
     $USER->active_status = isset($_POST['active']) ? 1 : 0;
  
     // Attempt to update the USER

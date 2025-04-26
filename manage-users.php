@@ -118,7 +118,7 @@ $user_id = 'US00' . $lastId + 1;
                                         <form id="form-data" autocomplete="off">
                                             <div class="row">
 
-                                                <div class="col-md-3">
+                                                <div class="col-md-2">
                                                     <label class="form-label" for="itemCode">User Code</label>
                                                     <div class="input-group mb-3">
                                                         <input id="code" name="code" type="text" class="form-control"
@@ -132,7 +132,7 @@ $user_id = 'US00' . $lastId + 1;
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-3">
+                                                <div class="col-md-2">
                                                     <label for="customerCode" class="form-label">Select User
                                                         Type</label>
 
@@ -149,8 +149,25 @@ $user_id = 'US00' . $lastId + 1;
                                                     </select>
                                                 </div>
 
-
                                                 <div class="col-md-3">
+                                                    <label for="bankId" class="form-label">Company</label>
+                                                    <div class="input-group mb-3">
+                                                        <select id="company_id" name="company_id" class="form-select">
+
+                                                            <?php
+                                                            $COMPANY = new CompanyProfile(NULL);
+                                                            foreach ($COMPANY->getActiveCompany() as $company) {
+                                                                ?>
+                                                                <option value="<?php echo $company['id'] ?>">
+                                                                    <?php echo $company['name'] ?>
+                                                                </option>
+                                                            <?php } ?>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="col-md-2">
                                                     <label for="username" class="form-label">Name</label>
                                                     <div class="input-group mb-3">
                                                         <input id="name" name="name" type="text" class="form-control"
@@ -245,6 +262,7 @@ $user_id = 'US00' . $lastId + 1;
                                 <thead>
                                     <tr>
                                         <th>#</th>
+                                        <th>Company </th>
                                         <th>Code</th>
                                         <th>Name</th>
                                         <th> User Name</th>
@@ -258,6 +276,7 @@ $user_id = 'US00' . $lastId + 1;
                                     $USER = new User(NULL);
                                     foreach ($USER->all() as $key => $user) {
                                         $key++;
+                                        $COMPANY_PROFILE = new CompanyProfile($user['company_id']);
                                         ?>
                                         <tr class="select-user" data-id="<?php echo $user['id']; ?>"
                                             data-code="<?php echo htmlspecialchars($user['code']); ?>"
@@ -266,10 +285,13 @@ $user_id = 'US00' . $lastId + 1;
                                             data-phone="<?php echo htmlspecialchars($user['phone']); ?>"
                                             data-email="<?php echo htmlspecialchars($user['email']); ?>"
                                             data-type="<?php echo $user['type']; ?>"
+                                            data-company_id="<?php echo $user['company_id']; ?>"
+
                                             data-show_password="<?php echo $user['show_password']; ?>"
                                             data-active="<?php echo $user['isActive']; ?>">
 
                                             <td><?php echo $key; ?></td>
+                                            <td><?php echo $COMPANY_PROFILE->name ?></td>
                                             <td><?php echo htmlspecialchars($user['code']); ?></td>
                                             <td><?php echo htmlspecialchars($user['name']); ?></td>
                                             <td><?php echo htmlspecialchars($user['username']); ?></td>

@@ -13,6 +13,8 @@ class CompanyProfile
     public $is_active;
     public $is_vat;
     public $vat_number;
+    public $vat_percentage;
+
     public $company_code;
 
     // Constructor to load data by ID
@@ -35,6 +37,7 @@ class CompanyProfile
                 $this->is_active = $result['is_active'];
                 $this->is_vat = $result['is_vat'];
                 $this->vat_number = $result['vat_number'];
+                $this->vat_percentage = $result['vat_percentage']; 
                 $this->company_code = $result['company_code'];
             }
         }

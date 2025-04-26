@@ -108,7 +108,7 @@
                     <a class="dropdown-item d-block" href="#"><i class="uil uil-cog me-1"></i> Settings <span
                             class="badge bg-soft-success rounded-pill mt-1 ms-2">03</span></a>
                     <a class="dropdown-item" href="#"><i class="uil uil-lock-alt me-1"></i> Lock screen</a>
-                    <a class="dropdown-item" href="#"><i class="uil uil-sign-out-alt me-1"></i> Sign out</a>
+                    <a class="dropdown-item" href="log-out.php"><i class="uil uil-sign-out-alt me-1"></i> Sign out</a>
                 </div>
             </div>
 

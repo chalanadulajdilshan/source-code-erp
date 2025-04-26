@@ -53,6 +53,14 @@ jQuery(document).ready(function () {
                 timer: 2000,
                 showConfirmButton: false
             });
+        } else if (!$('#company_id').val() || $('#company_id').val().length === 0) {
+            swal({
+                title: "Error!",
+                text: "Please select company",
+                type: 'error',
+                timer: 2000,
+                showConfirmButton: false
+            });
         } else {
 
             // Preloader start (optional if you use preloader plugin)
@@ -77,7 +85,7 @@ jQuery(document).ready(function () {
                     if (result.status === 'success') {
                         swal({
                             title: "Success!",
-                            text: "Branch added successfully!",
+                            text: "Company added successfully!",
                             type: 'success',
                             timer: 2000,
                             showConfirmButton: false
@@ -131,14 +139,7 @@ jQuery(document).ready(function () {
                 timer: 2000,
                 showConfirmButton: false
             });
-        } else if (!$('#password').val() || $('#password').val().length === 0) {
-            swal({
-                title: "Error!",
-                text: "Please enter password",
-                type: 'error',
-                timer: 2000,
-                showConfirmButton: false
-            });
+     
         } else if (!$('#email').val() || $('#email').val().length === 0) {
             swal({
                 title: "Error!",
@@ -180,7 +181,7 @@ jQuery(document).ready(function () {
                     if (result.status == 'success') {
                         swal({
                             title: "Success!",
-                            text: "Branch updated successfully!",
+                            text: "Company updated successfully!",
                             type: 'success',
                             timer: 2500,
                             showConfirmButton: false
@@ -234,9 +235,14 @@ jQuery(document).ready(function () {
         $("#email").val(row.data("email"));
         $("#type").val(row.data("type"));
         $("#password").val(row.data("show_password"));
+        $("#company_id").val(row.data("company_id"));
+
+
+
         // Set checkbox state based on active flag
         $("#active").prop("checked", row.data("active") == 1);
 
+        $("#create").hide();
         // Close modal
         $(".bs-example-modal-xl").modal("hide");
     });

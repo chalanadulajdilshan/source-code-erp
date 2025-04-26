@@ -6,9 +6,9 @@ $SALES_INVOICE = new SalesInvoice(NULL);
 
 // Get the last inserted package id
 $lastId = $SALES_INVOICE->getLastID();
-$invoice_id = 'IN00' . $lastId + 1;
+$qty_id = 'QTY00' . $lastId + 1;
 ?>
- 
+
 <html lang="en">
 
 <head>
@@ -29,7 +29,8 @@ $invoice_id = 'IN00' . $lastId + 1;
     <link href="assets/css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
     <link href="assets/libs/sweetalert/sweetalert.css" rel="stylesheet" type="text/css" />
-
+    <link rel="stylesheet" href="assets/libs/@chenfengyuan/datepicker/datepicker.min.css">
+    <link href="assets/libs/bootstrap-datepicker/css/bootstrap-datepicker.min.css" rel="stylesheet">
     <link href="assets/css/preloader.css" rel="stylesheet" type="text/css" />
     <!-- Responsive datatable examples -->
     <!-- DataTables -->
@@ -68,7 +69,7 @@ $invoice_id = 'IN00' . $lastId + 1;
                                     <i class="uil uil-plus me-1"></i> New
                                 </a>
                                 <a href="#" class="btn btn-primary" id="create">
-                                    <i class="uil uil-save me-1"></i> Payment
+                                    <i class="uil uil-save me-1"></i> Print
                                 </a>
                                 <a href="#" class="btn btn-warning" id="update">
                                     <i class="uil uil-edit me-1"></i> Update
@@ -82,13 +83,13 @@ $invoice_id = 'IN00' . $lastId + 1;
                             <div class="col-md-4 text-md-end text-start mt-3 mt-md-0">
                                 <ol class="breadcrumb m-0 justify-content-md-end">
                                     <li class="breadcrumb-item"><a href="javascript: void(0);">Dashboard</a></li>
-                                    <li class="breadcrumb-item active">Sales Invoice </li>
+                                    <li class="breadcrumb-item active"> Manage Quotation </li>
                                 </ol>
                             </div>
                         </div>
                         <!--- Hidden Values -->
                         <input type="hidden" id="item_id">
-                        <input type="hidden" id="availableQty" >
+                        <input type="hidden" id="availableQty">
 
                         <!-- end page title -->
 
@@ -108,10 +109,9 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                 </div>
                                             </div>
                                             <div class="flex-grow-1 overflow-hidden">
-                                                <h5 class="font-size-16 mb-1">Sales Invoice </h5>
+                                                <h5 class="font-size-16 mb-1">Manage Quotation </h5>
                                                 <p class="text-muted text-truncate mb-0">Fill all information below to
-                                                    add
-                                                    Invoice</p>
+                                                    Manage Quotation </p>
                                             </div>
                                             <div class="flex-shrink-0">
                                                 <i class="mdi mdi-chevron-up accor-down-icon font-size-24"></i>
@@ -124,32 +124,33 @@ $invoice_id = 'IN00' . $lastId + 1;
                                         <form id="form-data">
                                             <div class="row">
 
-                                                <div class="col-md-3">
-                                                    <label for="name" class="form-label">Invoice No</label>
+
+                                                <div class="col-md-2">
+                                                    <label for="customerCode" class="form-label">Quotation No</label>
                                                     <div class="input-group mb-3">
-                                                        <input id="invoice_no" name="invoice_no" type="text"
-                                                            class="form-control" value="<?php echo $invoice_id ?>"
-                                                            readonly>
+                                                        <input  type="text" id="quotation_id" name="quotation_id"
+                                                            placeholder="Quotation No" class="form-control"  value="<?php echo $qty_id ?>" readonly>
+                                                        <button class="btn btn-info" type="button"
+                                                            data-bs-toggle="modal" data-bs-target="#customerModal">
+                                                            <i class="uil uil-search me-1"></i> Find
+                                                        </button>
                                                     </div>
                                                 </div>
 
-                                                <!-- company ID -->
-                                                <div class="col-md-3">
-                                                    <label for="bankId" class="form-label">Company</label>
-                                                    <div class="input-group mb-3">
-                                                        <select id="company_id" name="company_id" class="form-select">
+                                                <div class="col-md-2">
+                                                    <label for="name" class="form-label">Quotation Date</label>
+                                                    <div class="input-group" id="datepicker2">
+                                                        <input type="text" class="form-control" placeholder="dd M, yyyy"
+                                                            data-date-format="dd M, yyyy"
+                                                            data-date-container='#datepicker2' data-provide="datepicker"
+                                                            data-date-autoclose="true">
 
-                                                            <?php
-                                                            $COMPANY = new CompanyProfile(NULL);
-                                                            foreach ($COMPANY->getActiveCompany() as $company) {
-                                                                ?>
-                                                                <option value="<?php echo $company['id'] ?>">
-                                                                    <?php echo $company['name'] ?>
-                                                                </option>
-                                                            <?php } ?>
-                                                        </select>
+                                                        <span class="input-group-text"><i
+                                                                class="mdi mdi-calendar"></i></span>
                                                     </div>
                                                 </div>
+
+                                                 
 
                                                 <div class="col-md-2">
                                                     <label for="customerCode" class="form-label">Customer Code</label>
@@ -163,7 +164,7 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-4">
+                                                <div class="col-md-3">
                                                     <label for="customerName" class="form-label">Customer Name</label>
                                                     <div class="input-group mb-3">
                                                         <input id="customer_name" name="customer_name" type="text"
@@ -192,6 +193,23 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                 </div>
 
 
+
+                                                <div class="col-md-3">
+                                                    <label for="bankId" class="form-label">Company</label>
+                                                    <div class="input-group mb-3">
+                                                        <select id="company_id" name="company_id" class="form-select">
+
+                                                            <?php
+                                                            $COMPANY = new CompanyProfile(NULL);
+                                                            foreach ($COMPANY->getActiveCompany() as $company) {
+                                                                ?>
+                                                                <option value="<?php echo $company['id'] ?>">
+                                                                    <?php echo $company['name'] ?>
+                                                                </option>
+                                                            <?php } ?>
+                                                        </select>
+                                                    </div>
+                                                </div>
 
                                                 <div class="col-md-3">
                                                     <label for="bankId" class="form-label">Vat Type</label>
@@ -249,7 +267,7 @@ $invoice_id = 'IN00' . $lastId + 1;
 
                                                 <hr class="my-4">
 
-                                                <h5 class="mb-3">Add Invoice Items</h5>
+                                                <h5 class="mb-3">Add Quotation Items</h5>
 
 
 
@@ -288,7 +306,7 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                             placeholder="Discount" oninput="calculatePayment()">
                                                     </div>
                                                     <div class="col-md-2">
-                                                        <label class="form-label">Payment</label>
+                                                        <label class="form-label">Amount</label>
                                                         <input type="number" id="itemPayment" class="form-control"
                                                             placeholder="Payment" readonly>
                                                     </div>
@@ -309,12 +327,12 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                                 <th>Price</th>
                                                                 <th>Qty</th>
                                                                 <th>Discount</th>
-                                                                <th>Payment</th>
+                                                                <th>Amount</th>
                                                                 <th>Total</th>
                                                                 <th>Action</th>
                                                             </tr>
                                                         </thead>
-                                                        <tbody id="invoiceItemsBody">
+                                                        <tbody id="quotationItemsBody">
                                                             <tr id="noItemRow">
                                                                 <td colspan="8" class="text-center text-muted">No items
                                                                     added</td>
@@ -362,7 +380,7 @@ $invoice_id = 'IN00' . $lastId + 1;
         <script src="assets/libs/jquery/jquery.min.js"></script>
         <!-- /////////////////////////// -->
 
-        <script src="ajax/js/sales-invoice.js"></script>
+        <script src="ajax/js/quotation.js"></script>
 
 
         <script src="assets/libs/sweetalert/sweetalert-dev.js"></script>
@@ -374,6 +392,8 @@ $invoice_id = 'IN00' . $lastId + 1;
         <script src="assets/libs/node-waves/waves.min.js"></script>
         <script src="assets/libs/waypoints/lib/jquery.waypoints.min.js"></script>
         <script src="assets/libs/jquery.counterup/jquery.counterup.min.js"></script>
+        <script src="assets/libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+        <script src="assets/libs/@chenfengyuan/datepicker/datepicker.min.js"></script>
 
         <!-- Required datatable js -->
         <script src="assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
