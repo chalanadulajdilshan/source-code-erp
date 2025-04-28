@@ -2,10 +2,10 @@
 <?php
 include 'class/include.php';
 
-$SALES_INVOICE = new SalesInvoice(NULL);
+$QUOTATION_ = new Quotation(NULL);
 
 // Get the last inserted package id
-$lastId = $SALES_INVOICE->getLastID();
+$lastId = $QUOTATION_->getLastID();
 $qty_id = 'QTY00' . $lastId + 1;
 ?>
 
@@ -128,8 +128,9 @@ $qty_id = 'QTY00' . $lastId + 1;
                                                 <div class="col-md-2">
                                                     <label for="customerCode" class="form-label">Quotation No</label>
                                                     <div class="input-group mb-3">
-                                                        <input  type="text" id="quotation_id" name="quotation_id"
-                                                            placeholder="Quotation No" class="form-control"  value="<?php echo $qty_id ?>" readonly>
+                                                        <input type="text" id="quotation_id" name="quotation_id"
+                                                            placeholder="Quotation No" class="form-control"
+                                                            value="<?php echo $qty_id ?>" readonly>
                                                         <button class="btn btn-info" type="button"
                                                             data-bs-toggle="modal" data-bs-target="#customerModal">
                                                             <i class="uil uil-search me-1"></i> Find
@@ -150,7 +151,7 @@ $qty_id = 'QTY00' . $lastId + 1;
                                                     </div>
                                                 </div>
 
-                                                 
+
 
                                                 <div class="col-md-2">
                                                     <label for="customerCode" class="form-label">Customer Code</label>
@@ -255,7 +256,7 @@ $qty_id = 'QTY00' . $lastId + 1;
                                                             class="form-select">
                                                             <?php
                                                             $PAYMENT_TYPE = new PaymentType(NULL);
-                                                            foreach ($PAYMENT_TYPE->all() as $payment_type) {
+                                                            foreach ($PAYMENT_TYPE->getActivePaymentType() as $payment_type) {
                                                                 ?>
                                                                 <option value="<?php echo $payment_type['id'] ?>">
                                                                     <?php echo $payment_type['name'] ?>
@@ -263,6 +264,31 @@ $qty_id = 'QTY00' . $lastId + 1;
                                                             <?php } ?>
                                                         </select>
                                                     </div>
+                                                </div>
+
+
+                                                <div class="col-md-3">
+                                                    <label for="payment_type" class="form-label">Marketing Executive
+                                                    </label>
+                                                    <div class="input-group mb-3">
+                                                        <select id="marketing_executive_id"
+                                                            name="marketing_executive_id" class="form-select">
+                                                            <?php
+                                                            $MARKETING_EXECUTIVE = new MarketingExecutive(NULL);
+                                                            foreach ($MARKETING_EXECUTIVE->getActiveExecutives() as $marketing_executive) {
+                                                                ?>
+                                                                <option value="<?php echo $marketing_executive['id'] ?>">
+                                                                    <?php echo $marketing_executive['full_name'] ?>
+                                                                </option>
+                                                            <?php } ?>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-12">
+                                                    <label for="remark" class="form-label">Remark Note</label>
+                                                    <textarea id="remark" name="remark" class="form-control" rows="4"
+                                                        placeholder="Enter any remarks or notes about the quotation..."></textarea>
                                                 </div>
 
                                                 <hr class="my-4">
@@ -371,7 +397,6 @@ $qty_id = 'QTY00' . $lastId + 1;
 
         <?php include 'customer-master-model.php' ?>
         <?php include 'item-master-model.php' ?>
-        <?php include 'payment-model.php' ?>
 
         <!-- Right bar overlay-->
         <div class="rightbar-overlay"></div>

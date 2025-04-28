@@ -72,7 +72,7 @@ jQuery(document).ready(function () {
 
         calculatePayment();
 
-        setTimeout(() => $('#itemQty').focus(), 200);  
+        setTimeout(() => $('#itemQty').focus(), 200);
 
         $('.bs-example-modal-xl').modal('hide');
     });
@@ -111,147 +111,6 @@ jQuery(document).ready(function () {
     });
 
 
-    // Open payment modal and pre-fill total
-    $('#create').on('click', function () {
-        const total = parseFloat($('#finalTotal').text()) || 0;
-        $('#modalFinalTotal').val(total.toFixed(2));
-        $('#amountPaid').val('');
-        $('#balanceAmount').val('0.00').removeClass('text-danger');
-        $('#paymentModal').modal('show');
-    });
-
-    // Calculate and display balance or show insufficient message
-    $('#amountPaid').on('input', function () {
-        const paid = parseFloat($(this).val()) || 0;
-        const total = parseFloat($('#modalFinalTotal').val()) || 0;
-
-        if (paid < total) {
-            $('#balanceAmount').val('Insufficient').addClass('text-danger');
-        } else {
-            const balance = paid - total;
-            $('#balanceAmount').val(balance.toFixed(2)).removeClass('text-danger');
-        }
-    });
-
-    // Handle payment form submission
-    $('#paymentForm').on('submit', function (e) {
-        e.preventDefault();
-
-
-        if (!$('#customer_code').val() || $('#customer_code').val().length === 0) {
-            swal({
-                title: "Error!",
-                text: "Please enter customer code",
-                type: 'error',
-                timer: 2000,
-                showConfirmButton: false
-            });
-
-
-        } else {
-
-            const total = parseFloat($('#modalFinalTotal').val()) || 0;
-            const paid = parseFloat($('#amountPaid').val()) || 0;
-            const paymentType = $('#modalPaymentType').val();
-
-            if (paid < total) {
-                swal({
-                    title: "Error!",
-                    text: "Paid amount cannot be less than Final Total",
-                    type: 'error',
-                    timer: 3000,
-                    showConfirmButton: false
-                });
-                return;
-            }
-
-            // Collect invoice items
-            const items = [];
-            $('#quotationItemsBody tr').each(function () {
-                const code = $(this).find('td:eq(0)').text().trim();
-                const name = $(this).find('td:eq(1)').text().trim();
-                const price = parseFloat($(this).find('td:eq(2)').text()) || 0;
-                const qty = parseFloat($(this).find('td:eq(3)').text()) || 0;
-                const discount = parseFloat($(this).find('td:eq(4)').text()) || 0;
-                const payment = parseFloat($(this).find('td:eq(5)').text()) || 0;
-                const totalItem = parseFloat($(this).find('td:eq(6)').text()) || 0;
-                const item_id = $('#item_id').val();
-
-                if (code && !isNaN(totalItem)) {
-                    items.push({
-                        item_id,
-                        code,
-                        name,
-                        price,
-                        qty,
-                        discount,
-                        payment,
-                        total: totalItem
-                    });
-                }
-            });
-
-            if (items.length === 0) {
-                swal({
-                    title: "Error!",
-                    text: "Please add at least one item.",
-                    type: 'error',
-                    timer: 3000,
-                    showConfirmButton: false
-                });
-                return;
-            }
-
-            // Use FormData to include form inputs + invoice items
-            const formData = new FormData($("#form-data")[0]);
-            formData.append('create', true);
-            formData.append('total', total);
-            formData.append('paid', paid);
-            formData.append('payment_type', paymentType);
-            formData.append('items', JSON.stringify(items));
-            formData.append('quotation_id', $('#quotation_id').val());
-
-
-
-            // Start Preloader
-            $('.someBlock').preloader();
-
-            $.ajax({
-                url: 'ajax/php/quotation.php',
-                type: 'POST',
-                data: formData,
-                contentType: false,
-                processData: false,
-                beforeSend: function () {
-                    $('.someBlock').preloader('remove');
-                },
-                success: function (res) {
-                    swal({
-                        title: "Success!",
-                        text: "Quotation saved successfully!",
-                        type: 'success',
-                        timer: 3000,
-                        showConfirmButton: false
-                    });
-                    $('#paymentModal').modal('hide');
-                    // Optional: Reset or redirect
-                    window.location.href = "invoice.php?quotation_id=" + $('#quotation_id').val();
-                },
-                error: function (xhr) {
-                    console.error(xhr.responseText);
-                    swal({
-                        title: "Error",
-                        text: "Something went wrong!",
-                        type: 'error',
-                        timer: 3000,
-                        showConfirmButton: false
-                    });
-                }
-            });
-
-        }
-    });
-
     // Open item modal
     $('#open-item-modal').click(function (e) {
         e.preventDefault();
@@ -259,7 +118,7 @@ jQuery(document).ready(function () {
         myModal.show();
     });
 
-    // Add item to invoice table
+    // Add item to quatation table
     function addItem() {
         const code = $('#itemCode').val().trim();
         const name = $('#itemName').val().trim();
@@ -378,6 +237,135 @@ jQuery(document).ready(function () {
     $('#paymentModal').on('shown.bs.modal', function () {
         $('#amountPaid').focus();
     });
+
+
+    $('#create').click(function (e) {
+        e.preventDefault();
+
+        // Validate Customer Information
+        const customerCode = $('#customer_code').val().trim();
+        const customerName = $('#customer_name').val().trim();
+        if (!customerCode || !customerName) {
+
+            swal({
+                title: "Error!",
+                text: "Please select the  customer.!",
+                type: 'error',
+                timer: 2000,
+                showConfirmButton: false
+            });
+            return;
+        }
+
+        // Validate Quotation Items
+        const items = [];
+        $('#quotationItemsBody tr').each(function () {
+            const itemCode = $(this).find('td:eq(0)').text().trim();
+            const itemName = $(this).find('td:eq(1)').text().trim();
+            const itemPrice = parseFloat($(this).find('td:eq(2)').text()) || 0;
+            const itemQty = parseFloat($(this).find('td:eq(3)').text()) || 0;
+            const itemDiscount = parseFloat($(this).find('td:eq(4)').text()) || 0;
+            const itemTotal = parseFloat($(this).find('td:eq(6)').text()) || 0;
+
+            // Item validation
+            if (!itemCode || !itemName || itemPrice <= 0 || itemQty <= 0) {
+
+
+                swal({
+                    title: "Error!",
+                    text: "Please ensure all items are filled correctly!",
+                    type: 'error',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+                return false; // Exit loop
+            }
+
+            items.push({
+                code: itemCode,
+                name: itemName,
+                price: itemPrice,
+                qty: itemQty,
+                discount: itemDiscount,
+                total: itemTotal
+            });
+        });
+
+        if (items.length === 0) {
+
+            swal({
+                title: "Error!",
+                text: "Please add items to the quotation.",
+                type: 'error',
+                timer: 2000,
+                showConfirmButton: false
+            });
+
+            return;
+        }
+
+        // Gather the quotation data
+        const quotationData = {
+            customer_code: customerCode,
+            customer_name: customerName,
+            customer_address: $('#customer_address').val().trim(),
+            items: items,
+            total_amount: parseFloat($('#finalTotal').text()) || 0
+        };
+ 
+        // Send data to create quotation
+        $.ajax({
+            url: 'ajax/php/quotation.php',  // Replace with your actual URL for quotation creation
+            method: 'POST',
+            data: { action: 'create_quotation', data: quotationData },
+            dataType: 'json',
+            success: function (response) {
+                if (response.success) { 
+
+                    swal({
+                        title: "Success!",
+                        text: "Quotation has been created successfully!",
+                        type: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 2000);
+
+                    // Optionally, clear the form and reset the state
+                    $('#form-data')[0].reset();
+                    $('#quotationItemsBody').empty();
+                    updateFinalTotal();  // Reset the final total
+                } else {
+
+                    swal({
+                        title: "Error!",
+                        text: "Error creating quotation.",
+                        type: 'error',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+
+                }
+            },
+            error: function () {
+
+
+                swal({
+                    title: "Error!",
+                    text: "Failed to create quotation. Please try again.",
+                    type: 'error',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            }
+        });
+
+        
+    });
+
 
     //////////////////////////customer details add//////////////////////////
 

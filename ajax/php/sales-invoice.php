@@ -26,9 +26,12 @@ if (isset($_POST['create'])) {
     }
 
     $netTotal = $totalSubTotal - $totalDiscount;
+    
+    $USER = new User($_SESSION['id']);
+    $COMPANY_PROFILE = new CompanyProfile($USER->company_id);
 
     // VAT calculation (18% of net total)
-    $vat = round(($netTotal * 18) / 100, 2);
+    $vat = round(($netTotal * $COMPANY_PROFILE->vat_percentage) / 100, 2);
 
     // Grand total = net total + VAT
     $grandTotal = $netTotal + $vat;
@@ -62,7 +65,8 @@ if (isset($_POST['create'])) {
 
             $SALES_ITEM = new TempSalesItem(NULL);
             $SALES_ITEM->temp_invoice_id = $invoiceId;
-            $SALES_ITEM->product_id = $item['item_id'];;
+            $SALES_ITEM->product_id = $item['item_id'];
+            ;
             $SALES_ITEM->product_name = $item['name'];
             $SALES_ITEM->price = $item['price'];
             $SALES_ITEM->quantity = $item['qty'];

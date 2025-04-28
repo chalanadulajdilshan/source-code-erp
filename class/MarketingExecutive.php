@@ -15,6 +15,8 @@ class MarketingExecutive
     public $remark;
     public $created_at;
 
+    public $queue;
+
     // Constructor to initialize the object with an ID (fetch data from the DB)
     public function __construct($id = null)
     {
@@ -36,6 +38,8 @@ class MarketingExecutive
                 $this->is_active = $result['is_active'];
                 $this->remark = $result['remark'];
                 $this->created_at = $result['created_at'];
+                $this->queue = $result['queue'];
+
             }
         }
     }
@@ -93,6 +97,20 @@ class MarketingExecutive
     public function all()
     {
         $query = "SELECT * FROM `marketing_executive` ORDER BY `full_name` ASC";
+        $db = new Database();
+        $result = $db->readQuery($query);
+
+        $array_res = array();
+        while ($row = mysqli_fetch_array($result)) {
+            array_push($array_res, $row);
+        }
+
+        return $array_res;
+    }
+
+    public function getActiveExecutives()
+    {
+        $query = "SELECT * FROM `marketing_executive` where is_active = 1 ORDER BY `queue` ASC";
         $db = new Database();
         $result = $db->readQuery($query);
 
