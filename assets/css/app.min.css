@@ -1,5 +1,35 @@
 @import url(../../../../css2.css);
 
+#customerList {
+    background-color: white;
+    /* Set the white background */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    /* Add a light shadow for better visibility */
+    max-height: 200px;
+    /* Limit the height of the dropdown */
+    overflow-y: auto;
+    /* Allow scrolling if the list is too long */
+    z-index: 1050;
+    /* Ensure the dropdown is above other elements */
+}
+
+#customerList .list-group-item {
+    cursor: pointer;
+    /* Add pointer cursor to items */
+}
+
+#customerList .list-group-item:hover {
+    background-color: #f8f9fa;
+    /* Highlight item on hover */
+}
+
+#customerList .list-group-item.active {
+    background-color: #007bff; /* Blue background for active item */
+    color: white; /* White text color for the active item */
+    cursor: pointer; /* Change cursor to pointer on hover */
+}
+
+
 #page-topbar {
     position: fixed;
     top: 0;

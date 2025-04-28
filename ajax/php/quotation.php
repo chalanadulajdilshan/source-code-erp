@@ -1,10 +1,11 @@
-<?php
-
+<?php 
 include '../../class/include.php';
 header('Content-Type: application/json; charset=UTF8');
+var_dump($_POST['quotation_id']);
+exit();
+// Create a new quotation
+if (isset($_POST['action']) && $_POST['action'] == 'create_quotation') {
 
-// Create a new invoice
-if (isset($_POST['create'])) {
 
     $quotationId = $_POST['quotation_id'];
     $items = json_decode($_POST['items'], true); // array of items
@@ -27,32 +28,26 @@ if (isset($_POST['create'])) {
 
     $netTotal = $totalSubTotal - $totalDiscount;
 
-    $COMPANY_PROFILE = new CompanyProfile(null);
-
-
-    // VAT calculation (18% of net total)
-    $vat = round(($netTotal * $COMPANY_PROFILE->vat_percentage) / 100, 2);
-
-    // Grand total = net total + VAT
-    $grandTotal = $netTotal + $vat;
-
+   
     // Create invoice
-    $SALES_INVOICE = new SalesInvoice(NULL);
+    $QUOTATION_ = new Quotation(NULL);
 
-    $SALES_INVOICE->invoice_no = $quotationId;
-    $SALES_INVOICE->invoice_date = date("Y-m-d H:i:s");
-    $SALES_INVOICE->company_id = $_POST['company_id'];
-    $SALES_INVOICE->customer_id = $_POST['customer_code'];
-    $SALES_INVOICE->department_id = $_POST['department_id'];
-    $SALES_INVOICE->sale_type = $_POST['sales_type'];
-    $SALES_INVOICE->discount_type = $paymentType;
-    $SALES_INVOICE->sub_total = $totalSubTotal;
-    $SALES_INVOICE->discount = $totalDiscount;
-    $SALES_INVOICE->tax = $vat;
-    $SALES_INVOICE->grand_total = $grandTotal;
-    $SALES_INVOICE->remark = !empty($_POST['remark']) ? $_POST['remark'] : null;
+    $QUOTATION_->quotation_no = $quotationId;
+    $QUOTATION_->date = $_POST['date'];
+    $QUOTATION_->company_id = $_POST['company_id'];
+    $QUOTATION_->customer_id = $_POST['customer_code'];
+    $QUOTATION_->department_id = $_POST['department_id'];
+    $QUOTATION_->marketing_executive_id = $_POST['marketing_executive_id'];
 
-    $invoiceResult = $SALES_INVOICE->create();
+    $QUOTATION_->sale_type = $_POST['sales_type'];
+    $QUOTATION_->discount_type = $paymentType;
+    $QUOTATION_->sub_total = $totalSubTotal;
+    $QUOTATION_->discount = $totalDiscount;
+    $QUOTATION_->tax = $vat;
+    $QUOTATION_->grand_total = $grandTotal;
+    $QUOTATION_->remark = !empty($_POST['remark']) ? $_POST['remark'] : null;
+
+    $invoiceResult = $QUOTATION_->create();
 
     if ($invoiceResult) {
         $quotationId = $invoiceResult;
@@ -63,17 +58,17 @@ if (isset($_POST['create'])) {
             $item_code = $ITEM_MASTER->getIdbyItemCode($item['code']);
 
 
-            $SALES_ITEM = new TempSalesItem(NULL);
-            $SALES_ITEM->temp_invoice_id = $quotationId;
-            $SALES_ITEM->product_id = $item['item_id'];;
-            $SALES_ITEM->product_name = $item['name'];
-            $SALES_ITEM->price = $item['price'];
-            $SALES_ITEM->quantity = $item['qty'];
-            $SALES_ITEM->discount = isset($item['discount']) ? $item['discount'] : 0;
-            $SALES_ITEM->total = ($item['price'] * $item['qty']) - $SALES_ITEM->discount;
-            // $SALES_ITEM->user_id = $_SESSION['user_id'];
-            $SALES_ITEM->created_at = date("Y-m-d H:i:s");
-            $SALES_ITEM->create();
+            $QUOTATION_ITEM = new QuotationItem(NULL);
+            $QUOTATION_ITEM->temp_invoice_id = $quotationId;
+            $QUOTATION_ITEM->product_id = $item['item_id'];;
+            $QUOTATION_ITEM->product_name = $item['name'];
+            $QUOTATION_ITEM->price = $item['price'];
+            $QUOTATION_ITEM->quantity = $item['qty'];
+            $QUOTATION_ITEM->discount = isset($item['discount']) ? $item['discount'] : 0;
+            $QUOTATION_ITEM->total = ($item['price'] * $item['qty']) - $QUOTATION_ITEM->discount;
+            // $QUOTATION_ITEM->user_id = $_SESSION['user_id'];
+            $QUOTATION_ITEM->created_at = date("Y-m-d H:i:s");
+            $QUOTATION_ITEM->create();
         }
 
         echo json_encode([
@@ -98,23 +93,23 @@ if (isset($_POST['update'])) {
     $quotationId = $_POST['invoice_id']; // Retrieve invoice ID
 
     // Create SalesInvoice object and load the data by ID
-    $SALES_INVOICE = new SalesInvoice($quotationId);
+    $QUOTATION_ = new SalesInvoice($quotationId);
 
     // Update invoice details
-    $SALES_INVOICE->invoice_date = date("Y-m-d H:i:s"); // You can update the date or other details here
-    $SALES_INVOICE->company_id = $_POST['company_id'];
-    $SALES_INVOICE->customer_id = $_POST['customer_id'];
-    $SALES_INVOICE->department_id = $_POST['department_id'];
-    $SALES_INVOICE->sale_type = $_POST['sale_type'];
-    $SALES_INVOICE->discount_type = $_POST['discount_type'];
-    $SALES_INVOICE->sub_total = $_POST['sub_total'];
-    $SALES_INVOICE->discount = $_POST['discount'];
-    $SALES_INVOICE->tax = $_POST['tax'];
-    $SALES_INVOICE->grand_total = $_POST['grand_total']; // New grand total
-    $SALES_INVOICE->remark = $_POST['remark'];
+    $QUOTATION_->invoice_date = date("Y-m-d H:i:s"); // You can update the date or other details here
+    $QUOTATION_->company_id = $_POST['company_id'];
+    $QUOTATION_->customer_id = $_POST['customer_id'];
+    $QUOTATION_->department_id = $_POST['department_id'];
+    $QUOTATION_->sale_type = $_POST['sale_type'];
+    $QUOTATION_->discount_type = $_POST['discount_type'];
+    $QUOTATION_->sub_total = $_POST['sub_total'];
+    $QUOTATION_->discount = $_POST['discount'];
+    $QUOTATION_->tax = $_POST['tax'];
+    $QUOTATION_->grand_total = $_POST['grand_total']; // New grand total
+    $QUOTATION_->remark = $_POST['remark'];
 
     // Attempt to update the invoice
-    $result = $SALES_INVOICE->update();
+    $result = $QUOTATION_->update();
 
     if ($result) {
         $result = [

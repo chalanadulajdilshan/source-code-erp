@@ -138,7 +138,7 @@ jQuery(document).ready(function () {
         e.preventDefault();
 
 
-        if (!$('#customer_code').val() || $('#customer_code').val().length === 0) {
+        if (!$('#customer_code').val() ) {
             swal({
                 title: "Error!",
                 text: "Please enter customer code",

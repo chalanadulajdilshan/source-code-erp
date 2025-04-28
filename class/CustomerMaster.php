@@ -93,7 +93,7 @@ class CustomerMaster
                     `nic_back_img` = '{$this->nic_back_img}', 
                     `is_active` = '{$this->is_active}' 
                 WHERE `id` = '{$this->id}'";
- 
+
         $db = new Database();
         $result = $db->readQuery($query);
 
@@ -136,79 +136,99 @@ class CustomerMaster
     }
 
     public function fetchForDataTable($request)
-{
-    $db = new Database();
+    {
+        $db = new Database();
 
-    $start = isset($request['start']) ? (int)$request['start'] : 0;
-    $length = isset($request['length']) ? (int)$request['length'] : 100;
-    $search = $request['search']['value'];
+        $start = isset($request['start']) ? (int) $request['start'] : 0;
+        $length = isset($request['length']) ? (int) $request['length'] : 100;
+        $search = $request['search']['value'];
 
-    // Total records
-    $totalSql = "SELECT * FROM customer_master";
-    $totalQuery = $db->readQuery($totalSql);
-    $totalData = mysqli_num_rows($totalQuery);
+        // Total records
+        $totalSql = "SELECT * FROM customer_master";
+        $totalQuery = $db->readQuery($totalSql);
+        $totalData = mysqli_num_rows($totalQuery);
 
-    // Search filter
-    $sql = "SELECT * FROM customer_master WHERE id != 1 AND ";
-    if (!empty($search)) {
-        $sql .= "  name LIKE '%$search%' OR code LIKE '%$search%' OR mobile_number LIKE '%$search%'";
-    }
- 
-    $filteredQuery = $db->readQuery($sql);
-    $filteredData = mysqli_num_rows($filteredQuery);
+        // Search filter
+        $sql = "SELECT * FROM customer_master WHERE id != 1  ";
+        if (!empty($search)) {
+            $sql .= "AND  name LIKE '%$search%' OR code LIKE '%$search%' OR mobile_number LIKE '%$search%'";
+        }
 
-    // Add pagination
-    $sql .= " LIMIT $start, $length";
-    $dataQuery = $db->readQuery($sql);
+        $filteredQuery = $db->readQuery($sql);
+        $filteredData = mysqli_num_rows($filteredQuery);
 
-    $data = [];
+        // Add pagination
+        $sql .= " LIMIT $start, $length";
+        $dataQuery = $db->readQuery($sql);
 
-    while ($row = mysqli_fetch_assoc($dataQuery)) {
-        $CATEGORY = new CustomerCategory($row['category']);
-        $PROVINCE = new Province($row['province']);
-        $DISTRICT = new District($row['district']);
+        $data = [];
 
-        $nestedData = [
-            "id" => $row['id'],
-            "code" => $row['code'],
-            "name" => $row['name'],
-            "address" => $row['address'],
-            "mobile_number" => $row['mobile_number'],
-            "mobile_number_2" => $row['mobile_number_2'],
-            "email" => $row['email'],
-            "contact_person" => $row['contact_person'],
-            "contact_person_number" => $row['contact_person_number'],
-            "credit_limit" => number_format($row['credit_limit'], 2),
-            "outstanding" => number_format($row['outstanding'], 2),
-            "overdue" => number_format($row['overdue'], 2),
-            "vat_no" => $row['vat_no'],
-            "svat_no" => $row['svat_no'],
-            "category_id" => $row['category'],
-            "category" => $CATEGORY->name,
-            "province_id" => $row['province'],
-            "province" => $PROVINCE->name,
-            "district_id" => $row['district'],
-            "district" => $DISTRICT->name,
-            "vat_group" => $row['vat_group'],
-            "remark" => $row['remark'],
-            "status" => $row['is_active'],
-            "status_label" => $row['is_active'] == 1 
-                ? '<span class="badge bg-soft-success font-size-12">Active</span>' 
-                : '<span class="badge bg-soft-danger font-size-12">Inactive</span>'
+        while ($row = mysqli_fetch_assoc($dataQuery)) {
+            $CATEGORY = new CustomerCategory($row['category']);
+            $PROVINCE = new Province($row['province']);
+            $DISTRICT = new District($row['district']);
+
+            $nestedData = [
+                "id" => $row['id'],
+                "code" => $row['code'],
+                "name" => $row['name'],
+                "address" => $row['address'],
+                "mobile_number" => $row['mobile_number'],
+                "mobile_number_2" => $row['mobile_number_2'],
+                "email" => $row['email'],
+                "contact_person" => $row['contact_person'],
+                "contact_person_number" => $row['contact_person_number'],
+                "credit_limit" => number_format($row['credit_limit'], 2),
+                "outstanding" => number_format($row['outstanding'], 2),
+                "overdue" => number_format($row['overdue'], 2),
+                "vat_no" => $row['vat_no'],
+                "svat_no" => $row['svat_no'],
+                "category_id" => $row['category'],
+                "category" => $CATEGORY->name,
+                "province_id" => $row['province'],
+                "province" => $PROVINCE->name,
+                "district_id" => $row['district'],
+                "district" => $DISTRICT->name,
+                "vat_group" => $row['vat_group'],
+                "remark" => $row['remark'],
+                "status" => $row['is_active'],
+                "status_label" => $row['is_active'] == 1
+                    ? '<span class="badge bg-soft-success font-size-12">Active</span>'
+                    : '<span class="badge bg-soft-danger font-size-12">Inactive</span>'
+            ];
+
+            $data[] = $nestedData;
+        }
+
+        return [
+            "draw" => intval($request['draw']),
+            "recordsTotal" => intval($totalData),
+            "recordsFiltered" => intval($filteredData),
+            "data" => $data
         ];
-
-        $data[] = $nestedData;
     }
 
-    return [
-        "draw" => intval($request['draw']),
-        "recordsTotal" => intval($totalData),
-        "recordsFiltered" => intval($filteredData),
-        "data" => $data
-    ];
-}
+    public static function searchCustomers($search)
+    {
+        $db = new Database();
+            $query = "SELECT *
+                FROM customer_master 
+                WHERE (code LIKE '%$search%' OR name LIKE '%$search%') 
+                AND is_active = 1 ";
 
-    
+ 
+        $result = $db->readQuery($query);
+
+        $customers = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $customers[] = $row;
+        }
+
+        return $customers;
+    }
+
+
+
 }
 
 ?>

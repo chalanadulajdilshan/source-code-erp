@@ -8,7 +8,7 @@ $SALES_INVOICE = new SalesInvoice(NULL);
 $lastId = $SALES_INVOICE->getLastID();
 $invoice_id = 'IN00' . $lastId + 1;
 ?>
- 
+
 <html lang="en">
 
 <head>
@@ -39,6 +39,7 @@ $invoice_id = 'IN00' . $lastId + 1;
     <link href="assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet"
         type="text/css" />
 
+     
 
 
 </head>
@@ -88,7 +89,7 @@ $invoice_id = 'IN00' . $lastId + 1;
                         </div>
                         <!--- Hidden Values -->
                         <input type="hidden" id="item_id">
-                        <input type="hidden" id="availableQty" >
+                        <input type="hidden" id="availableQty">
 
                         <!-- end page title -->
 
@@ -124,7 +125,7 @@ $invoice_id = 'IN00' . $lastId + 1;
                                         <form id="form-data">
                                             <div class="row">
 
-                                                <div class="col-md-3">
+                                                <div class="col-md-2">
                                                     <label for="name" class="form-label">Invoice No</label>
                                                     <div class="input-group mb-3">
                                                         <input id="invoice_no" name="invoice_no" type="text"
@@ -151,16 +152,23 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-2">
+
+
+
+                                                <div class="col-md-3">
                                                     <label for="customerCode" class="form-label">Customer Code</label>
                                                     <div class="input-group mb-3">
                                                         <input id="customer_code" name="customer_code" type="text"
-                                                            placeholder="Customer code" class="form-control" readonly>
+                                                            placeholder="Customer code" class="form-control">
                                                         <button class="btn btn-info" type="button"
                                                             data-bs-toggle="modal" data-bs-target="#customerModal">
                                                             <i class="uil uil-search me-1"></i> Find
                                                         </button>
+
                                                     </div>
+                                                    <div id="customerList" class="list-group position-absolute w-100">
+                                                    </div>
+
                                                 </div>
 
                                                 <div class="col-md-4">
@@ -237,7 +245,7 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                             class="form-select">
                                                             <?php
                                                             $PAYMENT_TYPE = new PaymentType(NULL);
-                                                            foreach ($PAYMENT_TYPE->all() as $payment_type) {
+                                                            foreach ($PAYMENT_TYPE->getActivePaymentType() as $payment_type) {
                                                                 ?>
                                                                 <option value="<?php echo $payment_type['id'] ?>">
                                                                     <?php echo $payment_type['name'] ?>
@@ -360,10 +368,11 @@ $invoice_id = 'IN00' . $lastId + 1;
 
         <!-- JAVASCRIPT -->
         <script src="assets/libs/jquery/jquery.min.js"></script>
+        <script src="ajax/js/customer-master.js"></script>
+
         <!-- /////////////////////////// -->
 
         <script src="ajax/js/sales-invoice.js"></script>
-
 
         <script src="assets/libs/sweetalert/sweetalert-dev.js"></script>
         <script src="assets/js/jquery.preloader.min.js"></script>

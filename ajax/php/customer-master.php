@@ -92,13 +92,28 @@ if (isset($_POST['delete']) && isset($_POST['id'])) {
 if (isset($_POST['filter'])) {
 
 
-    $customer_master = new CustomerMaster();
-    $response = $customer_master->fetchForDataTable($_REQUEST);
+    $CUSTOMER_MASTER = new CustomerMaster();
+    $response = $CUSTOMER_MASTER->fetchForDataTable($_REQUEST);
 
     echo json_encode($response);
     exit;
 }
- 
+// search by customer
+if (isset($_POST['query'])) {
+    $search = $_POST['query'];
+
+    $CUSTOMER_MASTER = new CustomerMaster();
+    $customers = $CUSTOMER_MASTER->searchCustomers($search);
+
+    if ($customers) {
+        echo json_encode($customers);  // Return the customers as a JSON string
+    } else {
+        echo json_encode([]);  // Return an empty array if no customers are found
+    }
+    exit;
+}
+
+
 if ($_POST['action'] == 'get_first_customer') {
     $CUSTOMER = new CustomerMaster(1); // Fetch customer with ID 1
 
@@ -108,14 +123,18 @@ if ($_POST['action'] == 'get_first_customer') {
         "customer_name" => $CUSTOMER->name,
         "customer_code" => $CUSTOMER->code ?? '',
         "mobile_number" => $CUSTOMER->mobile_number,
+        "customer_address" => $CUSTOMER->address,
         "email" => $CUSTOMER->email ?? ''
     ];
 
-    
+
 
     echo json_encode($response);
     exit;
 }
+
+
+
 
 
 ?>
