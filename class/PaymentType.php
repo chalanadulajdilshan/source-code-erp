@@ -29,9 +29,11 @@ class PaymentType
     // Create a new payment type record
     public function create()
     {
-        $query = "INSERT INTO `payment_type` (`name`, `queue`) VALUES (
-                    '" . $this->name . "', 
-                    '" . $this->queue . "')";
+        $query = "INSERT INTO `payment_type` (`name`,  `is_active`) VALUES (
+                    '" . $this->name . "',  
+                    '" . $this->is_active . "')";
+
+                   
         $db = new Database();
         $result = $db->readQuery($query);
 
@@ -47,13 +49,16 @@ class PaymentType
     {
         $query = "UPDATE `payment_type` SET 
                     `name` = '" . $this->name . "', 
-                    `queue` = '" . $this->queue . "' 
+                    `queue` = '" . $this->queue . "',
+                    `is_active` = '" . $this->is_active . "'
                   WHERE `id` = '" . $this->id . "'";
+
+       
         $db = new Database();
         $result = $db->readQuery($query);
 
         if ($result) {
-            return $this->__construct($this->id);
+            return true;
         } else {
             return false;
         }
