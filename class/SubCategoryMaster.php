@@ -86,5 +86,13 @@ class Subcategory
         return $array_res;
     }
 
+        public function getLastID()
+    {
+        $query = "SELECT * FROM `sub_categroy` ORDER BY `id` DESC LIMIT 1";
+        $db = new Database();
+        $result = mysqli_fetch_array($db->readQuery($query));
+        return $result['id'];
+    }
+
 }
 ?>
