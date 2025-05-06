@@ -53,7 +53,7 @@ class Pages
         $result = $db->readQuery($query);
 
         if ($result) {
-            return $this->__construct($this->id); // Refresh the object with updated data
+            return true; // Return true if the update is successful
         } else {
             return false; // Return false if the update fails
         }
