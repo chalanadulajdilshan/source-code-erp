@@ -143,7 +143,7 @@ $qty_id = 'QTY00' . $lastId + 1;
                                                     <div class="input-group" id="datepicker2">
                                                         <input type="text" class="form-control" placeholder="dd M, yyyy"
                                                             data-date-format="dd M, yyyy"
-                                                            data-date-container='#datepicker2' data-provide="datepicker"
+                                                            data-date-container='#datepicker2' name="date" id="date" data-provide="datepicker"
                                                             data-date-autoclose="true">
 
                                                         <span class="input-group-text"><i

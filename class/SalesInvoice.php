@@ -119,6 +119,66 @@ class SalesInvoice
         return $array_res;
     }
 
+    public function fetchInvoicesForDataTable($request)
+{
+    $db = new Database();
+    $conn = $db->DB_CON;
+
+    $start = isset($request['start']) ? (int)$request['start'] : 0;
+    $length = isset($request['length']) ? (int)$request['length'] : 100;
+    $search = $request['search']['value'] ?? '';
+
+    $where = "WHERE 1=1";
+
+    // Search filter
+    if (!empty($search)) {
+        $escapedSearch = mysqli_real_escape_string($conn, $search);
+        $where .= " AND (invoice_no LIKE '%$escapedSearch%' OR remark LIKE '%$escapedSearch%')";
+    }
+
+    // Total records (without filters)
+    $totalSql = "SELECT COUNT(*) as count FROM sales_invoice";
+    $totalResult = $db->readQuery($totalSql);
+    $totalData = mysqli_fetch_assoc($totalResult)['count'];
+
+    // Total filtered records
+    $filteredSql = "SELECT COUNT(*) as count FROM sales_invoice $where";
+    $filteredResult = $db->readQuery($filteredSql);
+    $filteredData = mysqli_fetch_assoc($filteredResult)['count'];
+
+    // Paginated query
+    $query = "SELECT * FROM sales_invoice $where ORDER BY invoice_date DESC LIMIT $start, $length";
+     
+
+    $result = $db->readQuery($query);
+
+    $data = [];
+
+    while ($row = mysqli_fetch_assoc($result)) {
+        // Optionally load related names if needed
+        $CUSTOMER = new CustomerMaster($row['customer_id']);
+        $DEPARTMENT = new DepartmentMaster($row['department_id']);
+
+        $nestedData = [
+            "invoice_no"    => $row['invoice_no'],
+            "invoice_date"  => $row['invoice_date'],
+            "customer"      => $CUSTOMER->name ?? $row['customer_id'],
+            "department"    => $DEPARTMENT->name ?? $row['department_id'],
+            "grand_total"   => number_format($row['grand_total'], 2),
+            "remark"        => $row['remark']
+        ];
+
+        $data[] = $nestedData;
+    } 
+    return [
+        "draw" => intval($request['draw']),
+        "recordsTotal" => intval($totalData),
+        "recordsFiltered" => intval($filteredData),
+        "data" => $data
+    ];
+}
+
+
     public function getLastID()
     {
         $query = "SELECT * FROM `sales_invoice` ORDER BY `id` DESC LIMIT 1";

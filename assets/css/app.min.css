@@ -29,6 +29,22 @@
     cursor: pointer; /* Change cursor to pointer on hover */
 }
 
+.left-width {
+    width: 400px;
+    margin-left: 0;
+}
+
+.price-highlight {
+    color: #28a745;           /* Green color */
+     
+    font-size: 14px;
+}
+
+#finalTotal {
+    background-color: #ffeeba; /* Light yellow background for Grand Total */
+    padding: 5px 10px;
+    border-radius: 5px;
+}
 
 #page-topbar {
     position: fixed;

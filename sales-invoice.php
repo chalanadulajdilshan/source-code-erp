@@ -39,7 +39,7 @@ $invoice_id = 'IN00' . $lastId + 1;
     <link href="assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet"
         type="text/css" />
 
-     
+
 
 
 </head>
@@ -125,12 +125,18 @@ $invoice_id = 'IN00' . $lastId + 1;
                                         <form id="form-data">
                                             <div class="row">
 
+
+
                                                 <div class="col-md-2">
-                                                    <label for="name" class="form-label">Invoice No</label>
+                                                    <label for="InvoiceCode" class="form-label">Invoice No</label>
                                                     <div class="input-group mb-3">
                                                         <input id="invoice_no" name="invoice_no" type="text"
                                                             class="form-control" value="<?php echo $invoice_id ?>"
                                                             readonly>
+                                                        <button class="btn btn-info" type="button"
+                                                            data-bs-toggle="modal" data-bs-target="#invoiceModal">
+                                                            <i class="uil uil-search me-1"></i> Find
+                                                        </button>
                                                     </div>
                                                 </div>
 
@@ -155,7 +161,7 @@ $invoice_id = 'IN00' . $lastId + 1;
 
 
 
-                                                <div class="col-md-3">
+                                                <div class="col-md-2">
                                                     <label for="customerCode" class="form-label">Customer Code</label>
                                                     <div class="input-group mb-3">
                                                         <input id="customer_code" name="customer_code" type="text"
@@ -171,7 +177,7 @@ $invoice_id = 'IN00' . $lastId + 1;
 
                                                 </div>
 
-                                                <div class="col-md-4">
+                                                <div class="col-md-3">
                                                     <label for="customerName" class="form-label">Customer Name</label>
                                                     <div class="input-group mb-3">
                                                         <input id="customer_name" name="customer_name" type="text"
@@ -180,7 +186,7 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-3">
+                                                <div class="col-md-2">
                                                     <label for="customerAddress" class="form-label">Customer
                                                         Address</label>
                                                     <div class="input-group mb-3">
@@ -190,7 +196,7 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-3">
+                                                <div class="col-md-2">
                                                     <label for="mobileNumber" class="form-label">Mobile Number</label>
                                                     <div class="input-group mb-3">
                                                         <input id="customer_mobile" name="customer_mobile" type="text"
@@ -201,18 +207,22 @@ $invoice_id = 'IN00' . $lastId + 1;
 
 
 
-                                                <div class="col-md-3">
-                                                    <label for="bankId" class="form-label">Vat Type</label>
+                                                <div class="col-md-2">
+                                                    <label for="vat_type" class="form-label">Vat Type</label>
                                                     <div class="input-group mb-3">
-                                                        <select id="bankId" name="bankId" class="form-select">
-                                                            <option value="1">Non Vat</option>
-                                                            <option value="2">vat</option>
-                                                            <option value="3">Svat</option>
+                                                        <select id="vat_type" name="vat_type" class="form-select">
+                                                            <?php
+                                                            $VAT_TYPE = new VatType(NULL);
+                                                            foreach ($VAT_TYPE->getActiveTypes() as $vat_type) {
+                                                                ?>
+                                                                <option value="<?php echo $vat_type['id']?>"><?php echo $vat_type['vat_type_name']?></option>
+                                                            <?php } ?>
                                                         </select>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-3">
-                                                    <label for="bankId" class="form-label">Department</label>
+
+                                                <div class="col-md-2">
+                                                    <label for="department" class="form-label">Department</label>
                                                     <div class="input-group mb-3">
                                                         <select id="department_id" name="department_id"
                                                             class="form-select">
@@ -228,7 +238,7 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-3">
+                                                <div class="col-md-2">
                                                     <label for="sales_type" class="form-label">Sales Type</label>
                                                     <div class="input-group mb-3">
                                                         <select id="sales_type" name="sales_type" class="form-select">
@@ -238,7 +248,7 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-3">
+                                                <div class="col-md-2">
                                                     <label for="payment_type" class="form-label">Payment Type</label>
                                                     <div class="input-group mb-3">
                                                         <select id="payment_type" name="payment_type"
@@ -255,94 +265,255 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                     </div>
                                                 </div>
 
+                                                <div class="col-md-2">
+                                                    <label for="sales_type" class="form-label">Sales Type</label>
+                                                    <div class="input-group mb-3">
+                                                        <select id="sales_type" name="sales_type" class="form-select">
+                                                            <option value="1">Whole Sales</option>
+                                                            <option value="2">Retail Sales</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
                                                 <hr class="my-4">
 
-                                                <h5 class="mb-3">Add Invoice Items</h5>
+                                                <ul class="nav nav-pills nav-justified bg-light left-width"
+                                                    role="tablist">
+                                                    <li class="nav-item waves-effect waves-light">
+                                                        <a class="nav-link active" data-bs-toggle="tab"
+                                                            href="#navpills2-home" role="tab" aria-selected="true">
+                                                            <span class="d-block d-sm-none"><i
+                                                                    class="fas fa-home"></i></span>
+                                                            <span class="d-none d-sm-block">Product</span>
+                                                        </a>
+                                                    </li>
+                                                    <li class="nav-item waves-effect waves-light">
+                                                        <a class="nav-link " data-bs-toggle="tab"
+                                                            href="#navpills2-profile" role="tab" aria-selected="false">
+                                                            <span class="d-block d-sm-none"><i
+                                                                    class="far fa-user"></i></span>
+                                                            <span class="d-none d-sm-block">Dag</span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+
+                                                <div class="tab-content p-3 text-muted">
+                                                    <div class="tab-pane active" id="navpills2-home" role="tabpanel">
 
 
 
+                                                        <div class="row align-items-end">
+                                                            <div class="col-md-2">
+                                                                <label for="itemCode" class="form-label">Item
+                                                                    Code</label>
+                                                                <div class="input-group">
+                                                                    <input id="itemCode" type="text"
+                                                                        class="form-control" placeholder="Item Code"
+                                                                        readonly>
+                                                                    <button class="btn btn-info" type="button"
+                                                                        id="open-item-modal">
+                                                                        <i class="uil uil-search me-1"></i> Find
+                                                                    </button>
+                                                                </div>
+                                                            </div>
 
-                                                <div class="row align-items-end">
-                                                    <div class="col-md-2">
-                                                        <label for="itemCode" class="form-label">Item Code</label>
-                                                        <div class="input-group">
-                                                            <input id="itemCode" type="text" class="form-control"
-                                                                placeholder="Item Code" readonly>
-                                                            <button class="btn btn-info" type="button"
-                                                                id="open-item-modal">
-                                                                <i class="uil uil-search me-1"></i> Find
-                                                            </button>
+                                                            <div class="col-md-2">
+                                                                <label class="form-label">Name</label>
+                                                                <input type="text" id="itemName" class="form-control"
+                                                                    placeholder="Name" readonly>
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                <label class="form-label">Price</label>
+                                                                <input type="number" id="itemPrice" class="form-control"
+                                                                    placeholder="Price" oninput="calculatePayment()">
+                                                            </div>
+                                                            <div class="col-md-1">
+                                                                <label class="form-label">Qty</label>
+                                                                <input type="number" id="itemQty" class="form-control"
+                                                                    placeholder="Qty" oninput="calculatePayment()">
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                <label class="form-label">Discount (%)</label>
+                                                                <input type="number" id="itemDiscount"
+                                                                    class="form-control" placeholder="Discount"
+                                                                    oninput="calculatePayment()">
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                <label class="form-label">Payment</label>
+                                                                <input type="number" id="itemPayment"
+                                                                    class="form-control" placeholder="Payment" readonly>
+                                                            </div>
+                                                            <div class="col-md-1">
+                                                                <button type="button" class="btn btn-success w-100"
+                                                                    id="addItemBtn">Add</button>
+                                                            </div>
+                                                        </div>
+
+
+
+                                                        <!-- Table -->
+                                                        <div class="table-responsive mt-4">
+                                                            <table class="table table-bordered" id="invoiceTable">
+                                                                <thead class="table-light">
+                                                                    <tr>
+                                                                        <th>Code</th>
+                                                                        <th>Name</th>
+                                                                        <th>Price</th>
+                                                                        <th>Qty</th>
+                                                                        <th>Discount</th>
+                                                                        <th>Payment</th>
+                                                                        <th>Total</th>
+                                                                        <th>Action</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody id="invoiceItemsBody">
+                                                                    <tr id="noItemRow">
+                                                                        <td colspan="8" class="text-center text-muted">
+                                                                            No items
+                                                                            added</td>
+                                                                    </tr>
+                                                                </tbody>
+
+                                                            </table>
+
                                                         </div>
                                                     </div>
+                                                    <div class="tab-pane " id="navpills2-profile" role="tabpanel">
+                                                        <p class="mb-0">
+                                                            Food truck fixie locavore, accusamus mcsweeney's marfa nulla
+                                                            single-origin coffee squid. Exercitation +1 labore velit,
+                                                            blog
+                                                            sartorial PBR leggings next level wes anderson artisan four
+                                                            loko
+                                                            farm-to-table craft beer twee. Qui photo booth letterpress,
+                                                            commodo enim craft beer mlkshk aliquip jean shorts ullamco
+                                                            ad
+                                                            vinyl cillum PBR. Homo nostrud organic, assumenda labore
+                                                            aesthetic magna 8-bit.
+                                                        </p>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-3">
+                                                            <div class="d-flex justify-content-between mb-2">
+                                                                <div><strong>Stock Level:</strong></div>
+                                                                <div id=""><strong>0.00</strong></div>
+                                                            </div>
 
-                                                    <div class="col-md-2">
-                                                        <label class="form-label">Name</label>
-                                                        <input type="text" id="itemName" class="form-control"
-                                                            placeholder="Name" readonly>
+                                                            <div class="d-flex justify-content-between mb-2">
+                                                                <div><strong>Credit Period:</strong></div>
+                                                                <div id=""><strong>0.00</strong></div>
+                                                            </div>
+
+                                                            <div class="d-flex justify-content-between mb-2">
+                                                                <div><strong>Remark:</strong></div>
+                                                                <div id=""><strong>0.00</strong></div>
+                                                            </div>
+
+
+                                                        </div>
+
+                                                        <div class="col-md-6"></div>
+
+                                                        <div class="col-md-3">
+                                                            <div class="d-flex justify-content-between mb-2">
+                                                                <div><strong>Sub Total:</strong></div>
+                                                                <div id="subTotal" class="price-highlight">
+                                                                    <strong>0.00</strong>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="d-flex justify-content-between mb-2">
+                                                                <div><strong>Discount Total:</strong></div>
+                                                                <div id="disTotal" class="price-highlight">
+                                                                    <strong>0.00</strong>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="d-flex justify-content-between mb-2">
+                                                                <div><strong>Tax Total:</strong></div>
+                                                                <div id="tax" class="price-highlight">
+                                                                    <strong>0.00</strong>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="d-flex justify-content-between border-top pt-2">
+                                                                <div><strong>Grand Total:</strong></div>
+                                                                <div id="finalTotal" class="price-highlight">
+                                                                    <strong>0.00</strong>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
                                                     </div>
-                                                    <div class="col-md-2">
-                                                        <label class="form-label">Price</label>
-                                                        <input type="number" id="itemPrice" class="form-control"
-                                                            placeholder="Price" oninput="calculatePayment()">
+                                                    <hr>
+                                                    <div class="row">
+                                                        <div class="  p-2 border rounded bg-light"
+                                                            style="max-width: 500px;">
+                                                            <div class="row mb-2">
+                                                                <div class="col-7">
+                                                                    <input type="text"
+                                                                        class="form-control text_purchase3"
+                                                                        value="Outstanding Invoice Amount" disabled>
+                                                                </div>
+                                                                <div class="col-5">
+                                                                    <input type="text" class="form-control" value="0.00"
+                                                                        disabled>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="row mb-2">
+                                                                <div class="col-7">
+                                                                    <input type="text"
+                                                                        class="form-control text_purchase3"
+                                                                        value="Return Cheque Amount" disabled>
+                                                                </div>
+                                                                <div class="col-5">
+                                                                    <input type="text" class="form-control" value="0.00"
+                                                                        disabled>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="row mb-2">
+                                                                <div class="col-7">
+                                                                    <input type="text"
+                                                                        class="form-control text_purchase3"
+                                                                        value="Pending Cheque Amount" disabled>
+                                                                </div>
+                                                                <div class="col-5">
+                                                                    <input type="text" class="form-control" value="0.00"
+                                                                        disabled>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="row mb-2">
+                                                                <div class="col-7">
+                                                                    <input type="text"
+                                                                        class="form-control text_purchase3"
+                                                                        value="PSD Cheque Settlements" disabled>
+                                                                </div>
+                                                                <div class="col-5">
+                                                                    <input type="text" class="form-control" value="0.00"
+                                                                        disabled>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="row border-top pt-2">
+                                                                <div class="col-7">
+                                                                    <input type="text"
+                                                                        class="form-control text_purchase3 fw-bold"
+                                                                        value="Total" disabled>
+                                                                </div>
+                                                                <div class="col-5">
+                                                                    <input type="text" class="form-control fw-bold"
+                                                                        value="0.00" disabled>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
                                                     </div>
-                                                    <div class="col-md-1">
-                                                        <label class="form-label">Qty</label>
-                                                        <input type="number" id="itemQty" class="form-control"
-                                                            placeholder="Qty" oninput="calculatePayment()">
-                                                    </div>
-                                                    <div class="col-md-2">
-                                                        <label class="form-label">Discount (%)</label>
-                                                        <input type="number" id="itemDiscount" class="form-control"
-                                                            placeholder="Discount" oninput="calculatePayment()">
-                                                    </div>
-                                                    <div class="col-md-2">
-                                                        <label class="form-label">Payment</label>
-                                                        <input type="number" id="itemPayment" class="form-control"
-                                                            placeholder="Payment" readonly>
-                                                    </div>
-                                                    <div class="col-md-1">
-                                                        <button type="button" class="btn btn-success w-100"
-                                                            id="addItemBtn">Add</button>
-                                                    </div>
+
                                                 </div>
-
-
-                                                <!-- Table -->
-                                                <div class="table-responsive mt-4">
-                                                    <table class="table table-bordered" id="invoiceTable">
-                                                        <thead class="table-light">
-                                                            <tr>
-                                                                <th>Code</th>
-                                                                <th>Name</th>
-                                                                <th>Price</th>
-                                                                <th>Qty</th>
-                                                                <th>Discount</th>
-                                                                <th>Payment</th>
-                                                                <th>Total</th>
-                                                                <th>Action</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody id="invoiceItemsBody">
-                                                            <tr id="noItemRow">
-                                                                <td colspan="8" class="text-center text-muted">No items
-                                                                    added</td>
-                                                            </tr>
-                                                        </tbody>
-                                                        <tfoot>
-                                                            <tr>
-                                                                <td colspan="6" class="text-end"><strong>Final
-                                                                        Total:</strong></td>
-                                                                <td colspan="2" id="finalTotal"><strong>0.00</strong>
-                                                                </td>
-                                                            </tr>
-                                                        </tfoot>
-                                                    </table>
-
-                                                </div>
-
                                             </div>
-
-
                                         </form>
                                     </div>
                                 </div>
@@ -359,9 +530,7 @@ $invoice_id = 'IN00' . $lastId + 1;
         </div>
         <!-- END layout-wrapper -->
 
-        <?php include 'customer-master-model.php' ?>
-        <?php include 'item-master-model.php' ?>
-        <?php include 'payment-model.php' ?>
+
 
         <!-- Right bar overlay-->
         <div class="rightbar-overlay"></div>

@@ -5,8 +5,8 @@ class QuotationItem
     public $id;
     public $quotation_id;
     public $item_code;
-    public $description;
-    public $rate;
+    public $item_name;
+    public $price;
     public $qty;
     public $discount;
     public $sub_total;
@@ -22,8 +22,8 @@ class QuotationItem
                 $this->id = $result['id'];
                 $this->quotation_id = $result['quotation_id'];
                 $this->item_code = $result['item_code'];
-                $this->description = $result['description'];
-                $this->rate = $result['rate'];
+                $this->item_name = $result['item_name'];
+                $this->price = $result['price'];
                 $this->qty = $result['qty'];
                 $this->discount = $result['discount'];
                 $this->sub_total = $result['sub_total'];
@@ -34,10 +34,10 @@ class QuotationItem
     public function create()
     {
         $query = "INSERT INTO `quotation_item` 
-                  (`quotation_id`, `item_code`, `description`, `rate`, `qty`, `discount`, `sub_total`) 
+                  (`quotation_id`, `item_code`, `item_name`, `price`, `qty`, `discount`, `sub_total`) 
                   VALUES 
-                  ('" . $this->quotation_id . "', '" . $this->item_code . "', '" . $this->description . "', '" .
-            $this->rate . "', '" . $this->qty . "', '" . $this->discount . "', '" . $this->sub_total . "')";
+                  ('" . $this->quotation_id . "', '" . $this->item_code . "', '" . $this->item_name . "', '" .
+            $this->price . "', '" . $this->qty . "', '" . $this->discount . "', '" . $this->sub_total . "')";
 
         $db = new Database();
         $result = $db->readQuery($query);
@@ -54,8 +54,8 @@ class QuotationItem
         $query = "UPDATE `quotation_item` SET 
                   `quotation_id` = '" . $this->quotation_id . "',
                   `item_code` = '" . $this->item_code . "',
-                  `description` = '" . $this->description . "',
-                  `rate` = '" . $this->rate . "',
+                  `item_name` = '" . $this->item_name . "',
+                  `price` = '" . $this->price . "',
                   `qty` = '" . $this->qty . "',
                   `discount` = '" . $this->discount . "',
                   `sub_total` = '" . $this->sub_total . "'

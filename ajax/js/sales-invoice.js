@@ -72,7 +72,7 @@ jQuery(document).ready(function () {
 
         calculatePayment();
 
-        setTimeout(() => $('#itemQty').focus(), 200);  
+        setTimeout(() => $('#itemQty').focus(), 200);
 
         $('.bs-example-modal-xl').modal('hide');
     });
@@ -138,7 +138,7 @@ jQuery(document).ready(function () {
         e.preventDefault();
 
 
-        if (!$('#customer_code').val() ) {
+        if (!$('#customer_code').val()) {
             swal({
                 title: "Error!",
                 text: "Please enter customer code",
@@ -282,11 +282,12 @@ jQuery(document).ready(function () {
         <tr>
             <td>${code}</td>
             <td>${name}</td>
-            <td>${price.toFixed(2)}</td>
-            <td>${qty}</td>
-            <td>${discount}%</td>
-            <td>${payment.toFixed(2)}</td>
-            <td>${total.toFixed(2)}</td>
+            <td class="item-price">${price.toFixed(2)}</td>
+            <td class="item-qty">${qty}</td>
+            <td class="item-discount">${discount}</td>
+            <td>${payment.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+            <td>${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+
             <td><button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">Remove</button></td>
         </tr>
     `;
@@ -359,16 +360,27 @@ jQuery(document).ready(function () {
 
     // Function to calculate final total from all rows
     function updateFinalTotal() {
-        let total = 0;
+        let subTotal = 0;
+        let discountTotal = 0;
 
         $('#invoiceItemsBody tr').each(function () {
-            const totalCell = $(this).find('td').eq(6);
-            if (totalCell.length && !isNaN(totalCell.text())) {
-                total += parseFloat(totalCell.text()) || 0;
-            }
+            const price = parseFloat($(this).find('.item-price').text()) || 0;
+            const qty = parseFloat($(this).find('.item-qty').text()) || 0;
+            const discount = parseFloat($(this).find('.item-discount').text()) || 0;
+
+            const itemSubTotal = price * qty;
+            const itemDiscount = itemSubTotal * (discount / 100);
+            const itemTotal = itemSubTotal - itemDiscount;
+
+            subTotal += itemSubTotal;
+            discountTotal += itemDiscount;
         });
 
-        $('#finalTotal').html(`<strong>${total.toFixed(2)}</strong>`);
+        const grandTotal = subTotal - discountTotal;
+        $('#subTotal').html(`<strong>${subTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>`);
+        $('#disTotal').html(`<strong>${discountTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>`);
+        $('#finalTotal').html(`<strong>${grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>`);
+
     }
 
     // Disable price field to prevent manual changes
@@ -438,5 +450,65 @@ jQuery(document).ready(function () {
             }
         });
     }
+
+
+    //////////// append invoice data to table ///////////////////
+    var table = $('#invoiceTable2').DataTable({
+        processing: true,
+        serverSide: true,
+        destroy: true, // important when initializing inside modal
+        ajax: {
+            url: "ajax/php/sales-invoice.php",
+            type: "POST",
+            data: function (d) {
+                d.filter = true;
+            },
+            dataSrc: function (json) {
+                return json.data;
+            },
+            error: function (xhr) {
+                console.error("Server Error Response:", xhr.responseText);
+            }
+        },
+        columns: [
+            { data: "id", title: "#ID" },
+            { data: "invoice_no", title: "Invoice No" },
+            { data: "invoice_date", title: "Date" },
+            { data: "department", title: "Department" },  // e.g., Sales, Marketing (string from JOIN)
+            { data: "customer", title: "Customer" },      // e.g., Customer Name (string from JOIN)
+            { data: "grand_total", title: "Grand Total" },
+            { data: "remark", title: "Remark" }
+        ],
+        order: [[0, 'desc']],
+        pageLength: 100
+    });
+
+    // row click to fill form
+    $('#invoiceTable2 tbody').on('click', 'tr', function () {
+        var data = table.row(this).data();
+        if (!data) return;
+
+        $('#invoice_id').val(data.id);
+        $('#invoice_no').val(data.invoice_no);
+        $('#invoice_date').val(data.invoice_date);
+        $('#department_id').val(data.department_id).trigger('change');
+        $('#customer_id').val(data.customer_id).trigger('change');
+        $('#sale_type').val(data.sale_type).trigger('change');
+        $('#discount_type').val(data.discount_type).trigger('change');
+        $('#payment_type').val(data.payment_type).trigger('change');
+        $('#sub_total').val(data.sub_total);
+        $('#discount').val(data.discount);
+        $('#tax').val(data.tax);
+        $('#grand_total').val(data.grand_total);
+        $('#remark').val(data.remark);
+
+        $("#create").hide();
+        $('#invoiceModal').modal('hide');
+    });
+
+
+
+
+
 
 });

@@ -31,13 +31,12 @@ include_once(dirname(__FILE__) . '/Permission.php');
 include_once(dirname(__FILE__) . '/UserPermission.php');
 include_once(dirname(__FILE__) . '/MarketingExecutive.php');
 include_once(dirname(__FILE__) . '/Quotation.php'); 
-include_once(dirname(__FILE__) . '/QuotationItem.php');
+include_once(dirname(__FILE__) . '/QuotationItem.php'); 
+include_once(dirname(__FILE__) . '/VatType.php');
+include_once(dirname(__FILE__) . '/LabourMaster.php');
+include_once(dirname(__FILE__) . '/LabourType.php'); 
 include_once(dirname(__FILE__) . '/ExpenseTypeMaster.php');
-
-
-
-
-
+ 
 
 
 function dd($data) {

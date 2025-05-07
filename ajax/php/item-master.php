@@ -106,8 +106,8 @@ if (isset($_POST['delete']) && isset($_POST['id'])) {
 if (isset($_POST['filter'])) {
  
 
-    $item = new ItemMaster();
-    $response = $item->fetchForDataTable($_REQUEST);
+    $ITEM_MASTER = new ItemMaster();
+    $response = $ITEM_MASTER->fetchForDataTable($_REQUEST);
 
     echo json_encode($response);
     exit; // 👈 Ensure nothing is output after this

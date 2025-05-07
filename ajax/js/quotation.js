@@ -238,27 +238,27 @@ jQuery(document).ready(function () {
         $('#amountPaid').focus();
     });
 
-
     $('#create').click(function (e) {
         e.preventDefault();
-
-        // Validate Customer Information
+    
         const customerCode = $('#customer_code').val().trim();
         const customerName = $('#customer_name').val().trim();
+        const quotationId = $('#quotation_id').val().trim();
+    
         if (!customerCode || !customerName) {
-
             swal({
                 title: "Error!",
-                text: "Please select the  customer.!",
+                text: "Please select the customer.",
                 type: 'error',
                 timer: 2000,
                 showConfirmButton: false
             });
             return;
         }
-
-        // Validate Quotation Items
+    
         const items = [];
+        let hasInvalidItem = false;
+    
         $('#quotationItemsBody tr').each(function () {
             const itemCode = $(this).find('td:eq(0)').text().trim();
             const itemName = $(this).find('td:eq(1)').text().trim();
@@ -266,21 +266,12 @@ jQuery(document).ready(function () {
             const itemQty = parseFloat($(this).find('td:eq(3)').text()) || 0;
             const itemDiscount = parseFloat($(this).find('td:eq(4)').text()) || 0;
             const itemTotal = parseFloat($(this).find('td:eq(6)').text()) || 0;
-
-            // Item validation
+    
             if (!itemCode || !itemName || itemPrice <= 0 || itemQty <= 0) {
-
-
-                swal({
-                    title: "Error!",
-                    text: "Please ensure all items are filled correctly!",
-                    type: 'error',
-                    timer: 2000,
-                    showConfirmButton: false
-                });
-                return false; // Exit loop
+                hasInvalidItem = true;
+                return false;
             }
-
+    
             items.push({
                 code: itemCode,
                 name: itemName,
@@ -290,9 +281,19 @@ jQuery(document).ready(function () {
                 total: itemTotal
             });
         });
-
+    
+        if (hasInvalidItem) {
+            swal({
+                title: "Error!",
+                text: "Please ensure all items are filled correctly!",
+                type: 'error',
+                timer: 2000,
+                showConfirmButton: false
+            });
+            return;
+        }
+    
         if (items.length === 0) {
-
             swal({
                 title: "Error!",
                 text: "Please add items to the quotation.",
@@ -300,46 +301,44 @@ jQuery(document).ready(function () {
                 timer: 2000,
                 showConfirmButton: false
             });
-
             return;
         }
-
-        // Gather the quotation data
+    
         const quotationData = {
+            action: 'create_quotation',
+            quotation_id: quotationId,
             customer_code: customerCode,
             customer_name: customerName,
-            customer_address: $('#customer_address').val().trim(),
-            items: items,
-            total_amount: parseFloat($('#finalTotal').text()) || 0
+            date: $('#date').val(),
+            company_id: $('#company_id').val(),
+            department_id: $('#department_id').val(),
+            marketing_executive_id: $('#marketing_executive_id').val(),
+            sales_type: $('#sales_type').val(),
+            payment_type: $('#payment_type').val(),
+            paid: $('#paid').val(),
+            remark: $('#remark').val(),
+            items: JSON.stringify(items)
         };
- 
-        // Send data to create quotation
+    
         $.ajax({
-            url: 'ajax/php/quotation.php',  // Replace with your actual URL for quotation creation
+            url: 'ajax/php/quotation.php',
             method: 'POST',
-            data: { action: 'create_quotation', data: quotationData },
+            data: quotationData,
             dataType: 'json',
             success: function (response) {
-                if (response.success) { 
-
+                if (response.status === 'success') {
                     swal({
                         title: "Success!",
-                        text: "Quotation has been created successfully!",
+                        text: "Quotation created successfully!",
                         type: 'success',
                         timer: 2000,
                         showConfirmButton: false
                     });
-
+    
                     setTimeout(function () {
                         window.location.reload();
                     }, 2000);
-
-                    // Optionally, clear the form and reset the state
-                    $('#form-data')[0].reset();
-                    $('#quotationItemsBody').empty();
-                    updateFinalTotal();  // Reset the final total
                 } else {
-
                     swal({
                         title: "Error!",
                         text: "Error creating quotation.",
@@ -347,25 +346,20 @@ jQuery(document).ready(function () {
                         timer: 2000,
                         showConfirmButton: false
                     });
-
                 }
             },
             error: function () {
-
-
                 swal({
                     title: "Error!",
-                    text: "Failed to create quotation. Please try again.",
+                    text: "AJAX request failed. Please try again.",
                     type: 'error',
                     timer: 2000,
                     showConfirmButton: false
                 });
             }
         });
-
-        
     });
-
+    
 
     //////////////////////////customer details add//////////////////////////
 

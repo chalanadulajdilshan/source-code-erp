@@ -33,7 +33,7 @@ include 'auth.php';
         <?php include 'navigation.php' ?>
 
 
-
+     
         <!-- ============================================================== -->
         <!-- Start right Content here -->
         <!-- ============================================================== -->
@@ -68,6 +68,8 @@ include 'auth.php';
                             </div>
                         </div>
                     </div>
+
+               
 
                     <div class="row">
                         <div class="col-md-6 col-xl-3">
