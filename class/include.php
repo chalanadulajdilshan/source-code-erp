@@ -36,7 +36,7 @@ include_once(dirname(__FILE__) . '/VatType.php');
 include_once(dirname(__FILE__) . '/LabourMaster.php');
 include_once(dirname(__FILE__) . '/LabourType.php'); 
 include_once(dirname(__FILE__) . '/ExpenseTypeMaster.php');
- 
+
 
 
 function dd($data) {
