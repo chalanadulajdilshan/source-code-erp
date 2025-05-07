@@ -2,11 +2,11 @@
 <?php
 include 'class/include.php';
 
-$ITEM_MASTER = new ItemMaster();
+$EXPENSES = new Expenses();
 
 // Get the last inserted package id
-$lastId = $ITEM_MASTER->getLastID();
-$item_id = 'IM00' . $lastId + 1;
+$lastId = $EXPENSES->getLastID();
+$expenses_id = 'IM00' . $lastId + 1;
 
 ?>
 <html lang="en">
@@ -117,8 +117,8 @@ $item_id = 'IM00' . $lastId + 1;
                                             <div class="col-md-3">
                                                 <label class="form-label" for="code">Ref No</label>
                                                 <div class="input-group mb-3">
-                                                <input id="code" name="code" type="text"
-                                                placeholder="Ref No" class="form-control">
+                                                <input id="code" name="code" type="text" value="<?php echo $expenses_id; ?>"
+                                                placeholder="Ref No" class="form-control" readonly>
                                                 
                                                     <button class="btn btn-info" type="button"  data-bs-toggle="modal"
                                                     data-bs-target=".bs-example-modal-xl">

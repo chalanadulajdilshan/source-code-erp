@@ -82,5 +82,13 @@ class Expenses
         return $array_res;
     }
 
+    public function getLastID()
+    {
+        $query = "SELECT * FROM `expenses_type` ORDER BY `id` DESC LIMIT 1";
+        $db = new Database();
+        $result = mysqli_fetch_array($db->readQuery($query));
+        return $result['id'];
+    }
+
 }
 ?>
