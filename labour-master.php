@@ -2,6 +2,15 @@
 <?php
 include 'class/include.php';
 include 'auth.php';
+
+$USER = new User($_SESSION['id']);
+$COMPANY = new CompanyProfile($USER->company_id);
+
+$LABOUR_MASTER = new LabourMaster(NULL);
+
+// Get the last inserted package id
+$lastId = $LABOUR_MASTER->getLastID();
+$labour_id = $COMPANY->company_code . '/00/0' . $lastId + 1;
 ?>
 <html lang="en">
 
@@ -33,10 +42,6 @@ include 'auth.php';
         type="text/css" />
     <link href="assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet"
         type="text/css" />
-
-
-
-
 </head>
 
 <body data-layout="horizontal" data-topbar="colored" class="someBlock">
@@ -63,7 +68,7 @@ include 'auth.php';
                             <a href="#" class="btn btn-warning" id="update">
                                 <i class="uil uil-edit me-1"></i> Update
                             </a>
-                            <a href="#" class="btn btn-danger delete-brand">
+                            <a href="#" class="btn btn-danger delete-labour">
                                 <i class="uil uil-trash-alt me-1"></i> Delete
                             </a>
 
@@ -72,7 +77,7 @@ include 'auth.php';
                         <div class="col-md-4 text-md-end text-start mt-3 mt-md-0">
                             <ol class="breadcrumb m-0 justify-content-md-end">
                                 <li class="breadcrumb-item"><a href="javascript: void(0);">Dashboard</a></li>
-                                <li class="breadcrumb-item active">Brand Master</li>
+                                <li class="breadcrumb-item active">Labour Master</li>
                             </ol>
                         </div>
                     </div>
@@ -95,9 +100,9 @@ include 'auth.php';
                                                 </div>
                                             </div>
                                             <div class="flex-grow-1 overflow-hidden">
-                                                <h5 class="font-size-16 mb-1">Brand Master</h5>
+                                                <h5 class="font-size-16 mb-1"> Labour Master </h5>
                                                 <p class="text-muted text-truncate mb-0">Fill all information below to
-                                                    Item Brands</p>
+                                                    Labour Master</p>
                                             </div>
                                             <div class="flex-shrink-0">
                                                 <i class="mdi mdi-chevron-up accor-down-icon font-size-24"></i>
@@ -113,45 +118,44 @@ include 'auth.php';
 
                                             <div class="row">
 
-                                                <!-- Brand Category -->
-                                                <div class="col-md-4">
-                                                    <label for="category_id" class="form-label">Brand Category <span
+                                                <!-- Labour type -->
+                                                <div class="col-md-2">
+                                                    <label for="type" class="form-label">Labour Type <span
                                                             class="text-danger">*</span></label>
-                                                    <select id="category_id" name="category_id" class="form-select"
-                                                        required>
+                                                    <select id="type" name="type" class="form-select" required>
 
                                                         <?php
-                                                        $BRAND_CATEGORY = new BrandCategory(NULL);
-                                                        foreach ($BRAND_CATEGORY->all() as $brand_category) {
+                                                        $LABOUR_TYPE = new LabourType(NULL);
+                                                        foreach ($LABOUR_TYPE->getActiveLabourType() as $labour_type) {
                                                             ?>
-                                                            <option value="<?php echo $brand_category['id']; ?>">
-                                                                <?php echo $brand_category['name']; ?>
+                                                            <option value="<?php echo $labour_type['id']; ?>">
+                                                                <?php echo $labour_type['name']; ?>
                                                             </option>
                                                         <?php } ?>
                                                     </select>
                                                 </div>
 
-
-                                                <div class="col-md-3">
-                                                    <label class="form-label" for="itemCode">Brand Name </label>
+                                                <!-- labour name -->
+                                                <div class="col-md-2">
+                                                    <label class="form-label" for="itemCode">Labour Code</label>
                                                     <div class="input-group mb-3">
-                                                        <input id="name" name="name" type="text" class="form-control"
-                                                            placeholder="Enter Brand Name">
+                                                        <input id="code" name="code" type="text" class="form-control"
+                                                            placeholder="Enter labour code"
+                                                            value="<?php echo $labour_id ?>" readonly>
                                                         <button class="btn btn-info" type="button"
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target=".bs-example-modal-xl">
-                                                            <i class="uil uil-search me-1"></i> Find Brand
+                                                            data-bs-toggle="modal" data-bs-target="#labourMasterModal">
+                                                            <i class="uil uil-search me-1"></i> Find
                                                         </button>
                                                     </div>
                                                 </div>
 
-                                                <!-- Direct Discount -->
+
+                                                <!-- labour name -->
                                                 <div class="col-md-3">
-                                                    <label for="discount" class="form-label">Direct Discount %</label>
+                                                    <label for="name" class="form-label"> Name</label>
                                                     <div class="input-group mb-3">
-                                                        <input id="discount" name="discount" type="text"
-                                                            class="form-control"
-                                                            placeholder="Enter Discount Percentage">
+                                                        <input id="name" name="name" type="text" class="form-control"
+                                                            placeholder="Enter labour name">
                                                     </div>
                                                 </div>
 
@@ -159,19 +163,12 @@ include 'auth.php';
                                                 <div class="col-md-1 d-flex justify-content-center align-items-center">
                                                     <div class="form-check">
                                                         <input class="form-check-input" type="checkbox"
-                                                            id="activeStatus" name="activeStatus" value="1">
+                                                            id="is_active" name="is_active"  >
                                                         <label class="form-check-label"
-                                                            for="activeStatus">Active</label>
+                                                            for="is_active">Active</label>
                                                     </div>
                                                 </div>
-
-                                                <!-- Remark Note -->
-                                                <div class="col-12">
-                                                    <label for="remark" class="form-label">Remark Note</label>
-                                                    <textarea id="remark" name="remark" class="form-control" rows="4"
-                                                        placeholder="Enter any remarks or notes about the brand..."></textarea>
-                                                </div>
-                                                <input type="hidden" id="brand_id" name="brand_id">
+                                                <input type="hidden" id="id" name="id">
 
                                             </div>
                                         </form>
@@ -185,7 +182,6 @@ include 'auth.php';
                 </div> <!-- container-fluid -->
             </div>
 
-
             <?php include 'footer.php' ?>
 
         </div>
@@ -194,12 +190,12 @@ include 'auth.php';
     </div>
 
     <!-- model start here -->
-    <div class="modal fade bs-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="brandModalLabel"
-        aria-hidden="true">
+    <div class="modal fade bs-example-modal-xl" id="labourMasterModal" tabindex="-1" role="dialog"
+        aria-labelledby="labourModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="brandModalLabel">Manage Brands</h5>
+                    <h5 class="modal-title" id="labourModalLabel">Manage Labour</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
@@ -212,43 +208,49 @@ include 'auth.php';
                                 <thead>
                                     <tr>
                                         <th>#ID</th>
-                                        <th>Category</th>
-                                        <th>Brand</th>
-                                        <th>Discount %</th>
+                                        <th>Code</th>
+                                        <th>Type</th>
+                                        <th>Name</th>                                    
                                         <th>Status</th>
-                                        <th>Remark</th>
                                     </tr>
                                 </thead>
 
                                 <tbody>
                                     <?php
-                                    $BRAND = new Brand(NULL);
-                                    foreach ($BRAND->all() as $key => $brand) {
-                                        $key++;
-                                        $CATEGORY = new BrandCategory($brand['category_id']);
-                                        ?>
-                                        <tr class="select-brand" data-id="<?php echo $brand['id']; ?>"
-                                            data-category="<?php echo $brand['category_id']; ?>"
-                                            data-name="<?php echo htmlspecialchars($brand['name']); ?>"
-                                            data-discount="<?php echo htmlspecialchars($brand['discount']); ?>"
-                                            data-remark="<?php echo htmlspecialchars($brand['remark']); ?>"
-                                            data-active="<?php echo $brand['is_active']; ?>">
+                                    $LABOUR = new LabourMaster(NULL);
+                                    $allLabours = $LABOUR->all();
 
-                                            <td><?php echo $key; ?></td>
-                                            <td><?php echo htmlspecialchars($CATEGORY->name); ?></td>
-                                            <td><?php echo htmlspecialchars($brand['name']); ?></td>
-                                            <td><?php echo htmlspecialchars($brand['discount']); ?>%</td>
-                                            <td>
-                                                <?php if ($brand['is_active'] == 1): ?>
-                                                    <span class="badge bg-soft-success font-size-12">Active</span>
-                                                <?php else: ?>
-                                                    <span class="badge bg-soft-danger font-size-12">Inactive</span>
-                                                <?php endif; ?>
-                                            </td>
-                                            <td><?php echo htmlspecialchars($brand['remark']); ?></td>
+                                    if (!empty($allLabours)) {
+                                        foreach ($allLabours as $key => $labour) {
+                                            $key++;
+                                            $TYPE = new LabourType($labour['type']);
+                                            ?>
+                                            <tr class="select-labour" data-id="<?php echo $labour['id']; ?>"
+                                                data-code="<?php echo htmlspecialchars($labour['code']); ?>"
+                                                data-name="<?php echo htmlspecialchars($labour['name']); ?>"
+                                                data-type="<?php echo $labour['type']; ?>"
+                                                data-active="<?php echo $labour['is_active']; ?>">
+
+                                                <td><?php echo $key; ?></td>
+                                                <td><?php echo htmlspecialchars($labour['name']); ?></td>
+                                                <td><?php echo htmlspecialchars($labour['code']); ?></td>                                              
+                                                <td><?php echo htmlspecialchars($TYPE->name); ?></td>
+                                                <td>
+                                                    <?php if ($labour['is_active'] == 1): ?>
+                                                        <span class="badge bg-soft-success font-size-12">Active</span>
+                                                    <?php else: ?>
+                                                        <span class="badge bg-soft-danger font-size-12">Inactive</span>
+                                                    <?php endif; ?>
+                                                </td>
+                                            </tr>
+                                        <?php }
+                                    } else { ?>
+                                        <tr>
+                                            <td colspan="5" class="text-center text-muted">No data available</td>
                                         </tr>
                                     <?php } ?>
                                 </tbody>
+
                             </table>
 
                         </div> <!-- end col -->
@@ -258,6 +260,7 @@ include 'auth.php';
         </div><!-- /.modal-dialog -->
     </div>
 
+
     <!-- model end here -->
 
     <!-- Right bar overlay-->
@@ -266,7 +269,7 @@ include 'auth.php';
     <!-- JAVASCRIPT -->
     <script src="assets/libs/jquery/jquery.min.js"></script>
     <!-- /////////////////////////// -->
-    <script src="ajax/js/brand.js"></script>
+    <script src="ajax/js/labour-master.js"></script>
 
     <script src="assets/libs/sweetalert/sweetalert-dev.js"></script>
     <script src="assets/js/jquery.preloader.min.js"></script>

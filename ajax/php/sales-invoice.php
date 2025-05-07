@@ -26,7 +26,7 @@ if (isset($_POST['create'])) {
     }
 
     $netTotal = $totalSubTotal - $totalDiscount;
-    
+
     $USER = new User($_SESSION['id']);
     $COMPANY_PROFILE = new CompanyProfile($USER->company_id);
 
@@ -131,6 +131,20 @@ if (isset($_POST['update'])) {
         exit();
     }
 }
+
+ 
+ 
+if (isset($_POST['filter'])) {
+ 
+
+    $SALES_INVOICE = new SalesInvoice();
+    $response = $SALES_INVOICE->fetchInvoicesForDataTable($_REQUEST);
+
+
+    echo json_encode($response);
+    exit;  
+}
+
 
 // Delete invoice
 if (isset($_POST['delete']) && isset($_POST['id'])) {
