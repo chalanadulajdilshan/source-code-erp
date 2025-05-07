@@ -2,11 +2,11 @@
 <?php
 include 'class/include.php';
 
-$EXPENSES = new Expenses();
+$SUBCATEGORY = new Subcategory();
 
 // Get the last inserted package id
-$lastId = $EXPENSES->getLastID();
-$expenses_id = 'IM00' . $lastId + 1;
+$lastId = $SUBCATEGORY->getLastID();
+$sub_category_id = 'IM00' . $lastId + 1;
 
 ?>
 <html lang="en">
@@ -68,7 +68,7 @@ $expenses_id = 'IM00' . $lastId + 1;
                             <a href="#" class="btn btn-warning" id="update">
                                 <i class="uil uil-edit me-1"></i> Update
                             </a>
-                            <a href="#" class="btn btn-danger delete-expense-type">
+                            <a href="#" class="btn btn-danger delete-sub-category">
                                 <i class="uil uil-trash-alt me-1"></i> Delete
                             </a>
 
@@ -77,7 +77,7 @@ $expenses_id = 'IM00' . $lastId + 1;
                         <div class="col-md-4 text-md-end text-start mt-3 mt-md-0">
                             <ol class="breadcrumb m-0 justify-content-md-end">
                                 <li class="breadcrumb-item"><a href="javascript: void(0);">Dashboard</a></li>
-                                <li class="breadcrumb-item active">Expenses Type</li>
+                                <li class="breadcrumb-item active">Sub Category</li>
                             </ol>
                         </div>
                     </div>
@@ -99,7 +99,7 @@ $expenses_id = 'IM00' . $lastId + 1;
                                             </div>
                                         </div>
                                         <div class="flex-grow-1 overflow-hidden">
-                                            <h5 class="font-size-16 mb-1">Expenses Type</h5>
+                                            <h5 class="font-size-16 mb-1">Sub Category</h5>
                                             <p class="text-muted text-truncate mb-0">Fill all information below</p>
                                         </div>
                                         <div class="flex-shrink-0">
@@ -114,11 +114,11 @@ $expenses_id = 'IM00' . $lastId + 1;
                                     <form id="form-data" autocomplete="off">
                                         <div class="row">
  
-                                            <div class="col-md-3">
+                                            <div class="col-md-2">
                                                 <label class="form-label" for="code">Ref No</label>
                                                 <div class="input-group mb-3">
-                                                <input id="code" name="code" type="text" value="<?php echo $expenses_id; ?>"
-                                                placeholder="Ref No" class="form-control" readonly>
+                                                <input id="code" name="code" type="text" value="<?php echo $sub_category_id; ?>"
+                                                    readonly class="form-control" placeholder="Ref No"> 
                                                 
                                                     <button class="btn btn-info" type="button"  data-bs-toggle="modal"
                                                     data-bs-target=".bs-example-modal-xl">
@@ -127,12 +127,30 @@ $expenses_id = 'IM00' . $lastId + 1;
                                                 </div>
                                             </div>
 
+                                            <div class="col-md-2">
+                                            <label for="Category" class="form-label">Category</label>
+                                            <div class="input-group mb-3">
+                                                <select id="category_id" name="category_id" class="form-select">
 
-                                            <div class="col-md-3">
-                                                <label for="name" class="form-label">Name</label>
+                                                <option value="">-- Select Category --</option>
+                                                <?php
+                                                $CATEGORY = new CategoryMaster(NULL);
+                                                foreach ($CATEGORY->getActiveCategory() as $key => $category) {
+                                                    ?>
+                                                    <option value="<?php echo $category['id']; ?>"><?php echo $category['name']; ?></option>
+                                                <?php
+                                                }   
+                                                ?>                                               
+                                                    
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                            <div class="col-md-2">
+                                                <label for="name" class="form-label">Sub Category Name</label>
                                                 <div class="input-group mb-3">
                                                     <input id="name" name="name" type="text"
-                                                    placeholder="Enter Name" class="form-control">
+                                                    placeholder="Enter Sub Category Name" class="form-control">
                                                 </div>
                                             </div>
 
@@ -165,13 +183,13 @@ $expenses_id = 'IM00' . $lastId + 1;
         <!-- end main content-->
     </div>
     <!-- END layout-wrapper -->
-
+     
     <div class="modal fade bs-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="categoryModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
 
                 <div class="modal-header">
-                    <h5 class="modal-title" id="categoryModalLabel">Manage Expense Type</h5>
+                    <h5 class="modal-title" id="categoryModalLabel">Manage Sub Category</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
@@ -185,6 +203,7 @@ $expenses_id = 'IM00' . $lastId + 1;
                                     <tr>
                                         <th>#</th>
                                         <th>Ref No</th>
+                                        <th>Category</th>
                                         <th>Name</th>
                                         <th>Is Active</th>
                                     </tr>
@@ -192,23 +211,25 @@ $expenses_id = 'IM00' . $lastId + 1;
 
                                 <tbody>
                                 <?php
-                                    $EXPENSES = new Expenses(NULL);
-                                    foreach ($EXPENSES->all() as $key => $expenses) {
-                                        $key++;
-                                        ?>
-                                        <tr class="select-expenses" data-id="<?php echo $expenses['id']; ?>"
-                                            data-code="<?php echo htmlspecialchars($expenses['code']); ?>"
-                                            data-name="<?php echo htmlspecialchars($expenses['name']); ?>"
-                                            data-is_active="<?php echo htmlspecialchars($expenses['is_active']); ?>"
-                                        >
+                                $SUBCATEGORY = new Subcategory(NULL);
+                                foreach ($SUBCATEGORY->all() as $key => $subcategory) {
+                                    $key++;
+                                    $category = new CategoryMaster($subcategory['category_id']); 
+                                    ?>
+                                    <tr class="select-ref" data-id="<?php echo $subcategory['id']; ?>"
+                                        data-code="<?php echo htmlspecialchars($subcategory['code']); ?>"
+                                        data-category_id="<?php echo htmlspecialchars($subcategory['category_id']); ?>"
+                                        data-name="<?php echo htmlspecialchars($subcategory['name']); ?>"
+                                        data-is_active="<?php echo htmlspecialchars($subcategory['is_active']); ?>"
+                                    >
+                                        <td><?php echo $key; ?></td>
+                                        <td><?php echo htmlspecialchars($subcategory['code']); ?></td>
+                                        <td><?php echo htmlspecialchars($category->name); ?></td>
+                                        <td><?php echo htmlspecialchars($subcategory['name']); ?></td>
+                                        <td><?php echo htmlspecialchars($subcategory['is_active']); ?></td>
+                                    </tr>
+                                <?php } ?>
 
-                                            <td><?php echo $key; ?></td>
-                                            <td><?php echo htmlspecialchars($expenses['code']); ?></td>
-                                            <td><?php echo htmlspecialchars($expenses['name']); ?></td>
-                                            <td><?php echo htmlspecialchars($expenses['is_active']); ?></td>
-                                            
-                                        </tr>
-                                    <?php } ?>
                                 </tbody>
                             </table>
 
@@ -227,7 +248,7 @@ $expenses_id = 'IM00' . $lastId + 1;
     <!-- JAVASCRIPT -->
     <script src="assets/libs/jquery/jquery.min.js"></script>
     <!-- /////////////////////////// -->
-    <script src="ajax/js/expense-type-master.js"></script>
+    <script src="ajax/js/sub-category-master.js"></script>
 
 
     <script src="assets/libs/sweetalert/sweetalert-dev.js"></script>

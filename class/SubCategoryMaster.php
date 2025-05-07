@@ -1,9 +1,10 @@
 <?php
 
-class Expenses
+class Subcategory
 {
     public $id;
     public $code;
+    public $category_id;
     public $name;
     public $is_active;
 
@@ -11,13 +12,14 @@ class Expenses
     public function __construct($id = null)
     {
         if ($id) {
-            $query = "SELECT * FROM `expenses_type` WHERE `id` = " . (int) $id;
+            $query = "SELECT * FROM `sub_categroy` WHERE `id` = " . (int) $id;
             $db = new Database();
             $result = mysqli_fetch_array($db->readQuery($query));
 
             if ($result) {
                 $this->id = $result['id'];
                 $this->code = $result['code'];
+                $this->category_id = $result['category_id'];
                 $this->name = $result['name'];
                 $this->is_active = $result['is_active'];
             }
@@ -27,8 +29,9 @@ class Expenses
     // Create a new page record in the database
     public function create()
     {
-        $query = "INSERT INTO `expenses_type` (`code`, `name`, `is_active`) VALUES (
+        $query = "INSERT INTO `sub_categroy` (`code`, `category_id`, `name`, `is_active`) VALUES (
             '" . $this->code . "',
+            '" . $this->category_id . "',
             '" . $this->name . "',
             '" . $this->is_active . "')";
         $db = new Database();
@@ -44,8 +47,9 @@ class Expenses
     // Update an existing page record
     public function update()
     {
-        $query = "UPDATE `expenses_type` SET 
+        $query = "UPDATE `sub_categroy` SET 
             `code` = '" . $this->code . "',
+            `category_id` = '" . $this->category_id . "',
             `name` = '" . $this->name . "',
             `is_active` = '" . $this->is_active . "'
             WHERE `id` = " . (int) $this->id;
@@ -62,7 +66,7 @@ class Expenses
     // Delete a page record by ID
     public function delete()
     {
-        $query = "DELETE FROM `expenses_type` WHERE `id` = " . (int) $this->id;
+        $query = "DELETE FROM `sub_categroy` WHERE `id` = " . (int) $this->id;
         $db = new Database();
         return $db->readQuery($query);
     }
@@ -70,7 +74,7 @@ class Expenses
     // Retrieve all page records
     public function all()
     {
-        $query = "SELECT * FROM `expenses_type` ORDER BY `code` ASC";
+        $query = "SELECT * FROM `sub_categroy` ORDER BY `code` ASC";
         $db = new Database();
         $result = $db->readQuery($query);
         $array_res = array();
@@ -82,9 +86,9 @@ class Expenses
         return $array_res;
     }
 
-    public function getLastID()
+        public function getLastID()
     {
-        $query = "SELECT * FROM `expenses_type` ORDER BY `id` DESC LIMIT 1";
+        $query = "SELECT * FROM `sub_categroy` ORDER BY `id` DESC LIMIT 1";
         $db = new Database();
         $result = mysqli_fetch_array($db->readQuery($query));
         return $result['id'];
