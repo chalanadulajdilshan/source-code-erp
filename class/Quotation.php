@@ -4,15 +4,13 @@ class Quotation
 {
     public $id;
     public $quotation_no;
-    public $sales_order_no;
     public $date;
     public $customer_id;
     public $credit_limit;
     public $balance;
     public $department_id;
     public $marketing_executive_id;
-    public $invoice_type;
-    public $payment_type;
+     public $payment_type;
     public $remarks;
     public $credit_period;
     public $payment_term;
@@ -20,7 +18,7 @@ class Quotation
     public $sub_total;
     public $discount;
     public $tax;
-    public $invoice_total;
+    public $grand_total;
     public $created_at;
 
     public function __construct($id = null)
@@ -33,15 +31,13 @@ class Quotation
             if ($result) {
                 $this->id = $result['id'];
                 $this->quotation_no = $result['quotation_no'];
-                $this->sales_order_no = $result['sales_order_no'];
-                $this->date = $result['date'];
+                 $this->date = $result['date'];
                 $this->customer_id = $result['customer_id'];
                 $this->credit_limit = $result['credit_limit'];
                 $this->balance = $result['balance'];
                 $this->department_id = $result['department_id'];
                 $this->marketing_executive_id = $result['marketing_executive_id'];
-                $this->invoice_type = $result['invoice_type'];
-                $this->payment_type = $result['payment_type'];
+                 $this->payment_type = $result['payment_type'];
                 $this->remarks = $result['remarks'];
                 $this->credit_period = $result['credit_period'];
                 $this->payment_term = $result['payment_term'];
@@ -49,7 +45,7 @@ class Quotation
                 $this->sub_total = $result['sub_total'];
                 $this->discount = $result['discount'];
                 $this->tax = $result['tax'];
-                $this->invoice_total = $result['invoice_total'];
+                $this->grand_total = $result['grand_total'];
                 $this->created_at = $result['created_at'];
             }
         }
@@ -58,9 +54,9 @@ class Quotation
     public function create()
     {
         $query = "INSERT INTO `quotation` 
-        (`quotation_no`, `sales_order_no`, `date`, `customer_id`, `credit_limit`, `balance`, `department_id`, `marketing_executive_id`, `invoice_type`, `payment_type`, `remarks`, `credit_period`, `payment_term`, `validity`, `sub_total`, `discount`, `tax`, `invoice_total`, `created_at`) 
+        (`quotation_no`,  `date`, `customer_id`, `credit_limit`, `balance`, `department_id`, `marketing_executive_id`,   `payment_type`, `remarks`, `credit_period`, `payment_term`, `validity`, `sub_total`, `discount`, `tax`, `grand_total`, `created_at`) 
         VALUES 
-        ('{$this->quotation_no}', '{$this->sales_order_no}', '{$this->date}', '{$this->customer_id}', '{$this->credit_limit}', '{$this->balance}', '{$this->department_id}', '{$this->marketing_executive_id}', '{$this->invoice_type}', '{$this->payment_type}', '{$this->remarks}', '{$this->credit_period}', '{$this->payment_term}', '{$this->validity}', '{$this->sub_total}', '{$this->discount}', '{$this->tax}', '{$this->invoice_total}', '{$this->created_at}')";
+        ('{$this->quotation_no}',  '{$this->date}', '{$this->customer_id}', '{$this->credit_limit}', '{$this->balance}', '{$this->department_id}', '{$this->marketing_executive_id}',   '{$this->payment_type}', '{$this->remarks}', '{$this->credit_period}', '{$this->payment_term}', '{$this->validity}', '{$this->sub_total}', '{$this->discount}', '{$this->tax}', '{$this->grand_total}', '{$this->created_at}')";
 
         $db = new Database();
         $result = $db->readQuery($query);
@@ -75,16 +71,14 @@ class Quotation
     public function update()
     {
         $query = "UPDATE `quotation` SET 
-        `quotation_no` = '{$this->quotation_no}',
-        `sales_order_no` = '{$this->sales_order_no}',
+        `quotation_no` = '{$this->quotation_no}', 
         `date` = '{$this->date}',
         `customer_id` = '{$this->customer_id}',
         `credit_limit` = '{$this->credit_limit}',
         `balance` = '{$this->balance}',
         `department_id` = '{$this->department_id}',
         `marketing_executive_id` = '{$this->marketing_executive_id}',
-        `invoice_type` = '{$this->invoice_type}',
-        `payment_type` = '{$this->payment_type}',
+         `payment_type` = '{$this->payment_type}',
         `remarks` = '{$this->remarks}',
         `credit_period` = '{$this->credit_period}',
         `payment_term` = '{$this->payment_term}',
@@ -92,7 +86,7 @@ class Quotation
         `sub_total` = '{$this->sub_total}',
         `discount` = '{$this->discount}',
         `tax` = '{$this->tax}',
-        `invoice_total` = '{$this->invoice_total}',
+        `grand_total` = '{$this->grand_total}',
         `created_at` = '{$this->created_at}'
         WHERE `id` = '{$this->id}'";
 

@@ -183,7 +183,7 @@
                                             foreach ($PAGES->getPagesByCategory($category['id']) as $page) {
                                                 ?>
                                                 <div class="col-lg-4">
-                                                    <a href="<?php echo $page['page_url'] . '?page_id=' . $page['id']; ?>" class="dropdown-item">
+                                                    <a href="<?php echo $page['page_url'] . '?page_id=' . $page['id']; ?>" target="_blank" class="dropdown-item">
                                                         <?php echo $page['page_name']; ?>
                                                     </a>
                                                 </div>
