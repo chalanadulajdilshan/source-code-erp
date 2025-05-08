@@ -136,7 +136,7 @@ jQuery(document).ready(function () {
       return false;
     });
   
-    // Delete Payment Type
+    // Delete Design Type
     $(document).on("click", ".delete-design-master", function (e) {
       e.preventDefault();
   
