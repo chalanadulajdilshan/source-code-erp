@@ -34,6 +34,7 @@ include_once(dirname(__FILE__) . '/Quotation.php');
 include_once(dirname(__FILE__) . '/QuotationItem.php');
 include_once(dirname(__FILE__) . '/ExpenseTypeMaster.php');
 include_once(dirname(__FILE__) . '/SubCategoryMaster.php');
+include_once(dirname(__FILE__) . '/SizeMaster.php');
 
 
 
