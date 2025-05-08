@@ -136,7 +136,7 @@ jQuery(document).ready(function () {
       return false;
     });
   
-    // Delete Payment Type
+    // Delete belt Type
     $(document).on("click", ".delete-belt-master", function (e) {
       e.preventDefault();
   

@@ -114,21 +114,21 @@ $design_id = 'DM00' . $lastId + 1;
                                     <form id="form-data" autocomplete="off">
                                         <div class="row">
  
-                                            <div class="col-md-3">
+                                            <div class="col-md-2">
                                                 <label class="form-label" for="code">Ref No</label>
                                                 <div class="input-group mb-3">
                                                 <input id="code" name="code" type="text" value="<?php echo $design_id; ?>"
                                                 placeholder="Ref No" class="form-control" readonly>
                                                 
                                                     <button class="btn btn-info" type="button"  data-bs-toggle="modal"
-                                                    data-bs-target=".bs-example-modal-xl">
+                                                    data-bs-target="#designModel">
                                                         <i class="uil uil-search me-1"></i> Find
                                                     </button>
                                                 </div>
                                             </div>
 
 
-                                            <div class="col-md-3">
+                                            <div class="col-md-2">
                                                 <label for="name" class="form-label">Design Name</label>
                                                 <div class="input-group mb-3">
                                                     <input id="name" name="name" type="text"
@@ -166,7 +166,7 @@ $design_id = 'DM00' . $lastId + 1;
     </div>
     <!-- END layout-wrapper -->
 
-    <div class="modal fade bs-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="categoryModalLabel" aria-hidden="true">
+    <div class="modal fade bs-example-modal-xl" id="designModel" tabindex="-1" role="dialog" aria-labelledby="categoryModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
 
@@ -185,7 +185,7 @@ $design_id = 'DM00' . $lastId + 1;
                                     <tr>
                                         <th>#</th>
                                         <th>Ref No</th>
-                                        <th>Belt Name</th>
+                                        <th>Design Name</th>
                                         <th>Is Active</th>
                                     </tr>
                                 </thead>

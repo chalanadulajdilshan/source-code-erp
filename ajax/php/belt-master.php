@@ -3,17 +3,17 @@
 include '../../class/include.php';
 header('Content-Type: application/json; charset=UTF8');
 
-// Create a new Expense Type
+// Create a new belt Type
 if (isset($_POST['create'])) {
 
-    $BELT = new BeltMaster(NULL); // Create a new Expense Type
+    $BELT = new BeltMaster(NULL); // Create a new belt Type
 
-    // Set the Expense Type details
+    // Set the belt Type details
     $BELT->code = $_POST['code'];
     $BELT->name = $_POST['name'];
     $BELT->is_active = isset($_POST['is_active']) ? 1 : 0;
 
-    // Attempt to create the Expense Type
+    // Attempt to create the belt Type
     $res = $BELT->create();
 
     if ($res) {
@@ -31,17 +31,17 @@ if (isset($_POST['create'])) {
     }
 }
 
-// Update Expense Type details
+// Update belt Type details
 if (isset($_POST['update'])) {
 
-    $BELT = new BeltMaster($_POST['id']); // Retrieve Expense Type by ID
+    $BELT = new BeltMaster($_POST['id']); // Retrieve belt Type by ID
 
-    // Update Expense Type details
+    // Update belt Type details
     $BELT->code = $_POST['code'];
     $BELT->name = $_POST['name'];
     $BELT->is_active = isset($_POST['is_active']) ? 1 : 0;
 
-    // Attempt to update the Expense Type
+    // Attempt to update the belt Type
     $result = $BELT->update();
 
     if ($result) {

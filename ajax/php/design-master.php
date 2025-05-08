@@ -3,17 +3,17 @@
 include '../../class/include.php';
 header('Content-Type: application/json; charset=UTF8');
 
-// Create a new Expense Type
+// Create a new Design Type
 if (isset($_POST['create'])) {
 
-    $DESIGN = new DesignMaster(NULL); // Create a new Expense Type
+    $DESIGN = new DesignMaster(NULL); // Create a new Design Type
 
-    // Set the Expense Type details
+    // Set the Design Type details
     $DESIGN->code = $_POST['code'];
     $DESIGN->name = $_POST['name'];
     $DESIGN->is_active = isset($_POST['is_active']) ? 1 : 0;
 
-    // Attempt to create the Expense Type
+    // Attempt to create the Design Type
     $res = $DESIGN->create();
 
     if ($res) {
@@ -31,17 +31,17 @@ if (isset($_POST['create'])) {
     }
 }
 
-// Update Expense Type details
+// Update Design Type details
 if (isset($_POST['update'])) {
 
-    $DESIGN = new DesignMaster($_POST['id']); // Retrieve Expense Type by ID
+    $DESIGN = new DesignMaster($_POST['id']); // Retrieve Design Type by ID
 
-    // Update Expense Type details
+    // Update Design Type details
     $DESIGN->code = $_POST['code'];
     $DESIGN->name = $_POST['name'];
     $DESIGN->is_active = isset($_POST['is_active']) ? 1 : 0;
 
-    // Attempt to update the Expense Type
+    // Attempt to update the Design Type
     $result = $DESIGN->update();
 
     if ($result) {

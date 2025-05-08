@@ -114,21 +114,21 @@ $belt_id = 'BM00' . $lastId + 1;
                                     <form id="form-data" autocomplete="off">
                                         <div class="row">
  
-                                            <div class="col-md-3">
-                                                <label class="form-label" for="code">Ref No</label>
-                                                <div class="input-group mb-3">
-                                                <input id="code" name="code" type="text" value="<?php echo $belt_id; ?>"
-                                                placeholder="Ref No" class="form-control" readonly>
-                                                
-                                                    <button class="btn btn-info" type="button"  data-bs-toggle="modal"
-                                                    data-bs-target=".bs-example-modal-xl">
-                                                        <i class="uil uil-search me-1"></i> Find
-                                                    </button>
+                                         
+                                            <div class="col-md-2">
+                                                    <label class="form-label" for="code">Ref No </label>
+                                                    <div class="input-group mb-3">
+                                                        <input id="code" name="code" type="text" value="<?php echo $belt_id; ?>"
+                                                            placeholder="Ref No" class="form-control" readonly>
+                                                        <button class="btn btn-info" type="button"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#beltModel">
+                                                            <i class="uil uil-search me-1"></i> Find
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                            </div>
 
-
-                                            <div class="col-md-3">
+                                            <div class="col-md-2">
                                                 <label for="name" class="form-label">Belt Name</label>
                                                 <div class="input-group mb-3">
                                                     <input id="name" name="name" type="text"
@@ -156,53 +156,54 @@ $belt_id = 'BM00' . $lastId + 1;
                         </div>
                     </div>
                 </div> <!-- container-fluid -->
-            </div>
-
-
+            </div>  
             <?php include 'footer.php' ?>
 
-        </div>
-        <!-- end main content-->
+        </div> 
     </div>
-    <!-- END layout-wrapper -->
+    
+  
+<!-- model open here -->
+<div class="modal fade bs-example-modal-xl" id="beltModel" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myExtraLargeModalLabel">Manage Belt Types</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+  
 
-    <div class="modal fade bs-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="categoryModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
+                        <table id="datatable" class="table table-bordered dt-responsive nowrap"
+                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Ref No</th>
+                                    <th>Belt Name</th>
+                                    <th>Is Active</th>
 
-                <div class="modal-header">
-                    <h5 class="modal-title" id="categoryModalLabel">Manage Belt Type</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
+                                </tr>
+                            </thead>
 
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-12">
 
-                            <table id="datatable" class="table table-bordered dt-responsive nowrap"
-                                style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Ref No</th>
-                                        <th>Belt Name</th>
-                                        <th>Is Active</th>
-                                    </tr>
-                                </thead>
-
-                                <tbody>
+                            <tbody>
                                 <?php
-                                    $BELT = new BeltMaster(NULL);
-                                    foreach ($BELT->all() as $key => $belt) {
-                                        $key++;
-                                        ?>
-                                        <tr class="select-belt" data-id="<?php echo $belt['id']; ?>"
+                                $BELT = new BeltMaster(null);
+                                foreach ($BELT->all() as $key => $belt) {
+                                    $key++;
+                                    ?>
+                                    <tr class="select-belt" data-id="<?php echo $belt['id']; ?>"
                                             data-code="<?php echo htmlspecialchars($belt['code']); ?>"
                                             data-name="<?php echo htmlspecialchars($belt['name']); ?>"
                                             data-is_active="<?php echo htmlspecialchars($belt['is_active']); ?>"
-                                        >
+                                    >
 
-                                            <td><?php echo $key; ?></td>
+                                    <td><?php echo $key; ?></td>
                                             <td><?php echo htmlspecialchars($belt['code']); ?></td>
                                             <td><?php echo htmlspecialchars($belt['name']); ?></td>
                                             <td>
@@ -212,20 +213,18 @@ $belt_id = 'BM00' . $lastId + 1;
                                                     <span class="badge bg-soft-danger font-size-12">Inactive</span>
                                                 <?php endif; ?>
                                             </td>
-                                            
-                                        </tr>
-                                    <?php } ?>
-                                </tbody>
-                            </table>
+                                    </tr>
 
-                        </div> <!-- end col -->
-                    </div> <!-- end row -->
-                </div>
-
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div>
-
+                                <?php } ?>
+                            </tbody>
+                        </table>
+                    </div> <!-- end col -->
+                </div> <!-- end row -->
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<!-- model close here -->
 
     <!-- Right bar overlay-->
     <div class="rightbar-overlay"></div>
