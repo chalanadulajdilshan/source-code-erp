@@ -39,7 +39,7 @@ include_once(dirname(__FILE__) . '/ExpenseTypeMaster.php');
 include_once(dirname(__FILE__) . '/BeltMaster.php');
 include_once(dirname(__FILE__) . '/DesignMaster.php');
 include_once(dirname(__FILE__) . '/VehicleBrand.php');
-
+include_once(dirname(__FILE__) . '/VehicleModel.php');
 
 function dd($data) {
 
