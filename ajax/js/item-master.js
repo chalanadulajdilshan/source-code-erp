@@ -250,12 +250,7 @@ jQuery(document).ready(function () {
         $("#create").show();
     });
 
-    // Open modal when button is clicked
-    $('#open-item-modal').click(function (e) {
-        e.preventDefault();
-        var myModal = new bootstrap.Modal(document.querySelector('.bs-example-modal-xl'));
-        myModal.show();
-    });
+     
 
 
     //data append 
@@ -321,7 +316,7 @@ jQuery(document).ready(function () {
         //hidden save button
         $("#create").hide();
         // Hide modal (if it's open)
-        $('.bs-example-modal-xl').modal('hide');
+        $('#item_master').modal('hide');
     });
     
 

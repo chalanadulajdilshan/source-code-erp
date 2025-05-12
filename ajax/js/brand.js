@@ -141,13 +141,7 @@ jQuery(document).ready(function () {
         $('#category_id').prop('selectedIndex', 0);
         $("#create").show();
     });
-
-    // Open modal
-    $('#open-brand-modal').click(function (e) {
-        e.preventDefault();
-        var myModal = new bootstrap.Modal(document.querySelector('.bs-example-modal-xl'));
-        myModal.show();
-    });
+ 
 
     // Populate form from modal click
     $(document).on('click', '.select-brand', function () {
@@ -164,7 +158,7 @@ jQuery(document).ready(function () {
         }
 
         $("#create").hide();
-        $('.bs-example-modal-xl').modal('hide');
+        $('#brand_master').modal('hide');
     });
 
     // Delete Brand

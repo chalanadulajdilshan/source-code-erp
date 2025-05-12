@@ -217,12 +217,7 @@ jQuery(document).ready(function () {
         $("#create").show();
     });
 
-    // JS to open modal when button is clicked
-    $('#open-branch-modal').click(function (e) {
-        e.preventDefault();
-        var myModal = new bootstrap.Modal(document.querySelector('.bs-example-modal-xl'));
-        myModal.show();
-    });
+    
 
     //model click append value form
     $(document).on('click', '.select-branch', function () {
@@ -241,7 +236,7 @@ jQuery(document).ready(function () {
         }
 
         $("#create").hide();
-        $('.bs-example-modal-xl').modal('hide'); // Close the modal
+        $('#branch_master').modal('hide'); // Close the modal
     });
 
     //delete branch
