@@ -170,7 +170,7 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                             data-bs-toggle="modal" data-bs-target="#customerModal">
                                                             <i class="uil uil-search me-1"></i> Find
                                                         </button>
-
+                                                        <input id="customer_id" name="customer_id" type="hidden">
                                                     </div>
                                                     <div id="customerList" class="list-group position-absolute w-100">
                                                     </div>
@@ -215,7 +215,8 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                             $VAT_TYPE = new VatType(NULL);
                                                             foreach ($VAT_TYPE->getActiveTypes() as $vat_type) {
                                                                 ?>
-                                                                <option value="<?php echo $vat_type['id']?>"><?php echo $vat_type['vat_type_name']?></option>
+                                                                <option value="<?php echo $vat_type['id'] ?>">
+                                                                    <?php echo $vat_type['vat_type_name'] ?></option>
                                                             <?php } ?>
                                                         </select>
                                                     </div>
@@ -265,15 +266,6 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-2">
-                                                    <label for="sales_type" class="form-label">Sales Type</label>
-                                                    <div class="input-group mb-3">
-                                                        <select id="sales_type" name="sales_type" class="form-select">
-                                                            <option value="1">Whole Sales</option>
-                                                            <option value="2">Retail Sales</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
 
                                                 <hr class="my-4">
 
@@ -311,9 +303,12 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                                         class="form-control" placeholder="Item Code"
                                                                         readonly>
                                                                     <button class="btn btn-info" type="button"
-                                                                        id="open-item-modal">
-                                                                        <i class="uil uil-search me-1"></i> Find
+                                                                        data-bs-toggle="modal"
+                                                                        data-bs-target="#item_master">
+                                                                        <i class="uil uil-search me-1"></i>
                                                                     </button>
+
+
                                                                 </div>
                                                             </div>
 
@@ -542,6 +537,7 @@ $invoice_id = 'IN00' . $lastId + 1;
         <!-- /////////////////////////// -->
 
         <script src="ajax/js/sales-invoice.js"></script>
+
 
         <script src="assets/libs/sweetalert/sweetalert-dev.js"></script>
         <script src="assets/js/jquery.preloader.min.js"></script>

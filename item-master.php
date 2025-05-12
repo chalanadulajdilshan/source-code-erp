@@ -114,20 +114,20 @@ $item_id = 'IM00' . $lastId + 1;
                                     <form id="form-data" autocomplete="off">
                                         <div class="row">
                                             <!-- Item Code -->
-                                            <div class="col-md-4">
+                                            <div class="col-md-3">
                                                 <label class="form-label" for="code">Item Code</label>
                                                 <div class="input-group mb-3">
                                                     <input id="code" name="code" type="text" class="form-control"
                                                         value="<?php echo $item_id ?>" readonly>
                                                     <button class="btn btn-info" type="button"  data-bs-toggle="modal"
                                                     data-bs-target=".bs-example-modal-xl">
-                                                        <i class="uil uil-search me-1"></i> Find Item
+                                                        <i class="uil uil-search me-1"></i> 
                                                     </button>
                                                 </div>
                                             </div>
 
                                             <!-- Item Name -->
-                                            <div class="col-md-4">
+                                            <div class="col-md-3">
                                                 <div class="mb-3">
                                                     <label class="form-label" for="name">Item Name <span
                                                             class="text-danger">*</span></label>
@@ -137,7 +137,7 @@ $item_id = 'IM00' . $lastId + 1;
                                             </div>
 
                                             <!-- Brand -->
-                                            <div class="col-md-4">
+                                            <div class="col-md-3">
                                                 <div class="mb-3">
                                                     <label class="form-label" for="brand">Manufacturer Brand <span
                                                             class="text-danger">*</span></label>

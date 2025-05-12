@@ -74,7 +74,7 @@ jQuery(document).ready(function () {
 
         setTimeout(() => $('#itemQty').focus(), 200);
 
-        $('.bs-example-modal-xl').modal('hide');
+        $('#item_master').modal('hide');
     });
 
     //get first row cash sales customer
@@ -87,6 +87,7 @@ jQuery(document).ready(function () {
             dataType: 'json',
             success: function (data) {
                 if (!data.error) {
+                    $('#customer_id').val(data.customer_id);
                     $('#customer_code').val(data.customer_code);
                     $('#customer_name').val(data.customer_name);
                     $('#customer_address').val(data.customer_address);
@@ -252,12 +253,7 @@ jQuery(document).ready(function () {
         }
     });
 
-    // Open item modal
-    $('#open-item-modal').click(function (e) {
-        e.preventDefault();
-        const myModal = new bootstrap.Modal(document.querySelector('.bs-example-modal-xl'));
-        myModal.show();
-    });
+
 
     // Add item to invoice table
     function addItem() {
@@ -453,58 +449,67 @@ jQuery(document).ready(function () {
 
 
     //////////// append invoice data to table ///////////////////
-    var table = $('#invoiceTable2').DataTable({
-        processing: true,
-        serverSide: true,
-        destroy: true, // important when initializing inside modal
-        ajax: {
-            url: "ajax/php/sales-invoice.php",
-            type: "POST",
-            data: function (d) {
-                d.filter = true;
+    function initInvoiceTable() {
+        var table = $('#invoiceTableData').DataTable({
+            processing: true,
+            serverSide: true,
+            destroy: true, // Re-initializes cleanly when called again
+            ajax: {
+                url: "ajax/php/sales-invoice.php",
+                type: "POST",
+                data: function (d) {
+                    d.filter = true;  // You can adjust this if needed
+                },
+                dataSrc: function (json) {
+                    console.log("Response Data:", json); // Check the server response here
+                    return json.data || [];  // Ensure data is in the expected format
+                },
+                error: function (xhr, error, thrown) {
+                    console.error("Server Error:", xhr.responseText, error, thrown);
+                }
             },
-            dataSrc: function (json) {
-                return json.data;
-            },
-            error: function (xhr) {
-                console.error("Server Error Response:", xhr.responseText);
-            }
-        },
-        columns: [
-            { data: "id", title: "#ID" },
-            { data: "invoice_no", title: "Invoice No" },
-            { data: "invoice_date", title: "Date" },
-            { data: "department", title: "Department" },  // e.g., Sales, Marketing (string from JOIN)
-            { data: "customer", title: "Customer" },      // e.g., Customer Name (string from JOIN)
-            { data: "grand_total", title: "Grand Total" },
-            { data: "remark", title: "Remark" }
-        ],
-        order: [[0, 'desc']],
-        pageLength: 100
+            columns: [
+                { data: "id", title: "#ID" },
+                { data: "invoice_no", title: "Invoice No" },
+                { data: "invoice_date", title: "Date" },
+                { data: "department", title: "Department" },
+                { data: "customer", title: "Customer" },
+                { data: "grand_total", title: "Grand Total" }
+            ],
+            order: [[0, 'desc']], // Sort by #ID (Descending)
+            pageLength: 100
+        });
+    
+        // Row click to populate form
+        $('#invoiceTableData tbody').off('click').on('click', 'tr', function () {
+            var data = table.row(this).data();
+            if (!data) return;
+    
+            // Populate form fields safely
+            $('#invoice_id').val(data.id || '');
+            $('#invoice_no').val(data.invoice_no || '');
+            $('#invoice_date').val(data.invoice_date || '');
+            $('#department_id').val(data.department_id || '').trigger('change');
+            $('#customer_id').val(data.customer_id || '').trigger('change');
+            $('#sale_type').val(data.sale_type || '').trigger('change');
+            $('#discount_type').val(data.discount_type || '').trigger('change');
+            $('#payment_type').val(data.payment_type || '').trigger('change');
+            $('#sub_total').val(data.sub_total || '');
+            $('#discount').val(data.discount || '');
+            $('#tax').val(data.tax || '');
+            $('#grand_total').val(data.grand_total || '');
+            $('#remark').val(data.remark || '');
+    
+            $("#create").hide();
+            $('#invoiceModal').modal('hide');
+        });
+    }
+    
+    // Re-initialize when modal is shown
+    $('#invoiceModal').on('shown.bs.modal', function () {
+        initInvoiceTable();
     });
-
-    // row click to fill form
-    $('#invoiceTable2 tbody').on('click', 'tr', function () {
-        var data = table.row(this).data();
-        if (!data) return;
-
-        $('#invoice_id').val(data.id);
-        $('#invoice_no').val(data.invoice_no);
-        $('#invoice_date').val(data.invoice_date);
-        $('#department_id').val(data.department_id).trigger('change');
-        $('#customer_id').val(data.customer_id).trigger('change');
-        $('#sale_type').val(data.sale_type).trigger('change');
-        $('#discount_type').val(data.discount_type).trigger('change');
-        $('#payment_type').val(data.payment_type).trigger('change');
-        $('#sub_total').val(data.sub_total);
-        $('#discount').val(data.discount);
-        $('#tax').val(data.tax);
-        $('#grand_total').val(data.grand_total);
-        $('#remark').val(data.remark);
-
-        $("#create").hide();
-        $('#invoiceModal').modal('hide');
-    });
+    
 
 
 

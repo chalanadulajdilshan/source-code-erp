@@ -1,4 +1,4 @@
-<div id="brandModal" class="modal fade bs-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="brandModalLabel" aria-hidden="true">
+<div id="item_master" class="modal fade  " tabindex="-1" role="dialog" aria-labelledby="brandModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">

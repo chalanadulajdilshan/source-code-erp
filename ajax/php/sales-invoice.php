@@ -42,7 +42,7 @@ if (isset($_POST['create'])) {
     $SALES_INVOICE->invoice_no = $invoiceId;
     $SALES_INVOICE->invoice_date = date("Y-m-d H:i:s");
     $SALES_INVOICE->company_id = $_POST['company_id'];
-    $SALES_INVOICE->customer_id = $_POST['customer_code'];
+    $SALES_INVOICE->customer_id = $_POST['customer_id'];
     $SALES_INVOICE->department_id = $_POST['department_id'];
     $SALES_INVOICE->sale_type = $_POST['sales_type'];
     $SALES_INVOICE->discount_type = $paymentType;
@@ -133,14 +133,13 @@ if (isset($_POST['update'])) {
 }
 
  
- 
-if (isset($_POST['filter'])) {
- 
 
+if (isset($_POST['filter'])) {
+  
     $SALES_INVOICE = new SalesInvoice();
     $response = $SALES_INVOICE->fetchInvoicesForDataTable($_REQUEST);
 
-
+ 
     echo json_encode($response);
     exit;  
 }

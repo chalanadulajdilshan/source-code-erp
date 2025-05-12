@@ -8,7 +8,7 @@ include 'auth.php';
 <head>
 
     <meta charset="utf-8" />
-    <title>Horizontal Layout | Minible - Admin & Dashboard Template</title>
+    <title>Brand Master | <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="#" name="description" />
     <meta content="Themesbrand" name="author" />
@@ -139,8 +139,8 @@ include 'auth.php';
                                                             placeholder="Enter Brand Name">
                                                         <button class="btn btn-info" type="button"
                                                             data-bs-toggle="modal"
-                                                            data-bs-target=".bs-example-modal-xl">
-                                                            <i class="uil uil-search me-1"></i> Find Brand
+                                                            data-bs-target="#brand_master">
+                                                            <i class="uil uil-search me-1"></i>  
                                                         </button>
                                                     </div>
                                                 </div>
@@ -194,7 +194,7 @@ include 'auth.php';
     </div>
 
     <!-- model start here -->
-    <div class="modal fade bs-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="brandModalLabel"
+    <div class="modal fade " id="brand_master" tabindex="-1" role="dialog" aria-labelledby="brandModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
