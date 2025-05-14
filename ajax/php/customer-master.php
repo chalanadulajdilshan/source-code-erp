@@ -95,6 +95,10 @@ if (isset($_POST['filter'])) {
     $CUSTOMER_MASTER = new CustomerMaster();
     $response = $CUSTOMER_MASTER->fetchForDataTable($_REQUEST);
 
+    if (isset($_POST['supplier_only']) && $_POST['supplier_only'] && isset($_POST['category'])) {
+        // The filtering will be handled by the fetchForDataTable method
+    }
+     $response = $CUSTOMER_MASTER->fetchForDataTable($_REQUEST);
     echo json_encode($response);
     exit;
 }
