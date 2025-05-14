@@ -36,10 +36,14 @@ include_once(dirname(__FILE__) . '/VatType.php');
 include_once(dirname(__FILE__) . '/LabourMaster.php');
 include_once(dirname(__FILE__) . '/LabourType.php'); 
 include_once(dirname(__FILE__) . '/ExpenseTypeMaster.php');
+include_once(dirname(__FILE__) . '/SubCategoryMaster.php');
 include_once(dirname(__FILE__) . '/BeltMaster.php');
 include_once(dirname(__FILE__) . '/DesignMaster.php');
 include_once(dirname(__FILE__) . '/VehicleBrand.php');
-
+include_once(dirname(__FILE__) . '/VehicleModel.php');
+include_once(dirname(__FILE__) . '/InvoiceRemark.php');
+include_once(dirname(__FILE__) . '/DiscountType.php');
+include_once(dirname(__FILE__) . '/SupplierDiscount.php');
 
 function dd($data) {
 
