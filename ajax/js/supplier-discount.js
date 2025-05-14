@@ -298,8 +298,8 @@ jQuery(document).ready(function () {
     });
   });
   
-  $(document).on('click', '#customerTable tbody tr', function () {
-    var table = $('#customerTable').DataTable();
+  $(document).on('click', '#supplierTable tbody tr', function () {
+    var table = $('#supplierTable').DataTable();
     var data = table.row(this).data();
     if (!data) return;
 
@@ -308,17 +308,17 @@ jQuery(document).ready(function () {
     $('#name').val(data.name);
 
     // Close the modal
-    $('#customerModal').modal('hide');
+    $('#supplierModal').modal('hide');
 });
   
 jQuery(document).ready(function () {
 
    
-    var table = $('#customerTable').DataTable({
+    var table = $('#supplierTable').DataTable({
         processing: true,
         serverSide: true,
         ajax: {
-            url: "ajax/php/customer-master.php",
+            url: "ajax/php/supplier-discount.php",
             type: "POST",
             data: function (d) {
                 d.filter = true;
@@ -347,25 +347,4 @@ jQuery(document).ready(function () {
         order: [[0, 'desc']],
         pageLength: 100
     });
-
-    $('#customerTable tbody').on('click', 'tr', function () {
-        var data = table.row(this).data();
-        if (!data) return;
-
-        // Fill form fields
-        $('#suplier_id').val(data.code);  
-        $('#name').val(data.name);       
-
-        // Hide modal if open
-        $('.bs-example-modal-xl').modal('hide');
-    });
- 
-    // Click outside to close the dropdown if it's open
-    $(document).click(function (e) {
-        if (!$(e.target).closest("#customer_code").length) {
-            $("#customerList").hide();
-        }
-    });
-    
-
 });

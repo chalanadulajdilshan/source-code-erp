@@ -80,4 +80,31 @@ if (isset($_POST['delete']) && isset($_POST['id'])) {
     }
 }
 
+if (isset($_POST['filter'])) {
+
+
+    $SUPLIER_DISCOUNT = new SuplierDiscount();
+    $response = $SUPLIER_DISCOUNT->fetchForDataTable($_REQUEST);
+        if (isset($_POST['supplier_only']) && $_POST['supplier_only'] && isset($_POST['category'])) {
+        // The filtering will be handled by the fetchForDataTable method
+    }
+     $response = $SUPLIER_DISCOUNT->fetchForDataTable($_REQUEST);
+    echo json_encode($response);
+    exit;
+}
+
+// search by supplier
+if (isset($_POST['query'])) {
+    $search = $_POST['query'];
+
+    $SUPLIER_DISCOUNT = new SuplierDiscount();
+    $supplier = $SUPLIER_DISCOUNT->searchCustomers($search);
+
+    if ($supplier) {
+        echo json_encode($supplier);  // Return the customers as a JSON string
+    } else {
+        echo json_encode([]);  // Return an empty array if no customers are found
+    }
+    exit;
+}
 ?>

@@ -87,21 +87,16 @@ if (isset($_POST['delete']) && isset($_POST['id'])) {
     } else {
         echo json_encode(['status' => 'error']);
     }
+    exit; // Add exit here to prevent further execution
 }
 
 if (isset($_POST['filter'])) {
-
-
     $CUSTOMER_MASTER = new CustomerMaster();
     $response = $CUSTOMER_MASTER->fetchForDataTable($_REQUEST);
-
-    if (isset($_POST['supplier_only']) && $_POST['supplier_only'] && isset($_POST['category'])) {
-        // The filtering will be handled by the fetchForDataTable method
-    }
-     $response = $CUSTOMER_MASTER->fetchForDataTable($_REQUEST);
     echo json_encode($response);
     exit;
 }
+
 // search by customer
 if (isset($_POST['query'])) {
     $search = $_POST['query'];
@@ -117,8 +112,8 @@ if (isset($_POST['query'])) {
     exit;
 }
 
-
-if ($_POST['action'] == 'get_first_customer') {
+// Make sure to use isset() before accessing $_POST['action']
+if (isset($_POST['action']) && $_POST['action'] == 'get_first_customer') {
     $CUSTOMER = new CustomerMaster(1); // Fetch customer with ID 1
 
     $response = [
@@ -131,14 +126,7 @@ if ($_POST['action'] == 'get_first_customer') {
         "email" => $CUSTOMER->email ?? ''
     ];
 
-
-
     echo json_encode($response);
     exit;
 }
-
-
-
-
-
 ?>
