@@ -177,7 +177,7 @@ $customer_id = 'CM00' . $lastId + 1;
                                                             placeholder="Select Code" class="form-control" readonly>
                                                         <button class="btn btn-info" type="button"
                                                             data-bs-toggle="modal"
-                                                            data-bs-target="#customerModal">
+                                                            data-bs-target="#supplierModal">
                                                             <i class="uil uil-search me-1"></i> Find
                                                         </button>
                                                     </div>
@@ -317,6 +317,8 @@ $customer_id = 'CM00' . $lastId + 1;
     </div><!-- /.modal-dialog -->
 </div>
 <!-- model close here -->
+
+<?php include 'supplier-master-model.php' ?>
 
     <!-- Right bar overlay-->
     <div class="rightbar-overlay"></div>

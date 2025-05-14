@@ -135,89 +135,71 @@ class CustomerMaster
         return $result['id'];
     }
 
-   public function fetchForDataTable($request)
+    public function fetchForDataTable($request)
     {
         $db = new Database();
-    
-        $start = isset($request['start']) ? (int)$request['start'] : 0;
-        $length = isset($request['length']) ? (int)$request['length'] : 100;
-        $search = $request['search']['value'] ?? '';
-    
-        $where = "WHERE 1=1";
-        
-        // Filter by category if specified (for supplier-only filter)
-        if (isset($request['supplier_only']) && $request['supplier_only'] && 
-            isset($request['category']) && is_array($request['category'])) {
-            $categories = implode(',', array_map('intval', $request['category']));
-            $where .= " AND category IN ($categories)";
-        }
-    
-        // Search filter
-        if (!empty($search)) {
-            $where .= " AND (name LIKE '%$search%' OR code LIKE '%$search%' OR mobile_number LIKE '%$search%')";
-        }
-    
-        // Status filter if provided
-        if (isset($request['status'])) {
-            if ($request['status'] === 'active' || $request['status'] === '1') {
-                $where .= " AND is_active = 1";
-            } elseif ($request['status'] === 'inactive' || $request['status'] === '0') {
-                $where .= " AND is_active = 0";
-            }
-        }
-    
+
+        $start = isset($request['start']) ? (int) $request['start'] : 0;
+        $length = isset($request['length']) ? (int) $request['length'] : 100;
+        $search = $request['search']['value'];
+
         // Total records
-        $totalSql = "SELECT COUNT(*) as total FROM customer_master";
+        $totalSql = "SELECT * FROM customer_master";
         $totalQuery = $db->readQuery($totalSql);
-        $totalData = mysqli_fetch_assoc($totalQuery)['total'];
-    
-        // Filtered records
-        $filteredSql = "SELECT COUNT(*) as filtered FROM customer_master $where";
-        $filteredQuery = $db->readQuery($filteredSql);
-        $filteredData = mysqli_fetch_assoc($filteredQuery)['filtered'];
-    
-        // Paginated query
-        $sql = "SELECT * FROM customer_master $where ORDER BY id DESC LIMIT $start, $length";
+        $totalData = mysqli_num_rows($totalQuery);
+
+        // Search filter
+        $sql = "SELECT * FROM customer_master WHERE id != 1  ";
+        if (!empty($search)) {
+            $sql .= "AND  name LIKE '%$search%' OR code LIKE '%$search%' OR mobile_number LIKE '%$search%'";
+        }
+
+        $filteredQuery = $db->readQuery($sql);
+        $filteredData = mysqli_num_rows($filteredQuery);
+
+        // Add pagination
+        $sql .= " LIMIT $start, $length";
         $dataQuery = $db->readQuery($sql);
-    
+
         $data = [];
-    
+
         while ($row = mysqli_fetch_assoc($dataQuery)) {
-            // Format category labels
-            $categoryLabel = '';
-            switch ($row['category']) {
-                case 1:
-                    $categoryLabel = 'Customer';
-                    break;
-                case 2:
-                    $categoryLabel = 'Supplier';
-                    break;
-                case 3:
-                    $categoryLabel = 'Both';
-                    break;
-                default:
-                    $categoryLabel = 'Unknown';
-            }
-            
+            $CATEGORY = new CustomerCategory($row['category']);
+            $PROVINCE = new Province($row['province']);
+            $DISTRICT = new District($row['district']);
+
             $nestedData = [
                 "id" => $row['id'],
                 "code" => $row['code'],
                 "name" => $row['name'],
+                "address" => $row['address'],
                 "mobile_number" => $row['mobile_number'],
+                "mobile_number_2" => $row['mobile_number_2'],
                 "email" => $row['email'],
-                "category" => $categoryLabel,
-                "province" => $row['province'] ?? '',
-                "credit_limit" => $row['credit_limit'] ?? '0',
-                "vat_no" => $row['vat_no'] ?? '',
+                "contact_person" => $row['contact_person'],
+                "contact_person_number" => $row['contact_person_number'],
+                "credit_limit" => number_format($row['credit_limit'], 2),
+                "outstanding" => number_format($row['outstanding'], 2),
+                "overdue" => number_format($row['overdue'], 2),
+                "vat_no" => $row['vat_no'],
+                "svat_no" => $row['svat_no'],
+                "category_id" => $row['category'],
+                "category" => $CATEGORY->name,
+                "province_id" => $row['province'],
+                "province" => $PROVINCE->name,
+                "district_id" => $row['district'],
+                "district" => $DISTRICT->name,
+                "vat_group" => $row['vat_group'],
+                "remark" => $row['remark'],
                 "status" => $row['is_active'],
                 "status_label" => $row['is_active'] == 1
                     ? '<span class="badge bg-soft-success font-size-12">Active</span>'
                     : '<span class="badge bg-soft-danger font-size-12">Inactive</span>'
             ];
-    
+
             $data[] = $nestedData;
         }
-    
+
         return [
             "draw" => intval($request['draw']),
             "recordsTotal" => intval($totalData),

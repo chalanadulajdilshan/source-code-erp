@@ -113,55 +113,72 @@ class SuplierDiscount
         $length = isset($request['length']) ? (int)$request['length'] : 100;
         $search = $request['search']['value'] ?? '';
     
-        $status = $request['status'] ?? null;
-        $stockOnly = isset($request['stock_only']) ? filter_var($request['stock_only'], FILTER_VALIDATE_BOOLEAN) : false;
-    
         $where = "WHERE 1=1";
+        
+        // Filter by category if specified (for supplier-only filter)
+        if (isset($request['supplier_only']) && $request['supplier_only'] && 
+            isset($request['category']) && is_array($request['category'])) {
+            $categories = implode(',', array_map('intval', $request['category']));
+            $where .= " AND category IN ($categories)";
+        }
     
         // Search filter
         if (!empty($search)) {
-            $where .= " AND (name LIKE '%$search%' OR code LIKE '%$search%')";
+            $where .= " AND (name LIKE '%$search%' OR code LIKE '%$search%' OR mobile_number LIKE '%$search%')";
         }
     
-        // Status filter
-        if (!empty($status)) {
-            if ($status === 'active' || $status === '1' || $status === 1) {
+        // Status filter if provided
+        if (isset($request['status'])) {
+            if ($request['status'] === 'active' || $request['status'] === '1') {
                 $where .= " AND is_active = 1";
-            } elseif ($status === 'inactive' || $status === '0' || $status === 0) {
+            } elseif ($request['status'] === 'inactive' || $request['status'] === '0') {
                 $where .= " AND is_active = 0";
             }
         }
     
         // Total records
-        $totalSql = "SELECT * FROM suplier_discount";
+        $totalSql = "SELECT COUNT(*) as total FROM customer_master";
         $totalQuery = $db->readQuery($totalSql);
-        $totalData = mysqli_num_rows($totalQuery);
+        $totalData = mysqli_fetch_assoc($totalQuery)['total'];
     
         // Filtered records
-        $filteredSql = "SELECT * FROM suplier_discount $where";
+        $filteredSql = "SELECT COUNT(*) as filtered FROM customer_master $where";
         $filteredQuery = $db->readQuery($filteredSql);
-        $filteredData = mysqli_num_rows($filteredQuery);
+        $filteredData = mysqli_fetch_assoc($filteredQuery)['filtered'];
     
         // Paginated query
-        $sql = "$filteredSql LIMIT $start, $length";
+        $sql = "SELECT * FROM customer_master $where ORDER BY id DESC LIMIT $start, $length";
         $dataQuery = $db->readQuery($sql);
     
         $data = [];
     
         while ($row = mysqli_fetch_assoc($dataQuery)) {
-            $DISCOUNT_TYPE = new DiscountType($row['discount_id']);
-            $SUPLIER = new CustomerMaster($row['name']);
-            $BRAND = new Brand($row['brand_id']);
-    
+            // Format category labels
+            $categoryLabel = '';
+            switch ($row['category']) {
+                case 1:
+                    $categoryLabel = 'Customer';
+                    break;
+                case 2:
+                    $categoryLabel = 'Supplier';
+                    break;
+                case 3:
+                    $categoryLabel = 'Both';
+                    break;
+                default:
+                    $categoryLabel = 'Unknown';
+            }
+            
             $nestedData = [
                 "id" => $row['id'],
                 "code" => $row['code'],
-                "date" => $row['date'],
-                "discount_id" => $row['discount_id'],
-                "suplier_id" => $row['suplier_id'],
                 "name" => $row['name'],
-                "brand_id" => $row['nambrand_ide'],
-                "discount" => $row['discount'],
+                "mobile_number" => $row['mobile_number'],
+                "email" => $row['email'],
+                "category" => $categoryLabel,
+                "province" => $row['province'] ?? '',
+                "credit_limit" => $row['credit_limit'] ?? '0',
+                "vat_no" => $row['vat_no'] ?? '',
                 "status" => $row['is_active'],
                 "status_label" => $row['is_active'] == 1
                     ? '<span class="badge bg-soft-success font-size-12">Active</span>'
