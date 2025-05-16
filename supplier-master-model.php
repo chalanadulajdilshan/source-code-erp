@@ -1,5 +1,7 @@
+ 
 <!-- Supplier Modal -->
 <div id="supplierModal" class="modal fade supplier-modal" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+ 
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
@@ -30,5 +32,6 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> 
 </div>
+ 

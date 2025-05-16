@@ -78,7 +78,7 @@ jQuery(document).ready(function () {
     return false;
   });
 
-  // Update Page
+  // Update category
   $("#update").click(function (event) {
     event.preventDefault();
 
@@ -158,7 +158,7 @@ jQuery(document).ready(function () {
     return false;
   });
 
-  // Delete Payment Type
+  // Delete category Type
   $(document).on("click", ".delete-sub-category", function (e) {
     e.preventDefault();
 

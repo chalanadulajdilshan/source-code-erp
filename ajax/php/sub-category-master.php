@@ -3,10 +3,10 @@
 include '../../class/include.php';
 header('Content-Type: application/json; charset=UTF8');
 
-// Create a new Expense Type
+// Create a new category Type
 if (isset($_POST['create'])) {
 
-    $SUBCATEGORY = new Subcategory(NULL); // Create a new Expense Type
+    $SUBCATEGORY = new Subcategory(NULL); // Create a new category Type
 
     // Set the Expense Type details
     $SUBCATEGORY->code = $_POST['code'];
@@ -14,7 +14,7 @@ if (isset($_POST['create'])) {
     $SUBCATEGORY->name = $_POST['name'];
     $SUBCATEGORY->is_active = isset($_POST['is_active']) ? 1 : 0;
 
-    // Attempt to create the Expense Type
+    // Attempt to create the category Type
     $res = $SUBCATEGORY->create();
 
     if ($res) {
@@ -32,18 +32,18 @@ if (isset($_POST['create'])) {
     }
 }
 
-// Update Expense Type details
+// Update category Type details
 if (isset($_POST['update'])) {
 
-    $SUBCATEGORY = new Subcategory($_POST['id']); // Retrieve Expense Type by ID
+    $SUBCATEGORY = new Subcategory($_POST['id']); // Retrieve category Type by ID
 
-    // Update Expense Type details
+    // Update category Type details
     $SUBCATEGORY->code = $_POST['code'];
     $SUBCATEGORY->category_id = $_POST['category_id'];
     $SUBCATEGORY->name = $_POST['name'];
     $SUBCATEGORY->is_active = isset($_POST['is_active']) ? 1 : 0;
 
-    // Attempt to update the Expense Type
+    // Attempt to update the category Type
     $result = $SUBCATEGORY->update();
 
     if ($result) {

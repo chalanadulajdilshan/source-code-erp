@@ -8,7 +8,7 @@ class Subcategory
     public $name;
     public $is_active;
 
-    // Constructor to initialize the Page object with an ID (fetch data from the DB)
+    // Constructor to initialize the category object with an ID (fetch data from the DB)
     public function __construct($id = null)
     {
         if ($id) {
@@ -26,7 +26,7 @@ class Subcategory
         }
     }
 
-    // Create a new page record in the database
+    // Create a new category record in the database
     public function create()
     {
         $query = "INSERT INTO `sub_categroy` (`code`, `category_id`, `name`, `is_active`) VALUES (
@@ -44,7 +44,7 @@ class Subcategory
         }
     }
 
-    // Update an existing page record
+    // Update an existing category record
     public function update()
     {
         $query = "UPDATE `sub_categroy` SET 
@@ -63,7 +63,7 @@ class Subcategory
         }
     }
 
-    // Delete a page record by ID
+    // Delete a category record by ID
     public function delete()
     {
         $query = "DELETE FROM `sub_categroy` WHERE `id` = " . (int) $this->id;
@@ -71,7 +71,7 @@ class Subcategory
         return $db->readQuery($query);
     }
 
-    // Retrieve all page records
+    // Retrieve all category records
     public function all()
     {
         $query = "SELECT * FROM `sub_categroy` ORDER BY `code` ASC";
