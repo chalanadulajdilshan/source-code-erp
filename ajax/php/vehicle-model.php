@@ -3,18 +3,18 @@
 include '../../class/include.php';
 header('Content-Type: application/json; charset=UTF8');
 
-// Create a new belt Type
+// Create a new  Vehicle Brand
 if (isset($_POST['create'])) {
 
-    $BELT = new BeltMaster(NULL); // Create a new belt Type
+    $MODEL = new VehicleModel(NULL); // Create a new Vehicle Brand
 
-    // Set the belt Type details
-    $BELT->code = $_POST['code'];
-    $BELT->name = $_POST['name'];
-    $BELT->is_active = isset($_POST['is_active']) ? 1 : 0;
+    // Set the Vehicle Brand details
+    $MODEL->code = $_POST['code'];
+    $MODEL->brand_id = $_POST['brand_id'];
+    $MODEL->name = $_POST['name'];
 
-    // Attempt to create the belt Type
-    $res = $BELT->create();
+    // Attempt to create the Vehicle Brand
+    $res = $MODEL->create();
 
     if ($res) {
         $result = [
@@ -31,18 +31,18 @@ if (isset($_POST['create'])) {
     }
 }
 
-// Update belt Type details
+// Update Vehicle Brand details
 if (isset($_POST['update'])) {
 
-    $BELT = new BeltMaster($_POST['id']); // Retrieve belt Type by ID
+    $MODEL = new VehicleModel($_POST['id']); // Retrieve Vehicle Brand by ID
 
-    // Update belt Type details
-    $BELT->code = $_POST['code'];
-    $BELT->name = $_POST['name'];
-    $BELT->is_active = isset($_POST['is_active']) ? 1 : 0;
+    // Update Vehicle Brand details
+    $MODEL->code = $_POST['code'];
+    $MODEL->brand_id = $_POST['brand_id'];
+    $MODEL->name = $_POST['name'];
 
-    // Attempt to update the belt Type
-    $result = $BELT->update();
+    // Attempt to update the Vehicle Brand
+    $result = $MODEL->update();
 
     if ($result) {
         $result = [
@@ -60,8 +60,8 @@ if (isset($_POST['update'])) {
 }
 
 if (isset($_POST['delete']) && isset($_POST['id'])) {
-    $belt = new BeltMaster($_POST['id']);
-    $result = $belt->delete(); // Make sure this method exists
+    $MODEL = new VehicleModel($_POST['id']);
+    $result = $MODEL->delete(); // Make sure this method exists
 
     if ($result) {
         echo json_encode(['status' => 'success']);

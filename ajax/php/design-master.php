@@ -3,18 +3,18 @@
 include '../../class/include.php';
 header('Content-Type: application/json; charset=UTF8');
 
-// Create a new belt Type
+// Create a new Design Type
 if (isset($_POST['create'])) {
 
-    $BELT = new BeltMaster(NULL); // Create a new belt Type
+    $DESIGN = new DesignMaster(NULL); // Create a new Design Type
 
-    // Set the belt Type details
-    $BELT->code = $_POST['code'];
-    $BELT->name = $_POST['name'];
-    $BELT->is_active = isset($_POST['is_active']) ? 1 : 0;
+    // Set the Design Type details
+    $DESIGN->code = $_POST['code'];
+    $DESIGN->name = $_POST['name'];
+    $DESIGN->is_active = isset($_POST['is_active']) ? 1 : 0;
 
-    // Attempt to create the belt Type
-    $res = $BELT->create();
+    // Attempt to create the Design Type
+    $res = $DESIGN->create();
 
     if ($res) {
         $result = [
@@ -31,18 +31,18 @@ if (isset($_POST['create'])) {
     }
 }
 
-// Update belt Type details
+// Update Design Type details
 if (isset($_POST['update'])) {
 
-    $BELT = new BeltMaster($_POST['id']); // Retrieve belt Type by ID
+    $DESIGN = new DesignMaster($_POST['id']); // Retrieve Design Type by ID
 
-    // Update belt Type details
-    $BELT->code = $_POST['code'];
-    $BELT->name = $_POST['name'];
-    $BELT->is_active = isset($_POST['is_active']) ? 1 : 0;
+    // Update Design Type details
+    $DESIGN->code = $_POST['code'];
+    $DESIGN->name = $_POST['name'];
+    $DESIGN->is_active = isset($_POST['is_active']) ? 1 : 0;
 
-    // Attempt to update the belt Type
-    $result = $BELT->update();
+    // Attempt to update the Design Type
+    $result = $DESIGN->update();
 
     if ($result) {
         $result = [
@@ -60,8 +60,8 @@ if (isset($_POST['update'])) {
 }
 
 if (isset($_POST['delete']) && isset($_POST['id'])) {
-    $belt = new BeltMaster($_POST['id']);
-    $result = $belt->delete(); // Make sure this method exists
+    $design = new DesignMaster($_POST['id']);
+    $result = $design->delete(); // Make sure this method exists
 
     if ($result) {
         echo json_encode(['status' => 'success']);

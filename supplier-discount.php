@@ -1,12 +1,18 @@
 <!doctype html>
 <?php
 include 'class/include.php';
+include 'customer-master-model.php';
 
-$BELT_MASTER = new BeltMaster();
+$SUPLIER_DISCOUNT = new SuplierDiscount();
+$CUSTOMER_MASTER = new CustomerMaster(NULL);
 
 // Get the last inserted package id
-$lastId = $BELT_MASTER->getLastID();
-$belt_id = 'BM00' . $lastId + 1;
+$lastId = $SUPLIER_DISCOUNT->getLastID();
+$discount_id = 'SD00' . $lastId + 1;
+
+// Get the last inserted package id
+$lastId = $CUSTOMER_MASTER->getLastID();
+$customer_id = 'CM00' . $lastId + 1;
 
 ?>
 <html lang="en">
@@ -68,7 +74,7 @@ $belt_id = 'BM00' . $lastId + 1;
                             <a href="#" class="btn btn-warning" id="update">
                                 <i class="uil uil-edit me-1"></i> Update
                             </a>
-                            <a href="#" class="btn btn-danger delete-belt-master">
+                            <a href="#" class="btn btn-danger delete-discount-model">
                                 <i class="uil uil-trash-alt me-1"></i> Delete
                             </a>
 
@@ -77,7 +83,7 @@ $belt_id = 'BM00' . $lastId + 1;
                         <div class="col-md-4 text-md-end text-start mt-3 mt-md-0">
                             <ol class="breadcrumb m-0 justify-content-md-end">
                                 <li class="breadcrumb-item"><a href="javascript: void(0);">Dashboard</a></li>
-                                <li class="breadcrumb-item active">BELT MASTER</li>
+                                <li class="breadcrumb-item active">SUPPLIER DISCOUNT</li>
                             </ol>
                         </div>
                     </div>
@@ -99,7 +105,7 @@ $belt_id = 'BM00' . $lastId + 1;
                                             </div>
                                         </div>
                                         <div class="flex-grow-1 overflow-hidden">
-                                            <h5 class="font-size-16 mb-1">Belt Master</h5>
+                                            <h5 class="font-size-16 mb-1">Supplier Discount</h5>
                                             <p class="text-muted text-truncate mb-0">Fill all information below</p>
                                         </div>
                                         <div class="flex-shrink-0">
@@ -115,38 +121,107 @@ $belt_id = 'BM00' . $lastId + 1;
                                         <div class="row">
  
                                          
-                                            <div class="col-md-2">
+                                            <div class="col-md-3">
                                                     <label class="form-label" for="code">Ref No </label>
                                                     <div class="input-group mb-3">
-                                                        <input id="code" name="code" type="text" value="<?php echo $belt_id; ?>"
+                                                        <input id="code" name="code" type="text" value="<?php echo $discount_id; ?>"
                                                             placeholder="Ref No" class="form-control" readonly>
                                                         <button class="btn btn-info" type="button"
                                                             data-bs-toggle="modal"
-                                                            data-bs-target="#beltModel">
+                                                            data-bs-target="#discountModel">
                                                             <i class="uil uil-search me-1"></i> Find
                                                         </button>
                                                     </div>
                                                 </div>
 
-                                            <div class="col-md-2">
-                                                <label for="name" class="form-label">Belt Name</label>
-                                                <div class="input-group mb-3">
-                                                    <input id="name" name="name" type="text"
-                                                    placeholder="Enter Name" class="form-control">
+                                                <div class="col-md-3">
+                                                    <label class="form-label" for="date">Date</label>
+                                                    <input id="date" name="date" type="date"
+                                                        class="form-control">
                                                 </div>
-                                            </div>
 
-                                            <div class="col-md-1 d-flex justify-content-center align-items-center">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="is_active"
-                                                        name="is_active">
-                                                    <label class="form-check-label" for="is_active">
-                                                        Active
-                                                    </label>
+ 
+                                                <div class="col-md-3">
+                                                    <label for="discount_id" class="form-label">Discount Types <span
+                                                            class="text-danger">*</span></label>
+                                                    <select id="discount_id" name="discount_id" class="form-select"
+                                                        required>
+
+                                                        <?php
+                                                        $DISCOUNT_TYPE = new DiscountType(NULL);
+                                                        foreach ($DISCOUNT_TYPE->all() as $discount_type) {
+                                                            ?>
+                                                            <option value="<?php echo $discount_type['id']; ?>">
+                                                                <?php echo $discount_type['name']; ?>
+                                                            </option>
+                                                        <?php } ?>
+                                                    </select>
+                                                </div>
+
+
+                                                <div class="col-md-1 d-flex justify-content-center align-items-center">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="is_active"
+                                                            name="is_active">
+                                                        <label class="form-check-label" for="is_active">
+                                                            Active
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                    
+
+                                                <div class="col-md-3">
+                                                    <label class="form-label" for="suplier_id">Supplier </label>
+                                                    <div class="input-group mb-3">
+                                                        <input id="suplier_id" name="suplier_id" type="text"
+                                                            placeholder="Select Code" class="form-control" readonly>
+                                                        <button class="btn btn-info" type="button"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#supplierModal">
+                                                            <i class="uil uil-search me-1"></i> Find
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <label for="suplierName" class="form-label">Supplier Name</label>
+                                                    <div class="input-group mb-3">
+                                                        <input id="name" name="name" type="text"
+                                                            class="form-control" placeholder="Select Name"
+                                                            readonly>
+                                                    </div>
+                                                </div>
+                                            
+                                                <div class="col-md-3">
+                                                    <label for="brand_id" class="form-label">Brand <span
+                                                            class="text-danger">*</span></label>
+                                                    <select id="brand_id" name="brand_id" class="form-select"
+                                                        required>
+
+                                                        <?php
+                                                        $BRAND = new Brand(NULL);
+                                                        foreach ($BRAND->all() as $brand) {
+                                                            ?>
+                                                            <option value="<?php echo $brand['id']; ?>">
+                                                                <?php echo $brand['name']; ?>
+                                                            </option>
+                                                        <?php } ?>
+                                                    </select>
+                                                </div>
+
+
+                                            <div class="col-md-3">
+                                                <label for="discount" class="form-label">Discount</label>
+                                                <div class="input-group mb-3">
+                                                    <input id="discount" name="discount" type="text"
+                                                    placeholder="Enter Discount" class="form-control">
                                                 </div>
                                             </div>
                                             
                                         </div>
+                                            
+                                        </div>
+                                        
                                         <input type="hidden" id="id" name="id" value="0">
                                         
                                     </form>
@@ -164,12 +239,12 @@ $belt_id = 'BM00' . $lastId + 1;
     
   
 <!-- model open here -->
-<div class="modal fade bs-example-modal-xl" id="beltModel" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel"
+<div class="modal fade bs-example-modal-xl" id="discountModel" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="myExtraLargeModalLabel">Manage Belt Types</h5>
+                <h5 class="modal-title" id="myExtraLargeModalLabel">Manage Supplier Discount</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                 </button>
             </div>
@@ -184,30 +259,47 @@ $belt_id = 'BM00' . $lastId + 1;
                                 <tr>
                                     <th>#</th>
                                     <th>Ref No</th>
-                                    <th>Belt Name</th>
+                                    <th>Date</th>
+                                    <th>Discount Type</th>
+                                    <th>Supplier</th>
+                                    <th>Supplier Name</th>
+                                    <th>Brand</th>
+                                    <th>Discount</th>
                                     <th>Is Active</th>
 
                                 </tr>
                             </thead>
 
-
                             <tbody>
                                 <?php
-                                $BELT = new BeltMaster(null);
-                                foreach ($BELT->all() as $key => $belt) {
+                                $DISCOUNT = new SuplierDiscount(null);
+                                foreach ($DISCOUNT->all() as $key => $discount) {
                                     $key++;
+                                    $DISCOUNT_TYPE = new DiscountType($discount['discount_id']);
+                                    $SUPLIER = new CustomerMaster($discount['suplier_id']);
+                                    $BRAND = new Brand($discount['brand_id']);
                                     ?>
-                                    <tr class="select-belt" data-id="<?php echo $belt['id']; ?>"
-                                            data-code="<?php echo htmlspecialchars($belt['code']); ?>"
-                                            data-name="<?php echo htmlspecialchars($belt['name']); ?>"
-                                            data-is_active="<?php echo htmlspecialchars($belt['is_active']); ?>"
+                                    <tr class="select-model" data-id="<?php echo $discount['id']; ?>"
+                                            data-code="<?php echo htmlspecialchars($discount['code']); ?>"
+                                            data-date="<?php echo htmlspecialchars($discount['date']); ?>"
+                                            data-discount_id="<?php echo htmlspecialchars($discount['discount_id']); ?>"
+                                            data-suplier_id="<?php echo htmlspecialchars($discount['suplier_id']); ?>"
+                                            data-name="<?php echo htmlspecialchars($discount['name']); ?>"
+                                            data-brand_id="<?php echo htmlspecialchars($discount['brand_id']); ?>"
+                                            data-discount="<?php echo htmlspecialchars($discount['discount']); ?>"
+                                            data-is_active="<?php echo htmlspecialchars($discount['is_active']); ?>"
                                     >
 
                                     <td><?php echo $key; ?></td>
-                                            <td><?php echo htmlspecialchars($belt['code']); ?></td>
-                                            <td><?php echo htmlspecialchars($belt['name']); ?></td>
+                                            <td><?php echo htmlspecialchars($discount['code']); ?></td>
+                                            <td><?php echo htmlspecialchars($discount['date']); ?></td>
+                                            <td><?php echo htmlspecialchars($DISCOUNT_TYPE->name); ?></td>
+                                            <td><?php echo htmlspecialchars($discount['suplier_id']); ?></td>
+                                            <td><?php echo htmlspecialchars($discount['name']); ?></td>
+                                            <td><?php echo htmlspecialchars($BRAND->name); ?></td>
+                                            <td><?php echo htmlspecialchars($discount['discount']); ?></td>
                                             <td>
-                                                <?php if ($belt['is_active'] == 1): ?>
+                                                <?php if ($discount['is_active'] == 1): ?>
                                                     <span class="badge bg-soft-success font-size-12">Active</span>
                                                 <?php else: ?>
                                                     <span class="badge bg-soft-danger font-size-12">Inactive</span>
@@ -226,13 +318,15 @@ $belt_id = 'BM00' . $lastId + 1;
 </div>
 <!-- model close here -->
 
+<?php include 'supplier-master-model.php' ?>
+
     <!-- Right bar overlay-->
     <div class="rightbar-overlay"></div>
 
     <!-- JAVASCRIPT -->
     <script src="assets/libs/jquery/jquery.min.js"></script>
     <!-- /////////////////////////// -->
-    <script src="ajax/js/belt-master.js"></script>
+    <script src="ajax/js/supplier-discount.js"></script>
 
 
     <script src="assets/libs/sweetalert/sweetalert-dev.js"></script>

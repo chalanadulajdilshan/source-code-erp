@@ -2,11 +2,11 @@
 <?php
 include 'class/include.php';
 
-$BELT_MASTER = new BeltMaster();
+$INVOICE_REMARK = new InvoiceRemark();
 
 // Get the last inserted package id
-$lastId = $BELT_MASTER->getLastID();
-$belt_id = 'BM00' . $lastId + 1;
+$lastId = $INVOICE_REMARK->getLastID();
+$remark_id = 'IR00' . $lastId + 1;
 
 ?>
 <html lang="en">
@@ -68,7 +68,7 @@ $belt_id = 'BM00' . $lastId + 1;
                             <a href="#" class="btn btn-warning" id="update">
                                 <i class="uil uil-edit me-1"></i> Update
                             </a>
-                            <a href="#" class="btn btn-danger delete-belt-master">
+                            <a href="#" class="btn btn-danger delete-invoice-remark">
                                 <i class="uil uil-trash-alt me-1"></i> Delete
                             </a>
 
@@ -77,7 +77,7 @@ $belt_id = 'BM00' . $lastId + 1;
                         <div class="col-md-4 text-md-end text-start mt-3 mt-md-0">
                             <ol class="breadcrumb m-0 justify-content-md-end">
                                 <li class="breadcrumb-item"><a href="javascript: void(0);">Dashboard</a></li>
-                                <li class="breadcrumb-item active">BELT MASTER</li>
+                                <li class="breadcrumb-item active">INVOICE REMARK</li>
                             </ol>
                         </div>
                     </div>
@@ -98,8 +98,9 @@ $belt_id = 'BM00' . $lastId + 1;
                                                 </div>
                                             </div>
                                         </div>
+
                                         <div class="flex-grow-1 overflow-hidden">
-                                            <h5 class="font-size-16 mb-1">Belt Master</h5>
+                                            <h5 class="font-size-16 mb-1">Invoice Remark</h5>
                                             <p class="text-muted text-truncate mb-0">Fill all information below</p>
                                         </div>
                                         <div class="flex-shrink-0">
@@ -108,44 +109,40 @@ $belt_id = 'BM00' . $lastId + 1;
                                     </div>
 
                                 </div>
-
+                                    
                                 <div class="p-4">
 
                                     <form id="form-data" autocomplete="off">
-                                        <div class="row">
- 
-                                         
-                                            <div class="col-md-2">
-                                                    <label class="form-label" for="code">Ref No </label>
-                                                    <div class="input-group mb-3">
-                                                        <input id="code" name="code" type="text" value="<?php echo $belt_id; ?>"
-                                                            placeholder="Ref No" class="form-control" readonly>
-                                                        <button class="btn btn-info" type="button"
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target="#beltModel">
-                                                            <i class="uil uil-search me-1"></i> Find
-                                                        </button>
+                                            <form id="form-data" autocomplete="off">
+                                                <div class="row">
+                                                    <!-- Ref No Field -->
+                                                    <div class="col-md-2">
+                                                        <label class="form-label" for="code">Ref No</label>
+                                                        <div class="input-group align-items-start">
+                                                            <input id="code" name="code" type="text" value="<?php echo $remark_id; ?>" placeholder="Ref No" class="form-control" readonly>
+                                                            <button class="btn btn-info" type="button" data-bs-toggle="modal" data-bs-target="#remarkModel">
+                                                                <i class="uil uil-search me-1"></i> Find
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Remark Field  -->
+                                                    <div class="col-md-4">
+                                                        <label for="remark" class="form-label">Remark</label>
+                                                        <textarea id="remark" name="remark" placeholder="Enter remark" class="form-control" rows="4"></textarea>
+                                                    </div>
+
+                                                    <!-- Active Checkbox -->
+                                                    <div class="col-md-2 d-flex align-items-start pt-4">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" id="is_active" name="is_active">
+                                                            <label class="form-check-label" for="is_active">Active</label>
+                                                        </div>
                                                     </div>
                                                 </div>
 
-                                            <div class="col-md-2">
-                                                <label for="name" class="form-label">Belt Name</label>
-                                                <div class="input-group mb-3">
-                                                    <input id="name" name="name" type="text"
-                                                    placeholder="Enter Name" class="form-control">
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-1 d-flex justify-content-center align-items-center">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="is_active"
-                                                        name="is_active">
-                                                    <label class="form-check-label" for="is_active">
-                                                        Active
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            
+                                                <input type="hidden" id="id" name="id" value="0">
+                                            </form>
                                         </div>
                                         <input type="hidden" id="id" name="id" value="0">
                                         
@@ -164,12 +161,12 @@ $belt_id = 'BM00' . $lastId + 1;
     
   
 <!-- model open here -->
-<div class="modal fade bs-example-modal-xl" id="beltModel" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel"
+<div class="modal fade bs-example-modal-xl" id="remarkModel" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="myExtraLargeModalLabel">Manage Belt Types</h5>
+                <h5 class="modal-title" id="myExtraLargeModalLabel">Manage Invoice Remark</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                 </button>
             </div>
@@ -184,7 +181,7 @@ $belt_id = 'BM00' . $lastId + 1;
                                 <tr>
                                     <th>#</th>
                                     <th>Ref No</th>
-                                    <th>Belt Name</th>
+                                    <th>remark</th>
                                     <th>Is Active</th>
 
                                 </tr>
@@ -193,21 +190,22 @@ $belt_id = 'BM00' . $lastId + 1;
 
                             <tbody>
                                 <?php
-                                $BELT = new BeltMaster(null);
-                                foreach ($BELT->all() as $key => $belt) {
+                                $REMARK = new InvoiceRemark(null);
+                                foreach ($REMARK->all() as $key => $remark) {
                                     $key++;
                                     ?>
-                                    <tr class="select-belt" data-id="<?php echo $belt['id']; ?>"
-                                            data-code="<?php echo htmlspecialchars($belt['code']); ?>"
-                                            data-name="<?php echo htmlspecialchars($belt['name']); ?>"
-                                            data-is_active="<?php echo htmlspecialchars($belt['is_active']); ?>"
+                                    <tr class="select-remark" data-id="<?php echo $remark['id']; ?>"
+                                            data-code="<?php echo htmlspecialchars($remark['code']); ?>"
+                                            data-remark="<?php echo htmlspecialchars($remark['remark']); ?>"
+                                            data-queue="<?php echo htmlspecialchars($remark['queue']); ?>"
+                                            data-is_active="<?php echo htmlspecialchars($remark['is_active']); ?>"
                                     >
 
                                     <td><?php echo $key; ?></td>
-                                            <td><?php echo htmlspecialchars($belt['code']); ?></td>
-                                            <td><?php echo htmlspecialchars($belt['name']); ?></td>
+                                            <td><?php echo htmlspecialchars($remark['code']); ?></td>
+                                            <td><?php echo htmlspecialchars($remark['remark']); ?></td>
                                             <td>
-                                                <?php if ($belt['is_active'] == 1): ?>
+                                                <?php if ($remark['is_active'] == 1): ?>
                                                     <span class="badge bg-soft-success font-size-12">Active</span>
                                                 <?php else: ?>
                                                     <span class="badge bg-soft-danger font-size-12">Inactive</span>
@@ -232,7 +230,7 @@ $belt_id = 'BM00' . $lastId + 1;
     <!-- JAVASCRIPT -->
     <script src="assets/libs/jquery/jquery.min.js"></script>
     <!-- /////////////////////////// -->
-    <script src="ajax/js/belt-master.js"></script>
+    <script src="ajax/js/invoice-remark.js"></script>
 
 
     <script src="assets/libs/sweetalert/sweetalert-dev.js"></script>

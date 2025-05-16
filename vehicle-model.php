@@ -2,11 +2,11 @@
 <?php
 include 'class/include.php';
 
-$BELT_MASTER = new BeltMaster();
+$VEHICLE_MODEL = new VehicleModel();
 
 // Get the last inserted package id
-$lastId = $BELT_MASTER->getLastID();
-$belt_id = 'BM00' . $lastId + 1;
+$lastId = $VEHICLE_MODEL->getLastID();
+$vehiclemodel_id = 'VM00' . $lastId + 1;
 
 ?>
 <html lang="en">
@@ -68,7 +68,7 @@ $belt_id = 'BM00' . $lastId + 1;
                             <a href="#" class="btn btn-warning" id="update">
                                 <i class="uil uil-edit me-1"></i> Update
                             </a>
-                            <a href="#" class="btn btn-danger delete-belt-master">
+                            <a href="#" class="btn btn-danger delete-vehicle-model">
                                 <i class="uil uil-trash-alt me-1"></i> Delete
                             </a>
 
@@ -77,7 +77,7 @@ $belt_id = 'BM00' . $lastId + 1;
                         <div class="col-md-4 text-md-end text-start mt-3 mt-md-0">
                             <ol class="breadcrumb m-0 justify-content-md-end">
                                 <li class="breadcrumb-item"><a href="javascript: void(0);">Dashboard</a></li>
-                                <li class="breadcrumb-item active">BELT MASTER</li>
+                                <li class="breadcrumb-item active">VEHICLE MODEL</li>
                             </ol>
                         </div>
                     </div>
@@ -99,7 +99,7 @@ $belt_id = 'BM00' . $lastId + 1;
                                             </div>
                                         </div>
                                         <div class="flex-grow-1 overflow-hidden">
-                                            <h5 class="font-size-16 mb-1">Belt Master</h5>
+                                            <h5 class="font-size-16 mb-1">Vehicle Model</h5>
                                             <p class="text-muted text-truncate mb-0">Fill all information below</p>
                                         </div>
                                         <div class="flex-shrink-0">
@@ -118,31 +118,40 @@ $belt_id = 'BM00' . $lastId + 1;
                                             <div class="col-md-2">
                                                     <label class="form-label" for="code">Ref No </label>
                                                     <div class="input-group mb-3">
-                                                        <input id="code" name="code" type="text" value="<?php echo $belt_id; ?>"
+                                                        <input id="code" name="code" type="text" value="<?php echo $vehiclemodel_id; ?>"
                                                             placeholder="Ref No" class="form-control" readonly>
                                                         <button class="btn btn-info" type="button"
                                                             data-bs-toggle="modal"
-                                                            data-bs-target="#beltModel">
+                                                            data-bs-target="#vehicleModel">
                                                             <i class="uil uil-search me-1"></i> Find
                                                         </button>
                                                     </div>
                                                 </div>
+                                            
+                                                <!-- Vehicle Brand -->
+                                                <div class="col-md-4">
+                                                    <label for="brand_id" class="form-label">Vehicle Brand Name <span
+                                                            class="text-danger">*</span></label>
+                                                    <select id="brand_id" name="brand_id" class="form-select"
+                                                        required>
+
+                                                        <?php
+                                                        $VEHICLE_BRAND = new VehicleBrand(NULL);
+                                                        foreach ($VEHICLE_BRAND->all() as $vehicle_brand) {
+                                                            ?>
+                                                            <option value="<?php echo $vehicle_brand['id']; ?>">
+                                                                <?php echo $vehicle_brand['name']; ?>
+                                                            </option>
+                                                        <?php } ?>
+                                                    </select>
+                                                </div>
+
 
                                             <div class="col-md-2">
-                                                <label for="name" class="form-label">Belt Name</label>
+                                                <label for="name" class="form-label">Vehicle Model Name</label>
                                                 <div class="input-group mb-3">
                                                     <input id="name" name="name" type="text"
-                                                    placeholder="Enter Name" class="form-control">
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-1 d-flex justify-content-center align-items-center">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="is_active"
-                                                        name="is_active">
-                                                    <label class="form-check-label" for="is_active">
-                                                        Active
-                                                    </label>
+                                                    placeholder="Enter Vehicle Model Name" class="form-control">
                                                 </div>
                                             </div>
                                             
@@ -164,12 +173,12 @@ $belt_id = 'BM00' . $lastId + 1;
     
   
 <!-- model open here -->
-<div class="modal fade bs-example-modal-xl" id="beltModel" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel"
+<div class="modal fade bs-example-modal-xl" id="vehicleModel" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="myExtraLargeModalLabel">Manage Belt Types</h5>
+                <h5 class="modal-title" id="myExtraLargeModalLabel">Manage Vehicle Model</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                 </button>
             </div>
@@ -184,8 +193,8 @@ $belt_id = 'BM00' . $lastId + 1;
                                 <tr>
                                     <th>#</th>
                                     <th>Ref No</th>
-                                    <th>Belt Name</th>
-                                    <th>Is Active</th>
+                                    <th>Vehicle Brand Name</th>
+                                    <th>Vehicle Model Name</th>
 
                                 </tr>
                             </thead>
@@ -193,26 +202,21 @@ $belt_id = 'BM00' . $lastId + 1;
 
                             <tbody>
                                 <?php
-                                $BELT = new BeltMaster(null);
-                                foreach ($BELT->all() as $key => $belt) {
+                                $MODEL = new VehicleModel(null);
+                                foreach ($MODEL->all() as $key => $model) {
                                     $key++;
+                                     $BRAND = new VehicleBrand($model['brand_id']);
                                     ?>
-                                    <tr class="select-belt" data-id="<?php echo $belt['id']; ?>"
-                                            data-code="<?php echo htmlspecialchars($belt['code']); ?>"
-                                            data-name="<?php echo htmlspecialchars($belt['name']); ?>"
-                                            data-is_active="<?php echo htmlspecialchars($belt['is_active']); ?>"
+                                    <tr class="select-model" data-id="<?php echo $model['id']; ?>"
+                                            data-code="<?php echo htmlspecialchars($model['code']); ?>"
+                                            data-brand_id="<?php echo $model['brand_id']; ?>"
+                                            data-name="<?php echo htmlspecialchars($model['name']); ?>"
                                     >
 
                                     <td><?php echo $key; ?></td>
-                                            <td><?php echo htmlspecialchars($belt['code']); ?></td>
-                                            <td><?php echo htmlspecialchars($belt['name']); ?></td>
-                                            <td>
-                                                <?php if ($belt['is_active'] == 1): ?>
-                                                    <span class="badge bg-soft-success font-size-12">Active</span>
-                                                <?php else: ?>
-                                                    <span class="badge bg-soft-danger font-size-12">Inactive</span>
-                                                <?php endif; ?>
-                                            </td>
+                                            <td><?php echo htmlspecialchars($model['code']); ?></td>
+                                            <td><?php echo htmlspecialchars($BRAND->name); ?></td>
+                                            <td><?php echo htmlspecialchars($model['name']); ?></td>
                                     </tr>
 
                                 <?php } ?>
@@ -232,7 +236,7 @@ $belt_id = 'BM00' . $lastId + 1;
     <!-- JAVASCRIPT -->
     <script src="assets/libs/jquery/jquery.min.js"></script>
     <!-- /////////////////////////// -->
-    <script src="ajax/js/belt-master.js"></script>
+    <script src="ajax/js/vehicle-model.js"></script>
 
 
     <script src="assets/libs/sweetalert/sweetalert-dev.js"></script>

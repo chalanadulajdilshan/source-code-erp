@@ -126,12 +126,7 @@ jQuery(document).ready(function () {
         $("#create").show();
     });
 
-    // Open modal
-    $('#open-category-modal').click(function (e) {
-        e.preventDefault();
-        var myModal = new bootstrap.Modal(document.querySelector('.bs-example-modal-xl'));
-        myModal.show();
-    });
+   
 
     // Populate form from modal click
     $(document).on('click', '.select-category', function () {
@@ -148,7 +143,7 @@ jQuery(document).ready(function () {
         }
 
         $("#create").hide();
-        $('.bs-example-modal-xl').modal('hide');
+        $('#category_master').modal('hide');
     });
 
     // Delete Category

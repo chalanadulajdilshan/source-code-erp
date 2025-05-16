@@ -121,6 +121,9 @@ class SalesInvoice
 
     public function fetchInvoicesForDataTable($request)
 {
+
+   
+
     $db = new Database();
     $conn = $db->DB_CON;
 
@@ -149,6 +152,7 @@ class SalesInvoice
     // Paginated query
     $query = "SELECT * FROM sales_invoice $where ORDER BY invoice_date DESC LIMIT $start, $length";
      
+ 
 
     $result = $db->readQuery($query);
 
@@ -160,13 +164,15 @@ class SalesInvoice
         $DEPARTMENT = new DepartmentMaster($row['department_id']);
 
         $nestedData = [
-            "invoice_no"    => $row['invoice_no'],
-            "invoice_date"  => $row['invoice_date'],
-            "customer"      => $CUSTOMER->name ?? $row['customer_id'],
-            "department"    => $DEPARTMENT->name ?? $row['department_id'],
-            "grand_total"   => number_format($row['grand_total'], 2),
-            "remark"        => $row['remark']
+            "id"           => $row['id'], // Needed!
+            "invoice_no"   => $row['invoice_no'],
+            "invoice_date" => $row['invoice_date'],
+            "customer"     => $CUSTOMER->name ?? $row['customer_id'],
+            "department"   => $DEPARTMENT->name ?? $row['department_id'],
+            "grand_total"  => number_format($row['grand_total'], 2),
+            "remark"       => $row['remark']
         ];
+        
 
         $data[] = $nestedData;
     } 

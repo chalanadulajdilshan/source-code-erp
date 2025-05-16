@@ -2,11 +2,11 @@
 <?php
 include 'class/include.php';
 
-$BELT_MASTER = new BeltMaster();
+$DESIGN_MASTER = new DesignMaster();
 
 // Get the last inserted package id
-$lastId = $BELT_MASTER->getLastID();
-$belt_id = 'BM00' . $lastId + 1;
+$lastId = $DESIGN_MASTER->getLastID();
+$design_id = 'DM00' . $lastId + 1;
 
 ?>
 <html lang="en">
@@ -68,7 +68,7 @@ $belt_id = 'BM00' . $lastId + 1;
                             <a href="#" class="btn btn-warning" id="update">
                                 <i class="uil uil-edit me-1"></i> Update
                             </a>
-                            <a href="#" class="btn btn-danger delete-belt-master">
+                            <a href="#" class="btn btn-danger delete-design-master">
                                 <i class="uil uil-trash-alt me-1"></i> Delete
                             </a>
 
@@ -77,7 +77,7 @@ $belt_id = 'BM00' . $lastId + 1;
                         <div class="col-md-4 text-md-end text-start mt-3 mt-md-0">
                             <ol class="breadcrumb m-0 justify-content-md-end">
                                 <li class="breadcrumb-item"><a href="javascript: void(0);">Dashboard</a></li>
-                                <li class="breadcrumb-item active">BELT MASTER</li>
+                                <li class="breadcrumb-item active">DESIGN MASTER</li>
                             </ol>
                         </div>
                     </div>
@@ -99,7 +99,7 @@ $belt_id = 'BM00' . $lastId + 1;
                                             </div>
                                         </div>
                                         <div class="flex-grow-1 overflow-hidden">
-                                            <h5 class="font-size-16 mb-1">Belt Master</h5>
+                                            <h5 class="font-size-16 mb-1">Design Master</h5>
                                             <p class="text-muted text-truncate mb-0">Fill all information below</p>
                                         </div>
                                         <div class="flex-shrink-0">
@@ -114,22 +114,22 @@ $belt_id = 'BM00' . $lastId + 1;
                                     <form id="form-data" autocomplete="off">
                                         <div class="row">
  
-                                         
                                             <div class="col-md-2">
-                                                    <label class="form-label" for="code">Ref No </label>
-                                                    <div class="input-group mb-3">
-                                                        <input id="code" name="code" type="text" value="<?php echo $belt_id; ?>"
-                                                            placeholder="Ref No" class="form-control" readonly>
-                                                        <button class="btn btn-info" type="button"
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target="#beltModel">
-                                                            <i class="uil uil-search me-1"></i> Find
-                                                        </button>
-                                                    </div>
+                                                <label class="form-label" for="code">Ref No</label>
+                                                <div class="input-group mb-3">
+                                                <input id="code" name="code" type="text" value="<?php echo $design_id; ?>"
+                                                placeholder="Ref No" class="form-control" readonly>
+                                                
+                                                    <button class="btn btn-info" type="button"  data-bs-toggle="modal"
+                                                    data-bs-target="#designModel">
+                                                        <i class="uil uil-search me-1"></i> Find
+                                                    </button>
                                                 </div>
+                                            </div>
+
 
                                             <div class="col-md-2">
-                                                <label for="name" class="form-label">Belt Name</label>
+                                                <label for="name" class="form-label">Design Name</label>
                                                 <div class="input-group mb-3">
                                                     <input id="name" name="name" type="text"
                                                     placeholder="Enter Name" class="form-control">
@@ -156,75 +156,76 @@ $belt_id = 'BM00' . $lastId + 1;
                         </div>
                     </div>
                 </div> <!-- container-fluid -->
-            </div>  
+            </div>
+
+
             <?php include 'footer.php' ?>
 
-        </div> 
+        </div>
+        <!-- end main content-->
     </div>
-    
-  
-<!-- model open here -->
-<div class="modal fade bs-example-modal-xl" id="beltModel" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="myExtraLargeModalLabel">Manage Belt Types</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-12">
-  
+    <!-- END layout-wrapper -->
 
-                        <table id="datatable" class="table table-bordered dt-responsive nowrap"
-                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Ref No</th>
-                                    <th>Belt Name</th>
-                                    <th>Is Active</th>
+    <div class="modal fade bs-example-modal-xl" id="designModel" tabindex="-1" role="dialog" aria-labelledby="categoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
 
-                                </tr>
-                            </thead>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="categoryModalLabel">Manage Design Type</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
 
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
 
-                            <tbody>
+                            <table id="datatable" class="table table-bordered dt-responsive nowrap"
+                                style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Ref No</th>
+                                        <th>Design Name</th>
+                                        <th>Is Active</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
                                 <?php
-                                $BELT = new BeltMaster(null);
-                                foreach ($BELT->all() as $key => $belt) {
-                                    $key++;
-                                    ?>
-                                    <tr class="select-belt" data-id="<?php echo $belt['id']; ?>"
-                                            data-code="<?php echo htmlspecialchars($belt['code']); ?>"
-                                            data-name="<?php echo htmlspecialchars($belt['name']); ?>"
-                                            data-is_active="<?php echo htmlspecialchars($belt['is_active']); ?>"
-                                    >
+                                    $DESIGN = new DesignMaster(NULL);
+                                    foreach ($DESIGN->all() as $key => $design) {
+                                        $key++;
+                                        ?>
+                                        <tr class="select-design" data-id="<?php echo $design['id']; ?>"
+                                            data-code="<?php echo htmlspecialchars($design['code']); ?>"
+                                            data-name="<?php echo htmlspecialchars($design['name']); ?>"
+                                            data-is_active="<?php echo htmlspecialchars($design['is_active']); ?>"
+                                        >
 
-                                    <td><?php echo $key; ?></td>
-                                            <td><?php echo htmlspecialchars($belt['code']); ?></td>
-                                            <td><?php echo htmlspecialchars($belt['name']); ?></td>
+                                            <td><?php echo $key; ?></td>
+                                            <td><?php echo htmlspecialchars($design['code']); ?></td>
+                                            <td><?php echo htmlspecialchars($design['name']); ?></td>
                                             <td>
-                                                <?php if ($belt['is_active'] == 1): ?>
+                                                <?php if ($design['is_active'] == 1): ?>
                                                     <span class="badge bg-soft-success font-size-12">Active</span>
                                                 <?php else: ?>
                                                     <span class="badge bg-soft-danger font-size-12">Inactive</span>
                                                 <?php endif; ?>
                                             </td>
-                                    </tr>
+                                            
+                                        </tr>
+                                    <?php } ?>
+                                </tbody>
+                            </table>
 
-                                <?php } ?>
-                            </tbody>
-                        </table>
-                    </div> <!-- end col -->
-                </div> <!-- end row -->
-            </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div>
-<!-- model close here -->
+                        </div> <!-- end col -->
+                    </div> <!-- end row -->
+                </div>
+
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+
 
     <!-- Right bar overlay-->
     <div class="rightbar-overlay"></div>
@@ -232,7 +233,7 @@ $belt_id = 'BM00' . $lastId + 1;
     <!-- JAVASCRIPT -->
     <script src="assets/libs/jquery/jquery.min.js"></script>
     <!-- /////////////////////////// -->
-    <script src="ajax/js/belt-master.js"></script>
+    <script src="ajax/js/design-master.js"></script>
 
 
     <script src="assets/libs/sweetalert/sweetalert-dev.js"></script>

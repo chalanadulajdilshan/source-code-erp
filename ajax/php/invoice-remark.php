@@ -3,18 +3,18 @@
 include '../../class/include.php';
 header('Content-Type: application/json; charset=UTF8');
 
-// Create a new belt Type
+// Create a new invoice remark
 if (isset($_POST['create'])) {
 
-    $BELT = new BeltMaster(NULL); // Create a new belt Type
+    $REMARK = new InvoiceRemark(NULL); // Create a new invoice remark
 
     // Set the belt Type details
-    $BELT->code = $_POST['code'];
-    $BELT->name = $_POST['name'];
-    $BELT->is_active = isset($_POST['is_active']) ? 1 : 0;
+    $REMARK->code = $_POST['code'];
+    $REMARK->remark = $_POST['remark'];
+    $REMARK->is_active = isset($_POST['is_active']) ? 1 : 0;
 
-    // Attempt to create the belt Type
-    $res = $BELT->create();
+    // Attempt to create the invoice remark
+    $res = $REMARK->create();
 
     if ($res) {
         $result = [
@@ -31,18 +31,18 @@ if (isset($_POST['create'])) {
     }
 }
 
-// Update belt Type details
+// Update invoice remark details
 if (isset($_POST['update'])) {
 
-    $BELT = new BeltMaster($_POST['id']); // Retrieve belt Type by ID
+    $REMARK = new InvoiceRemark($_POST['id']); // Retrieve invoice remark by ID
 
     // Update belt Type details
-    $BELT->code = $_POST['code'];
-    $BELT->name = $_POST['name'];
-    $BELT->is_active = isset($_POST['is_active']) ? 1 : 0;
+    $REMARK->code = $_POST['code'];
+    $REMARK->remark = $_POST['remark'];
+    $REMARK->is_active = isset($_POST['is_active']) ? 1 : 0;
 
-    // Attempt to update the belt Type
-    $result = $BELT->update();
+    // Attempt to update the invoice remark
+    $result = $REMARK->update();
 
     if ($result) {
         $result = [
@@ -60,8 +60,8 @@ if (isset($_POST['update'])) {
 }
 
 if (isset($_POST['delete']) && isset($_POST['id'])) {
-    $belt = new BeltMaster($_POST['id']);
-    $result = $belt->delete(); // Make sure this method exists
+    $remark = new InvoiceRemark($_POST['id']);
+    $result = $remark->delete(); // Make sure this method exists
 
     if ($result) {
         echo json_encode(['status' => 'success']);

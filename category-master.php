@@ -14,7 +14,7 @@ $category_id = 'CA00' . $lastId + 1;
 <head>
 
     <meta charset="utf-8" />
-    <title>Horizontal Layout | Minible - Admin & Dashboard Template</title>
+    <title>Category Master | <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="#" name="description" />
     <meta content="Themesbrand" name="author" />
@@ -77,7 +77,7 @@ $category_id = 'CA00' . $lastId + 1;
                         <div class="col-md-4 text-md-end text-start mt-3 mt-md-0">
                             <ol class="breadcrumb m-0 justify-content-md-end">
                                 <li class="breadcrumb-item"><a href="javascript: void(0);">Dashboard</a></li>
-                                <li class="breadcrumb-item active">category Master</li>
+                                <li class="breadcrumb-item active">Category Master</li>
                             </ol>
                         </div>
                     </div>
@@ -119,8 +119,8 @@ $category_id = 'CA00' . $lastId + 1;
                                                     <input id="code" name="code" type="text" class="form-control"
                                                         placeholder="Enter Category Code" readonly value="<?php echo $category_id ?>">
                                                     <button class="btn btn-info" type="button" data-bs-toggle="modal"
-                                                        data-bs-target=".bs-example-modal-xl">
-                                                        <i class="uil uil-search me-1"></i> Find Category
+                                                        data-bs-target="#category_master">
+                                                        <i class="uil uil-search me-1"></i>  
                                                     </button>
                                                 </div>
                                             </div>
@@ -168,7 +168,7 @@ $category_id = 'CA00' . $lastId + 1;
 
 
   <!-- category master file model open -->
-  <div class="modal fade bs-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="categoryModalLabel"
+  <div class="modal fade  " id="category_master" tabindex="-1" role="dialog" aria-labelledby="categoryModalLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
