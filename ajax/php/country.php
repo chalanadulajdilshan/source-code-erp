@@ -9,8 +9,9 @@ if (isset($_POST['create'])) {
     $COUNTRY = new Country(NULL); // Create a new Country object
 
     // Set the country name
+    $COUNTRY->code = $_POST['code'];
     $COUNTRY->name = $_POST['name'];
-
+    $COUNTRY->is_active = isset($_POST['is_active']) ? 1 : 0;
     // Attempt to create the country
     $res = $COUNTRY->create();
 
@@ -32,10 +33,11 @@ if (isset($_POST['create'])) {
 // Update country details
 if (isset($_POST['update'])) {
 
-    $COUNTRY = new Country($_POST['country_id']); // Retrieve country by ID
+    $COUNTRY = new Country($_POST['id']); // Retrieve country by ID
 
     // Update country name
     $COUNTRY->name = $_POST['name'];
+    $COUNTRY->is_active = isset($_POST['is_active']) ? 1 : 0;
 
     // Attempt to update the country
     $result = $COUNTRY->update();
