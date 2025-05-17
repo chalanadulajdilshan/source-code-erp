@@ -21,7 +21,7 @@ class SalesInvoice
     public function __construct($id = null)
     {
         if ($id) {
-            $query = "SELECT * FROM `sales_invoice` WHERE `id` = " . (int)$id;
+            $query = "SELECT * FROM `sales_invoice` WHERE `id` = " . (int) $id;
             $db = new Database();
             $result = mysqli_fetch_array($db->readQuery($query));
 
@@ -120,77 +120,82 @@ class SalesInvoice
     }
 
     public function fetchInvoicesForDataTable($request)
-{
+    {
 
-   
 
-    $db = new Database();
-    $conn = $db->DB_CON;
 
-    $start = isset($request['start']) ? (int)$request['start'] : 0;
-    $length = isset($request['length']) ? (int)$request['length'] : 100;
-    $search = $request['search']['value'] ?? '';
+        $db = new Database();
+        $conn = $db->DB_CON;
 
-    $where = "WHERE 1=1";
+        $start = isset($request['start']) ? (int) $request['start'] : 0;
+        $length = isset($request['length']) ? (int) $request['length'] : 100;
+        $search = $request['search']['value'] ?? '';
 
-    // Search filter
-    if (!empty($search)) {
-        $escapedSearch = mysqli_real_escape_string($conn, $search);
-        $where .= " AND (invoice_no LIKE '%$escapedSearch%' OR remark LIKE '%$escapedSearch%')";
-    }
+        $where = "WHERE 1=1";
 
-    // Total records (without filters)
-    $totalSql = "SELECT COUNT(*) as count FROM sales_invoice";
-    $totalResult = $db->readQuery($totalSql);
-    $totalData = mysqli_fetch_assoc($totalResult)['count'];
+        // Search filter
+        if (!empty($search)) {
+            $escapedSearch = mysqli_real_escape_string($conn, $search);
+            $where .= " AND (invoice_no LIKE '%$escapedSearch%' OR remark LIKE '%$escapedSearch%')";
+        }
 
-    // Total filtered records
-    $filteredSql = "SELECT COUNT(*) as count FROM sales_invoice $where";
-    $filteredResult = $db->readQuery($filteredSql);
-    $filteredData = mysqli_fetch_assoc($filteredResult)['count'];
+        // Total records (without filters)
+        $totalSql = "SELECT COUNT(*) as count FROM sales_invoice";
+        $totalResult = $db->readQuery($totalSql);
+        $totalData = mysqli_fetch_assoc($totalResult)['count'];
 
-    // Paginated query
-    $query = "SELECT * FROM sales_invoice $where ORDER BY invoice_date DESC LIMIT $start, $length";
-     
- 
+        // Total filtered records
+        $filteredSql = "SELECT COUNT(*) as count FROM sales_invoice $where";
+        $filteredResult = $db->readQuery($filteredSql);
+        $filteredData = mysqli_fetch_assoc($filteredResult)['count'];
 
-    $result = $db->readQuery($query);
+        // Paginated query
+        $query = "SELECT * FROM sales_invoice $where ORDER BY invoice_date DESC LIMIT $start, $length";
 
-    $data = [];
 
-    while ($row = mysqli_fetch_assoc($result)) {
-        // Optionally load related names if needed
-        $CUSTOMER = new CustomerMaster($row['customer_id']);
-        $DEPARTMENT = new DepartmentMaster($row['department_id']);
 
-        $nestedData = [
-            "id"           => $row['id'], // Needed!
-            "invoice_no"   => $row['invoice_no'],
-            "invoice_date" => $row['invoice_date'],
-            "customer"     => $CUSTOMER->name ?? $row['customer_id'],
-            "department"   => $DEPARTMENT->name ?? $row['department_id'],
-            "grand_total"  => number_format($row['grand_total'], 2),
-            "remark"       => $row['remark']
+        $result = $db->readQuery($query);
+
+        $data = [];
+
+        while ($row = mysqli_fetch_assoc($result)) {
+            // Optionally load related names if needed
+            $CUSTOMER = new CustomerMaster($row['customer_id']);
+            $DEPARTMENT = new DepartmentMaster($row['department_id']);
+
+            $nestedData = [
+                "id" => $row['id'], // Needed!
+                "invoice_no" => $row['invoice_no'],
+                "invoice_date" => $row['invoice_date'],
+                "customer" => $CUSTOMER->name ?? $row['customer_id'],
+                "department" => $DEPARTMENT->name ?? $row['department_id'],
+                "grand_total" => number_format($row['grand_total'], 2),
+                "remark" => $row['remark']
+            ];
+
+
+            $data[] = $nestedData;
+        }
+        return [
+            "draw" => intval($request['draw']),
+            "recordsTotal" => intval($totalData),
+            "recordsFiltered" => intval($filteredData),
+            "data" => $data
         ];
-        
-
-        $data[] = $nestedData;
-    } 
-    return [
-        "draw" => intval($request['draw']),
-        "recordsTotal" => intval($totalData),
-        "recordsFiltered" => intval($filteredData),
-        "data" => $data
-    ];
-}
-
-
+    }
+ 
     public function getLastID()
     {
         $query = "SELECT * FROM `sales_invoice` ORDER BY `id` DESC LIMIT 1";
         $db = new Database();
         $result = mysqli_fetch_array($db->readQuery($query));
-        return $result['id'];
+
+        if ($result && isset($result['id'])) {
+            return $result['id'];
+        } else {
+            return 0; // Or null, depending on how you want to handle "no results"
+        }
     }
+
 }
 ?>

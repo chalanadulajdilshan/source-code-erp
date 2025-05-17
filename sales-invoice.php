@@ -2,7 +2,7 @@
 <?php
 include 'class/include.php';
 
-$SALES_INVOICE = new SalesInvoice(NULL);
+$SALES_INVOICE = new SalesInvoice();
 
 // Get the last inserted package id
 $lastId = $SALES_INVOICE->getLastID();
@@ -88,8 +88,9 @@ $invoice_id = 'IN00' . $lastId + 1;
                             </div>
                         </div>
                         <!--- Hidden Values -->
-                        <input type="hidden" id="item_id">
+                        <input type="hidden" id="item_id" name="item_id">
                         <input type="hidden" id="availableQty">
+
 
                         <!-- end page title -->
 
@@ -165,7 +166,7 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                     <label for="customerCode" class="form-label">Customer Code</label>
                                                     <div class="input-group mb-3">
                                                         <input id="customer_code" name="customer_code" type="text"
-                                                            placeholder="Customer code" class="form-control">
+                                                            placeholder="Customer code" class="form-control" readonly>
                                                         <button class="btn btn-info" type="button"
                                                             data-bs-toggle="modal" data-bs-target="#customerModal">
                                                             <i class="uil uil-search me-1"></i> Find
@@ -216,7 +217,8 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                             foreach ($VAT_TYPE->getActiveTypes() as $vat_type) {
                                                                 ?>
                                                                 <option value="<?php echo $vat_type['id'] ?>">
-                                                                    <?php echo $vat_type['vat_type_name'] ?></option>
+                                                                    <?php echo $vat_type['vat_type_name'] ?>
+                                                                </option>
                                                             <?php } ?>
                                                         </select>
                                                     </div>
@@ -291,9 +293,6 @@ $invoice_id = 'IN00' . $lastId + 1;
 
                                                 <div class="tab-content p-3 text-muted">
                                                     <div class="tab-pane active" id="navpills2-home" role="tabpanel">
-
-
-
                                                         <div class="row align-items-end">
                                                             <div class="col-md-2">
                                                                 <label for="itemCode" class="form-label">Item
@@ -307,8 +306,6 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                                         data-bs-target="#item_master">
                                                                         <i class="uil uil-search me-1"></i>
                                                                     </button>
-
-
                                                                 </div>
                                                             </div>
 
@@ -372,6 +369,8 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                             </table>
 
                                                         </div>
+
+
                                                     </div>
                                                     <div class="tab-pane " id="navpills2-profile" role="tabpanel">
                                                         <p class="mb-0">
@@ -387,54 +386,111 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                             aesthetic magna 8-bit.
                                                         </p>
                                                     </div>
+                                                    <hr>
                                                     <div class="row">
-                                                        <div class="col-md-3">
-                                                            <div class="d-flex justify-content-between mb-2">
-                                                                <div><strong>Stock Level:</strong></div>
-                                                                <div id=""><strong>0.00</strong></div>
+                                                        <div class="col-md-5">
+                                                            <div class="  p-2 border rounded bg-light"
+                                                                style="max-width: 500px;">
+                                                                <div class="row mb-2">
+                                                                    <div class="col-5">
+                                                                        <input type="text"
+                                                                            class="form-control text_purchase3"
+                                                                            value="Stock Level" disabled>
+                                                                    </div>
+                                                                    <div class="col-7">
+                                                                        <input type="text" class="form-control"
+                                                                            value="0.00" disabled>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="row mb-2">
+                                                                    <div class="col-5">
+                                                                        <input type="text"
+                                                                            class="form-control text_purchase3"
+                                                                            value="Credit Period  " disabled>
+                                                                    </div>
+                                                                    <div class="col-7">
+                                                                        <select class="form-control">
+                                                                            <option> -- Select Credit Period --
+                                                                            </option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row mb-2">
+                                                                    <div class="col-5">
+                                                                        <input type="text"
+                                                                            class="form-control text_purchase3"
+                                                                            value="Invoice Remarks  " disabled>
+                                                                    </div>
+                                                                    <div class="col-7">
+                                                                        <select class="form-control">
+                                                                            <option> -- Select Remark -- </option>
+                                                                            <?php
+                                                                            $INVOICE_REMARK = new InvoiceRemark(null);
+                                                                            foreach ($INVOICE_REMARK->all() as $remark) {
+                                                                                ?>
+                                                                                <option value="<?php echo $remark['id'] ?>">
+                                                                                    <?php echo $remark['remark'] ?>
+                                                                                </option>
+                                                                            <?php } ?>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+
                                                             </div>
-
-                                                            <div class="d-flex justify-content-between mb-2">
-                                                                <div><strong>Credit Period:</strong></div>
-                                                                <div id=""><strong>0.00</strong></div>
-                                                            </div>
-
-                                                            <div class="d-flex justify-content-between mb-2">
-                                                                <div><strong>Remark:</strong></div>
-                                                                <div id=""><strong>0.00</strong></div>
-                                                            </div>
-
-
                                                         </div>
 
-                                                        <div class="col-md-6"></div>
 
-                                                        <div class="col-md-3">
-                                                            <div class="d-flex justify-content-between mb-2">
-                                                                <div><strong>Sub Total:</strong></div>
-                                                                <div id="subTotal" class="price-highlight">
-                                                                    <strong>0.00</strong>
+                                                        <div class="col-md-3"></div>
+
+                                                        <div class="col-md-4">
+                                                            <div class="  p-2 border rounded bg-light"
+                                                                style="max-width: 600px;">
+                                                                <div class="row mb-2">
+                                                                    <div class="col-7">
+                                                                        <input type="text"
+                                                                            class="form-control text_purchase3"
+                                                                            value="Sub Total" disabled>
+                                                                    </div>
+                                                                    <div class="col-5">
+                                                                        <input type="text" class="form-control"
+                                                                            id="subTotal" value="0.00" disabled>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
 
-                                                            <div class="d-flex justify-content-between mb-2">
-                                                                <div><strong>Discount Total:</strong></div>
-                                                                <div id="disTotal" class="price-highlight">
-                                                                    <strong>0.00</strong>
+                                                                <div class="row mb-2">
+                                                                    <div class="col-7">
+                                                                        <input type="text"
+                                                                            class="form-control text_purchase3"
+                                                                            value="Discount Total:" disabled>
+                                                                    </div>
+                                                                    <div class="col-5">
+                                                                        <input type="text" class="form-control"
+                                                                            id="disTotal" value="0.00" disabled>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
 
-                                                            <div class="d-flex justify-content-between mb-2">
-                                                                <div><strong>Tax Total:</strong></div>
-                                                                <div id="tax" class="price-highlight">
-                                                                    <strong>0.00</strong>
+                                                                <div class="row mb-2">
+                                                                    <div class="col-7">
+                                                                        <input type="text"
+                                                                            class="form-control text_purchase3"
+                                                                            value="Tax Total:" disabled>
+                                                                    </div>
+                                                                    <div class="col-5">
+                                                                        <input type="text" class="form-control" id="tax"
+                                                                            value="0.00" disabled>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
-
-                                                            <div class="d-flex justify-content-between border-top pt-2">
-                                                                <div><strong>Grand Total:</strong></div>
-                                                                <div id="finalTotal" class="price-highlight">
-                                                                    <strong>0.00</strong>
+                                                                <div class="row mb-2">
+                                                                    <div class="col-7">
+                                                                        <input type="text"
+                                                                            class="form-control text_purchase3 fw-bold"
+                                                                            value="Grand Total:" disabled>
+                                                                    </div>
+                                                                    <div class="col-5">
+                                                                        <input type="text" class="form-control  fw-bold"
+                                                                            id="finalTotal" value="0.00" disabled>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -532,10 +588,7 @@ $invoice_id = 'IN00' . $lastId + 1;
 
         <!-- JAVASCRIPT -->
         <script src="assets/libs/jquery/jquery.min.js"></script>
-        <script src="ajax/js/customer-master.js"></script>
-
         <!-- /////////////////////////// -->
-
         <script src="ajax/js/sales-invoice.js"></script>
 
 
@@ -543,11 +596,6 @@ $invoice_id = 'IN00' . $lastId + 1;
         <script src="assets/js/jquery.preloader.min.js"></script>
 
         <script src="assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
-        <script src="assets/libs/metismenu/metisMenu.min.js"></script>
-        <script src="assets/libs/simplebar/simplebar.min.js"></script>
-        <script src="assets/libs/node-waves/waves.min.js"></script>
-        <script src="assets/libs/waypoints/lib/jquery.waypoints.min.js"></script>
-        <script src="assets/libs/jquery.counterup/jquery.counterup.min.js"></script>
 
         <!-- Required datatable js -->
         <script src="assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
@@ -555,9 +603,6 @@ $invoice_id = 'IN00' . $lastId + 1;
         <!-- Buttons examples -->
         <script src="assets/libs/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
         <script src="assets/libs/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js"></script>
-        <script src="assets/libs/jszip/jszip.min.js"></script>
-        <script src="assets/libs/pdfmake/build/pdfmake.min.js"></script>
-        <script src="assets/libs/pdfmake/build/vfs_fonts.js"></script>
         <script src="assets/libs/datatables.net-buttons/js/buttons.html5.min.js"></script>
         <script src="assets/libs/datatables.net-buttons/js/buttons.print.min.js"></script>
         <script src="assets/libs/datatables.net-buttons/js/buttons.colVis.min.js"></script>
@@ -569,8 +614,6 @@ $invoice_id = 'IN00' . $lastId + 1;
         <!-- Datatable init js -->
         <script src="assets/js/pages/datatables.init.js"></script>
         <!-- apexcharts -->
-
-        <script src="assets/js/pages/dashboard.init.js"></script>
 
         <!-- App js -->
         <script src="assets/js/app.js"></script>

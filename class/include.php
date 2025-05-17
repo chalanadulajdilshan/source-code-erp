@@ -38,7 +38,10 @@ include_once(dirname(__FILE__) . '/LabourType.php');
 include_once(dirname(__FILE__) . '/ExpenseTypeMaster.php');
 include_once(dirname(__FILE__) . '/BeltMaster.php');
 include_once(dirname(__FILE__) . '/DesignMaster.php');
-include_once(dirname(__FILE__) . '/VehicleBrand.php');
+include_once(dirname(__FILE__) . '/VehicleBrand.php'); 
+include_once(dirname(__FILE__) . '/StockTransaction.php');
+include_once(dirname(__FILE__) . '/StockAdjustmentType.php');
+include_once(dirname(__FILE__) . '/InvoiceRemark.php');
 
 
 function dd($data) {

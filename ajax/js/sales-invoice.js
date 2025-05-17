@@ -77,6 +77,13 @@ jQuery(document).ready(function () {
         $('#item_master').modal('hide');
     });
 
+    $('#item_master').on('hidden.bs.modal', function () {
+        if (focusAfterModal) {
+            $('#itemQty').focus();
+            focusAfterModal = false;
+        }
+    });
+
     //get first row cash sales customer
     function loadCustomer() {
 
@@ -114,7 +121,8 @@ jQuery(document).ready(function () {
 
     // Open payment modal and pre-fill total
     $('#create').on('click', function () {
-        const total = parseFloat($('#finalTotal').text()) || 0;
+        const total = parseFloat($('#finalTotal').text().replace(/,/g, '')) || 0;
+
         $('#modalFinalTotal').val(total.toFixed(2));
         $('#amountPaid').val('');
         $('#balanceAmount').val('0.00').removeClass('text-danger');
@@ -139,7 +147,7 @@ jQuery(document).ready(function () {
         e.preventDefault();
 
 
-        if (!$('#customer_code').val()) {
+        if (!$('#customer_id').val()) {
             swal({
                 title: "Error!",
                 text: "Please enter customer code",
@@ -208,10 +216,9 @@ jQuery(document).ready(function () {
             formData.append('create', true);
             formData.append('total', total);
             formData.append('paid', paid);
-            formData.append('payment_type', paymentType);
+            formData.append('payment_type', $('#payment_type').val());
             formData.append('items', JSON.stringify(items));
             formData.append('invoice_no', $('#invoice_no').val());
-
 
 
             // Start Preloader
@@ -236,7 +243,7 @@ jQuery(document).ready(function () {
                     });
                     $('#paymentModal').modal('hide');
                     // Optional: Reset or redirect
-                    window.location.href = "invoice.php?invoice_no=" + $('#invoice_no').val();
+                    window.location.href = "invoice.php?invoice_no=" + res.invoice_id;
                 },
                 error: function (xhr) {
                     console.error(xhr.responseText);
@@ -265,7 +272,13 @@ jQuery(document).ready(function () {
         const payment = parseFloat($('#itemPayment').val()) || 0;
 
         if (!code || !name || price <= 0 || qty <= 0) {
-            alert("Please fill valid item details.");
+            swal({
+                title: "Error!",
+                text: "Please fill valid item quantity..!",
+                type: 'error',
+                timer: 3000,
+                showConfirmButton: false
+            });
             return;
         }
 
@@ -285,8 +298,8 @@ jQuery(document).ready(function () {
             <td>${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
 
             <td><button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">Remove</button></td>
-        </tr>
-    `;
+        </tr>  `;
+
         $('#invoiceItemsBody').append(row);
 
         // Clear input fields
@@ -373,10 +386,10 @@ jQuery(document).ready(function () {
         });
 
         const grandTotal = subTotal - discountTotal;
-        $('#subTotal').html(`<strong>${subTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>`);
-        $('#disTotal').html(`<strong>${discountTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>`);
-        $('#finalTotal').html(`<strong>${grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>`);
-
+        $('#subTotal').val(subTotal.toLocaleString(undefined, {  minimumFractionDigits: 2,  maximumFractionDigits: 2  }));
+        $('#disTotal').val(discountTotal.toLocaleString(undefined, {  minimumFractionDigits: 2,  maximumFractionDigits: 2  }));
+        $('#finalTotal').val(grandTotal.toLocaleString(undefined, {  minimumFractionDigits: 2,  maximumFractionDigits: 2  }));
+ 
     }
 
     // Disable price field to prevent manual changes
@@ -388,12 +401,9 @@ jQuery(document).ready(function () {
     });
 
     //////////////////////////customer details add//////////////////////////
-
-
     $('#customerModal').on('shown.bs.modal', function () {
         loadCustomerTable();
     });
-
 
     function loadCustomerTable() {
         // Destroy if already initialized
@@ -479,12 +489,12 @@ jQuery(document).ready(function () {
             order: [[0, 'desc']], // Sort by #ID (Descending)
             pageLength: 100
         });
-    
+
         // Row click to populate form
         $('#invoiceTableData tbody').off('click').on('click', 'tr', function () {
             var data = table.row(this).data();
             if (!data) return;
-    
+
             // Populate form fields safely
             $('#invoice_id').val(data.id || '');
             $('#invoice_no').val(data.invoice_no || '');
@@ -499,17 +509,64 @@ jQuery(document).ready(function () {
             $('#tax').val(data.tax || '');
             $('#grand_total').val(data.grand_total || '');
             $('#remark').val(data.remark || '');
-    
+
+            // Fetch items related to invoice
+            fetchInvoiceItems(data.id);
+
             $("#create").hide();
             $('#invoiceModal').modal('hide');
         });
+
+
     }
-    
+
+    function fetchInvoiceItems(invoiceId) {
+        $.ajax({
+            url: 'ajax/php/temp-sales-items.php', // Replace with your PHP endpoint
+            type: 'GET',
+            data: { invoice_id: invoiceId },
+            dataType: 'json',
+            success: function (response) {
+                let tbody = $('#invoiceItemsBody');
+                tbody.empty();
+
+                if (response && response.length > 0) {
+                    response.forEach(item => {
+                        let row = `
+                        <tr>
+                            <td>${item.item_code}</td>
+                            <td>${item.item_name}</td>
+                            <td>${parseFloat(item.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                            <td>${item.quantity}</td>
+                            <td>${item.discount}%</td>
+                            <td>${parseFloat(item.price - (item.price * (item.discount / 100))).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                            <td>${parseFloat(item.total).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                            <td>
+ -
+                            </td>
+                        </tr>
+                    `;
+                        tbody.append(row);
+                    });
+                } else {
+                    tbody.html(`<tr id="noItemRow">
+                                <td colspan="8" class="text-center text-muted">No items found</td>
+                            </tr>`);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Failed to fetch items:', error);
+                $('#invoiceItemsBody').html(`<tr><td colspan="8" class="text-center text-danger">Error loading items</td></tr>`);
+            }
+        });
+    }
+
+
     // Re-initialize when modal is shown
     $('#invoiceModal').on('shown.bs.modal', function () {
         initInvoiceTable();
     });
-    
+
 
 
 

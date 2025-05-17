@@ -2,14 +2,16 @@
 
 include '../../class/include.php';
 header('Content-Type: application/json; charset=UTF8');
+session_start();
 
 // Create a new invoice
 if (isset($_POST['create'])) {
 
-    $invoiceId = $_POST['invoice_no'];
-    $items = json_decode($_POST['items'], true); // array of items
+    $invoiceId = $_POST['invoice_no']; 
+    $items = json_decode($_POST['items'], true); // array of items 
     $paid = $_POST['paid'];
     $paymentType = $_POST['payment_type'];
+
 
     $totalSubTotal = 0;
     $totalDiscount = 0;
@@ -45,7 +47,7 @@ if (isset($_POST['create'])) {
     $SALES_INVOICE->customer_id = $_POST['customer_id'];
     $SALES_INVOICE->department_id = $_POST['department_id'];
     $SALES_INVOICE->sale_type = $_POST['sales_type'];
-    $SALES_INVOICE->discount_type = $paymentType;
+    $SALES_INVOICE->payment_type = $paymentType;
     $SALES_INVOICE->sub_total = $totalSubTotal;
     $SALES_INVOICE->discount = $totalDiscount;
     $SALES_INVOICE->tax = $vat;
@@ -59,22 +61,41 @@ if (isset($_POST['create'])) {
 
         foreach ($items as $item) {
 
-            $ITEM_MASTER = new ItemMaster(NULL);
-            $item_code = $ITEM_MASTER->getIdbyItemCode($item['code']);
-
+            $item_discount = isset($item['discount']) ? $item['discount'] : 0;
 
             $SALES_ITEM = new TempSalesItem(NULL);
-            $SALES_ITEM->temp_invoice_id = $invoiceId;
-            $SALES_ITEM->product_id = $item['item_id'];
-            ;
-            $SALES_ITEM->product_name = $item['name'];
+            $SALES_ITEM->invoice_id = $invoiceId;
+            $SALES_ITEM->item_code = $item['code'];
+            $SALES_ITEM->item_name = $item['name'];
             $SALES_ITEM->price = $item['price'];
             $SALES_ITEM->quantity = $item['qty'];
-            $SALES_ITEM->discount = isset($item['discount']) ? $item['discount'] : 0;
-            $SALES_ITEM->total = ($item['price'] * $item['qty']) - $SALES_ITEM->discount;
-            // $SALES_ITEM->user_id = $_SESSION['user_id'];
+            $SALES_ITEM->discount = $item_discount;
+            $SALES_ITEM->total = ($item['price'] * $item['qty']) - $item_discount;
+
             $SALES_ITEM->created_at = date("Y-m-d H:i:s");
             $SALES_ITEM->create();
+
+
+            $ITEM_MASTER = new ItemMaster($item['item_id']);
+
+            $currentQty = $ITEM_MASTER->available_qty;
+            $newQty = $currentQty - $item['qty'];
+            $ITEM_MASTER->available_qty = $newQty;
+            $ITEM_MASTER->update();
+
+            $STOCK = new StockTransaction(NULL);
+            $STOCK->item_id = $item['item_id'];
+
+            $STOCK_ADJ_TYPE = new StockAdjustmentType(4);
+            //SALE
+            $STOCK->type = $STOCK_ADJ_TYPE->name;
+            $STOCK->date = date("Y-m-d");
+            $STOCK->qty_in = 0;
+            $STOCK->qty_out = $item['qty'];
+            $STOCK->remark = 'Invoice No: ' . $invoiceId;
+            $STOCK->created_at = date("Y-m-d H:i:s");
+            $STOCK->create();
+
         }
 
         echo json_encode([
@@ -132,16 +153,16 @@ if (isset($_POST['update'])) {
     }
 }
 
- 
+
 
 if (isset($_POST['filter'])) {
-  
+
     $SALES_INVOICE = new SalesInvoice();
     $response = $SALES_INVOICE->fetchInvoicesForDataTable($_REQUEST);
 
- 
+
     echo json_encode($response);
-    exit;  
+    exit;
 }
 
 
