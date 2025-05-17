@@ -98,6 +98,8 @@ if (isset($_POST['filter'])) {
     echo json_encode($response);
     exit;
 }
+
+
 // search by customer
 if (isset($_POST['query'])) {
     $search = $_POST['query'];

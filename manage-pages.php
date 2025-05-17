@@ -139,7 +139,7 @@ $item_id = 'IM00' . $lastId + 1;
                                                 <input id="page_name" name="page_name" type="text"
                                                 placeholder="Enter Page Name" class="form-control">
                                                     <button class="btn btn-info" type="button"  data-bs-toggle="modal"
-                                                    data-bs-target=".bs-example-modal-xl">
+                                                    data-bs-target="#manage-pages">
                                                         <i class="uil uil-search me-1"></i> Find Page
                                                     </button>
                                                 </div>
@@ -172,7 +172,7 @@ $item_id = 'IM00' . $lastId + 1;
     </div>
     <!-- END layout-wrapper -->
 
-    <div class="modal fade bs-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="categoryModalLabel"
+    <div class="modal fade bs-example-modal-xl" id="manage-pages" tabindex="-1" role="dialog" aria-labelledby="categoryModalLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
