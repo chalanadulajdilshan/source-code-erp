@@ -45,6 +45,7 @@ include_once(dirname(__FILE__) . '/InvoiceRemark.php');
 include_once(dirname(__FILE__) . '/DiscountType.php');
 include_once(dirname(__FILE__) . '/SupplierDiscount.php');
 include_once(dirname(__FILE__) . '/EmployeeMaster.php');
+include_once(dirname(__FILE__) . '/CreditPeriod.php');
 
 function dd($data) {
 
