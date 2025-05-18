@@ -3,6 +3,7 @@
 class Country
 {
     public $id;
+    public $code;
     public $name;
     public $created_at;
 
@@ -10,13 +11,15 @@ class Country
     public function __construct($id = null)
     {
         if ($id) {
-            $query = "SELECT `id`, `name`, `created_at` FROM `country` WHERE `id` = " . (int) $id;
+            $query = "SELECT * FROM `country` WHERE `id` = " . (int) $id;
             $db = new Database();
             $result = mysqli_fetch_array($db->readQuery($query));
 
             if ($result) {
                 $this->id = $result['id'];
+                $this->code = $result['code'];
                 $this->name = $result['name'];
+                $this->is_active = $result['is_active'];
                 $this->created_at = $result['created_at'];
             }
         }
@@ -25,8 +28,10 @@ class Country
     // Create a new country record in the database
     public function create()
     {
-        $query = "INSERT INTO `country` (`name`, `created_at`) VALUES ('" .
-            $this->name . "', NOW())";
+        $query = "INSERT INTO `country` (`code`,`name`,`is_active`,`created_at`) VALUES ('" .
+            $this->code . "', '" .
+            $this->name . "', '" . 
+            $this->is_active . "', NOW())";
         $db = new Database();
         $result = $db->readQuery($query);
 
@@ -40,12 +45,15 @@ class Country
     // Update an existing country record
     public function update()
     {
-        $query = "UPDATE `country` SET `name` = '" . $this->name . "' WHERE `id` = '" . $this->id . "'";
+        $query = "UPDATE `country` SET 
+            `name` = '" . $this->name . "',
+            `is_active` = '" . $this->is_active . "'
+            WHERE `id` = " . (int) $this->id;
         $db = new Database();
         $result = $db->readQuery($query);
 
         if ($result) {
-            return $this->__construct($this->id); // Refresh the object with updated data
+            return true; // Refresh the object with updated data
         } else {
             return false; // Return false if the update fails
         }
@@ -54,7 +62,7 @@ class Country
     // Delete a country record by ID
     public function delete()
     {
-        $query = "DELETE FROM `country` WHERE `id` = '" . $this->id . "'";
+        $query = "DELETE FROM `country` WHERE `id` = " . (int) $this->id;
         $db = new Database();
         return $db->readQuery($query);
     }
@@ -87,6 +95,14 @@ class Country
         }
 
         return $array_res;
+    }
+
+    public function getLastID()
+    {
+        $query = "SELECT * FROM `country` ORDER BY `id` DESC LIMIT 1";
+        $db = new Database();
+        $result = mysqli_fetch_array($db->readQuery($query));
+        return $result['id'];
     }
 }
 

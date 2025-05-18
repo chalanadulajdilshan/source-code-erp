@@ -3,13 +3,13 @@
 class TempSalesItem
 {
     public $id;
-    public $temp_invoice_id;
-    public $product_id;
-    public $product_name;
+    public $invoice_id;
+    public $item_code;
+    public $item_name;
     public $quantity;
     public $price;
+     public $discount;
     public $total;
-    public $user_id;
     public $created_at;
 
     public function __construct($id = null)
@@ -17,19 +17,19 @@ class TempSalesItem
         if ($id) {
             $query = "SELECT  * 
                       FROM `temp_sales_items` 
-                      WHERE `id` = " . (int)$id;
+                      WHERE `id` = " . (int) $id;
             $db = new Database();
             $result = mysqli_fetch_array($db->readQuery($query));
 
             if ($result) {
                 $this->id = $result['id'];
-                $this->temp_invoice_id = $result['temp_invoice_id'];
-                $this->product_id = $result['product_id'];
-                $this->product_name = $result['product_name'];
-                $this->quantity = $result['quantity'];
+                $this->invoice_id = $result['invoice_id'];
+                $this->item_code = $result['item_code'];
+                $this->item_name = $result['product_id'];
+                $this->quantity = $result['quantity'];                
+                $this->discount = $result['discount'];
                 $this->price = $result['price'];
                 $this->total = $result['total'];
-                $this->user_id = $result['user_id'];
                 $this->created_at = $result['created_at'];
             }
         }
@@ -37,18 +37,22 @@ class TempSalesItem
 
     public function create()
     {
+
+
         $query = "INSERT INTO `temp_sales_items` 
-            (`temp_invoice_id`, `product_id`, `product_name`, `price`, `quantity`, `total`, `user_id`, `created_at`) 
-            VALUES (
-                '{$this->temp_invoice_id}', 
-                '{$this->product_id}', 
-                '{$this->product_name}', 
-                '{$this->price}', 
-                '{$this->quantity}', 
-                '{$this->total}', 
-                '{$this->user_id}', 
-                NOW()
-            )";
+    (`invoice_id`, `item_code`, `item_name`, `price`, `discount`,`quantity`, `total`, `created_at`) 
+    VALUES (
+        '{$this->invoice_id}', 
+        '{$this->item_code}', 
+        '{$this->item_name}', 
+        '{$this->price}', 
+        '{$this->discount}', 
+        '{$this->quantity}', 
+        '{$this->total}',  
+        NOW()
+    )";
+
+
 
         $db = new Database();
         $result = $db->readQuery($query);
@@ -63,13 +67,12 @@ class TempSalesItem
     public function update()
     {
         $query = "UPDATE `temp_sales_items` SET 
-            `temp_invoice_id` = '{$this->temp_invoice_id}', 
-            `product_id` = '{$this->product_id}', 
-            `product_name` = '{$this->product_name}', 
+             
+            `item_code` = '{$this->item_code}', 
+            `item_name` = '{$this->item_name}', 
             `price` = '{$this->price}', 
             `quantity` = '{$this->quantity}', 
-            `total` = '{$this->total}', 
-            `user_id` = '{$this->user_id}' 
+            `total` = '{$this->total}' 
             WHERE `id` = '{$this->id}'";
 
         $db = new Database();
@@ -93,6 +96,22 @@ class TempSalesItem
     {
         $query = "SELECT  * 
                   FROM `temp_sales_items` 
+                  ORDER BY `id` DESC";
+        $db = new Database();
+        $result = $db->readQuery($query);
+        $array_res = array();
+
+        while ($row = mysqli_fetch_array($result)) {
+            array_push($array_res, $row);
+        }
+
+        return $array_res;
+    }
+
+    public function getItemsByInvoiceId($invoice_id)
+    {
+        $query = "SELECT  * 
+                  FROM `temp_sales_items` where `invoice_id` =  $invoice_id 
                   ORDER BY `id` DESC";
         $db = new Database();
         $result = $db->readQuery($query);

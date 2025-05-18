@@ -34,7 +34,7 @@ class InvoiceRemark
             ) VALUES (
                 '$this->code', '$this->remark', '$this->queue', '$this->is_active'
 )";
-
+ 
 
         $db = new Database();
         $result = $db->readQuery($query);

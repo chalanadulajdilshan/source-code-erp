@@ -151,7 +151,7 @@ class CustomerMaster
         // Search filter
         $sql = "SELECT * FROM customer_master WHERE id != 1  ";
         if (!empty($search)) {
-            $sql .= "AND  name LIKE '%$search%' OR code LIKE '%$search%' OR mobile_number LIKE '%$search%'";
+            $sql .= "AND  name LIKE '%$search%' OR code LIKE '%$search%' OR mobile_number LIKE '%$search%' ";
         }
 
         $filteredQuery = $db->readQuery($sql);

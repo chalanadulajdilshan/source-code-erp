@@ -41,7 +41,7 @@
 }
 
 #finalTotal {
-    background-color: #ffeeba; /* Light yellow background for Grand Total */
+    color:red; /* Light yellow background for Grand Total */
     padding: 5px 10px;
     border-radius: 5px;
 }

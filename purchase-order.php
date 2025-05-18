@@ -1,7 +1,13 @@
 <!doctype html>
 <?php
 include 'class/include.php';
- 
+
+$PURCHASE_ORDER = new SalesInvoice(NULL);
+
+// Get the last inserted package id
+$lastId = $PURCHASE_ORDER->getLastID();
+$po_number = 'PO-00' . $lastId + 1;
+
 ?>
 
 <html lang="en"> 
@@ -71,7 +77,7 @@ include 'class/include.php';
                                 <a href="#" class="btn btn-primary" id="print">
                                     <i class="uil uil-save me-1"></i> Print
                                 </a>
-                                <a href="#" class="btn btn-danger delete-category">
+                                <a href="#" class="btn btn-danger delete-order">
                                     <i class="uil uil-trash-alt me-1"></i> Delete
                                 </a>
                             </div>
@@ -119,14 +125,14 @@ include 'class/include.php';
                                         <form id="form-data">
                                             <div class="row">
 
-                                                <div class="col-md-3">
+                                                <div class="col-md-2">
                                                     <label for="PO_No" class="form-label">PO No</label>
                                                     <div class="input-group mb-3">
                                                         <input id="po_no" name="po_no" type="text"
-                                                            placeholder="PO No" class="form-control">
+                                                            placeholder="PO No" class="form-control" value="<?php echo $po_number; ?>" readonly>
                                                         <button class="btn btn-info" type="button"
                                                             data-bs-toggle="modal" data-bs-target="#po_no">
-                                                            <i class="uil uil-search me-1"></i> Search
+                                                            <i class="uil uil-search me-1"></i> Find
                                                         </button>
 
                                                     </div>
@@ -141,23 +147,23 @@ include 'class/include.php';
                                                         class="form-control">
                                                 </div>
 
-                                                <div class="col-md-3">
+                                                <div class="col-md-4">
                                                 <label for="supplier" class="form-label">Supplier</label>
                                                     <div class="input-group mb-3">
                                                         <input id="supplier_id" name="supplier_id" type="text"
-                                                            class="form-control ms-2 me-2">
+                                                            class="form-control ms-2 me-2" readonly>
                                                         <input id="supplier_name" name="supplier_name" type="text"
-                                                            class="form-control">
+                                                            class="form-control" readonly>
 
                                                         <button class="btn btn-info" type="button"
-                                                            data-bs-toggle="modal" data-bs-target="#po_no">
-                                                            <i class="uil uil-search me-1"></i> Search
+                                                            data-bs-toggle="modal" data-bs-target="#supplierModal">
+                                                            <i class="uil uil-search me-1"></i> Find
                                                         </button>
                                                     </div> 
 
                                                 </div>
 
-                                                <div class="col-md-3">
+                                                <div class="col-md-2">
                                                     <label for="PI_No" class="form-label">PI No</label>
                                                     <div class="input-group mb-3">
                                                         <input id="pi_no" name="pi_no" type="text"
@@ -174,7 +180,7 @@ include 'class/include.php';
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-3">
+                                                <div class="col-md-2">
                                                     <label for="LC/TT_No" class="form-label">LC/TT No</label>
                                                     <div class="input-group mb-3">
                                                         <input id="lc/tt_no" name="lc/tt_no" type="text"
@@ -183,18 +189,22 @@ include 'class/include.php';
 
                                                 </div>
 
-                                                <div class="col-md-3">
-                                                    <label for="brandId" class="form-label">Brand</label>
+                                                <div class="col-md-2">
+                                                    <label for="brand" class="form-label">Brand</label>
                                                     <div class="input-group mb-3">
-                                                        <select id="brand_id" name="brand_id" class="form-select">
-
-                                                    
-
+                                                        <select id="brand" name="brand" class="form-select">
+                                                            <option value="">-- Select Brand --</option>
+                                                        <?php
+                                                        $BRAND = new Brand(NULL);
+                                                        foreach ($BRAND->activeBrands() as $brand) {
+                                                            echo "<option value='{$brand['id']}'>{$brand['name']}</option>";
+                                                        }
+                                                        ?>
                                                         </select>
                                                     </div>
                                                 </div>
                                                 
-                                                <div class="col-md-3">
+                                                <div class="col-md-2">
                                                     <label for="BL_No" class="form-label">BL No</label>
                                                     <div class="input-group mb-3">
                                                         <input id="bl_no" name="bl_no" type="text"
@@ -203,18 +213,17 @@ include 'class/include.php';
 
                                                 </div>
 
-                                                <div class="col-md-3">
+                                                <div class="col-md-2">
                                                     <label for="Country" class="form-label">Country</label>
                                                     <div class="input-group mb-3">
                                                         <select id="country_id" name="country_id" class="form-select">
-
-                                                            
-
+                                                        <option value="">-- Select Country --</option>
+                                                        
                                                         </select>
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-3">
+                                                <div class="col-md-2">
                                                     <label for="CI_no" class="form-label">CI No</label>
                                                     <div class="input-group mb-3">
                                                         <input id="ci_no" name="ci_no" type="text"
@@ -223,18 +232,24 @@ include 'class/include.php';
 
                                                 </div>
 
-                                                <div class="col-md-3">
+                                                <div class="col-md-2">
                                                     <label for="Department" class="form-label">Department</label>
                                                     <div class="input-group mb-3">
                                                         <select id="department_id" name="department_id" class="form-select">
-
-                                                        
-
+                                                            <option value="">-- Select Department --</option>
+                                                        <?php
+                                                            $DEPARTMENT_MASTER = new DepartmentMaster(NULL);
+                                                            foreach ($DEPARTMENT_MASTER->getActiveDepartment() as $departments) {
+                                                                ?>
+                                                                <option value="<?php echo $departments['id'] ?>">
+                                                                    <?php echo $departments['name'] ?>
+                                                                </option>
+                                                            <?php } ?>
                                                         </select>
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-3">
+                                                <div class="col-md-2">
                                                     <label for="Order_By" class="form-label">Order By</label>
                                                     <div class="input-group mb-3">
                                                         <select id="order_by" name="order_by" class="form-select">
@@ -245,7 +260,7 @@ include 'class/include.php';
                                                     </div>
                                                 </div>
 
-                                                <div class="col-12 mt-3">
+                                                <div class="col-5 mt-3">
                                                     <label for="remark" class="form-label">Remarks</label>
                                                     <textarea id="remark" name="remark" class="form-control" rows="4"
                                                         placeholder="Enter any remarks or notes..."></textarea>
@@ -263,20 +278,19 @@ include 'class/include.php';
                                                         <div class="input-group">
                                                             <input id="itemCode" type="text" class="form-control"
                                                                 placeholder="Item Code">
+                                                                <button class="btn btn-info" type="button"
+                                                                id="open-item-modal">
+                                                                <i class="uil uil-search me-1"></i> Find
+                                                            </button>
                                                         </div>
                                                     </div>
 
-                                                    <div class="col-md-4">
+                                                    <div class="col-md-3">
                                                         <label for="Description" class="form-label">Description</label>
                                                         <div class="input-group">
                                                             <input id="description" type="text" class="form-control"
                                                                 placeholder="Description">
-
-                                                            <button class="btn btn-info" type="button"
-                                                                id="open-item-modal">
-                                                                <i class="uil uil-search me-1"></i> Search
-                                                            </button>
-
+ 
                                                         </div>
                                                     </div>
 
@@ -313,6 +327,150 @@ include 'class/include.php';
                                                 </div>
 
                                             </div>
+                                            
+                                            <!-- Table -->
+                                            <div class="table-responsive mt-4">
+                                                <table class="table table-bordered" id="invoiceTable">
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th>Code</th>
+                                                            <th>Description</th>
+                                                            <th>Pattern</th>
+                                                            <th>Qty</th>
+                                                            <th>Rate</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="invoiceItemsBody">
+                                                        <tr id="noItemRow">
+                                                            <td colspan="8" class="text-center text-muted">
+                                                                No items
+                                                                added</td>
+                                                        </tr>
+                                                    </tbody>
+
+                                                </table>
+
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <div class="d-flex justify-content-between mb-2">
+                                                        <div><strong>Stock Level:</strong></div>
+                                                        <div id=""><strong>0.00</strong></div>
+                                                    </div>
+
+                                                    <div class="d-flex justify-content-between mb-2">
+                                                        <div><strong>Credit Period:</strong></div>
+                                                        <div id=""><strong>0.00</strong></div>
+                                                    </div>
+
+                                                    <div class="d-flex justify-content-between mb-2">
+                                                        <div><strong>Remark:</strong></div>
+                                                        <div id=""><strong>0.00</strong></div>
+                                                    </div>
+
+
+                                                </div>
+
+                                                <div class="col-md-6"></div>
+
+                                                <div class="col-md-3">
+                                                    <div class="d-flex justify-content-between mb-2">
+                                                        <div><strong>Sub Total:</strong></div>
+                                                        <div id="subTotal" class="price-highlight">
+                                                            <strong>0.00</strong>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="d-flex justify-content-between mb-2">
+                                                        <div><strong>Discount Total:</strong></div>
+                                                        <div id="disTotal" class="price-highlight">
+                                                            <strong>0.00</strong>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="d-flex justify-content-between mb-2">
+                                                        <div><strong>Tax Total:</strong></div>
+                                                        <div id="tax" class="price-highlight">
+                                                            <strong>0.00</strong>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="d-flex justify-content-between border-top pt-2">
+                                                        <div><strong>Grand Total:</strong></div>
+                                                        <div id="finalTotal" class="price-highlight">
+                                                            <strong>0.00</strong>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <hr>
+                                            <div class="row">
+                                                <div class="  p-2 border rounded bg-light"
+                                                    style="max-width: 500px;">
+                                                    <div class="row mb-2">
+                                                        <div class="col-7">
+                                                            <input type="text"
+                                                                class="form-control text_purchase3"
+                                                                value="Outstanding Invoice Amount" disabled>
+                                                        </div>
+                                                        <div class="col-5">
+                                                            <input type="text" class="form-control" value="0.00"
+                                                                disabled>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row mb-2">
+                                                        <div class="col-7">
+                                                            <input type="text"
+                                                                class="form-control text_purchase3"
+                                                                value="Return Cheque Amount" disabled>
+                                                        </div>
+                                                        <div class="col-5">
+                                                            <input type="text" class="form-control" value="0.00"
+                                                                disabled>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row mb-2">
+                                                        <div class="col-7">
+                                                            <input type="text"
+                                                                class="form-control text_purchase3"
+                                                                value="Pending Cheque Amount" disabled>
+                                                        </div>
+                                                        <div class="col-5">
+                                                            <input type="text" class="form-control" value="0.00"
+                                                                disabled>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row mb-2">
+                                                        <div class="col-7">
+                                                            <input type="text"
+                                                                class="form-control text_purchase3"
+                                                                value="PSD Cheque Settlements" disabled>
+                                                        </div>
+                                                        <div class="col-5">
+                                                            <input type="text" class="form-control" value="0.00"
+                                                                disabled>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row border-top pt-2">
+                                                        <div class="col-7">
+                                                            <input type="text"
+                                                                class="form-control text_purchase3 fw-bold"
+                                                                value="Total" disabled>
+                                                        </div>
+                                                        <div class="col-5">
+                                                            <input type="text" class="form-control fw-bold"
+                                                                value="0.00" disabled>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
 
                                         </form>
                                     </div>
@@ -341,7 +499,7 @@ include 'class/include.php';
 
         <!-- /////////////////////////// -->
 
-        <script src="ajax/js/sales-invoice.js"></script>
+        <script src="ajax/js/purchase-order.js"></script>
 
         <script src="assets/libs/sweetalert/sweetalert-dev.js"></script>
         <script src="assets/js/jquery.preloader.min.js"></script>

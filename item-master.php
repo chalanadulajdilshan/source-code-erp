@@ -1,12 +1,13 @@
 <!doctype html>
 <?php
 include 'class/include.php';
+include 'auth.php';
 
-$ITEM_MASTER = new ItemMaster();
+$ITEM_MASTER = new ItemMaster(null);
 
 // Get the last inserted package id
 $lastId = $ITEM_MASTER->getLastID();
-$item_id = 'IM00' . $lastId + 1;
+$item_id = 'IM' . str_pad($lastId+1, 3, '0', STR_PAD_LEFT);
 
 ?>
 <html lang="en">
@@ -14,10 +15,9 @@ $item_id = 'IM00' . $lastId + 1;
 <head>
 
     <meta charset="utf-8" />
-    <title>Horizontal Layout | Minible - Admin & Dashboard Template</title>
+    <title>Item Master | <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta content="#" name="description" />
-    <meta content="Themesbrand" name="author" />
+    <meta content="<?php echo $COMPANY_PROFILE_DETAILS->name ?>" name="author" />
     <!-- App favicon -->
     <link rel="shortcut icon" href="assets/images/favicon.ico">
 
@@ -119,9 +119,9 @@ $item_id = 'IM00' . $lastId + 1;
                                                 <div class="input-group mb-3">
                                                     <input id="code" name="code" type="text" class="form-control"
                                                         value="<?php echo $item_id ?>" readonly>
-                                                    <button class="btn btn-info" type="button"  data-bs-toggle="modal"
-                                                    data-bs-target=".bs-example-modal-xl">
-                                                        <i class="uil uil-search me-1"></i> 
+                                                    <button class="btn btn-info" type="button" data-bs-toggle="modal"
+                                                        data-bs-target="#item_master">
+                                                        <i class="uil uil-search me-1"></i>
                                                     </button>
                                                 </div>
                                             </div>
@@ -206,6 +206,17 @@ $item_id = 'IM00' . $lastId + 1;
                                                     </select>
                                                 </div>
                                             </div>
+
+                                            <div class="col-md-3">
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="available_qty">Availabel QTY <span
+                                                            class="text-danger">*</span></label>
+                                                    <input id="available_qty" name="available_qty" type="number" min="0" class="form-control"
+                                                        placeholder="Enter item available qty">
+                                                </div>
+                                            </div>
+
+
                                         </div>
 
                                         <hr class="my-4">
@@ -216,8 +227,7 @@ $item_id = 'IM00' . $lastId + 1;
                                                 <div class="mb-3">
                                                     <label class="form-label" for="cost">Item Cost <span
                                                             class="text-danger">*</span></label>
-                                                    <input id="cost" name="cost" type="text"
-                                                        class="form-control"
+                                                    <input id="cost" name="cost" type="text" class="form-control"
                                                         placeholder="Enter item cost">
                                                 </div>
                                             </div>
@@ -264,8 +274,7 @@ $item_id = 'IM00' . $lastId + 1;
                                                     <label class="form-label" for="whole_sale_price">Wholesale Price
                                                         <span class="text-danger">*</span></label>
                                                     <input id="whole_sale_price" name="whole_sale_price" type="text"
-                                                        class="form-control"
-                                                        placeholder="Enter wholesale price">
+                                                        class="form-control" placeholder="Enter wholesale price">
                                                 </div>
                                             </div>
 
@@ -275,8 +284,7 @@ $item_id = 'IM00' . $lastId + 1;
                                                     <label class="form-label" for="retail_price">Retail Price <span
                                                             class="text-danger">*</span></label>
                                                     <input id="retail_price" name="retail_price" type="text"
-                                                        class="form-control"
-                                                        placeholder="Enter retail price">
+                                                        class="form-control" placeholder="Enter retail price">
                                                 </div>
                                             </div>
 
@@ -333,12 +341,7 @@ $item_id = 'IM00' . $lastId + 1;
         </div>
         <!-- end main content-->
 
-    </div>
-    <!-- END layout-wrapper -->
-
-
-    <?php include 'item-master-model.php' ?>
-
+    </div>  
 
     <!-- Right bar overlay-->
     <div class="rightbar-overlay"></div>
@@ -348,18 +351,11 @@ $item_id = 'IM00' . $lastId + 1;
     <!-- /////////////////////////// -->
     <script src="ajax/js/item-master.js"></script>
     <script src="ajax/js/common.js"></script>
-
-
-
+ 
     <script src="assets/libs/sweetalert/sweetalert-dev.js"></script>
     <script src="assets/js/jquery.preloader.min.js"></script>
 
     <script src="assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/libs/metismenu/metisMenu.min.js"></script>
-    <script src="assets/libs/simplebar/simplebar.min.js"></script>
-    <script src="assets/libs/node-waves/waves.min.js"></script>
-    <script src="assets/libs/waypoints/lib/jquery.waypoints.min.js"></script>
-    <script src="assets/libs/jquery.counterup/jquery.counterup.min.js"></script>
 
     <!-- Required datatable js -->
     <script src="assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
@@ -367,12 +363,6 @@ $item_id = 'IM00' . $lastId + 1;
     <!-- Buttons examples -->
     <script src="assets/libs/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
     <script src="assets/libs/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js"></script>
-    <script src="assets/libs/jszip/jszip.min.js"></script>
-    <script src="assets/libs/pdfmake/build/pdfmake.min.js"></script>
-    <script src="assets/libs/pdfmake/build/vfs_fonts.js"></script>
-    <script src="assets/libs/datatables.net-buttons/js/buttons.html5.min.js"></script>
-    <script src="assets/libs/datatables.net-buttons/js/buttons.print.min.js"></script>
-    <script src="assets/libs/datatables.net-buttons/js/buttons.colVis.min.js"></script>
 
     <!-- Responsive examples -->
     <script src="assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
@@ -380,12 +370,7 @@ $item_id = 'IM00' . $lastId + 1;
 
     <!-- Datatable init js -->
     <script src="assets/js/pages/datatables.init.js"></script>
-    <!-- apexcharts -->
-
-    <script src="assets/js/pages/dashboard.init.js"></script>
-
-    <!-- App js -->
-    <script src="assets/js/app.js"></script>
+     
 
 </body>
 

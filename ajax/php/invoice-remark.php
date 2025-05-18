@@ -14,21 +14,17 @@ if (isset($_POST['create'])) {
     $REMARK->is_active = isset($_POST['is_active']) ? 1 : 0;
 
     // Attempt to create the invoice remark
-    $res = $REMARK->create();
+    $result = $REMARK->create();
 
-    if ($res) {
-        $result = [
-            "status" => 'success'
-        ];
-        echo json_encode($result);
-        exit();
+  
+
+    if ($result) {
+        $response['status'] = 'success';
     } else {
-        $result = [
-            "status" => 'error'
-        ];
-        echo json_encode($result);
-        exit();
-    }
+        $response['status'] = 'error';
+     }
+    echo json_encode($response);
+    exit();
 }
 
 // Update invoice remark details
