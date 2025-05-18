@@ -227,7 +227,7 @@ $employee_id = 'EM00' . $lastId + 1;
                                                         <option value=""> --Select Department --</option>
                                                         <?php
                                                         $DEPARTMENT_MASTER = new DepartmentMaster(NULL);
-                                                        foreach ($DEPARTMENT_MASTER->all() as $department_master) {
+                                                        foreach ($DEPARTMENT_MASTER->getActiveDepartment() as $department_master) {
                                                             ?>
                                                             <option value="<?php echo $department_master['id']; ?>">
                                                                 <?php echo $department_master['name']; ?>
