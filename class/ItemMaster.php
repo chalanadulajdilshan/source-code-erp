@@ -12,6 +12,7 @@ class ItemMaster
     public $group;
     public $category;
     public $cost;
+    public $available_qty;
     public $re_order_level;
     public $re_order_qty;
     public $whole_sale_price;
@@ -39,6 +40,7 @@ class ItemMaster
                 $this->group = $result['group'];
                 $this->category = $result['category'];
                 $this->cost = $result['cost'];
+                $this->available_qty = $result['available_qty'];
                 $this->re_order_level = $result['re_order_level'];
                 $this->re_order_qty = $result['re_order_qty'];
                 $this->whole_sale_price = $result['whole_sale_price'];
@@ -56,11 +58,11 @@ class ItemMaster
     {
         $query = "INSERT INTO `item_master` (
             `code`, `name`, `brand`, `size`, `pattern`, `group`, `category`, 
-            `cost`, `re_order_level`, `re_order_qty`, `whole_sale_price`, 
+            `cost`, `re_order_level`, `re_order_qty`,`available_qty`, `whole_sale_price`, 
             `retail_price`, `cash_discount`, `credit_discount`, `stock_type`, `note`, `is_active`
         ) VALUES (
             '$this->code', '$this->name', '$this->brand', '$this->size', '$this->pattern', '$this->group',
-            '$this->category', '$this->cost', '$this->re_order_level', '$this->re_order_qty',
+            '$this->category', '$this->cost', '$this->re_order_level', '$this->re_order_qty','$this->available_qty'
             '$this->whole_sale_price', '$this->retail_price', '$this->cash_discount',
             '$this->credit_discount', '$this->stock_type', '$this->note', '$this->is_active'
         )";
@@ -82,6 +84,7 @@ class ItemMaster
             `name` = '$this->name', 
             `brand` = '$this->brand', 
             `size` = '$this->size', 
+            `available_qty` = '$this->available_qty',  
             `pattern` = '$this->pattern', 
             `group` = '$this->group', 
             `category` = '$this->category', 

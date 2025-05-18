@@ -116,7 +116,7 @@ include 'auth.php';
                                                         placeholder="Enter Payment Type Name">
                                                     <button class="btn btn-info" type="button" data-bs-toggle="modal"
                                                         data-bs-target=".bs-example-modal-xl">
-                                                        <i class="uil uil-search me-1"></i> Find Payment Type
+                                                        <i class="uil uil-search me-1"></i>  
                                                     </button>
                                                 </div>
                                             </div>

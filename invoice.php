@@ -1,9 +1,17 @@
 <!doctype html>
 <?php
 include 'class/include.php';
+if (!isset($_SESSION)) {
+    session_start();
+}
 
-$COMPANY_PROFILE = new CompanyProfile(1)
-    ?>
+$invoice_id = $_GET['invoice_no'];
+$US = new User($_SESSION['id']);
+$COMPANY_PROFILE = new CompanyProfile($US->company_id);
+
+$SALES_INVOICE = new SalesInvoice($invoice_id);
+$CUSTOMER_MASTER = new CustomerMaster($SALES_INVOICE->customer_id);
+?>
 <html lang="en">
 
 <head>
@@ -92,8 +100,9 @@ $COMPANY_PROFILE = new CompanyProfile(1)
                 <div class="invoice-title">
 
                     <div class="col-sm-6 text-sm-end float-end">
-                        <p><strong>Invoice No:</strong> #MN0131</p>
-                        <p><strong>Invoice Date:</strong> 09 Jul, 2020</p>
+                        <p><strong>Invoice No:</strong> #<?php echo $SALES_INVOICE->invoice_no ?></p>
+                        <p><strong>Invoice Date:</strong>
+                            <?php echo date('d M, Y', strtotime($SALES_INVOICE->invoice_date)); ?></p>
                     </div>
                     <div class="mb-4">
                         <img src="./uploads/company-logos/<?php echo $COMPANY_PROFILE->image_name ?>" alt="logo">
@@ -115,16 +124,17 @@ $COMPANY_PROFILE = new CompanyProfile(1)
 
                         <!-- Right: Billed To -->
                         <div class="col-sm-6 text-sm-end">
-                             
-                            <p>Preston Miller<br>4450 Fancher Drive<br>Dallas, TX
-                                75247<br>PrestonMiller@armyspy.com<br>001-234-5678</p>
+
+                            <p><?php echo $CUSTOMER_MASTER->name ?><br><?php echo $CUSTOMER_MASTER->address ?>
+                                <br><?php echo $CUSTOMER_MASTER->mobile_number ?><br>
+                                <?php echo $CUSTOMER_MASTER->email ?></p>
                         </div>
                     </div>
 
 
                 </div>
 
-                <hr  >
+                <hr>
 
 
 
@@ -135,47 +145,104 @@ $COMPANY_PROFILE = new CompanyProfile(1)
                             <tr>
                                 <th>No.</th>
                                 <th>Item</th>
-                                <th>Price</th>
+                                <th>List Price</th>
+                                <th>Dis % </th>
+                                <th>Selling Price</th>
                                 <th>Quantity</th>
                                 <th class="text-end">Total</th>
                             </tr>
                         </thead>
                         <tbody>
+                            <?php
+                            $TEMP_SALES_ITEM = new TempSalesItem(null);
+                            $temp_items_list = $TEMP_SALES_ITEM->getItemsByInvoiceId($invoice_id);
+
+                            $subtotal = 0;
+                            $total_discount = 0;
+
+                            foreach ($temp_items_list as $key => $temp_items) {
+                                $key++;
+                                $price = (float) $temp_items['price'];
+                                $quantity = (int) $temp_items['quantity'];
+                                $discount_percentage = isset($temp_items['discount']) ? (float) $temp_items['discount'] : 0;
+
+                                // Calculate selling price after discount (per item)
+                                $discount_per_item = $price * ($discount_percentage / 100);
+                                $selling_price = $price - $discount_per_item;
+
+                                // Line total = selling price × quantity
+                                $line_total = $price * $quantity;
+
+                                // Totals
+                                $subtotal += $price * $quantity;
+                                $total_discount += $discount_per_item * $quantity;
+                                ?>
+
+                                <tr>
+                                    <td>0<?php echo $key; ?></td>
+                                    <td><?php echo $temp_items['item_code'] . ' ' . $temp_items['item_name']; ?></td>
+                                    <td><?php echo number_format($price, 2); ?></td>
+                                    <td><?php echo $discount_percentage; ?>%</td>
+                                    <td><?php echo number_format($selling_price, 2); ?></td> <!-- Selling price per item -->
+                                    <td><?php echo $quantity; ?></td>
+                                    <td class="text-end"><?php echo number_format($line_total, 2); ?></td>
+                                </tr>
+                            <?php } ?>
+
+                            <!-- Totals section -->
                             <tr>
-                                <td>01</td>
-                                <td>Nike N012 Running Shoes</td>
-                                <td>$260</td>
-                                <td>1</td>
-                                <td class="text-end">$260.00</td>
+                                <td colspan="4" rowspan="3" style="vertical-align: top;">
+                                    <!-- Terms & Conditions on the left -->
+                                    <h6><strong>Terms & Conditions:</strong></h6>
+                                    <ul style="padding-left: 20px; margin-bottom: 0;">
+                                        <li>All goods once sold are non-refundable.</li>
+                                        <li>Warranty as per manufacturer policy.</li>
+                                        <li>Payment due within 15 days.</li>
+                                    </ul>
+                                </td>
+
+
+                                <td colspan="2" class="text-end">Gross Amount:- </td>
+                                <td class="text-end"><?php echo number_format($subtotal, 2); ?></td>
                             </tr>
                             <tr>
-                                <td>02</td>
-                                <td>Adidas Running Shoes</td>
-                                <td>$250</td>
-                                <td>1</td>
-                                <td class="text-end">$250.00</td>
+                                <td colspan="2" class="text-end">Discount:- </td>
+                                <td class="text-end">- <?php echo number_format($total_discount, 2); ?></td>
+
                             </tr>
                             <tr>
-                                <td colspan="4" class="text-end">Sub Total</td>
-                                <td class="text-end">$510.00</td>
+                                <td colspan="2" class="text-end"><strong>Net Amount:- </strong></td>
+                                <td class="text-end">
+                                    <strong><?php echo number_format($subtotal - $total_discount, 2); ?></strong>
+                                </td>
                             </tr>
+
+                            <!-- Signature line -->
                             <tr>
-                                <td colspan="4" class="text-end">Discount</td>
-                                <td class="text-end">- $50.00</td>
+                                <td colspan="7" style="padding-top: 50px;">
+                                    <table style="width: 100%;">
+                                        <tr>
+                                            <td style="text-align: center;">
+                                                _________________________<br>
+                                                <strong>Prepared By</strong>
+                                            </td>
+                                            <td style="text-align: center;">
+                                                _________________________<br>
+                                                <strong>Approved By</strong>
+                                            </td>
+                                            <td style="text-align: center;">
+                                                _________________________<br>
+                                                <strong>Received By</strong>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
                             </tr>
-                            <tr>
-                                <td colspan="4" class="text-end">Shipping</td>
-                                <td class="text-end">$25.00</td>
-                            </tr>
-                            <tr>
-                                <td colspan="4" class="text-end">Tax</td>
-                                <td class="text-end">$13.00</td>
-                            </tr>
-                            <tr>
-                                <td colspan="4" class="text-end"><strong>Total</strong></td>
-                                <td class="text-end"><strong>$498.00</strong></td>
-                            </tr>
+
+
                         </tbody>
+
+
                     </table>
                 </div>
 
