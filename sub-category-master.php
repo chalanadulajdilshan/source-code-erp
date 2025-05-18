@@ -121,7 +121,7 @@ $sub_category_id = 'IM00' . $lastId + 1;
                                                     readonly class="form-control" placeholder="Ref No"> 
                                                 
                                                     <button class="btn btn-info" type="button"  data-bs-toggle="modal"
-                                                    data-bs-target=".bs-example-modal-xl">
+                                                    data-bs-target="#subMasterModel">
                                                         <i class="uil uil-search me-1"></i> Find
                                                     </button>
                                                 </div>
@@ -184,7 +184,7 @@ $sub_category_id = 'IM00' . $lastId + 1;
     </div>
     <!-- END layout-wrapper -->
      
-    <div class="modal fade bs-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="categoryModalLabel" aria-hidden="true">
+    <div class="modal fade bs-example-modal-xl" id="subMasterModel" tabindex="-1" role="dialog" aria-labelledby="categoryModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
 
@@ -226,7 +226,13 @@ $sub_category_id = 'IM00' . $lastId + 1;
                                         <td><?php echo htmlspecialchars($subcategory['code']); ?></td>
                                         <td><?php echo htmlspecialchars($category->name); ?></td>
                                         <td><?php echo htmlspecialchars($subcategory['name']); ?></td>
-                                        <td><?php echo htmlspecialchars($subcategory['is_active']); ?></td>
+                                        <td>
+                                                <?php if ($subcategory['is_active'] == 1): ?>
+                                                    <span class="badge bg-soft-success font-size-12">Active</span>
+                                                <?php else: ?>
+                                                    <span class="badge bg-soft-danger font-size-12">Inactive</span>
+                                                <?php endif; ?>
+                                            </td> 
                                     </tr>
                                 <?php } ?>
 

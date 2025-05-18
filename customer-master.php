@@ -73,7 +73,7 @@ $customer_id = 'CM00' . $lastId + 1;
                             <a href="#" class="btn btn-warning" id="update">
                                 <i class="uil uil-edit me-1"></i> Update
                             </a>
-                            <a href="#" class="btn btn-danger delete-category">
+                            <a href="#" class="btn btn-danger delete-customer">
                                 <i class="uil uil-trash-alt me-1"></i> Delete
                             </a>
 
