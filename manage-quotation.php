@@ -80,7 +80,7 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
                                 <a href="#" class="btn btn-warning" id="update">
                                     <i class="uil uil-edit me-1"></i> Update
                                 </a>
-                                <a href="#" class="btn btn-danger delete-category">
+                                <a href="#" class="btn btn-danger delete-quotation">
                                     <i class="uil uil-trash-alt me-1"></i> Delete
                                 </a>
 
@@ -127,18 +127,16 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
                                     </div>
 
                                     <div class="p-4">
-                                        <form id="form-data">
+                                        <form id="form-data" autocomplete="off">
                                             <div class="row">
-
 
                                                 <div class="col-md-2">
                                                     <label for="customerCode" class="form-label">Quotation No</label>
                                                     <div class="input-group mb-3">
-                                                        <input type="text" id="quotation_id" name="quotation_id"
-                                                            placeholder="Quotation No" class="form-control"
-                                                            value="<?php echo $quotation_id ?>" readonly>
+                                                        <input type="text" id="quotation_id" name="quotation_id" value="<?php echo $qty_id; ?>"    class="form-control" readonly>
+  
                                                         <button class="btn btn-info" type="button"
-                                                            data-bs-toggle="modal" data-bs-target="#customerModal">
+                                                            data-bs-toggle="modal" data-bs-target="#quotationModel">
                                                             <i class="uil uil-search me-1"></i> Find
                                                         </button>
                                                     </div>
@@ -147,7 +145,9 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
                                                 <div class="col-md-2">
                                                     <label for="name" class="form-label">Quotation Date</label>
                                                     <div class="input-group" id="datepicker2">
+ 
                                                         <input type="text" class="form-control date-picker">
+ 
 
                                                         <span class="input-group-text"><i
                                                                 class="mdi mdi-calendar"></i></span>
@@ -219,6 +219,7 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
                                                     <label for="vat_type" class="form-label">Vat Type</label>
                                                     <div class="input-group mb-3">
                                                         <select id="vat_type" name="vat_type" class="form-select">
+ 
                                                             <?php
                                                             $VAT_TYPE = new VatType(NULL);
                                                             foreach ($VAT_TYPE->all() as $vat_type) {
@@ -227,9 +228,11 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
                                                                     <?php echo $vat_type['name'] ?>
                                                                 </option>
                                                             <?php } ?>
+ 
                                                         </select>
                                                     </div>
                                                 </div>
+
                                                 <div class="col-md-3">
                                                     <label for="department_id" class="form-label">Department</label>
                                                     <div class="input-group mb-3">
@@ -298,6 +301,12 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
                                                     <textarea id="remark" name="remark" class="form-control" rows="4"
                                                         placeholder="Enter any remarks or notes about the quotation..."></textarea>
                                                 </div>
+                                                <!-- hidden values -->
+
+                                               <input type="hidden" id="customer_id" name="customer_id">
+                                               <input type="hidden" id="credit_limit" name="credit_limit">
+                                               <input type="hidden" id="balance" name="balance">
+                                               <input type="hidden" id="id"  >
 
                                                 <hr class="my-4">
 
@@ -398,6 +407,73 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
 
         </div>
         <!-- END layout-wrapper -->
+         
+        <!-- model open here -->
+        <div class="modal fade bs-example-modal-xl" id="quotationModel" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="myExtraLargeModalLabel">Manage Quotation</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-12">
+        
+
+                                <table id="datatable" class="table table-bordered dt-responsive nowrap"
+                                    style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>#ID</th>
+                                            <th>Quotation No</th>
+                                            <th>Date</th>
+                                            <th>Customer Name</th>
+                                            <th>Company</th>
+                                            <th>Department</th>
+                                            <th>Final Total</th>
+
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <?php
+                                        $QUOTATION = new Quotation(null);
+                                        foreach ($QUOTATION->all() as $key => $quotation) {
+                                            $key++;
+                                            $CUSTOMER = new CustomerMaster($quotation['customer_id']);
+                                            $COMPANY = new CompanyProfile($quotation['company_id']);
+                                            $DEPARTMENT_MASTER = new DepartmentMaster($quotation['department_id']);
+                                            ?>
+                                            <tr class="select-model" data-id="<?php echo $quotation['id']; ?>"
+                                                    data-quotation_no="<?php echo htmlspecialchars($quotation['quotation_no']); ?>"
+                                                    data-date="<?php echo htmlspecialchars($quotation['date']); ?>"
+                                                    data-customer_name="<?php echo htmlspecialchars($quotation['customer_id']); ?>"
+                                                    data-company_id="<?php echo htmlspecialchars($quotation['company_id']); ?>"
+                                                    data-department_id="<?php echo htmlspecialchars($quotation['department_id']); ?>"
+                                                    data-finalTotal="<?php echo htmlspecialchars($quotation['grand_total']); ?>"
+                                            >
+
+                                            <td><?php echo $key; ?></td>
+                                                    <td><?php echo htmlspecialchars($quotation['quotation_no']); ?></td>
+                                                    <td><?php echo htmlspecialchars($quotation['date']); ?></td>
+                                                    <td><?php echo htmlspecialchars($CUSTOMER->name); ?></td>
+                                                    <td><?php echo htmlspecialchars($COMPANY->name); ?></td>
+                                                    <td><?php echo htmlspecialchars($DEPARTMENT_MASTER->name); ?></td>
+                                                    <td><?php echo htmlspecialchars($quotation['grand_total']); ?></td>
+                                            </tr>
+                                        <?php } ?>
+                                    </tbody>
+                                </table>
+                            </div> <!-- end col -->
+                        </div> <!-- end row -->
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div>
+        <!-- model close here -->
 
         <!-- Right bar overlay-->
         <div class="rightbar-overlay"></div>

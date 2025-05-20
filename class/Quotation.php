@@ -4,13 +4,15 @@ class Quotation
 {
     public $id;
     public $quotation_no;
+    public $company_id;  
     public $date;
     public $customer_id;
     public $credit_limit;
     public $balance;
     public $department_id;
     public $marketing_executive_id;
-     public $payment_type;
+    public $vat_type;
+    public $payment_type;
     public $remarks;
     public $credit_period;
     public $payment_term;
@@ -31,13 +33,15 @@ class Quotation
             if ($result) {
                 $this->id = $result['id'];
                 $this->quotation_no = $result['quotation_no'];
-                 $this->date = $result['date'];
+                $this->company_id = $result['company_id'];
+                $this->date = $result['date'];
                 $this->customer_id = $result['customer_id'];
                 $this->credit_limit = $result['credit_limit'];
                 $this->balance = $result['balance'];
                 $this->department_id = $result['department_id'];
                 $this->marketing_executive_id = $result['marketing_executive_id'];
-                 $this->payment_type = $result['payment_type'];
+                $this->vat_type = $result['vat_type'];
+                $this->payment_type = $result['payment_type'];
                 $this->remarks = $result['remarks'];
                 $this->credit_period = $result['credit_period'];
                 $this->payment_term = $result['payment_term'];
@@ -54,10 +58,11 @@ class Quotation
     public function create()
     {
         $query = "INSERT INTO `quotation` 
-        (`quotation_no`,  `date`, `customer_id`, `credit_limit`, `balance`, `department_id`, `marketing_executive_id`,   `payment_type`, `remarks`, `credit_period`, `payment_term`, `validity`, `sub_total`, `discount`, `tax`, `grand_total`, `created_at`) 
+        (`quotation_no`, `company_id`, `date`, `customer_id`, `credit_limit`, `balance`, `department_id`, `marketing_executive_id`, `vat_type`,  `payment_type`, `remarks`, `credit_period`, `payment_term`, `validity`, `sub_total`, `discount`, `tax`, `grand_total`, `created_at`) 
         VALUES 
-        ('{$this->quotation_no}',  '{$this->date}', '{$this->customer_id}', '{$this->credit_limit}', '{$this->balance}', '{$this->department_id}', '{$this->marketing_executive_id}',   '{$this->payment_type}', '{$this->remarks}', '{$this->credit_period}', '{$this->payment_term}', '{$this->validity}', '{$this->sub_total}', '{$this->discount}', '{$this->tax}', '{$this->grand_total}', '{$this->created_at}')";
-
+        ('{$this->quotation_no}', '{$this->company_id}',  '{$this->date}', '{$this->customer_id}', '{$this->credit_limit}', '{$this->balance}', '{$this->department_id}', '{$this->marketing_executive_id}', '{$this->vat_type}', '{$this->payment_type}', '{$this->remarks}', '{$this->credit_period}', '{$this->payment_term}', '{$this->validity}', '{$this->sub_total}', '{$this->discount}', '{$this->tax}', '{$this->grand_total}', '{$this->created_at}')";
+ 
+ 
         $db = new Database();
         $result = $db->readQuery($query);
 
@@ -71,14 +76,16 @@ class Quotation
     public function update()
     {
         $query = "UPDATE `quotation` SET 
-        `quotation_no` = '{$this->quotation_no}', 
+        `quotation_no` = '{$this->quotation_no}',
+        `company_id` = '{$this->company_id}', 
         `date` = '{$this->date}',
         `customer_id` = '{$this->customer_id}',
         `credit_limit` = '{$this->credit_limit}',
         `balance` = '{$this->balance}',
         `department_id` = '{$this->department_id}',
         `marketing_executive_id` = '{$this->marketing_executive_id}',
-         `payment_type` = '{$this->payment_type}',
+        `vat_type` = '{$this->vat_type}',
+        `payment_type` = '{$this->payment_type}',
         `remarks` = '{$this->remarks}',
         `credit_period` = '{$this->credit_period}',
         `payment_term` = '{$this->payment_term}',
@@ -94,12 +101,18 @@ class Quotation
         return $db->readQuery($query);
     }
 
-    public function delete()
-    {
-        $query = "DELETE FROM `quotation` WHERE `id` = '{$this->id}'";
-        $db = new Database();
-        return $db->readQuery($query);
-    }
+public function delete()
+{
+    $db = new Database();
+    
+    // Delete related quotation items
+    $db->readQuery("DELETE FROM `quotation_item` WHERE `quotation_id` = '{$this->id}'");
+
+    // Delete the quotation itself
+    $query = "DELETE FROM `quotation` WHERE `id` = '{$this->id}'";
+    return $db->readQuery($query);
+}
+
 
     public function all()
     {
