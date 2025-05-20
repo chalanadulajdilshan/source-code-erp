@@ -1,12 +1,17 @@
 <!doctype html>
 <?php
 include 'class/include.php';
+include './auth.php';
 
 $QUOTATION_ = new Quotation(NULL);
 
-// Get the last inserted package id
-$lastId = $QUOTATION_->getLastID();
-$qty_id = 'QTY00' . $lastId + 1;
+//doc id get by session 
+$DOCUMENT_TRACKING = new DocumentTracking($doc_id);
+
+// Get the last inserted quotation
+$lastId = $DOCUMENT_TRACKING->quotation_id;
+$quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId + 1;
+
 ?>
 
 <html lang="en">
@@ -14,10 +19,10 @@ $qty_id = 'QTY00' . $lastId + 1;
 <head>
 
     <meta charset="utf-8" />
-    <title>Horizontal Layout | Minible - Admin & Dashboard Template</title>
+    <title> Manage Quotation | <?php echo $COMPANY_PROFILE_DETAILS->name ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="#" name="description" />
-    <meta content="Themesbrand" name="author" />
+    <meta content="Themesbrand" name="#" />
     <!-- App favicon -->
     <link rel="shortcut icon" href="assets/images/favicon.ico">
 
@@ -39,6 +44,7 @@ $qty_id = 'QTY00' . $lastId + 1;
         type="text/css" />
     <link href="assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet"
         type="text/css" />
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
 
 
 
@@ -127,9 +133,8 @@ $qty_id = 'QTY00' . $lastId + 1;
                                                 <div class="col-md-2">
                                                     <label for="customerCode" class="form-label">Quotation No</label>
                                                     <div class="input-group mb-3">
-                                                        <input type="text" id="quotation_id" name="quotation_id" value="<?php echo $qty_id; ?>"
-                                                            placeholder="Quotation No" class="form-control"
-                                                            readonly>
+                                                        <input type="text" id="quotation_id" name="quotation_id" value="<?php echo $qty_id; ?>"    class="form-control" readonly>
+  
                                                         <button class="btn btn-info" type="button"
                                                             data-bs-toggle="modal" data-bs-target="#quotationModel">
                                                             <i class="uil uil-search me-1"></i> Find
@@ -140,10 +145,9 @@ $qty_id = 'QTY00' . $lastId + 1;
                                                 <div class="col-md-2">
                                                     <label for="name" class="form-label">Quotation Date</label>
                                                     <div class="input-group" id="datepicker2">
-                                                        <input type="text" class="form-control" placeholder="dd M, yyyy"
-                                                            data-date-format="dd M, yyyy"
-                                                            data-date-container='#datepicker2' name="date" id="date" data-provide="datepicker"
-                                                            data-date-autoclose="true" required>
+ 
+                                                        <input type="text" class="form-control date-picker">
+ 
 
                                                         <span class="input-group-text"><i
                                                                 class="mdi mdi-calendar"></i></span>
@@ -215,15 +219,22 @@ $qty_id = 'QTY00' . $lastId + 1;
                                                     <label for="vat_type" class="form-label">Vat Type</label>
                                                     <div class="input-group mb-3">
                                                         <select id="vat_type" name="vat_type" class="form-select">
-                                                            <option value="1">Non Vat</option>
-                                                            <option value="2">vat</option>
-                                                            <option value="3">Svat</option>
+ 
+                                                            <?php
+                                                            $VAT_TYPE = new VatType(NULL);
+                                                            foreach ($VAT_TYPE->all() as $vat_type) {
+                                                                ?>
+                                                                <option value="<?php echo $vat_type['id'] ?>">
+                                                                    <?php echo $vat_type['name'] ?>
+                                                                </option>
+                                                            <?php } ?>
+ 
                                                         </select>
                                                     </div>
                                                 </div>
 
                                                 <div class="col-md-3">
-                                                    <label for="bankId" class="form-label">Department</label>
+                                                    <label for="department_id" class="form-label">Department</label>
                                                     <div class="input-group mb-3">
                                                         <select id="department_id" name="department_id"
                                                             class="form-select">
@@ -379,12 +390,8 @@ $qty_id = 'QTY00' . $lastId + 1;
                                                             </tr>
                                                         </tfoot>
                                                     </table>
-
                                                 </div>
-
                                             </div>
-
-
                                         </form>
                                     </div>
                                 </div>
@@ -468,16 +475,12 @@ $qty_id = 'QTY00' . $lastId + 1;
         </div>
         <!-- model close here -->
 
-        <?php include 'customer-master-model.php' ?>
-        <?php include 'item-master-model.php' ?>
-
         <!-- Right bar overlay-->
         <div class="rightbar-overlay"></div>
 
         <!-- JAVASCRIPT -->
         <script src="assets/libs/jquery/jquery.min.js"></script>
         <!-- /////////////////////////// -->
-
         <script src="ajax/js/quotation.js"></script>
 
 
@@ -518,6 +521,19 @@ $qty_id = 'QTY00' . $lastId + 1;
 
         <!-- App js -->
         <script src="assets/js/app.js"></script>
+        <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+        <script>
+            $(function () {
+                // Initialize the datepicker
+                $(".date-picker").datepicker({
+                    dateFormat: 'yy-mm-dd' // or 'dd-mm-yy' as per your format
+                });
+
+                // Set today's date as default value
+                var today = $.datepicker.formatDate('yy-mm-dd', new Date());
+                $(".date-picker").val(today);
+            });
+        </script>
 
     </body>
 

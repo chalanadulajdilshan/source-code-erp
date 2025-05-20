@@ -89,6 +89,16 @@ jQuery(document).ready(function () {
                 timer: 2000,
                 showConfirmButton: false
             });
+        } else if (!$('#province').val() || $('#province').val() == 0) {
+            swal({
+                title: "Error!",
+                text: "Please Select Province",
+                type: 'error',
+                timer: 2000,
+                showConfirmButton: false
+            });
+
+
         } else {
 
             $('.someBlock').preloader();
@@ -145,50 +155,6 @@ jQuery(document).ready(function () {
         $("#create").show();
     });
 
-    // Open modal
-    $('#open-customer-modal').click(function (e) {
-        e.preventDefault();
-        var myModal = new bootstrap.Modal(document.querySelector('.bs-example-modal-xl'));
-        myModal.show();
-    });
-
-    // Populate form from modal click
-    $(document).on('click', '.select-customer', function () {
-        $('#customer_id').val($(this).data('id'));
-        $('#code').val($(this).data('code'));
-        $('#name').val($(this).data('name'));
-        $('#mobile_number').val($(this).data('mobile1'));
-        $('#mobile_number_2').val($(this).data('mobile2'));
-        $('#email').val($(this).data('email'));
-        $('#contact_person').val($(this).data('contact'));
-        $('#contact_person_number').val($(this).data('contactnum'));
-        $('#credit_limit').val($(this).data('creditlimit'));
-        $('#outstanding').val($(this).data('outstanding'));
-        $('#overdue').val($(this).data('overdue'));
-        $('#vat_no').val($(this).data('vat'));
-        $('#svat_no').val($(this).data('svat'));
-        $('#address').val($(this).data('address'));
-        $('#remark').val($(this).data('remark'));
-        $('#category').val($(this).data('category'));
-        $('#district').val($(this).data('district'));
-        $('#province').val($(this).data('province'));
-        $('#vat_group').val($(this).data('vatgroup'));
-
-        if ($(this).data('isvat') == 1) {
-            $('#is_vat').prop('checked', true);
-        } else {
-            $('#is_vat').prop('checked', false);
-        }
-
-        if ($(this).data('active') == 1) {
-            $('#activeStatus').prop('checked', true);
-        } else {
-            $('#activeStatus').prop('checked', false);
-        }
-
-        $("#create").hide();
-        $('.bs-example-modal-xl').modal('hide');
-    });
 
     // Delete Customer
     $(document).on('click', '.delete-customer', function (e) {
@@ -262,74 +228,6 @@ jQuery(document).ready(function () {
     });
 
 
-    var table = $('#customerTable').DataTable({
-        processing: true,
-        serverSide: true,
-        ajax: {
-            url: "ajax/php/customer-master.php",
-            type: "POST",
-            data: function (d) {
-                d.filter = true;
-            },
-            dataSrc: function (json) {
-                return json.data;
-            },
-            error: function (xhr) {
-                console.error("Server Error Response:", xhr.responseText);
-            }
-        },
-        columns: [
-            { data: "id", title: "#ID" },
-            { data: "code", title: "Code" },
-            { data: "name", title: "Name" },
-            { data: "mobile_number", title: "Mobile" },
-            { data: "email", title: "Email" },
-            { data: "category", title: "Category" },
-            { data: "province", title: "Province" },
-            { data: "credit_limit", title: "Credit Limit" },
-            { data: "vat_no", title: "Is Vat" },
-            { data: "status_label", title: "Status" }
-        ],
-        order: [[0, 'desc']],
-        pageLength: 100
-    });
-
-    $('#customerTable tbody').on('click', 'tr', function () {
-        var data = table.row(this).data();
-        if (!data) return;
-
-        // Fill form fields
-        $('#customer_id').val(data.id);
-        $('#code').val(data.code);
-        $('#name').val(data.name);
-        $('#address').val(data.address);
-        $('#mobile_number').val(data.mobile_number);
-        $('#mobile_number_2').val(data.mobile_number_2);
-        $('#email').val(data.email);
-        $('#contact_person').val(data.contact_person);
-        $('#contact_person_number').val(data.contact_person_number);
-        $('#credit_limit').val(data.credit_limit);
-        $('#outstanding').val(data.outstanding);
-        $('#overdue').val(data.overdue);
-        $('#vat_no').val(data.vat_no);
-        $('#svat_no').val(data.svat_no);
-        $('#vat_group').val(data.vat_group).trigger('change');
-        $('#category').val(data.category_id).trigger('change');
-        $('#province').val(data.province_id).trigger('change');
-        $('#district').val(data.district_id).trigger('change');
-        $('#remark').val(data.remark);
-
-        // Checkbox for active status
-        $('#is_active').prop('checked', data.status == "1");
-
-        // Hide Save (Create) Button
-        $("#create").hide();
-
-        // Hide modal if open
-        $('.bs-example-modal-xl').modal('hide');
-    });
-
-
     $("#customer_code").keyup(function () {
         var query = $(this).val();
 
@@ -377,7 +275,7 @@ jQuery(document).ready(function () {
     // Keydown event to handle Up and Down arrow key navigation
     $(document).on("keydown", "#customer_code", function (e) {
         var listItems = $("#customerList .list-group-item");
-    
+
         if (listItems.length > 0) {
             // Handle Down arrow key
             if (e.keyCode == 40) { // Down arrow
@@ -400,29 +298,29 @@ jQuery(document).ready(function () {
                     var customerName = selectedItem.data("name");
                     var customerAddress = selectedItem.data("address");
                     var customerMobile = selectedItem.data("mobile");
-    
+
                     // Populate input fields with selected customer data
                     $("#customer_code").val(customerCode);
                     $("#customer_name").val(customerName);
                     $("#customer_address").val(customerAddress);
                     $("#customer_mobile").val(customerMobile);
-    
+
                     // Hide the customer dropdown list
                     $("#customerList").hide();
-    
+
                     // Highlight the selected item
                     listItems.removeClass("active"); // Remove active class from all items
                     selectedItem.addClass("active"); // Highlight the current selected item
                     $("#customer_code").blur(); // Unfocus the input field
                 }
             }
-    
+
             // Highlight the selected item in the dropdown
             listItems.removeClass("active"); // Remove any previously highlighted class
             listItems.eq(selectedIndex).addClass("active"); // Highlight the current item
         }
     });
-    
+
     // When a user clicks on a dropdown item
     $(document).on("click", "#customerList .list-group-item", function () {
         // Retrieve customer data from the clicked item
@@ -430,28 +328,28 @@ jQuery(document).ready(function () {
         var customerName = $(this).data("name");
         var customerAddress = $(this).data("address");
         var customerMobile = $(this).data("mobile");
-    
+
         // Populate the fields with the customer data
         $("#customer_code").val(customerCode);
         $("#customer_name").val(customerName);
         $("#customer_address").val(customerAddress);
         $("#customer_mobile").val(customerMobile);
-    
+
         // Hide the customer list after selection
         $("#customerList").hide();
-    
+
         // Keep the selected item highlighted
         $("#customerList .list-group-item").removeClass("active");
         $(this).addClass("active");
-        
+
     });
-    
+
     // Click outside to close the dropdown if it's open
     $(document).click(function (e) {
         if (!$(e.target).closest("#customer_code").length) {
             $("#customerList").hide();
         }
     });
-    
+
 
 });

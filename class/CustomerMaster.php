@@ -135,7 +135,7 @@ class CustomerMaster
         return $result['id'];
     }
 
-    public function fetchForDataTable($request)
+    public function fetchForDataTable($request, $category)
     {
         $db = new Database();
 
@@ -149,11 +149,27 @@ class CustomerMaster
         $totalData = mysqli_num_rows($totalQuery);
 
         // Search filter
-        $sql = "SELECT * FROM customer_master WHERE id != 1  ";
-        if (!empty($search)) {
-            $sql .= "AND  name LIKE '%$search%' OR code LIKE '%$search%' OR mobile_number LIKE '%$search%' ";
+        $sql = "SELECT * FROM customer_master WHERE id != 1 ";
+
+        if (!empty($category)) {
+            if (is_array($category)) {
+                // Sanitize values to integers
+                $category = array_map('intval', $category);
+                $categoryList = implode(',', $category);
+                $sql .= " AND category IN ($categoryList)   ";
+            } else {
+                // Single category value
+                $category = intval($category); // sanitize
+                $sql .= " AND category = $category    ";
+            }
         }
 
+
+
+        if (!empty($search)) {
+            $sql .= "AND  name LIKE '%$search%' OR code LIKE '%$search%' OR mobile_number LIKE '%$search%'  and is_active !=0";
+        }
+ 
         $filteredQuery = $db->readQuery($sql);
         $filteredData = mysqli_num_rows($filteredQuery);
 
@@ -208,15 +224,16 @@ class CustomerMaster
         ];
     }
 
+
     public static function searchCustomers($search)
     {
         $db = new Database();
-            $query = "SELECT *
+        $query = "SELECT *
                 FROM customer_master 
                 WHERE (code LIKE '%$search%' OR name LIKE '%$search%') 
                 AND is_active = 1 ";
 
- 
+
         $result = $db->readQuery($query);
 
         $customers = [];

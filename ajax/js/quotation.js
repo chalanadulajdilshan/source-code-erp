@@ -118,8 +118,6 @@ jQuery(document).ready(function () {
     });
 
 
-    
-
     // Add item to quatation table
     function addItem() {
         const code = $('#itemCode').val().trim();

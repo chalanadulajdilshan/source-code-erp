@@ -1,12 +1,13 @@
 <!doctype html>
 <?php
 include 'class/include.php';
+include './auth.php';
 
-$SALES_INVOICE = new SalesInvoice(NULL);
+$DOCUMENT_TRACKING = new DocumentTracking($doc_id);
 
 // Get the last inserted package id
-$lastId = $SALES_INVOICE->getLastID();
-$invoice_id = 'IN00' . $lastId + 1;
+$lastId = $DOCUMENT_TRACKING->arn_id;
+$arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
 ?>
 
 <html lang="en">
@@ -14,7 +15,7 @@ $invoice_id = 'IN00' . $lastId + 1;
 <head>
 
     <meta charset="utf-8" />
-    <title>Horizontal Layout | Minible - Admin & Dashboard Template</title>
+    <title>ARN | <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="#" name="description" />
     <meta content="Themesbrand" name="author" />
@@ -38,8 +39,13 @@ $invoice_id = 'IN00' . $lastId + 1;
         type="text/css" />
     <link href="assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet"
         type="text/css" />
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
 
-     
+    <style>
+        .col-lg-1 {
+            width: 5.9% !important;
+        }
+    </style>
 
 
 </head>
@@ -68,14 +74,14 @@ $invoice_id = 'IN00' . $lastId + 1;
                                 <a href="#" class="btn btn-success" id="new">
                                     <i class="uil uil-plus me-1"></i> New
                                 </a>
-                                <a href="#" class="btn btn-primary" id="create">
+                                <a href="#" class="btn btn-primary" id="create_arn">
                                     <i class="uil uil-save me-1"></i> Save
                                 </a>
                                 <a href="#" class="btn btn-warning" id="search">
                                     <i class="uil uil-search me-1"></i> Search
                                 </a>
-                                <a href="#" class="btn btn-primary" id="print">
-                                    <i class="uil uil-save me-1"></i> Print
+                                <a href="#" class="btn btn-info" id="print">
+                                    <i class="uil uil-plus me-1"></i> Print
                                 </a>
                                 <a href="#" class="btn btn-danger delete-category">
                                     <i class="uil uil-trash-alt me-1"></i> Delete
@@ -99,9 +105,7 @@ $invoice_id = 'IN00' . $lastId + 1;
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="card">
-
                                     <div class="p-4">
-
                                         <div class="d-flex align-items-center">
                                             <div class="flex-shrink-0 me-3">
                                                 <div class="avatar-xs">
@@ -127,10 +131,10 @@ $invoice_id = 'IN00' . $lastId + 1;
                                             <div class="row">
 
                                                 <div class="col-md-2">
-                                                    <label for="GRN_No" class="form-label">GRN No</label>
+                                                    <label for="arn_no" class="form-label">ARN No</label>
                                                     <div class="input-group mb-3">
-                                                        <input id="grn_no" name="grn_no" type="text"
-                                                            class="form-control" readonly>
+                                                        <input id="arn_no" name="arn_no" type="text"
+                                                            class="form-control" value="<?php echo $arn_id ?>" readonly>
                                                     </div>
                                                 </div>
 
@@ -138,7 +142,8 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                     <label for="Entry_Date" class="form-label">Entry Date</label>
                                                     <div class="input-group mb-3">
                                                         <input id="entry_date" name="entry_date" type="text"
-                                                            class="form-control" readonly>
+                                                            class="form-control" value="<?php echo date('Y-m-d') ?> "
+                                                            readonly>
                                                     </div>
                                                 </div>
 
@@ -146,44 +151,51 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                     <label for="PO_No" class="form-label">PO No</label>
                                                     <div class="input-group">
                                                         <input id="po_no" type="text" class="form-control"
-                                                            placeholder="PO No">
+                                                            placeholder="Select Po No">
 
-                                                        <button class="btn btn-info" type="button"
-                                                            id="open-item-modal">
-                                                            <i class="uil uil-search me-1"></i> Search
+                                                        <button class="btn btn-info" type="button" id="open-item-modal">
+                                                            <i class="uil uil-search me-1"></i>
                                                         </button>
                                                     </div>
                                                 </div>
-
-
-                                                <div class="col-md-5">
-                                                <label for="supplier" class="form-label">Supplier</label>
-                                                    <div class="input-group mb-3">
-                                                        <input id="supplier_id" name="supplier_id" type="text"
-                                                            class="form-control ms-2 me-2" style="max-width: 150px;" readonly>
-                                                        <input id="supplier_name" name="supplier_name" type="text"
-                                                            class="form-control" style="flex: 1;" readonly>
-
-                                                        <button class="btn btn-info" type="button"
-                                                            data-bs-toggle="modal" data-bs-target="#supplier">
-                                                            <i class="uil uil-search me-1"></i> Search
-                                                        </button>
-                                                    </div> 
-
-                                                </div>
-                                                
                                                 <div class="col-md-2">
                                                     <label class="form-label" for="entry_date">PO Date</label>
-                                                    <input id="po_date" name="po_date" type="date" class="form-control">
+                                                    <input id="po_date" name="po_date" type="text"
+                                                        class="form-control date-picker" placeholder="Select Po Date">
                                                 </div>
+
+                                                <div class="col-md-4">
+                                                    <label for="supplier" class="form-label">Supplier</label>
+                                                    <div class="input-group mb-3">
+                                                        <input id="customer_code" name="customer_code" type="text"
+                                                            class="form-control ms-2 me-2" style="max-width: 200px;"
+                                                            readonly placeholder="Select Code">
+                                                        <input id="customer_name" name="customer_name" type="text"
+                                                            class="form-control" placeholder="Select name" readonly>
+
+                                                        <button class="btn btn-info" type="button"
+                                                            data-bs-toggle="modal" data-bs-target="#supplierModal">
+                                                            <i class="uil uil-search me-1"></i>
+                                                        </button>
+                                                    </div>
+
+                                                </div>
+
+
 
                                                 <div class="col-md-2">
                                                     <label for="Department" class="form-label">Department</label>
                                                     <div class="input-group mb-3">
-                                                        <select id="department_id" name="department_id" class="form-select">
-
-                                                            
-
+                                                        <select id="department_id" name="department_id"
+                                                            class="form-select">
+                                                            <?php
+                                                            $DEPARTMENT_MASTER = new DepartmentMaster(NULL);
+                                                            foreach ($DEPARTMENT_MASTER->getActiveDepartment() as $department_master) {
+                                                                ?>
+                                                                <option value="<?php echo $department_master['id'] ?> ">
+                                                                    <?php echo $department_master['name'] ?>
+                                                                </option>
+                                                            <?php } ?>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -192,7 +204,7 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                     <label for="CI_No" class="form-label">CI No</label>
                                                     <div class="input-group mb-3">
                                                         <input id="ci_no" name="ci_no" type="text"
-                                                        placeholder="CI No" class="form-control">
+                                                            placeholder="Enter CI No" class="form-control">
                                                     </div>
                                                 </div>
 
@@ -200,7 +212,7 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                     <label for="BL_No" class="form-label">BL No</label>
                                                     <div class="input-group mb-3">
                                                         <input id="bl_no" name="bl_no" type="text"
-                                                        placeholder="BL No" class="form-control">
+                                                            placeholder="Enter BL No" class="form-control">
                                                     </div>
                                                 </div>
 
@@ -208,19 +220,30 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                     <label for="Brand" class="form-label">Brand</label>
                                                     <div class="input-group mb-3">
                                                         <select id="brand_id" name="brand_id" class="form-select">
+                                                            <?php
+                                                            $BRAND = new Brand(NULL);
+                                                            foreach ($BRAND->all() as $brand) {
+                                                                ?>
+                                                                <option value="<?php echo $brand['id'] ?> ">
+                                                                    <?php echo $brand['name'] ?>
+                                                                </option>
+                                                            <?php } ?>
 
-                                                            
 
                                                         </select>
                                                     </div>
                                                 </div>
 
                                                 <div class="col-md-2">
-                                                    <label for="GRN_Status" class="form-label">GRN Status</label>
+                                                    <label for="arn_status" class="form-label">ARN Status</label>
                                                     <div class="input-group mb-3">
-                                                        <select id="grn_status" name="grn_status" class="form-select">
+                                                        <select id="arn_status" name="arn_status" class="form-select">
+                                                            <option value="">Select Status</option>
+                                                            <option value="Pending">Pending</option>
+                                                            <option value="Approved">Approved</option>
+                                                            <option value="Received">Received</option>
+                                                            <option value="Rejected">Rejected</option>
 
-                                                            
 
                                                         </select>
                                                     </div>
@@ -230,7 +253,7 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                     <label for="LC?TT_No" class="form-label">LC/TT No</label>
                                                     <div class="input-group mb-3">
                                                         <input id="lc/tt_no" name="lc/tt_no" type="text"
-                                                        placeholder="LC/TT No" class="form-control">
+                                                            placeholder="Enter LC/TT No" class="form-control">
                                                     </div>
                                                 </div>
 
@@ -238,7 +261,7 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                     <label for="PI_No" class="form-label">PI No</label>
                                                     <div class="input-group mb-3">
                                                         <input id="pi_no" name="pi_no" type="text"
-                                                        placeholder="PI No" class="form-control">
+                                                            placeholder="Enter PI No" class="form-control">
                                                     </div>
                                                 </div>
 
@@ -247,7 +270,7 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                     <div class="input-group mb-3">
                                                         <select id="order_by" name="order_by" class="form-select">
 
-                                                            
+
 
                                                         </select>
                                                     </div>
@@ -256,25 +279,36 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                 <div class="col-md-2">
                                                     <label for="Purchase_Type" class="form-label">Purchase Type</label>
                                                     <div class="input-group mb-3">
-                                                        <select id="purchase_type" name="purchase_type" class="form-select">
+                                                        <select id="purchase_type" name="purchase_type"
+                                                            class="form-select">
+                                                            <?php
+                                                            $PURCHASE_TYPE = new PurchaseType(NULL);
+                                                            foreach ($PURCHASE_TYPE->all() as $purchase_type) {
+                                                                ?>
+                                                                <option value="<?php echo $purchase_type['id'] ?>">
+                                                                    <?php echo $purchase_type['title'] ?>
+                                                                </option>
+                                                            <?php } ?>
 
-                                                            
 
                                                         </select>
                                                     </div>
                                                 </div>
 
                                                 <div class="col-md-2">
-                                                    <label for="Container_Size" class="form-label">Container Size</label>
+                                                    <label for="Container_Size" class="form-label">Container
+                                                        Size</label>
                                                     <div class="input-group mb-3">
                                                         <input id="container_size" name="container_size" type="text"
-                                                        placeholder="Container Size" class="form-control">
+                                                            placeholder="Container Size" class="form-control">
                                                     </div>
                                                 </div>
 
                                                 <div class="col-md-2">
                                                     <label class="form-label" for="Invoice_date">Invoice Date</label>
-                                                    <input id="invoice_date" name="invoice_date" type="date" class="form-control">
+                                                    <input id="invoice_date" name="invoice_date" type="text"
+                                                        class="form-control date-picker"
+                                                        placeholder="Select Invoice Date">
                                                 </div>
 
                                                 <div class="col-md-2">
@@ -282,7 +316,14 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                     <div class="input-group mb-3">
                                                         <select id="country_id" name="country_id" class="form-select">
 
-                                                            
+                                                            <?php
+                                                            $COUNTRY = new Country(NULL);
+                                                            foreach ($COUNTRY->all() as $country) {
+                                                                ?>
+                                                                <option value="<?php echo $country['id'] ?>">
+                                                                    <?php echo $country['name'] ?>
+                                                                </option>
+                                                            <?php } ?>
 
                                                         </select>
                                                     </div>
@@ -292,158 +333,235 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                     <label for="VAT" class="form-label">Vat Type</label>
                                                     <div class="input-group mb-3">
                                                         <select id="vat_id" name="vat_id" class="form-select">
-                                                            <option value="1">Non Vat</option>
-                                                            <option value="2">Vat</option>
-                                                            <option value="3">Svat</option>
+                                                            <?php
+                                                            $VAT_TYPE = new VatType(NULL);
+                                                            foreach ($VAT_TYPE->all() as $vat_type) {
+                                                                ?>
+                                                                <option value="<?php echo $vat_type['id'] ?>">
+                                                                    <?php echo $vat_type['name'] ?>
+                                                                </option>
+                                                            <?php } ?>
                                                         </select>
                                                     </div>
                                                 </div>
-
-                                                <div class="col-10 mt-3">
+                                                <div class="col-md-2">
+                                                    <label class="form-label">Pending Debit Note Amount</label>
+                                                    <input type="number" id="Qty" class="form-control"
+                                                        placeholder="Quantity" oninput="calculatePayment()">
+                                                </div>
+                                                <div class="col-12  ">
                                                     <label for="remark" class="form-label">Remarks</label>
                                                     <textarea id="remark" name="remark" class="form-control" rows="4"
                                                         placeholder="Enter any remarks or notes..."></textarea>
                                                 </div>
 
-                                                <div class="col-md-2" style="margin-top: 15px;">
-                                                    <label class="form-label">Pending Debit Note Amount</label>
-                                                    <input type="number" id="Qty" class="form-control"
-                                                        placeholder="Quantity" oninput="calculatePayment()">
-                                                </div>
-
 
                                                 <hr class="my-4">
 
 
-                                                <h5 class="mb-3">Item Details</h5>
+                                                <h5>Item Details</h5>
 
-                                                <div class="row align-items-end">
-                                                    <div class="col-md-1 mb-3">
-                                                        <label class="form-label">Item Code</label>
-                                                        <input type="text" id="itemCode" class="form-control" readonly>
-                                                    </div>
+                                                <div class="row gx-2 gy-2">
+                                                    <!-- ────────── First Line of Fields ────────── -->
 
-                                                    <div class="col-md-2 mb-3">
-                                                        <label for="Description" class="form-label">Description</label>
-                                                        <div class="input-group">
-                                                            <input id="description" type="text" class="form-control" readonly>
 
+                                                    <div class="  col-sm-2 col-md-2 col-lg-2">
+                                                        <label for="Description" class="form-label">Item Code</label>
+                                                        <div class="input-group input-group-sm">
+                                                            <input id="code" name="code" type="text"
+                                                                class="form-control" readonly>
                                                             <button class="btn btn-info" type="button"
-                                                                id="open-item-modal">
+                                                                data-bs-toggle="modal" data-bs-target="#item_master">
                                                                 <i class="uil uil-search me-1"></i>
                                                             </button>
                                                         </div>
                                                     </div>
 
-                                                    <div class="col-md-1 mb-3">
-                                                        <label class="form-label">Order Quantity</label>
-                                                        <input type="text" id="order_qty" class="form-control" readonly>
+                                                    <div class="col-6 col-sm-4 col-md-2 col-lg-1">
+                                                        <label class="form-label">Order Qty</label>
+                                                        <input type="text" id="order_qty"
+                                                            class="form-control form-control-sm" readonly>
                                                     </div>
-                                                    <div class="col-md-1 mb-3">
-                                                        <label class="form-label">Rec Quantity</label>
-                                                        <input type="number" id="rec_quantity" class="form-control"
-                                                             oninput="calculatePayment()">
+
+                                                    <div class="col-6 col-sm-4 col-md-2 col-lg-1">
+                                                        <label class="form-label">Rec Qty</label>
+                                                        <input type="number" id="rec_quantity"
+                                                            class="form-control form-control-sm"
+                                                            oninput="calculatePayment()">
                                                     </div>
-                                                    <div class="col-md-1 mb-3">
-                                                        <label class="form-label">Com Cost</label>
-                                                        <input type="number" id="com_cost" class="form-control"
-                                                             oninput="calculatePayment()">
+
+                                                    <div class="col-6 col-sm-4 col-md-2 col-lg-1">
+                                                        <label class="form-label">Com Cost</label>
+                                                        <input type="text" id="cost" name="cost"
+                                                            class="form-control form-control-sm"
+                                                            oninput="calculatePayment()">
                                                     </div>
-                                                    <div class="col-md-1 mb-3">
-                                                        <label class="form-label">Dis 1</label>
-                                                        <input type="number" id="dis_1" class="form-control"
-                                                             oninput="calculatePayment()">
+
+                                                    <div class="col-6 col-sm-4 col-md-2 col-lg-1">
+                                                        <label class="form-label">Dis 1</label>
+                                                        <input type="number" id="dis_1"
+                                                            class="form-control form-control-sm"
+                                                            oninput="calculatePayment()">
                                                     </div>
-                                                    <div class="col-md-1 mb-3">
-                                                        <label class="form-label">Dis 2</label>
-                                                        <input type="number" id="dis_2" class="form-control"
-                                                             oninput="calculatePayment()">
+
+                                                    <div class="col-6 col-sm-4 col-md-2 col-lg-1">
+                                                        <label class="form-label">Dis 2</label>
+                                                        <input type="number" id="dis_2"
+                                                            class="form-control form-control-sm"
+                                                            oninput="calculatePayment()">
                                                     </div>
-                                                    <div class="col-md-1 mb-3">
-                                                        <label class="form-label">Dis 3</label>
-                                                        <input type="number" id="dis_3" class="form-control"
-                                                            placeholder="Qty" oninput="calculatePayment()">
+
+                                                    <!-- ────────── Second Line of Fields ────────── -->
+                                                    <div class="col-6 col-sm-4 col-md-2 col-lg-1">
+                                                        <label class="form-label">Dis 3</label>
+                                                        <input type="number" id="dis_3"
+                                                            class="form-control form-control-sm"
+                                                            oninput="calculatePayment()">
                                                     </div>
-                                                    <div class="col-md-1 mb-3">
-                                                        <label class="form-label">Actual Cost</label>
-                                                        <input type="number" id="actual_cost" class="form-control"
-                                                             oninput="calculatePayment()" readonly>
+
+                                                    <div class="col-6 col-sm-4 col-md-2 col-lg-1">
+                                                        <label class="form-label">Actual Cost</label>
+                                                        <input type="text" id="actual_cost"
+                                                            class="form-control form-control-sm"
+                                                            oninput="calculatePayment()" readonly>
                                                     </div>
-                                                    <div class="col-md-1 mb-3">
+
+                                                    <div class="col-6 col-sm-4 col-md-2 col-lg-1">
                                                         <label class="form-label">Tax</label>
-                                                        <input type="number" id="tax" class="form-control"
-                                                             oninput="calculatePayment()" readonly>
-                                                    </div>
-                                                    <div class="col-md-1 mb-3">
-                                                        <label class="form-label">List Price</label>
-                                                        <input type="number" id="list_price" class="form-control"
-                                                             oninput="calculatePayment()">
-                                                    </div>
-                                                    <div class="col-md-1 mb-3">
-                                                        <label class="form-label">Cash Price</label>
-                                                        <input type="number" id="cash_price" class="form-control"
-                                                             oninput="calculatePayment()">
-                                                    </div>
-                                                    <div class="col-md-1 mb-3">
-                                                        <label class="form-label">Credit Price</label>
-                                                        <input type="number" id="credit_price" class="form-control"
-                                                             oninput="calculatePayment()">
-                                                    </div>
-                                                    <div class="col-md-1 mb-3">
-                                                        <label class="form-label">Margin (%)</label>
-                                                        <input type="number" id="margin" class="form-control"
-                                                             oninput="calculatePayment()" readonly>
-                                                    </div>
-                                                    <div class="col-md-1 mb-3">
-                                                        <label class="form-label">Unit Total</label>
-                                                        <input type="number" id="unit_total" class="form-control"
-                                                             oninput="calculatePayment()" readonly>
+                                                        <input type="text" id="tax" class="form-control form-control-sm"
+                                                            oninput="calculatePayment()" readonly>
                                                     </div>
 
-                                                    <div class="col-md-1 mb-3">
-                                                        <button type="button" class="btn btn-success w-100"
-                                                            id="addItemBtn">Add</button>
+                                                    <div class="col-6 col-sm-4 col-md-2 col-lg-1">
+                                                        <label class="form-label">List Price</label>
+                                                        <input type="text" id="list_price"
+                                                            class="form-control form-control-sm"
+                                                            oninput="calculatePayment()">
                                                     </div>
 
+                                                    <div class="col-6 col-sm-4 col-md-2 col-lg-1">
+                                                        <label class="form-label">Cash Price</label>
+                                                        <input type="text" id="cash_price"
+                                                            class="form-control form-control-sm"
+                                                            oninput="calculatePayment()">
+                                                    </div>
+
+                                                    <div class="col-6 col-sm-4 col-md-2 col-lg-1">
+                                                        <label class="form-label">Credit Price</label>
+                                                        <input type="text" id="credit_price"
+                                                            class="form-control form-control-sm"
+                                                            oninput="calculatePayment()">
+                                                    </div>
+
+                                                    <div class="col-6 col-sm-4 col-md-2 col-lg-1">
+                                                        <label class="form-label">Margin (%)</label>
+                                                        <input type="number" id="margin"
+                                                            class="form-control form-control-sm"
+                                                            oninput="calculatePayment()" readonly>
+                                                    </div>
+
+                                                    <div class="col-6 col-sm-4 col-md-2 col-lg-1">
+                                                        <label class="form-label">Unit Total</label>
+                                                        <input type="text" id="unit_total"
+                                                            class="form-control form-control-sm"
+                                                            oninput="calculatePayment()" readonly>
+                                                    </div>
+
+                                                    <div class="col-6 col-sm-4 col-md-2 col-lg-1 align-self-end">
+                                                        <button type="button" class="btn btn-success btn-sm w-100"
+                                                            id="addItemBtn">
+                                                            Add
+                                                        </button>
+                                                    </div>
                                                 </div>
+                                                <table id="itemTable" class="table table-bordered table-sm mt-5">
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th>Item Code</th>
+                                                            <th>Order Qty</th>
+                                                            <th>Rec Qty</th>
+                                                            <th>Com Cost</th>
+                                                            <th>Discounts (1/2/3)</th>
+                                                            <th>Actual Cost</th>
+                                                            <th>Unit Total</th>
+                                                            <th>List Price</th>
+                                                            <th>Cash Price</th>
+                                                            <th>Credit Price</th>
+                                                            <th>Action</th>
+                                                        </tr>
+                                                    </thead>
+
+                                                    <tbody id="itemTableBody">
+                                                        <tr id="noDataRow">
+                                                            <td colspan="8" class="text-center">No data available</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+
 
                                                 <hr class="my-4">
-                                                
-                                                <div class="container" style="max-width: 1000px; margin-left: 10px;">
-                                                    
-                                                    <div class="col-md-3 mb-3">
-                                                        <label class="form-label">Sub GRN Value</label>
-                                                        <input type="number" id="itemQty" class="form-control"
-                                                            oninput="calculatePayment()" readonly>
-                                                    </div>
-                                                    <div class="col-md-3 mb-3">
-                                                        <label class="form-label">Total Discount</label>
-                                                        <input type="number" id="itemQty" class="form-control"
-                                                            oninput="calculatePayment()" readonly>
-                                                    </div>
-                                                    <div class="col-md-3 mb-3">
-                                                        <label class="form-label">Total VAT Value</label>
-                                                        <input type="number" id="itemQty" class="form-control"
-                                                            oninput="calculatePayment()" readonly>
-                                                    </div>
-                                                    <div class="col-md-3 mb-3">
-                                                        <label class="form-label">Total GRN Value</label>
-                                                        <input type="number" id="itemQty" class="form-control"
-                                                            oninput="calculatePayment()" readonly>
-                                                    </div>
-                                                    <div class="col-md-3 mb-3">
-                                                        <label class="form-label">Total Recieved Qty</label>
-                                                        <input type="number" id="itemQty" class="form-control"
-                                                            oninput="calculatePayment()" readonly>
-                                                    </div>
-                                                    <div class="col-md-3 mb-3">
-                                                        <label class="form-label">Total Order Quantity</label>
-                                                        <input type="number" id="itemQty" class="form-control"
-                                                            oninput="calculatePayment()" readonly>
-                                                    </div>
+                                                <div class="row justify-content-end">
+                                                    <div class="p-2 border rounded bg-light" style="max-width: 500px;">
 
+
+                                                        <div class="row mb-2">
+                                                            <div class="col-7">
+                                                                <input type="text" class="form-control text_purchase3"
+                                                                    value="Total Discount" disabled>
+                                                            </div>
+                                                            <div class="col-5">
+                                                                <input type="text" id="total_discount"
+                                                                    class="form-control text-end" value="0.00" disabled>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row mb-2">
+                                                            <div class="col-7">
+                                                                <input type="text" class="form-control text_purchase3"
+                                                                    value="Total VAT Value" disabled>
+                                                            </div>
+                                                            <div class="col-5">
+                                                                <input type="text" id="total_vat"
+                                                                    class="form-control text-end" value="0.00" disabled>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row mb-2">
+                                                            <div class="col-7">
+                                                                <input type="text" class="form-control text_purchase3"
+                                                                    value="Total Received Qty" disabled>
+                                                            </div>
+                                                            <div class="col-5">
+                                                                <input type="text" id="total_received_qty"
+                                                                    class="form-control text-end" value="0.00" disabled>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row border-top pt-2">
+                                                            <div class="col-7">
+                                                                <input type="text" class="form-control text_purchase3 "
+                                                                    value="Total Order Quantity" disabled>
+                                                            </div>
+                                                            <div class="col-5">
+                                                                <input type="text" id="total_order_qty"
+                                                                    class="form-control  text-end" value="0.00"
+                                                                    disabled>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row border-top pt-2">
+
+                                                            <div class="col-7">
+                                                                <input type="text"
+                                                                    class="form-control text_purchase3 fw-bold"
+                                                                    value="Total ARN Value" disabled>
+                                                            </div>
+                                                            <div class="col-5">
+                                                                <input type="text" class="form-control text-end fw-bold"
+                                                                    id="total_arn" value="0.00" disabled>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
-
                                         </form>
                                     </div>
                                 </div>
@@ -465,21 +583,16 @@ $invoice_id = 'IN00' . $lastId + 1;
 
         <!-- JAVASCRIPT -->
         <script src="assets/libs/jquery/jquery.min.js"></script>
-        <script src="ajax/js/customer-master.js"></script>
+        <!-- add js files -->
+        <script src="ajax/js/item-master.js"></script>
+        <script src="ajax/js/common.js"></script>
+        <script src="ajax/js/arn-master.js"></script>
 
-        <!-- /////////////////////////// -->
-
-        <script src="ajax/js/sales-invoice.js"></script>
 
         <script src="assets/libs/sweetalert/sweetalert-dev.js"></script>
         <script src="assets/js/jquery.preloader.min.js"></script>
 
         <script src="assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
-        <script src="assets/libs/metismenu/metisMenu.min.js"></script>
-        <script src="assets/libs/simplebar/simplebar.min.js"></script>
-        <script src="assets/libs/node-waves/waves.min.js"></script>
-        <script src="assets/libs/waypoints/lib/jquery.waypoints.min.js"></script>
-        <script src="assets/libs/jquery.counterup/jquery.counterup.min.js"></script>
 
         <!-- Required datatable js -->
         <script src="assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
@@ -503,6 +616,19 @@ $invoice_id = 'IN00' . $lastId + 1;
         <!-- apexcharts -->
 
         <script src="assets/js/pages/dashboard.init.js"></script>
+        <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+        <script>
+            $(function () {
+                // Initialize the datepicker
+                $(".date-picker").datepicker({
+                    dateFormat: 'yy-mm-dd' // or 'dd-mm-yy' as per your format
+                });
+
+                // Set today's date as default value
+                var today = $.datepicker.formatDate('yy-mm-dd', new Date());
+                $(".date-picker").val(today);
+            });
+        </script>
 
         <!-- App js -->
         <script src="assets/js/app.js"></script>

@@ -48,6 +48,11 @@ include_once(dirname(__FILE__) . '/InvoiceRemark.php');
 include_once(dirname(__FILE__) . '/DiscountType.php');
 include_once(dirname(__FILE__) . '/SupplierDiscount.php');
 include_once(dirname(__FILE__) . '/Bank.php');
+include_once(dirname(__FILE__) . '/EmployeeMaster.php'); 
+include_once(dirname(__FILE__) . '/ArnMaster.php'); 
+include_once(dirname(__FILE__) . '/DocumentTracking.php'); 
+include_once(dirname(__FILE__) . '/PurchaseType.php');
+ 
 
 
 function dd($data) {

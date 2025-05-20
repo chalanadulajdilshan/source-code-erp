@@ -221,7 +221,7 @@ class ItemMaster
                 "brand_id" => $row['brand'],
                 "brand" => $BRAND->name,
                 "category_id" => $row['category'],
-                "cost" => number_format($row['cost'], 2),
+                "cost" => $row['cost'],
                 "category" => $CATEGORY->name,
                 "whole_sale_price" => number_format($row['whole_sale_price'], 2),
                 "retail_price" => number_format($row['retail_price'], 2),

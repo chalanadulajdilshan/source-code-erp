@@ -9,7 +9,7 @@ if (isset($_POST['create'])) {
     $CUSTOMER = new CustomerMaster(NULL); // New customer object
 
     $CUSTOMER->code = $_POST['code'];
-    $CUSTOMER->name = $_POST['name'];
+    $CUSTOMER->name = ucwords(strtolower($_POST['name']));
     $CUSTOMER->mobile_number = $_POST['mobile_number'];
     $CUSTOMER->mobile_number_2 = $_POST['mobile_number_2'];
     $CUSTOMER->email = $_POST['email'];
@@ -20,7 +20,7 @@ if (isset($_POST['create'])) {
     $CUSTOMER->overdue = $_POST['overdue'];
     $CUSTOMER->vat_no = $_POST['vat_no'];
     $CUSTOMER->svat_no = $_POST['svat_no'];
-    $CUSTOMER->address = $_POST['address'];
+    $CUSTOMER->address = ucwords(strtolower($_POST['address']));
     $CUSTOMER->remark = $_POST['remark'];
     $CUSTOMER->category = $_POST['category'];
     $CUSTOMER->district = $_POST['district'];
@@ -91,13 +91,15 @@ if (isset($_POST['delete']) && isset($_POST['id'])) {
 }
 
 if (isset($_POST['filter'])) {
+    $category = $_POST['category'];
     $CUSTOMER_MASTER = new CustomerMaster();
-    $response = $CUSTOMER_MASTER->fetchForDataTable($_REQUEST);
+    $response = $CUSTOMER_MASTER->fetchForDataTable($_REQUEST, $category);
     echo json_encode($response);
     exit;
 }
 
- 
+
+
 // search by customer
 if (isset($_POST['query'])) {
     $search = $_POST['query'];
