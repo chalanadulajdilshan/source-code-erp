@@ -109,14 +109,7 @@ jQuery(document).ready(function () {
         $('#category').prop('selectedIndex', 0); // Optional, if using dropdowns
         $("#create").show();
     });
-
-
-    // Open item modal
-    $('#open-item-modal').click(function (e) {
-        e.preventDefault();
-        const myModal = new bootstrap.Modal(document.querySelector('.bs-example-modal-xl'));
-        myModal.show();
-    });
+ 
 
     // Add item to quatation table
     function addItem() {

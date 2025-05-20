@@ -1,12 +1,15 @@
 <!doctype html>
 <?php
 include 'class/include.php';
+include './auth.php';
 
-$SALES_INVOICE = new SalesInvoice();
+//doc id get by session 
+$DOCUMENT_TRACKING = new DocumentTracking($doc_id);
 
 // Get the last inserted package id
-$lastId = $SALES_INVOICE->getLastID();
-$invoice_id = 'IN00' . $lastId + 1;
+$lastId = $DOCUMENT_TRACKING->arn_id;
+$invoice_id = $COMPANY_PROFILE_DETAILS->company_code . '/INV/00/' . $lastId + 1;
+
 ?>
 
 <html lang="en">
@@ -14,7 +17,7 @@ $invoice_id = 'IN00' . $lastId + 1;
 <head>
 
     <meta charset="utf-8" />
-    <title>Horizontal Layout | Minible - Admin & Dashboard Template</title>
+    <title>Sales Invoice | <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="#" name="description" />
     <meta content="Themesbrand" name="author" />
@@ -136,7 +139,7 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                             readonly>
                                                         <button class="btn btn-info" type="button"
                                                             data-bs-toggle="modal" data-bs-target="#invoiceModal">
-                                                            <i class="uil uil-search me-1"></i> Find
+                                                            <i class="uil uil-search me-1"></i>
                                                         </button>
                                                     </div>
                                                 </div>
@@ -161,22 +164,20 @@ $invoice_id = 'IN00' . $lastId + 1;
 
 
 
-
                                                 <div class="col-md-2">
                                                     <label for="customerCode" class="form-label">Customer Code</label>
                                                     <div class="input-group mb-3">
                                                         <input id="customer_code" name="customer_code" type="text"
-                                                            placeholder="Customer code" class="form-control" readonly>
+                                                            class="form-control" 
+                                                            readonly>
                                                         <button class="btn btn-info" type="button"
                                                             data-bs-toggle="modal" data-bs-target="#customerModal">
-                                                            <i class="uil uil-search me-1"></i> Find
+                                                            <i class="uil uil-search me-1"></i>
                                                         </button>
-                                                        <input id="customer_id" name="customer_id" type="hidden">
                                                     </div>
-                                                    <div id="customerList" class="list-group position-absolute w-100">
-                                                    </div>
-
                                                 </div>
+
+                                               
 
                                                 <div class="col-md-3">
                                                     <label for="customerName" class="form-label">Customer Name</label>
@@ -590,7 +591,7 @@ $invoice_id = 'IN00' . $lastId + 1;
         <script src="assets/libs/jquery/jquery.min.js"></script>
         <!-- /////////////////////////// -->
         <script src="ajax/js/sales-invoice.js"></script>
-
+        <script src="ajax/js/common.js"></script>
 
         <script src="assets/libs/sweetalert/sweetalert-dev.js"></script>
         <script src="assets/js/jquery.preloader.min.js"></script>

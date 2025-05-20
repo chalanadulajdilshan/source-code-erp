@@ -3,7 +3,7 @@
 class VatType
 {
     public $id;
-    public $vat_type_name;
+    public $name;
     public $description;
     public $is_active;
 
@@ -11,13 +11,13 @@ class VatType
     public function __construct($id = null)
     {
         if ($id) {
-            $query = "SELECT `id`, `vat_type_name`, `description`, `is_active` FROM `vat_types` WHERE `id` = " . (int)$id;
+            $query = "SELECT `id`, `name`, `description`, `is_active` FROM `vat_types` WHERE `id` = " . (int)$id;
             $db = new Database();
             $result = mysqli_fetch_array($db->readQuery($query));
 
             if ($result) {
                 $this->id = $result['id'];
-                $this->vat_type_name = $result['vat_type_name'];
+                $this->name = $result['name'];
                 $this->description = $result['description'];
                 $this->is_active = $result['is_active'];
             }
@@ -27,8 +27,8 @@ class VatType
     // Create a new VAT type record
     public function create()
     {
-        $query = "INSERT INTO `vat_types` (`vat_type_name`, `description`, `is_active`) VALUES (
-            '" . $this->vat_type_name . "',
+        $query = "INSERT INTO `vat_types` (`name`, `description`, `is_active`) VALUES (
+            '" . $this->name . "',
             '" . $this->description . "',
             '" . $this->is_active . "')";
         $db = new Database();
@@ -45,7 +45,7 @@ class VatType
     public function update()
     {
         $query = "UPDATE `vat_types` SET 
-            `vat_type_name` = '" . $this->vat_type_name . "',
+            `name` = '" . $this->name . "',
             `description` = '" . $this->description . "',
             `is_active` = '" . $this->is_active . "'
             WHERE `id` = " . (int)$this->id;
@@ -70,7 +70,7 @@ class VatType
     // Retrieve all VAT types
     public function all()
     {
-        $query = "SELECT * FROM `vat_types` ORDER BY `vat_type_name` ASC";
+        $query = "SELECT * FROM `vat_types` ORDER BY `name` ASC";
         $db = new Database();
         $result = $db->readQuery($query);
         $array_res = array();
@@ -85,7 +85,7 @@ class VatType
     // Retrieve only active VAT types (optional)
     public function getActiveTypes()
     {
-        $query = "SELECT * FROM `vat_types` WHERE `is_active` = 1 ORDER BY `vat_type_name` ASC";
+        $query = "SELECT * FROM `vat_types` WHERE `is_active` = 1 ORDER BY `name` ASC";
         $db = new Database();
         $result = $db->readQuery($query);
         $array_res = array();

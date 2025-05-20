@@ -131,14 +131,14 @@ $customer_id = 'CM00' . $lastId + 1;
                                                         <input id="code" name="code" type="text" class="form-control"
                                                             value="<?php echo $customer_id ?>" readonly>
                                                         <button class="btn btn-info" type="button"
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target="#customerModal"><i
-                                                                class="uil uil-search me-1"></i> Find</button>
+                                                            data-bs-toggle="modal" data-bs-target="#AllCustomerModal"><i
+                                                                class="uil uil-search me-1"></i>
+                                                        </button>
                                                     </div>
                                                 </div>
 
                                                 <!-- Full Name -->
-                                                <div class="col-md-5">
+                                                <div class="col-md-4">
                                                     <label for="fullName" class="form-label">Full Name <span
                                                             class="text-danger">*</span></label>
                                                     <input id="name" name="name" type="text" class="form-control"
@@ -146,7 +146,7 @@ $customer_id = 'CM00' . $lastId + 1;
                                                 </div>
 
                                                 <!-- Address -->
-                                                <div class="col-md-5">
+                                                <div class="col-md-3">
                                                     <label for="address" class="form-label">Address <span
                                                             class="text-danger">*</span></label>
                                                     <input id="address" name="address" type="text" class="form-control"
@@ -162,7 +162,7 @@ $customer_id = 'CM00' . $lastId + 1;
                                                 </div>
 
                                                 <!-- Mobile 2 -->
-                                                <div class="col-md-3">
+                                                <div class="col-md-2">
                                                     <label for="mobile_number_2" class="form-label">Mobile Number
                                                         02</label>
                                                     <input id="mobile_number_2" name="mobile_number_2" type="text"
@@ -187,7 +187,7 @@ $customer_id = 'CM00' . $lastId + 1;
                                                 </div>
 
                                                 <!-- Contact Person No -->
-                                                <div class="col-md-3 mt-3">
+                                                <div class="col-md-3  ">
                                                     <label for="contact_person_number" class="form-label">Contact Person
                                                         No
                                                         <span class="text-danger">*</span></label>
@@ -195,7 +195,8 @@ $customer_id = 'CM00' . $lastId + 1;
                                                         type="text" class="form-control"
                                                         placeholder="Enter contact person number">
                                                 </div>
-                                                <div class="col-md-1 d-flex justify-content-center align-items-center mt-5 ">
+                                                <div
+                                                    class="col-md-1 d-flex justify-content-center align-items-center mt-3 ">
                                                     <div class="form-check">
                                                         <input class="form-check-input" type="checkbox" id="is_active"
                                                             name="is_active">
@@ -323,9 +324,6 @@ $customer_id = 'CM00' . $lastId + 1;
             <?php include 'footer.php' ?>
 
         </div>
-        <!-- end main content-->
-        <?php include 'customer-master-model.php' ?>
-
     </div>
 
     <!-- Right bar overlay-->
@@ -335,7 +333,7 @@ $customer_id = 'CM00' . $lastId + 1;
     <script src="assets/libs/jquery/jquery.min.js"></script>
     <!-- /////////////////////////// -->
     <script src="ajax/js/customer-master.js"></script>
-
+    <script src="ajax/js/common.js"></script>
 
     <script src="assets/libs/sweetalert/sweetalert-dev.js"></script>
     <script src="assets/js/jquery.preloader.min.js"></script>
