@@ -86,6 +86,16 @@ class QuotationItem
         return $array_res;
     }
 
+
+    public function checkQuotationItemExist($quotation_id, $item_code)
+    {
+        $db = new Database();
+        $query = "SELECT id FROM `quotation_item` WHERE `quotation_id` = '{$quotation_id}' AND `item_code` = '{$item_code}'";
+        $result = mysqli_fetch_array($db->readQuery($query));
+
+        return ($result) ? $result['id'] : false;  
+    }
+
     public function getByQuotationId($quotation_id)
     {
         $query = "SELECT * FROM `quotation_item` WHERE `quotation_id` = '" . (int) $quotation_id . "'";

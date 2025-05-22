@@ -1,6 +1,6 @@
 jQuery(document).ready(function () {
 
-
+    //number formate
     function formatPriceInput(inputField) {
         let inputValue = inputField.value;
 
@@ -71,7 +71,7 @@ jQuery(document).ready(function () {
     $('#customerModal').on('shown.bs.modal', function () {
         loadCustomerTable();
     });
-
+    //loard customers all
     function loadCustomerTable() {
         // Destroy if already initialized
         if ($.fn.DataTable.isDataTable('#customerTable')) {
@@ -125,11 +125,45 @@ jQuery(document).ready(function () {
         });
     }
 
+    //loard firrst customer cash customer
+
+    //windows loder
+    loadCustomer();
+
+
+    //get first row cash sales customer
+    function loadCustomer() {
+
+        $.ajax({
+            url: 'ajax/php/customer-master.php',
+            method: 'POST',
+            data: { action: 'get_first_customer' }, // you can customize this key/value
+            dataType: 'json',
+            success: function (data) {
+                if (!data.error) {
+                    $('#customer_id').val(data.customer_id);
+                    $('#customer_code').val(data.customer_code);
+                    $('#customer_name').val(data.customer_name);
+                    $('#customer_address').val(data.customer_address);
+                    $('#customer_mobile').val(data.mobile_number); // adjust key if needed
+
+                } else {
+                    console.warn('No customer found');
+                }
+            },
+            error: function () {
+                console.error('AJAX request failed.');
+            }
+        });
+    }
+
+
     //loard supliers model  
     $('#supplierModal').on('shown.bs.modal', function () {
         loadSupplierTable();
     });
 
+    //loard supliers
     function loadSupplierTable() {
         // Destroy if already initialized
         if ($.fn.DataTable.isDataTable('#supplierTable')) {
@@ -180,12 +214,11 @@ jQuery(document).ready(function () {
                 $('#customer_mobile').val(data.mobile_number);
                 $('#customerModal').modal('hide');
             }
-           
+
             $('#supplierModal').modal('hide');
 
         });
     }
-
 
     // When the modal is shown, load the DataTable
     $('#AllCustomerModal').on('shown.bs.modal', function () {
@@ -270,7 +303,6 @@ jQuery(document).ready(function () {
             }
         });
     }
-
 
     //sales invoice get same formate for all
     function initInvoiceTable() {
@@ -375,12 +407,12 @@ jQuery(document).ready(function () {
         });
     }
 
-
     // Re-initialize when modal is shown
     $('#invoiceModal').on('shown.bs.modal', function () {
         initInvoiceTable();
     });
 
+   
 
 
 });

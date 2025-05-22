@@ -49,7 +49,7 @@ class CreditPeriod
             `days` = '$this->days',  
             `is_active` = '$this->is_active'
             WHERE `id` = '$this->id'";
- 
+
 
         $db = new Database();
         $result = $db->readQuery($query);
@@ -93,38 +93,36 @@ class CreditPeriod
     public function fetchForDataTable($request)
     {
         $db = new Database();
-    
-        $start = isset($request['start']) ? (int)$request['start'] : 0;
-        $length = isset($request['length']) ? (int)$request['length'] : 100;
+
+        $start = isset($request['start']) ? (int) $request['start'] : 0;
+        $length = isset($request['length']) ? (int) $request['length'] : 100;
         $search = $request['search']['value'] ?? '';
-    
+
         $status = $request['status'] ?? null;
         $stockOnly = isset($request['stock_only']) ? filter_var($request['stock_only'], FILTER_VALIDATE_BOOLEAN) : false;
-    
+
         $where = "WHERE 1=1";
-    
+
         // Search filter
         if (!empty($search)) {
             $where .= " AND (name LIKE '%$search%' OR code LIKE '%$search%')";
         }
     }
-    
-    
-
-    public function getIdbyItemCode($code)
+ 
+    public function getCreditPeriodByStatus($status)
     {
-        $query = "SELECT `id` FROM `credit_period` WHERE `code` = '$code' LIMIT 1";
+        $query = "SELECT * FROM `credit_period` WHERE `is_active` = $status ORDER BY `id` ASC";
         $db = new Database();
         $result = $db->readQuery($query);
-    
-        if ($row = mysqli_fetch_assoc($result)) {
-            return $row['id'];
+        $array = [];
+
+        while ($row = mysqli_fetch_array($result)) {
+            array_push($array, $row);
         }
-    
-        return null;
+
+        return $array;
     }
-    
-    
+
 
 }
 

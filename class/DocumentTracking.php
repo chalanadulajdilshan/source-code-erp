@@ -103,8 +103,9 @@ class DocumentTracking
     {
         $query = "SELECT `id` FROM `document_tracking` 
               WHERE `company_code` = '" . (int) $company_id . "'
-              AND `accounting_year_start` = '" . $year_start . "'
-              AND `accounting_year_end` = '" . $year_end . "'";
+              AND `accounting_year_start`  <= '" . $year_start . "'
+              AND `accounting_year_end` >= '" . $year_end . "' and `status` = 1";
+ 
 
         $db = new Database();
         $result = $db->readQuery($query);
@@ -116,6 +117,47 @@ class DocumentTracking
 
         return $ids;
     }
+
+//update Ids
+    public function incrementDocumentId($type)
+    {
+        $db = new Database();
+
+        // Map accepted types to column names
+        $columns = [
+            'quotation' => 'quotation_id',
+            'invoice' => 'invoice_id',
+            'arn' => 'arn_id'
+        ];
+
+        // Check if valid type
+        if (!array_key_exists($type, $columns)) {
+            return false;
+        }
+
+        $column = $columns[$type];
+
+        // Fetch current value
+        $query = "SELECT `$column` FROM `document_tracking` WHERE `status` = 1 LIMIT 1";
+        
+        $result = $db->readQuery($query);
+        $row = mysqli_fetch_array($result);
+
+        if ($row) { 
+            $new_id = (int) $row[$column] + 1; 
+           
+            $update_query = "UPDATE `document_tracking` SET 
+                            `$column` = '$new_id',
+                            `updated_at` = NOW() " ;
+
+            $db->readQuery($update_query);
+            return $new_id;
+        }
+
+        return false;
+    }
+
+
 
 
 }
