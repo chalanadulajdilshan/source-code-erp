@@ -52,8 +52,6 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
 
 <body data-layout="horizontal" data-topbar="colored" class="someBlock">
 
-
-
     </head>
 
     <body data-layout="horizontal" data-topbar="colored">
@@ -75,7 +73,7 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
                                     <i class="uil uil-plus me-1"></i> New
                                 </a>
                                 <a href="#" class="btn btn-primary" id="create">
-                                    <i class="uil uil-save me-1"></i> Print
+                                    <i class="uil uil-save me-1"></i> Save
                                 </a>
                                 <a href="#" class="btn btn-warning" id="update">
                                     <i class="uil uil-edit me-1"></i> Update
@@ -94,17 +92,14 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
                             </div>
                         </div>
                         <!--- Hidden Values -->
-                        <input type="hidden" id="item_id">
-                        <input type="hidden" id="availableQty">
+
 
                         <!-- end page title -->
 
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="card">
-
                                     <div class="p-4">
-
                                         <div class="d-flex align-items-center">
                                             <div class="flex-shrink-0 me-3">
                                                 <div class="avatar-xs">
@@ -133,11 +128,13 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
                                                 <div class="col-md-2">
                                                     <label for="customerCode" class="form-label">Quotation No</label>
                                                     <div class="input-group mb-3">
-                                                        <input type="text" id="quotation_id" name="quotation_id" value="<?php echo $qty_id; ?>"    class="form-control" readonly>
-  
+                                                        <input type="text" id="quotation_id" name="quotation_id"
+                                                            value="<?php echo $quotation_id; ?>" class="form-control"
+                                                            readonly>
+
                                                         <button class="btn btn-info" type="button"
                                                             data-bs-toggle="modal" data-bs-target="#quotationModel">
-                                                            <i class="uil uil-search me-1"></i> Find
+                                                            <i class="uil uil-search me-1"></i>
                                                         </button>
                                                     </div>
                                                 </div>
@@ -145,11 +142,9 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
                                                 <div class="col-md-2">
                                                     <label for="name" class="form-label">Quotation Date</label>
                                                     <div class="input-group" id="datepicker2">
- 
-                                                        <input type="text" class="form-control date-picker">
- 
 
-                                                        <span class="input-group-text"><i
+                                                        <input type="text" class="form-control date-picker" id="date"
+                                                            name="date"> <span class="input-group-text"><i
                                                                 class="mdi mdi-calendar"></i></span>
                                                     </div>
                                                 </div>
@@ -163,7 +158,7 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
                                                             placeholder="Customer code" class="form-control" readonly>
                                                         <button class="btn btn-info" type="button"
                                                             data-bs-toggle="modal" data-bs-target="#customerModal">
-                                                            <i class="uil uil-search me-1"></i> Find
+                                                            <i class="uil uil-search me-1"></i>
                                                         </button>
                                                     </div>
                                                 </div>
@@ -219,7 +214,7 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
                                                     <label for="vat_type" class="form-label">Vat Type</label>
                                                     <div class="input-group mb-3">
                                                         <select id="vat_type" name="vat_type" class="form-select">
- 
+
                                                             <?php
                                                             $VAT_TYPE = new VatType(NULL);
                                                             foreach ($VAT_TYPE->all() as $vat_type) {
@@ -228,7 +223,7 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
                                                                     <?php echo $vat_type['name'] ?>
                                                                 </option>
                                                             <?php } ?>
- 
+
                                                         </select>
                                                     </div>
                                                 </div>
@@ -254,8 +249,15 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
                                                     <label for="sales_type" class="form-label">Sales Type</label>
                                                     <div class="input-group mb-3">
                                                         <select id="sales_type" name="sales_type" class="form-select">
-                                                            <option value="1">Whole Sales</option>
-                                                            <option value="2">Retail Sales</option>
+                                                            <?php
+                                                            $SALES_TYPE = new SalesType(NULL);
+                                                            foreach ($SALES_TYPE->getSalesTypeByStatus(1) as $sales_type) {
+                                                                ?>
+                                                                <option value="<?php echo $sales_type['id'] ?>">
+                                                                    <?php echo $sales_type['name'] ?>
+                                                                </option>
+                                                            <?php } ?>
+
                                                         </select>
                                                     </div>
                                                 </div>
@@ -301,18 +303,20 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
                                                     <textarea id="remark" name="remark" class="form-control" rows="4"
                                                         placeholder="Enter any remarks or notes about the quotation..."></textarea>
                                                 </div>
-                                                <!-- hidden values -->
 
-                                               <input type="hidden" id="customer_id" name="customer_id">
-                                               <input type="hidden" id="credit_limit" name="credit_limit">
-                                               <input type="hidden" id="balance" name="balance">
-                                               <input type="hidden" id="id"  >
+
+                                                <!-- hidden values -->
+                                                <input type="hidden" id="item_id">
+                                                <input type="hidden" id="customer_id">
+
+                                                <input type="hidden" id="availableQty">
+                                                <input type="hidden" id="id">
+                                                <input type="hidden" value="<?php echo $company_id ?>">
+                                                <input type="hidden" name="vat" id="vat" value="18">
 
                                                 <hr class="my-4">
 
                                                 <h5 class="mb-3">Add Quotation Items</h5>
-
-
 
 
                                                 <div class="row align-items-end">
@@ -351,7 +355,7 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
                                                     <div class="col-md-2">
                                                         <label class="form-label">Amount</label>
                                                         <input type="number" id="itemPayment" class="form-control"
-                                                            placeholder="Payment" readonly>
+                                                            placeholder="Amount" readonly>
                                                     </div>
                                                     <div class="col-md-1">
                                                         <button type="button" class="btn btn-success w-100"
@@ -381,15 +385,102 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
                                                                     added</td>
                                                             </tr>
                                                         </tbody>
-                                                        <tfoot>
-                                                            <tr>
-                                                                <td colspan="6" class="text-end"><strong>Final
-                                                                        Total:</strong></td>
-                                                                <td colspan="2" id="finalTotal"><strong>0.00</strong>
-                                                                </td>
-                                                            </tr>
-                                                        </tfoot>
                                                     </table>
+                                                </div>
+                                                <hr>
+                                                <div class="row">
+                                                    <div class="col-md-5">
+                                                        <div class="  p-2 border rounded bg-light"
+                                                            style="max-width: 500px;">
+                                                            <div class="row mb-2">
+                                                                <div class="col-5">
+                                                                    <input type="text" class="form-control "
+                                                                        value="Stock Level" disabled>
+                                                                </div>
+                                                                <div class="col-7">
+                                                                    <input type="text" class="form-control" value="0.00"
+                                                                        disabled>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="row mb-2">
+                                                                <div class="col-5">
+                                                                    <input type="text" class="form-control  "
+                                                                        value="Credit Period  " disabled>
+                                                                </div>
+                                                                <div class="col-7">
+                                                                    <select class="form-control" id="credit_period"
+                                                                        name="credit_period">
+                                                                        <option value="0"> -- Select Credit Period --
+                                                                        </option>
+                                                                        <?php
+                                                                        $CREDIT_PERIOD = new CreditPeriod(NULL);
+                                                                        foreach ($CREDIT_PERIOD->getCreditPeriodByStatus(1) as $Credit_period) {
+                                                                            ?>
+                                                                            <option
+                                                                                value="<?php echo $Credit_period['id'] ?>">
+                                                                                <?php echo $Credit_period['days'] . ' ' . "Days" ?>
+                                                                            </option>
+                                                                        <?php } ?>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row mb-2">
+                                                                <div class="col-5">
+                                                                    <input type="text" class="form-control  "
+                                                                        value="Validate Days  " disabled>
+                                                                </div>
+                                                                <div class="col-7">
+                                                                    <input type="text" id="validity" name="validity"
+                                                                        class="form-control  "
+                                                                        placeholder="Enter Validate Days " />
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+
+
+                                                    <div class="col-md-3"></div>
+
+                                                    <div class="col-md-4">
+                                                        <div class="  p-2 border rounded bg-light"
+                                                            style="max-width: 600px;">
+                                                            <div class="row mb-2">
+                                                                <div class="col-7">
+                                                                    <input type="text" class="form-control  "
+                                                                        value="Sub Total" disabled>
+                                                                </div>
+                                                                <div class="col-5">
+                                                                    <input type="text" class="form-control"
+                                                                        id="finalTotal" value="0.00" disabled>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="row mb-2">
+                                                                <div class="col-7">
+                                                                    <input type="text" class="form-control  "
+                                                                        value="Discount Total:" disabled>
+                                                                </div>
+                                                                <div class="col-5">
+                                                                    <input type="text" class="form-control"
+                                                                        id="disTotal" value="0.00" disabled>
+                                                                </div>
+                                                            </div>
+
+
+                                                            <div class="row mb-2">
+                                                                <div class="col-7">
+                                                                    <input type="text" class="form-control   fw-bold"
+                                                                        value="Grand Total:" disabled>
+                                                                </div>
+                                                                <div class="col-5">
+                                                                    <input type="text" class="form-control  fw-bold"
+                                                                        id="grandTotal" value="0.00" disabled>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </form>
@@ -397,20 +488,18 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
                                 </div>
                             </div>
                         </div>
-                    </div> <!-- container-fluid -->
+                    </div>
                 </div>
 
                 <?php include 'footer.php' ?>
 
             </div>
-            <!-- end main content-->
-
         </div>
-        <!-- END layout-wrapper -->
-         
+
+
         <!-- model open here -->
-        <div class="modal fade bs-example-modal-xl" id="quotationModel" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel"
-            aria-hidden="true">
+        <div class="modal fade bs-example-modal-xl" id="quotationModel" tabindex="-1" role="dialog"
+            aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -419,11 +508,11 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
                         </button>
                     </div>
                     <div class="modal-body">
+
                         <div class="row">
                             <div class="col-12">
-        
 
-                                <table id="datatable" class="table table-bordered dt-responsive nowrap"
+                                <table id="quotation_table" class="table table-bordered dt-responsive nowrap"
                                     style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                     <thead>
                                         <tr>
@@ -448,25 +537,28 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
                                             $DEPARTMENT_MASTER = new DepartmentMaster($quotation['department_id']);
                                             ?>
                                             <tr class="select-model" data-id="<?php echo $quotation['id']; ?>"
-                                                    data-quotation_no="<?php echo htmlspecialchars($quotation['quotation_no']); ?>"
-                                                    data-date="<?php echo htmlspecialchars($quotation['date']); ?>"
-                                                    data-customer_name="<?php echo htmlspecialchars($quotation['customer_id']); ?>"
-                                                    data-company_id="<?php echo htmlspecialchars($quotation['company_id']); ?>"
-                                                    data-department_id="<?php echo htmlspecialchars($quotation['department_id']); ?>"
-                                                    data-finalTotal="<?php echo htmlspecialchars($quotation['grand_total']); ?>"
-                                            >
+                                                data-quotation_no="<?php echo htmlspecialchars($quotation['quotation_no']); ?>"
+                                                data-date="<?php echo htmlspecialchars($quotation['date']); ?>"
+                                                data-customer_name="<?php echo htmlspecialchars($quotation['customer_id']); ?>"
+                                                data-company_id="<?php echo htmlspecialchars($quotation['company_id']); ?>"
+                                                data-department_id="<?php echo htmlspecialchars($quotation['department_id']); ?>"
+                                                data-sub_total="<?php echo htmlspecialchars($quotation['sub_total']); ?>"
+                                                data-discount="<?php echo htmlspecialchars($quotation['discount']); ?>"
+                                                data-grand_total="<?php echo htmlspecialchars($quotation['grand_total']); ?>">
 
-                                            <td><?php echo $key; ?></td>
-                                                    <td><?php echo htmlspecialchars($quotation['quotation_no']); ?></td>
-                                                    <td><?php echo htmlspecialchars($quotation['date']); ?></td>
-                                                    <td><?php echo htmlspecialchars($CUSTOMER->name); ?></td>
-                                                    <td><?php echo htmlspecialchars($COMPANY->name); ?></td>
-                                                    <td><?php echo htmlspecialchars($DEPARTMENT_MASTER->name); ?></td>
-                                                    <td><?php echo htmlspecialchars($quotation['grand_total']); ?></td>
+                                                <td><?php echo $key; ?></td>
+                                                <td><?php echo htmlspecialchars($quotation['quotation_no']); ?></td>
+                                                <td><?php echo htmlspecialchars($quotation['date']); ?></td>
+                                                <td><?php echo htmlspecialchars($CUSTOMER->name); ?></td>
+                                                <td><?php echo htmlspecialchars($COMPANY->name); ?></td>
+                                                <td><?php echo htmlspecialchars($DEPARTMENT_MASTER->name); ?></td>
+                                                <td><?php echo htmlspecialchars($quotation['grand_total']); ?></td>
                                             </tr>
                                         <?php } ?>
                                     </tbody>
                                 </table>
+
+
                             </div> <!-- end col -->
                         </div> <!-- end row -->
                     </div>
@@ -482,7 +574,8 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
         <script src="assets/libs/jquery/jquery.min.js"></script>
         <!-- /////////////////////////// -->
         <script src="ajax/js/quotation.js"></script>
-
+        <script src="ajax/js/common.js"></script>
+ 
 
         <script src="assets/libs/sweetalert/sweetalert-dev.js"></script>
         <script src="assets/js/jquery.preloader.min.js"></script>
@@ -523,6 +616,7 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
         <script src="assets/js/app.js"></script>
         <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
         <script>
+            $('#quotation_table').DataTable();
             $(function () {
                 // Initialize the datepicker
                 $(".date-picker").datepicker({

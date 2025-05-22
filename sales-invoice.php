@@ -39,8 +39,7 @@ $invoice_id = $COMPANY_PROFILE_DETAILS->company_code . '/INV/00/' . $lastId + 1;
     <link href="assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
     <link href="assets/libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css" rel="stylesheet"
         type="text/css" />
-    <link href="assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet"
-        type="text/css" />
+    <link href="assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet"  type="text/css" />
 
 
 
@@ -168,8 +167,7 @@ $invoice_id = $COMPANY_PROFILE_DETAILS->company_code . '/INV/00/' . $lastId + 1;
                                                     <label for="customerCode" class="form-label">Customer Code</label>
                                                     <div class="input-group mb-3">
                                                         <input id="customer_code" name="customer_code" type="text"
-                                                            class="form-control" 
-                                                            readonly>
+                                                            class="form-control" readonly>
                                                         <button class="btn btn-info" type="button"
                                                             data-bs-toggle="modal" data-bs-target="#customerModal">
                                                             <i class="uil uil-search me-1"></i>
@@ -177,7 +175,7 @@ $invoice_id = $COMPANY_PROFILE_DETAILS->company_code . '/INV/00/' . $lastId + 1;
                                                     </div>
                                                 </div>
 
-                                               
+
 
                                                 <div class="col-md-3">
                                                     <label for="customerName" class="form-label">Customer Name</label>
@@ -411,9 +409,17 @@ $invoice_id = $COMPANY_PROFILE_DETAILS->company_code . '/INV/00/' . $lastId + 1;
                                                                             value="Credit Period  " disabled>
                                                                     </div>
                                                                     <div class="col-7">
-                                                                        <select class="form-control">
-                                                                            <option> -- Select Credit Period --
-                                                                            </option>
+                                                                        <select class="form-control select2">
+                                                                            <option> -- Select Credit Period --   </option>
+                                                                            <?php
+                                                                            $CREDIT_PERIOD = new CreditPeriod(NULL);
+                                                                            foreach ($CREDIT_PERIOD->getCreditPeriodByStatus(1) as $Credit_period) {
+                                                                                ?>
+                                                                                <option
+                                                                                    value="<?php echo $Credit_period['id'] ?>">
+                                                                                    <?php echo $Credit_period['days'] . ' ' . "Days" ?>
+                                                                                </option>
+                                                                            <?php } ?> 
                                                                         </select>
                                                                     </div>
                                                                 </div>

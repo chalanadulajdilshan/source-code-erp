@@ -51,7 +51,10 @@ include_once(dirname(__FILE__) . '/Bank.php');
 include_once(dirname(__FILE__) . '/EmployeeMaster.php'); 
 include_once(dirname(__FILE__) . '/ArnMaster.php'); 
 include_once(dirname(__FILE__) . '/DocumentTracking.php'); 
-include_once(dirname(__FILE__) . '/PurchaseType.php');
+include_once(dirname(__FILE__) . '/PurchaseType.php'); 
+include_once(dirname(__FILE__) . '/CreditPeriod.php');
+include_once(dirname(__FILE__) . '/SalesType.php');
+
  
 
 
