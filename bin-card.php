@@ -115,95 +115,79 @@ include 'class/include.php';
                                     </div>
 
                                     <div class="col-md-10">
-                                        <div class="row g-3">
                                         
-                                            <div class="col-md-2">
+                                        <div class="row mb-3">
+                                            <div class="col">
                                                 <label for="itemNo" class="form-label">Item No</label>
-                                                <div class="input-group mb-3">
-                                                    <input id="item_no" name="item_no" type="text"
-                                                        placeholder="Item No" class="form-control">
-
-                                                        <button class="btn btn-info" type="button"
-                                                            data-bs-toggle="modal" data-bs-target="#itemModal">
-                                                            <i class="uil uil-ellipsis-h"></i>
-                                                        </button>
-
+                                                <div class="input-group">
+                                                    <input id="item_no" name="item_no" type="text" placeholder="Item No" class="form-control">
+                                                    <button class="btn btn-info" type="button" data-bs-toggle="modal" data-bs-target="#itemModal">
+                                                        <i class="uil uil-ellipsis-h"></i>
+                                                    </button>
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-2">
+                                            <div class="col">
                                                 <label for="partNo" class="form-label">Part No</label>
-                                                <div class="input-group mb-3">
-                                                    <input id="part_no" name="part_no" type="text"
-                                                        class="form-control" placeholder="Enter Part No"
-                                                        readonly>
+                                                <div class="input-group">
+                                                    <input id="part_no" name="part_no" type="text" class="form-control" placeholder="Enter Part No" readonly>
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-2">
+                                            <div class="col">
                                                 <label for="Department" class="form-label">Department</label>
-                                                <div class="input-group mb-3">
-                                                    <select id="department_id" name="department_id" class="form-select">
-
-                                                                        
-
-                                                    </select>
+                                                <div class="input-group">
+                                                    <select id="department_id" name="department_id" class="form-select"></select>
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-2">
+                                            <div class="col">
                                                 <label for="itemName" class="form-label">Item Name</label>
-                                                <div class="input-group mb-3">
-                                                    <input id="item_name" name="item_name" type="text"
-                                                        class="form-control" placeholder="Enter Item Name"
-                                                        readonly>
+                                                <div class="input-group">
+                                                    <input id="item_name" name="item_name" type="text" class="form-control" placeholder="Enter Item Name" readonly>
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-2">
+                                            <div class="col">
                                                 <label for="selling" class="form-label">Selling</label>
-                                                <div class="input-group mb-3">
-                                                    <input id="selling" name="selling" type="text"
-                                                        class="form-control" placeholder=""
-                                                        readonly>
+                                                <div class="input-group">
+                                                    <input id="selling" name="selling" type="text" class="form-control" placeholder="" readonly>
                                                 </div>
                                             </div>
+                                        </div>
 
-                                            <div class="col-md-2">
+                                        
+                                        <div class="row">
+                                            <div class="col-md-3">
                                                 <label class="form-label" for="date">From</label>
-                                                <input id="date" name="date" type="date"
-                                                    class="form-control">
+                                                <input id="date" name="date" type="date" class="form-control">
                                             </div>
 
-                                            <div class="col-md-2">
+                                            <div class="col-md-3">
                                                 <label for="discount1" class="form-label">Discount 1</label>
-                                                <div class="input-group mb-3">
-                                                    <input id="discount1" name="discount1" type="text"
-                                                        class="form-control" placeholder="">
+                                                <div class="input-group">
+                                                    <input id="discount1" name="discount1" type="text" class="form-control" placeholder="">
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-2">
+                                            <div class="col-md-3">
                                                 <label for="discount2" class="form-label">Discount 2</label>
-                                                <div class="input-group mb-3">
-                                                    <input id="discount2" name="discount2" type="text"
-                                                        class="form-control" placeholder="">
+                                                <div class="input-group">
+                                                    <input id="discount2" name="discount2" type="text" class="form-control" placeholder="">
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-2">
+                                            <div class="col-md-3">
                                                 <label for="total" class="form-label">Total</label>
-                                                <div class="input-group mb-3">
-                                                    <input id="total" name="total" type="text"
-                                                        class="form-control" placeholder=""
-                                                        readonly>
+                                                <div class="input-group">
+                                                    <input id="total" name="total" type="text" class="form-control" placeholder="" readonly>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="col-md-2 d-flex flex-column justify-content-center align-items-center">
-                                        <div class="text-center mb-3">
+                                        <div class="text-center mb-4">
                                             <div class="col-md-12">
                                                 <!-- Over 90 Stock -->
                                                 <div class="mb-3">
