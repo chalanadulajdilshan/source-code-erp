@@ -7,7 +7,10 @@ class DocumentTracking
     public $accounting_year_start;
     public $accounting_year_end;
     public $invoice_id;
+    public $cash_id;
+    public $credit_id;
     public $quotation_id;
+    public $po_id;
     public $arn_id;
     public $vat_percentage;
     public $created_at;
@@ -105,7 +108,7 @@ class DocumentTracking
               WHERE `company_code` = '" . (int) $company_id . "'
               AND `accounting_year_start`  <= '" . $year_start . "'
               AND `accounting_year_end` >= '" . $year_end . "' and `status` = 1";
- 
+
 
         $db = new Database();
         $result = $db->readQuery($query);
@@ -118,7 +121,7 @@ class DocumentTracking
         return $ids;
     }
 
-//update Ids
+    //update Ids
     public function incrementDocumentId($type)
     {
         $db = new Database();
@@ -127,6 +130,8 @@ class DocumentTracking
         $columns = [
             'quotation' => 'quotation_id',
             'invoice' => 'invoice_id',
+            'cash' => 'cash_id',
+            'credit' => 'credit_id',
             'arn' => 'arn_id'
         ];
 
@@ -139,16 +144,16 @@ class DocumentTracking
 
         // Fetch current value
         $query = "SELECT `$column` FROM `document_tracking` WHERE `status` = 1 LIMIT 1";
-        
+
         $result = $db->readQuery($query);
         $row = mysqli_fetch_array($result);
 
-        if ($row) { 
-            $new_id = (int) $row[$column] + 1; 
-           
+        if ($row) {
+            $new_id = (int) $row[$column] + 1;
+
             $update_query = "UPDATE `document_tracking` SET 
                             `$column` = '$new_id',
-                            `updated_at` = NOW() " ;
+                            `updated_at` = NOW() ";
 
             $db->readQuery($update_query);
             return $new_id;

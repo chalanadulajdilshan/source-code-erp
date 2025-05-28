@@ -3,8 +3,7 @@
 include 'class/include.php';
 include './auth.php';
 
-$QUOTATION_ = new Quotation(NULL);
-
+ 
 //doc id get by session 
 $DOCUMENT_TRACKING = new DocumentTracking($doc_id);
 
@@ -78,7 +77,7 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
                                 <a href="#" class="btn btn-warning" id="update">
                                     <i class="uil uil-edit me-1"></i> Update
                                 </a>
-                                <a href="#" class="btn btn-danger delete-quotation">
+                                <a href="#" class="btn btn-danger delete-quotation  " style="display:none">
                                     <i class="uil uil-trash-alt me-1"></i> Delete
                                 </a>
 

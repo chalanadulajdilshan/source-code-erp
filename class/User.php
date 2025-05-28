@@ -11,7 +11,6 @@ class User
 
     public $id;
     public $name;
-
     public $code;
     public $email;
     public $phone;
@@ -25,9 +24,8 @@ class User
     public $resetCode;
     private $password;
     public $show_password;
-
     public $company_id;
-
+    public $department_id;
 
 
     public function __construct($id)
@@ -55,18 +53,19 @@ class User
             $this->resetCode = $result['resetcode'];
             $this->show_password = $result['show_password'];
             $this->company_id = $result['company_id'];
+            $this->department_id = $result['department_id'];
 
             return $result;
         }
     }
 
-    public function create($name, $code, $type,$company_id, $active, $email, $phone, $username, $show_password, $password)
+    public function create($name, $code, $type, $company_id, $active, $email, $phone, $username, $show_password, $password, $department_id)
     {
         $enPass = md5($password);
 
         date_default_timezone_set('Asia/Colombo');
         $createdAt = date('Y-m-d H:i:s');
-        $query = "INSERT INTO `user` (`name`,code,`type`,`company_id`,`isActive`,`email`,`phone`,`createdAt`,`username`,`show_password`,`password`) VALUES  ('" . $name . "','" . $code . "',  '" . $type . "',  '" . $company_id . "','" . $active . "', '" . $email . "','" . $phone . "', '" . $createdAt . "', '" . $username . "',  '" . $show_password . "', '" . $enPass . "')";
+        $query = "INSERT INTO `user` (`name`,code,`type`,`company_id`,`isActive`,`email`,`phone`,`createdAt`,`username`,`show_password`,`password`,`department_id`) VALUES  ('" . $name . "','" . $code . "',  '" . $type . "',  '" . $company_id . "','" . $active . "', '" . $email . "','" . $phone . "', '" . $createdAt . "', '" . $username . "',  '" . $show_password . "', '" . $enPass . "','" . $department_id . "')";
 
         $db = new Database();
 
@@ -86,11 +85,11 @@ class User
         $enPass = md5($password);
 
         $query = "SELECT * FROM `user` WHERE `username`= '" . $username . "' AND `password`= '" . $enPass . "'";
- 
+
         $db = new Database();
 
         $result = mysqli_fetch_array($db->readQuery($query));
-       
+
         if (!$result) {
 
             return FALSE;
@@ -248,7 +247,8 @@ class User
             . "`username` ='" . $this->username . "', "
             . "`type` ='" . $this->type . "', "
             . "`email` ='" . $this->email . "', "
-            . "`company_id` ='" . $this->company_id . "', " 
+            . "`company_id` ='" . $this->company_id . "', "
+            . "`department_id` ='" . $this->department_id . "', "
             . "`phone` ='" . $this->phone . "'  "
             . "WHERE `id` = '" . $this->id . "'";
 

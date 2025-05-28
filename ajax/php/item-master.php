@@ -111,7 +111,7 @@ if (isset($_POST['filter'])) {
     $response = $ITEM_MASTER->fetchForDataTable($_REQUEST);
 
     echo json_encode($response);
-    exit; // 👈 Ensure nothing is output after this
+    exit;  
 }
 
 
