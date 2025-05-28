@@ -87,9 +87,7 @@ jQuery(document).ready(function () {
     // Reset input fields
     $("#new").click(function (e) {
         e.preventDefault();
-        $('#form-data')[0].reset();
-        $('#category').prop('selectedIndex', 0); // Optional, if using dropdowns
-        $("#create").show();
+        location.reload();
     });
 
 
@@ -504,7 +502,7 @@ jQuery(document).ready(function () {
 
         let finalTotal = parseFloat($('#finalTotal').text()) || 0;
 
-         const quotationData = {
+        const quotationData = {
             action: 'update_quotation',
             id: id,
             quotation_id: quotationId,
@@ -531,7 +529,7 @@ jQuery(document).ready(function () {
             method: 'POST',
             data: quotationData,
             dataType: 'json',
-            beforeSend: function () { 
+            beforeSend: function () {
                 $('body').preloader({
                     text: 'Updating quotation...'
                 });
@@ -669,7 +667,7 @@ jQuery(document).ready(function () {
 
                     $('#create').hide();
                     $('#update').show();
-
+                    $('.delete-quotation').show();
 
                     // Update final total
                     $('#finalTotal').html(`<strong>${quotation.grand_total}</strong>`);

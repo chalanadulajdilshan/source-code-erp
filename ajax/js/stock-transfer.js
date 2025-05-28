@@ -1,0 +1,292 @@
+jQuery(document).ready(function () {
+
+
+    // DataTable config
+    var table = $('#datatable').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: "ajax/php/item-master.php",
+            type: "POST",
+            data: function (d) {
+                d.filter = true;
+                d.status = 1;
+                d.stock_only = 1;
+            },
+            dataSrc: function (json) {
+
+                return json.data;
+            },
+            error: function (xhr) {
+                console.error("Server Error Response:", xhr.responseText);
+            }
+        },
+        columns: [
+            { data: "key", title: "#ID" },
+            { data: "code", title: "Code" },
+            { data: "name", title: "Name" },
+            { data: "brand", title: "Brand" },
+            { data: "cost", title: "Cost" },
+            { data: "whole_sale_price", title: "Wholesale" },
+            { data: "retail_price", title: "Retail" },
+            { data: "cash_discount", title: "Cash Dis %" },
+            { data: "credit_discount", title: "Credit Dis %" },
+            { data: "status_label", title: "Status" }
+        ],
+        order: [[0, 'desc']],
+        pageLength: 100
+    });
+
+
+    // On row click, load selected item into input fields
+    $('#datatable tbody').on('click', 'tr', function () {
+        var data = table.row(this).data();
+        if (!data) return;
+
+        const salesType = $('#sales_type').val();
+        const paymentType = $('#payment_type').val();
+
+        if (salesType == 1) {  // Whole Sales
+            $('#itemPrice').val(data.whole_sale_price.replace(/,/g, ''));
+        } else if (salesType == 2) {  // Retail Sales
+            $('#itemPrice').val(data.retail_price.replace(/,/g, ''));
+        }
+
+
+        if (paymentType == 1) {
+            $('#itemDiscount').val(data.cash_discount);
+        } else if (paymentType == 2) {
+            $('#itemDiscount').val(data.credit_discount);
+        } else {
+            $('#itemDiscount').val(0);
+        }
+
+        $('#item_id').val(data.id);
+        $('#itemCode').val(data.code);
+        $('#itemName').val(data.name);
+        $('#itemQty').val(1);
+
+
+        const departmentId = $('#department_id').val();
+        const itemId = data.id;
+
+        $.ajax({
+            url: 'ajax/php/stock-transfer.php',
+            method: 'POST',
+            data: {
+                action: 'get_available_qty',
+                department_id: departmentId,
+                item_id: itemId
+            },
+            success: function (res) {
+                if (res.status === 'success') {
+                    $('#available_qty').val(res.available_qty);
+                } else {
+                    $('#available_qty').val(0);
+                    swal({
+                        title: "Error!",
+                        text: res.message || "Failed to load available quantity.",
+                        type: 'error',
+                        timer: 2500,
+                        showConfirmButton: false
+                    });
+                }
+            },
+            error: function () {
+                $('#available_qty').val(0);
+                swal({
+                    title: "Error!",
+                    text: "Could not load available quantity.",
+                    type: 'error',
+                    timer: 2500,
+                    showConfirmButton: false
+                });
+            }
+
+        });
+
+
+        setTimeout(() => $('#itemQty').focus(), 200);
+
+        $('#item_master').modal('hide');
+    });
+
+    $('#item_master').on('hidden.bs.modal', function () {
+        if (focusAfterModal) {
+            $('#itemQty').focus();
+            focusAfterModal = false;
+        }
+    });
+
+
+    document.querySelector('#add_item').addEventListener('click', function () {
+        const item_id = document.getElementById('item_id').value.trim();
+        const itemCode = document.getElementById('itemCode').value.trim();
+        const itemName = document.getElementById('itemName').value.trim();
+        const itemQty = document.getElementById('itemQty').value.trim();
+        const availableQty = parseInt(document.getElementById('available_qty').value.trim());
+
+        if (!itemCode || !itemName || !itemQty || parseInt(itemQty) <= 0) {
+            swal({
+                title: "Error!",
+                text: "Please enter valid item code, name, and quantity",
+                type: "error",
+                timer: 2000,
+                showConfirmButton: false,
+            });
+            return; // 🚨 Stop execution
+        }
+
+        if (parseInt(itemQty) > availableQty) {
+            swal({
+                title: "Error!",
+                text: "Transfer quantity cannot exceed available quantity!",
+                type: "error",
+                timer: 2000,
+                showConfirmButton: false,
+            });
+            return; // 🚨 Stop execution
+        } else {
+
+
+            const table = document.getElementById('itemTable').querySelector('tbody');
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+        <td>        
+        <input type="hidden" name="item_codes[]" value="${item_id}">${itemCode}</td>
+        <td><input type="hidden" name="item_names[]" value="${itemName}">${itemName}</td>
+        <td><input type="hidden" name="item_qtys[]" value="${itemQty}">${itemQty}</td>
+        <td><button type="button" class="btn btn-danger btn-sm remove-row">Remove</button></td>
+    `;
+
+            table.appendChild(row);
+
+            document.getElementById('show_table').style.display = 'block';
+            // Clear input fields
+            document.getElementById('itemCode').value = '';
+            document.getElementById('itemName').value = '';
+            document.getElementById('itemQty').value = '';
+            document.getElementById('available_qty').value = '0';
+            document.getElementById('itemCode').focus();
+
+        }
+
+
+    });
+
+    document.getElementById('itemQty').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault(); // Prevent form submission if inside a form
+            document.getElementById('add_item').click(); // Trigger the same logic
+        }
+    });
+
+    // Remove row functionality
+    document.addEventListener('click', function (e) {
+        if (e.target.classList.contains('remove-row')) {
+            e.target.closest('tr').remove();
+        }
+    });
+
+    $('#create').on('click', function () {
+        const fromDept = $('#department_id').val();
+        const toDept = $('#to_department_id').val();
+        const transferDate = $('#transfer_date').val();
+
+        // Check at least one item is added
+        const rowCount = $('#itemTable tbody tr').length;
+
+        if (!fromDept || !toDept || !transferDate || rowCount === 0) {
+            swal({
+                title: "Error!",
+                text: "Please complete all required fields and add at least one item.",
+                type: 'error',
+                timer: 2500,
+                showConfirmButton: false
+            });
+            return;
+        }
+
+        const formData = new FormData($('#form_data')[0]);
+        formData.append('action', 'create_stock_transfer');
+        formData.append('department_id', fromDept);
+        formData.append('to_department_id', toDept);
+        formData.append('transfer_date', transferDate);
+
+        // Collect item data from the table
+        $('#itemTable tbody tr').each(function () {
+            const code = $(this).find('input[name="item_codes[]"]').val();
+            const name = $(this).find('td:eq(1)').text().trim();
+            const qty = $(this).find('td:eq(2)').text().trim();
+
+            formData.append('item_codes[]', code);
+            formData.append('item_names[]', name);
+            formData.append('item_qtys[]', qty);
+        });
+
+        // Start preloader
+        $(".someBlock").preloader();
+
+        $.ajax({
+            url: 'ajax/php/stock-transfer.php',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                // Stop preloader
+                $(".someBlock").preloader("remove");
+
+                let res = {};
+                try {
+                    res = typeof response === 'object' ? response : JSON.parse(response);
+                } catch (e) {
+                    console.error('Invalid JSON:', response);
+                    swal({
+                        title: "Error!",
+                        text: "Server returned an invalid response.",
+                        type: 'error',
+                        timer: 2500,
+                        showConfirmButton: false
+                    });
+                    return;
+                }
+
+                if (res.status === 'success') {
+                    swal({
+                        title: "Success!",
+                        text: "Stock transfer saved successfully.",
+                        type: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+
+                    window.setTimeout(function () {
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    swal({
+                        title: "Error!",
+                        text: res.message || "Failed to save stock transfer.",
+                        type: 'error',
+                        timer: 2500,
+                        showConfirmButton: false
+                    });
+                }
+            },
+            error: function () {
+                $(".someBlock").preloader("remove");
+                swal({
+                    title: "Error!",
+                    text: "An unexpected error occurred while saving.",
+                    type: 'error',
+                    timer: 2500,
+                    showConfirmButton: false
+                });
+            }
+        });
+    });
+
+
+});

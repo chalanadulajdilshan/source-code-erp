@@ -167,11 +167,12 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
                                                 <div class="col-md-4">
                                                     <label for="supplier" class="form-label">Supplier</label>
                                                     <div class="input-group mb-3">
-                                                        <input id="customer_code" name="customer_code" type="text"
+                                                        <input id="supplier_code" name="supplier_code" type="text"
                                                             class="form-control ms-2 me-2" style="max-width: 200px;"
-                                                            readonly placeholder="Select Code">
-                                                        <input id="customer_name" name="customer_name" type="text"
-                                                            class="form-control" placeholder="Select name" readonly>
+                                                            readonly placeholder="Select Supplier Code">
+                                                        <input id="supplier_name" name="supplier_name" type="text"
+                                                            class="form-control" placeholder="Select Suplier Name"
+                                                            readonly>
 
                                                         <button class="btn btn-info" type="button"
                                                             data-bs-toggle="modal" data-bs-target="#supplierModal">
@@ -347,7 +348,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
                                                 <div class="col-md-2">
                                                     <label class="form-label">Pending Debit Note Amount</label>
                                                     <input type="number" id="Qty" class="form-control"
-                                                        placeholder="Quantity" oninput="calculatePayment()">
+                                                        placeholder="Quantity">
                                                 </div>
                                                 <div class="col-12  ">
                                                     <label for="remark" class="form-label">Remarks</label>
@@ -368,7 +369,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
                                                     <div class="  col-sm-2 col-md-2 col-lg-2">
                                                         <label for="Description" class="form-label">Item Code</label>
                                                         <div class="input-group input-group-sm">
-                                                            <input id="code" name="code" type="text"
+                                                            <input id="itemCode" name="itemCode" type="text"
                                                                 class="form-control" readonly>
                                                             <button class="btn btn-info" type="button"
                                                                 data-bs-toggle="modal" data-bs-target="#item_master">
@@ -582,11 +583,11 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
         <div class="rightbar-overlay"></div>
 
         <!-- JAVASCRIPT -->
-        <script src="assets/libs/jquery/jquery.min.js"></script>
+       <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <!-- add js files -->
-        <script src="ajax/js/item-master.js"></script>
-        <script src="ajax/js/common.js"></script>
         <script src="ajax/js/arn-master.js"></script>
+        <script src="ajax/js/common.js"></script>
+
 
 
         <script src="assets/libs/sweetalert/sweetalert-dev.js"></script>

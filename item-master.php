@@ -7,7 +7,7 @@ $ITEM_MASTER = new ItemMaster(null);
 
 // Get the last inserted package id
 $lastId = $ITEM_MASTER->getLastID();
-$item_id = 'IM' . str_pad($lastId+1, 3, '0', STR_PAD_LEFT);
+$item_id = 'IM' . str_pad($lastId + 1, 3, '0', STR_PAD_LEFT);
 
 ?>
 <html lang="en">
@@ -65,7 +65,7 @@ $item_id = 'IM' . str_pad($lastId+1, 3, '0', STR_PAD_LEFT);
                             <a href="#" class="btn btn-primary" id="create">
                                 <i class="uil uil-save me-1"></i> Save
                             </a>
-                            <a href="#" class="btn btn-warning" id="update">
+                            <a href="#" class="btn btn-warning" id="update" style="display:none">
                                 <i class="uil uil-edit me-1"></i> Update
                             </a>
                             <!-- <a href="#" class="btn btn-danger delete-branch">
@@ -142,7 +142,7 @@ $item_id = 'IM' . str_pad($lastId+1, 3, '0', STR_PAD_LEFT);
                                                     <label class="form-label" for="brand">Manufacturer Brand <span
                                                             class="text-danger">*</span></label>
                                                     <select id="brand" name="brand" class="form-select">
-                                                        <option value="">-- Select Brand --</option>
+                                                         
                                                         <?php
                                                         $BRAND = new Brand(NULL);
                                                         foreach ($BRAND->activeBrands() as $brand) {
@@ -179,7 +179,7 @@ $item_id = 'IM' . str_pad($lastId+1, 3, '0', STR_PAD_LEFT);
                                                     <label class="form-label" for="group">Item Group <span
                                                             class="text-danger">*</span></label>
                                                     <select id="group" name="group" class="form-select">
-                                                        <option value="">-- Select Group --</option>
+                                                         
                                                         <?php
                                                         $GROUP_MASTER = new GroupMaster(NULL);
                                                         foreach ($GROUP_MASTER->getActiveGroups() as $group) {
@@ -196,7 +196,7 @@ $item_id = 'IM' . str_pad($lastId+1, 3, '0', STR_PAD_LEFT);
                                                     <label class="form-label" for="category">Item Category <span
                                                             class="text-danger">*</span></label>
                                                     <select id="category" name="category" class="form-select">
-                                                        <option value="">-- Select Category --</option>
+                                                        
                                                         <?php
                                                         $CATEGORY_MASTER = new CategoryMaster(NULL);
                                                         foreach ($CATEGORY_MASTER->getActiveCategory() as $category) {
@@ -211,8 +211,8 @@ $item_id = 'IM' . str_pad($lastId+1, 3, '0', STR_PAD_LEFT);
                                                 <div class="mb-3">
                                                     <label class="form-label" for="available_qty">Availabel QTY <span
                                                             class="text-danger">*</span></label>
-                                                    <input id="available_qty" name="available_qty" type="number" min="0" class="form-control"
-                                                        placeholder="Enter item available qty">
+                                                    <input id="available_qty" name="available_qty" type="number" min="0"
+                                                        class="form-control" placeholder="Enter item available qty">
                                                 </div>
                                             </div>
 
@@ -257,7 +257,7 @@ $item_id = 'IM' . str_pad($lastId+1, 3, '0', STR_PAD_LEFT);
                                                     <label class="form-label" for="stock_type">Stock Type <span
                                                             class="text-danger">*</span></label>
                                                     <select id="stock_type" name="stock_type" class="form-select">
-                                                        <option value="">-- Select Stock Type --</option>
+                                                        
                                                         <?php
                                                         $STOCK_TYPE = new StockType(NULL);
                                                         foreach ($STOCK_TYPE->getActiveStockType() as $stock_type) {
@@ -334,24 +334,18 @@ $item_id = 'IM' . str_pad($lastId+1, 3, '0', STR_PAD_LEFT);
                     </div>
                 </div> <!-- container-fluid -->
             </div>
-
-
             <?php include 'footer.php' ?>
-
         </div>
-        <!-- end main content-->
-
-    </div>  
+    </div>
 
     <!-- Right bar overlay-->
     <div class="rightbar-overlay"></div>
-
     <!-- JAVASCRIPT -->
     <script src="assets/libs/jquery/jquery.min.js"></script>
     <!-- /////////////////////////// -->
     <script src="ajax/js/item-master.js"></script>
     <script src="ajax/js/common.js"></script>
- 
+
     <script src="assets/libs/sweetalert/sweetalert-dev.js"></script>
     <script src="assets/js/jquery.preloader.min.js"></script>
 
@@ -370,7 +364,7 @@ $item_id = 'IM' . str_pad($lastId+1, 3, '0', STR_PAD_LEFT);
 
     <!-- Datatable init js -->
     <script src="assets/js/pages/datatables.init.js"></script>
-     
+
 
 </body>
 

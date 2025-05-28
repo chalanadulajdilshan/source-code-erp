@@ -1,20 +1,22 @@
-<!doctype html>
 <?php
 include 'class/include.php';
+include './auth.php';
 
-$PURCHASE_ORDER = new SalesInvoice(NULL);
+//doc id get by session 
+$DOCUMENT_TRACKING = new DocumentTracking($doc_id);
 
-// Get the last inserted package id
-$lastId = $PURCHASE_ORDER->getLastID();
-$po_number = 'PO-00' . $lastId + 1;
+// Get the last inserted quotation
+$lastId = $DOCUMENT_TRACKING->po_id;
+$purchase_id = $COMPANY_PROFILE_DETAILS->company_code . '/PO/00/0' . $lastId + 1;
 
 ?>
 
-<html lang="en"> 
+<html lang="en">
+
 <head>
 
     <meta charset="utf-8" />
-    <title>Horizontal Layout | Minible - Admin & Dashboard Template</title>
+    <title> Purchase Order | <?php echo $COMPANY_PROFILE_DETAILS->name ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="#" name="description" />
     <meta content="Themesbrand" name="author" />
@@ -39,23 +41,17 @@ $po_number = 'PO-00' . $lastId + 1;
     <link href="assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet"
         type="text/css" />
 
-     
+
 
 
 </head>
 
-<body data-layout="horizontal" data-topbar="colored" class="someBlock">
+<body data-layout="horizontal" data-topbar="colored" class="someBlock"> 
 
+        <!-- Begin page -->
+        <div id="layout-wrapper">
 
-
-    </head>
-
-    <body data-layout="horizontal" data-topbar="colored" class="someBlock">
-
-<!-- Begin page -->
-<div id="layout-wrapper">
-
-    <?php include 'navigation.php' ?>
+            <?php include 'navigation.php' ?>
 
             <!-- ============================================================== -->
             <!-- Start right Content here -->
@@ -128,8 +124,9 @@ $po_number = 'PO-00' . $lastId + 1;
                                                 <div class="col-md-2">
                                                     <label for="PO_No" class="form-label">PO No</label>
                                                     <div class="input-group mb-3">
-                                                        <input id="po_no" name="po_no" type="text"
-                                                            placeholder="PO No" class="form-control" value="<?php echo $po_number; ?>" readonly>
+                                                        <input id="po_no" name="po_no" type="text" placeholder="PO No"
+                                                            class="form-control" value="<?php echo $purchase_id; ?>"
+                                                            readonly>
                                                         <button class="btn btn-info" type="button"
                                                             data-bs-toggle="modal" data-bs-target="#po_no">
                                                             <i class="uil uil-search me-1"></i> Find
@@ -148,7 +145,7 @@ $po_number = 'PO-00' . $lastId + 1;
                                                 </div>
 
                                                 <div class="col-md-4">
-                                                <label for="supplier" class="form-label">Supplier</label>
+                                                    <label for="supplier" class="form-label">Supplier</label>
                                                     <div class="input-group mb-3">
                                                         <input id="supplier_id" name="supplier_id" type="text"
                                                             class="form-control ms-2 me-2" readonly>
@@ -159,15 +156,15 @@ $po_number = 'PO-00' . $lastId + 1;
                                                             data-bs-toggle="modal" data-bs-target="#supplierModal">
                                                             <i class="uil uil-search me-1"></i> Find
                                                         </button>
-                                                    </div> 
+                                                    </div>
 
                                                 </div>
 
                                                 <div class="col-md-2">
                                                     <label for="PI_No" class="form-label">PI No</label>
                                                     <div class="input-group mb-3">
-                                                        <input id="pi_no" name="pi_no" type="text"
-                                                            placeholder="PI No" class="form-control">
+                                                        <input id="pi_no" name="pi_no" type="text" placeholder="PI No"
+                                                            class="form-control">
                                                     </div>
 
                                                 </div>
@@ -194,21 +191,21 @@ $po_number = 'PO-00' . $lastId + 1;
                                                     <div class="input-group mb-3">
                                                         <select id="brand" name="brand" class="form-select">
                                                             <option value="">-- Select Brand --</option>
-                                                        <?php
-                                                        $BRAND = new Brand(NULL);
-                                                        foreach ($BRAND->activeBrands() as $brand) {
-                                                            echo "<option value='{$brand['id']}'>{$brand['name']}</option>";
-                                                        }
-                                                        ?>
+                                                            <?php
+                                                            $BRAND = new Brand(NULL);
+                                                            foreach ($BRAND->activeBrands() as $brand) {
+                                                                echo "<option value='{$brand['id']}'>{$brand['name']}</option>";
+                                                            }
+                                                            ?>
                                                         </select>
                                                     </div>
                                                 </div>
-                                                
+
                                                 <div class="col-md-2">
                                                     <label for="BL_No" class="form-label">BL No</label>
                                                     <div class="input-group mb-3">
-                                                        <input id="bl_no" name="bl_no" type="text"
-                                                            placeholder="BL No" class="form-control">
+                                                        <input id="bl_no" name="bl_no" type="text" placeholder="BL No"
+                                                            class="form-control">
                                                     </div>
 
                                                 </div>
@@ -217,8 +214,8 @@ $po_number = 'PO-00' . $lastId + 1;
                                                     <label for="Country" class="form-label">Country</label>
                                                     <div class="input-group mb-3">
                                                         <select id="country_id" name="country_id" class="form-select">
-                                                        <option value="">-- Select Country --</option>
-                                                        
+                                                            <option value="">-- Select Country --</option>
+
                                                         </select>
                                                     </div>
                                                 </div>
@@ -226,8 +223,8 @@ $po_number = 'PO-00' . $lastId + 1;
                                                 <div class="col-md-2">
                                                     <label for="CI_no" class="form-label">CI No</label>
                                                     <div class="input-group mb-3">
-                                                        <input id="ci_no" name="ci_no" type="text"
-                                                            placeholder="CI No" class="form-control">
+                                                        <input id="ci_no" name="ci_no" type="text" placeholder="CI No"
+                                                            class="form-control">
                                                     </div>
 
                                                 </div>
@@ -235,9 +232,10 @@ $po_number = 'PO-00' . $lastId + 1;
                                                 <div class="col-md-2">
                                                     <label for="Department" class="form-label">Department</label>
                                                     <div class="input-group mb-3">
-                                                        <select id="department_id" name="department_id" class="form-select">
+                                                        <select id="department_id" name="department_id"
+                                                            class="form-select">
                                                             <option value="">-- Select Department --</option>
-                                                        <?php
+                                                            <?php
                                                             $DEPARTMENT_MASTER = new DepartmentMaster(NULL);
                                                             foreach ($DEPARTMENT_MASTER->getActiveDepartment() as $departments) {
                                                                 ?>
@@ -254,8 +252,8 @@ $po_number = 'PO-00' . $lastId + 1;
                                                     <div class="input-group mb-3">
                                                         <select id="order_by" name="order_by" class="form-select">
 
-                                                            
-                                                        
+
+
                                                         </select>
                                                     </div>
                                                 </div>
@@ -278,7 +276,7 @@ $po_number = 'PO-00' . $lastId + 1;
                                                         <div class="input-group">
                                                             <input id="itemCode" type="text" class="form-control"
                                                                 placeholder="Item Code">
-                                                                <button class="btn btn-info" type="button"
+                                                            <button class="btn btn-info" type="button"
                                                                 id="open-item-modal">
                                                                 <i class="uil uil-search me-1"></i> Find
                                                             </button>
@@ -290,7 +288,7 @@ $po_number = 'PO-00' . $lastId + 1;
                                                         <div class="input-group">
                                                             <input id="description" type="text" class="form-control"
                                                                 placeholder="Description">
- 
+
                                                         </div>
                                                     </div>
 
@@ -307,7 +305,7 @@ $po_number = 'PO-00' . $lastId + 1;
                                                         <input type="number" id="qty" class="form-control"
                                                             placeholder="Quantity" oninput="calculatePayment()">
                                                     </div>
-                                                    
+
                                                     <div class="col-md-1">
                                                         <label class="form-label">Rate</label>
                                                         <input type="number" id="rate" class="form-control"
@@ -327,7 +325,7 @@ $po_number = 'PO-00' . $lastId + 1;
                                                 </div>
 
                                             </div>
-                                            
+
                                             <!-- Table -->
                                             <div class="table-responsive mt-4">
                                                 <table class="table table-bordered" id="invoiceTable">
@@ -407,12 +405,10 @@ $po_number = 'PO-00' . $lastId + 1;
                                             </div>
                                             <hr>
                                             <div class="row">
-                                                <div class="  p-2 border rounded bg-light"
-                                                    style="max-width: 500px;">
+                                                <div class="  p-2 border rounded bg-light" style="max-width: 500px;">
                                                     <div class="row mb-2">
                                                         <div class="col-7">
-                                                            <input type="text"
-                                                                class="form-control text_purchase3"
+                                                            <input type="text" class="form-control text_purchase3"
                                                                 value="Outstanding Invoice Amount" disabled>
                                                         </div>
                                                         <div class="col-5">
@@ -423,8 +419,7 @@ $po_number = 'PO-00' . $lastId + 1;
 
                                                     <div class="row mb-2">
                                                         <div class="col-7">
-                                                            <input type="text"
-                                                                class="form-control text_purchase3"
+                                                            <input type="text" class="form-control text_purchase3"
                                                                 value="Return Cheque Amount" disabled>
                                                         </div>
                                                         <div class="col-5">
@@ -435,8 +430,7 @@ $po_number = 'PO-00' . $lastId + 1;
 
                                                     <div class="row mb-2">
                                                         <div class="col-7">
-                                                            <input type="text"
-                                                                class="form-control text_purchase3"
+                                                            <input type="text" class="form-control text_purchase3"
                                                                 value="Pending Cheque Amount" disabled>
                                                         </div>
                                                         <div class="col-5">
@@ -447,8 +441,7 @@ $po_number = 'PO-00' . $lastId + 1;
 
                                                     <div class="row mb-2">
                                                         <div class="col-7">
-                                                            <input type="text"
-                                                                class="form-control text_purchase3"
+                                                            <input type="text" class="form-control text_purchase3"
                                                                 value="PSD Cheque Settlements" disabled>
                                                         </div>
                                                         <div class="col-5">
@@ -464,8 +457,8 @@ $po_number = 'PO-00' . $lastId + 1;
                                                                 value="Total" disabled>
                                                         </div>
                                                         <div class="col-5">
-                                                            <input type="text" class="form-control fw-bold"
-                                                                value="0.00" disabled>
+                                                            <input type="text" class="form-control fw-bold" value="0.00"
+                                                                disabled>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -488,7 +481,7 @@ $po_number = 'PO-00' . $lastId + 1;
         </div>
         <!-- END layout-wrapper -->
 
-        
+
 
         <!-- Right bar overlay-->
         <div class="rightbar-overlay"></div>

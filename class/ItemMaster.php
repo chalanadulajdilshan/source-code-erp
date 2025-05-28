@@ -57,15 +57,17 @@ class ItemMaster
     public function create()
     {
         $query = "INSERT INTO `item_master` (
-            `code`, `name`, `brand`, `size`, `pattern`, `group`, `category`, 
-            `cost`, `re_order_level`, `re_order_qty`,`available_qty`, `whole_sale_price`, 
-            `retail_price`, `cash_discount`, `credit_discount`, `stock_type`, `note`, `is_active`
-        ) VALUES (
-            '$this->code', '$this->name', '$this->brand', '$this->size', '$this->pattern', '$this->group',
-            '$this->category', '$this->cost', '$this->re_order_level', '$this->re_order_qty','$this->available_qty'
-            '$this->whole_sale_price', '$this->retail_price', '$this->cash_discount',
-            '$this->credit_discount', '$this->stock_type', '$this->note', '$this->is_active'
-        )";
+    `code`, `name`, `brand`, `size`, `pattern`, `group`, `category`, 
+    `cost`, `re_order_level`, `re_order_qty`, `available_qty`, `whole_sale_price`, 
+    `retail_price`, `cash_discount`, `credit_discount`, `stock_type`, `note`, `is_active`
+) VALUES (
+    '$this->code', '$this->name', '$this->brand', '$this->size', '$this->pattern', '$this->group',
+    '$this->category', '$this->cost', '$this->re_order_level', '$this->re_order_qty', '$this->available_qty',
+    '$this->whole_sale_price', '$this->retail_price', '$this->cash_discount',
+    '$this->credit_discount', '$this->stock_type', '$this->note', '$this->is_active'
+)";
+
+    
 
         $db = new Database();
         $result = $db->readQuery($query);
@@ -99,7 +101,7 @@ class ItemMaster
             `note` = '$this->note', 
             `is_active` = '$this->is_active'
             WHERE `id` = '$this->id'";
- 
+
 
         $db = new Database();
         $result = $db->readQuery($query);
@@ -159,21 +161,21 @@ class ItemMaster
     public function fetchForDataTable($request)
     {
         $db = new Database();
-    
-        $start = isset($request['start']) ? (int)$request['start'] : 0;
-        $length = isset($request['length']) ? (int)$request['length'] : 100;
+
+        $start = isset($request['start']) ? (int) $request['start'] : 0;
+        $length = isset($request['length']) ? (int) $request['length'] : 100;
         $search = $request['search']['value'] ?? '';
-    
+
         $status = $request['status'] ?? null;
         $stockOnly = isset($request['stock_only']) ? filter_var($request['stock_only'], FILTER_VALIDATE_BOOLEAN) : false;
-    
+
         $where = "WHERE 1=1";
-    
+
         // Search filter
         if (!empty($search)) {
             $where .= " AND (name LIKE '%$search%' OR code LIKE '%$search%')";
         }
-    
+
         // Status filter
         if (!empty($status)) {
             if ($status === 'active' || $status === '1' || $status === 1) {
@@ -182,34 +184,35 @@ class ItemMaster
                 $where .= " AND is_active = 0";
             }
         }
-        
-    
+
+
         // Stock only filter
         if ($stockOnly) {
-            $where .= " AND stock_type = 1"; 
+            $where .= " AND stock_type = 1";
         }
-    
+
         // Total records
         $totalSql = "SELECT * FROM item_master";
         $totalQuery = $db->readQuery($totalSql);
         $totalData = mysqli_num_rows($totalQuery);
-    
+
         // Filtered records
         $filteredSql = "SELECT * FROM item_master $where";
         $filteredQuery = $db->readQuery($filteredSql);
         $filteredData = mysqli_num_rows($filteredQuery);
-    
+
         // Paginated query
         $sql = "$filteredSql LIMIT $start, $length";
         $dataQuery = $db->readQuery($sql);
-    
+
         $data = [];
-    
+        $key = 1;
         while ($row = mysqli_fetch_assoc($dataQuery)) {
             $CATEGORY = new CategoryMaster($row['category']);
             $BRAND = new Brand($row['brand']);
-    
+
             $nestedData = [
+                "key" => $key,
                 "id" => $row['id'],
                 "code" => $row['code'],
                 "name" => $row['name'],
@@ -221,7 +224,8 @@ class ItemMaster
                 "brand_id" => $row['brand'],
                 "brand" => $BRAND->name,
                 "category_id" => $row['category'],
-                "cost" => $row['cost'],
+                "cost" => number_format($row['cost'], 2),
+                "available_qty" => $row['available_qty'],
                 "category" => $CATEGORY->name,
                 "whole_sale_price" => number_format($row['whole_sale_price'], 2),
                 "retail_price" => number_format($row['retail_price'], 2),
@@ -234,10 +238,11 @@ class ItemMaster
                     ? '<span class="badge bg-soft-success font-size-12">Active</span>'
                     : '<span class="badge bg-soft-danger font-size-12">Inactive</span>'
             ];
-    
+
             $data[] = $nestedData;
+            $key++;
         }
-    
+
         return [
             "draw" => intval($request['draw']),
             "recordsTotal" => intval($totalData),
@@ -245,23 +250,43 @@ class ItemMaster
             "data" => $data
         ];
     }
-    
-    
+
+
 
     public function getIdbyItemCode($code)
     {
         $query = "SELECT `id` FROM `item_master` WHERE `code` = '$code' LIMIT 1";
         $db = new Database();
         $result = $db->readQuery($query);
-    
+
         if ($row = mysqli_fetch_assoc($result)) {
             return $row['id'];
         }
-    
+
         return null;
     }
-    
-    
+
+    public static function checkReorderLevel()
+    {
+        $db = new Database();
+        $query = "SELECT `id`, `code`, `name`, `available_qty`, `re_order_level` FROM `item_master`";
+        $result = $db->readQuery($query);
+
+        $reorderItems = [];
+
+        while ($row = mysqli_fetch_assoc($result)) {
+            if ((float) $row['available_qty'] < (float) $row['re_order_level']) {
+                $reorderItems[] = [
+                    'id' => $row['id'],
+                    'code' => $row['code'],
+                    'name' => $row['name'],
+                ];
+            }
+        }
+
+        return $reorderItems;
+    }
+
 
 }
 

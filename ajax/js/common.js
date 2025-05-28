@@ -96,7 +96,7 @@ jQuery(document).ready(function () {
                 }
             },
             columns: [
-                { data: "id", title: "#ID" },
+                { data: "key", title: "#ID" },
                 { data: "code", title: "Code" },
                 { data: "name", title: "Name" },
                 { data: "mobile_number", title: "Mobile" },
@@ -188,7 +188,7 @@ jQuery(document).ready(function () {
                 }
             },
             columns: [
-                { data: "id", title: "#ID" },
+                { data: "key", title: "#ID" },
                 { data: "code", title: "Code" },
                 { data: "name", title: "Name" },
                 { data: "mobile_number", title: "Mobile" },
@@ -207,12 +207,9 @@ jQuery(document).ready(function () {
             var data = $('#supplierTable').DataTable().row(this).data();
 
             if (data) {
-                $('#customer_id').val(data.id);
-                $('#customer_code').val(data.code);
-                $('#customer_name').val(data.name);
-                $('#customer_address').val(data.address);
-                $('#customer_mobile').val(data.mobile_number);
-                $('#customerModal').modal('hide');
+                $('#supplier_id').val(data.id);
+                $('#supplier_code').val(data.code);
+                $('#supplier_name').val(data.name);
             }
 
             $('#supplierModal').modal('hide');
@@ -249,7 +246,7 @@ jQuery(document).ready(function () {
                 }
             },
             columns: [
-                { data: "id", title: "#ID" },
+                { data: "key", title: "#ID" },
                 { data: "code", title: "Code" },
                 { data: "name", title: "Name" },
                 { data: "mobile_number", title: "Mobile" },
@@ -412,8 +409,40 @@ jQuery(document).ready(function () {
         initInvoiceTable();
     });
 
-   
+    $('#show-more-btn').on('click', function () {
+        $('.extra-message').removeClass('d-none');
+        $('#show-more-btn').addClass('d-none');
+        $('#show-less-btn').removeClass('d-none');
+    });
 
+    $('#show-less-btn').on('click', function () {
+        $('.extra-message').addClass('d-none');
+        $('#show-more-btn').removeClass('d-none');
+        $('#show-less-btn').addClass('d-none');
+    });
+
+    $(document).ready(function () {
+        const totalMessages = $('.alert').length;
+        const toggleLink = $('#toggle-messages');
+
+        if (totalMessages <= 2) {
+            toggleLink.hide(); // hide toggle link if ≤ 2 messages
+        }
+
+        let expanded = false;
+
+        toggleLink.on('click', function (e) {
+            e.preventDefault();
+            if (!expanded) {
+                $('.extra-message').removeClass('d-none');
+                toggleLink.text(totalMessages + ' of ' + totalMessages + ' Hide messages');
+            } else {
+                $('.extra-message').addClass('d-none');
+                toggleLink.text('2 of ' + totalMessages + ' click all messages');
+            }
+            expanded = !expanded;
+        });
+    });
 
 });
 

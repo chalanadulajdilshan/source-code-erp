@@ -1,7 +1,7 @@
 <!doctype html>
 <?php
 include 'class/include.php';
-
+include './auth.php';
 
 $USER = new User(NUll);
 
@@ -15,7 +15,7 @@ $user_id = 'US00' . $lastId + 1;
 <head>
 
     <meta charset="utf-8" />
-    <title>Horizontal Layout | Minible - Admin & Dashboard Template</title>
+    <title>Manage Users | <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="#" name="description" />
     <meta content="Themesbrand" name="author" />
@@ -125,9 +125,8 @@ $user_id = 'US00' . $lastId + 1;
                                                             placeholder="Enter Category Code" readonly
                                                             value="<?php echo $user_id ?>">
                                                         <button class="btn btn-info" type="button"
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target=".bs-example-modal-xl">
-                                                            <i class="uil uil-search me-1"></i> Find user
+                                                            data-bs-toggle="modal" data-bs-target="#userModal">
+                                                            <i class="uil uil-search me-1"></i>
                                                         </button>
                                                     </div>
                                                 </div>
@@ -165,9 +164,25 @@ $user_id = 'US00' . $lastId + 1;
                                                         </select>
                                                     </div>
                                                 </div>
-
-
                                                 <div class="col-md-2">
+                                                    <label for="bankId" class="form-label">Department</label>
+                                                    <div class="input-group mb-3">
+                                                        <select id="department_id" name="department_id"
+                                                            class="form-select">
+                                                            <option value="">--Select Department--</option>
+                                                            <?php
+                                                            $DEPARTMENT_MASTER = new DepartmentMaster(NULL);
+                                                            foreach ($DEPARTMENT_MASTER->all() as $department) {
+                                                                ?>
+                                                                <option value="<?php echo $department['id'] ?>">
+                                                                    <?php echo $department['name'] ?>
+                                                                </option>
+                                                            <?php } ?>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-3">
                                                     <label for="username" class="form-label">Name</label>
                                                     <div class="input-group mb-3">
                                                         <input id="name" name="name" type="text" class="form-control"
@@ -176,7 +191,7 @@ $user_id = 'US00' . $lastId + 1;
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-3">
+                                                <div class="col-md-2">
                                                     <label for="username" class="form-label">User Name</label>
                                                     <div class="input-group mb-3">
                                                         <input id="username" name="username" type="text"
@@ -229,13 +244,8 @@ $user_id = 'US00' . $lastId + 1;
                             </div>
                         </div>
                     </div>
-
-
-
                 </div> <!-- container-fluid -->
             </div>
-
-
             <?php include 'footer.php' ?>
 
         </div>
@@ -243,13 +253,13 @@ $user_id = 'US00' . $lastId + 1;
 
     </div>
     <!-- END layout-wrapper -->
-    <div class="modal fade bs-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="categoryModalLabel"
+    <div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="userModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
 
                 <div class="modal-header">
-                    <h5 class="modal-title" id="categoryModalLabel">Manage Users</h5>
+                    <h5 class="modal-title" id="userModalLabel">Manage Users</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
@@ -263,6 +273,7 @@ $user_id = 'US00' . $lastId + 1;
                                     <tr>
                                         <th>#</th>
                                         <th>Company </th>
+                                        <th>Department </th>
                                         <th>Code</th>
                                         <th>Name</th>
                                         <th> User Name</th>
@@ -277,7 +288,8 @@ $user_id = 'US00' . $lastId + 1;
                                     foreach ($USER->all() as $key => $user) {
                                         $key++;
                                         $COMPANY_PROFILE = new CompanyProfile($user['company_id']);
-                                        ?>
+                                        $DEPARTMENT_MASTER = new DepartmentMaster($user['department_id'])
+                                            ?>
                                         <tr class="select-user" data-id="<?php echo $user['id']; ?>"
                                             data-code="<?php echo htmlspecialchars($user['code']); ?>"
                                             data-name="<?php echo htmlspecialchars($user['name']); ?>"
@@ -286,12 +298,13 @@ $user_id = 'US00' . $lastId + 1;
                                             data-email="<?php echo htmlspecialchars($user['email']); ?>"
                                             data-type="<?php echo $user['type']; ?>"
                                             data-company_id="<?php echo $user['company_id']; ?>"
-
+                                            data-department_id="<?php echo $user['department_id']; ?>"
                                             data-show_password="<?php echo $user['show_password']; ?>"
                                             data-active="<?php echo $user['isActive']; ?>">
 
                                             <td><?php echo $key; ?></td>
                                             <td><?php echo $COMPANY_PROFILE->name ?></td>
+                                            <td><?php echo $DEPARTMENT_MASTER->name ?></td>
                                             <td><?php echo htmlspecialchars($user['code']); ?></td>
                                             <td><?php echo htmlspecialchars($user['name']); ?></td>
                                             <td><?php echo htmlspecialchars($user['username']); ?></td>

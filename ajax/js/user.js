@@ -61,6 +61,14 @@ jQuery(document).ready(function () {
                 timer: 2000,
                 showConfirmButton: false
             });
+        } else if (!$('#department_id').val() || $('#department_id').val().length === 0) {
+            swal({
+                title: "Error!",
+                text: "Please select department",
+                type: 'error',
+                timer: 2000,
+                showConfirmButton: false
+            });
         } else {
 
             // Preloader start (optional if you use preloader plugin)
@@ -139,7 +147,7 @@ jQuery(document).ready(function () {
                 timer: 2000,
                 showConfirmButton: false
             });
-     
+
         } else if (!$('#email').val() || $('#email').val().length === 0) {
             swal({
                 title: "Error!",
@@ -152,6 +160,14 @@ jQuery(document).ready(function () {
             swal({
                 title: "Error!",
                 text: "Please enter phone number",
+                type: 'error',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } else if (!$('#department_id').val() || $('#department_id').val().length === 0) {
+            swal({
+                title: "Error!",
+                text: "Please select department",
                 type: 'error',
                 timer: 2000,
                 showConfirmButton: false
@@ -236,7 +252,7 @@ jQuery(document).ready(function () {
         $("#type").val(row.data("type"));
         $("#password").val(row.data("show_password"));
         $("#company_id").val(row.data("company_id"));
-
+        $("#department_id").val(row.data("department_id"));
 
 
         // Set checkbox state based on active flag
@@ -244,7 +260,7 @@ jQuery(document).ready(function () {
 
         $("#create").hide();
         // Close modal
-        $(".bs-example-modal-xl").modal("hide");
+        $("#userModal").modal("hide");
     });
 
 

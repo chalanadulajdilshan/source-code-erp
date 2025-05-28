@@ -8,7 +8,7 @@ include 'auth.php';
 <head>
 
     <meta charset="utf-8" />
-    <title>Horizontal Layout | Minible - Admin & Dashboard Template</title>
+    <title>Home | <?php echo $COMPANY_PROFILE_DETAILS->name ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="#" name="description" />
     <meta content="Themesbrand" name="author" />
@@ -33,7 +33,7 @@ include 'auth.php';
         <?php include 'navigation.php' ?>
 
 
-     
+
         <!-- ============================================================== -->
         <!-- Start right Content here -->
         <!-- ============================================================== -->
@@ -59,17 +59,23 @@ include 'auth.php';
                         </div>
                     </div>
                     <!-- end page title -->
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                A simple success alert—check it out!
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    <?php
+                    $ITEM_MASTER = new ItemMaster(NULL);
+                    $MESSAGE = new Message(null);
 
-               
+                    $reorderItems = $ITEM_MASTER->checkReorderLevel();
+
+                    if (!empty($reorderItems)) {
+                        $customMessages = [];
+
+                        foreach ($reorderItems as $item) {
+                            $customMessages[] = "Reorder Alert: <strong>{$item['code']}</strong> - {$item['name']} is below reorder level.";
+                        }
+
+                        $MESSAGE->showCustomMessages($customMessages, 'danger');
+                    }
+
+                    ?>
 
                     <div class="row">
                         <div class="col-md-6 col-xl-3">
@@ -862,6 +868,8 @@ include 'auth.php';
 
     <!-- JAVASCRIPT -->
     <script src="assets/libs/jquery/jquery.min.js"></script>
+    <script src="ajax/js/common.js"></script>
+
     <script src="assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="assets/libs/metismenu/metisMenu.min.js"></script>
     <script src="assets/libs/simplebar/simplebar.min.js"></script>
