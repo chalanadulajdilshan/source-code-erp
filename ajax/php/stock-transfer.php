@@ -36,6 +36,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'create_stock_transfer') {
     $codes = $_POST['item_codes'];
     $names = $_POST['item_names'];
     $qtys = $_POST['item_qtys'];
+ 
 
     if (!$from || !$to || !$date || empty($codes)) {
         echo json_encode(['status' => 'error', 'message' => 'Missing required fields.']);

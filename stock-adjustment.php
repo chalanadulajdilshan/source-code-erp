@@ -1,12 +1,7 @@
 <!doctype html>
 <?php
 include 'class/include.php';
-
-$STOCK_ADJUSTMENT = new SalesInvoice(NULL);
-
-// Get the last inserted package id
-$lastId = $STOCK_ADJUSTMENT->getLastID();
-$stock_id = 'SA00' . $lastId + 1;
+include './auth.php'; 
 ?>
 
 <html lang="en">
@@ -14,10 +9,9 @@ $stock_id = 'SA00' . $lastId + 1;
 <head>
 
     <meta charset="utf-8" />
-    <title>Horizontal Layout | Minible - Admin & Dashboard Template</title>
+    <title>Stock Adjustment |  <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta content="#" name="description" />
-    <meta content="Themesbrand" name="author" />
+    <meta content="#" name="description" /> 
     <!-- App favicon -->
     <link rel="shortcut icon" href="assets/images/favicon.ico">
 
@@ -39,7 +33,7 @@ $stock_id = 'SA00' . $lastId + 1;
     <link href="assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet"
         type="text/css" />
 
-     
+
 
 
 </head>
@@ -72,7 +66,7 @@ $stock_id = 'SA00' . $lastId + 1;
                                     <i class="uil uil-save me-1"></i> Save
                                 </a>
                                 <a href="#" class="btn btn-warning" id="update">
-                                <i class="uil uil-edit me-1"></i> Update
+                                    <i class="uil uil-edit me-1"></i> Update
                                 </a>
                                 <a href="#" class="btn btn-danger delete-stock">
                                     <i class="uil uil-trash-alt me-1"></i> Delete
@@ -123,94 +117,140 @@ $stock_id = 'SA00' . $lastId + 1;
                                         <form id="form-data">
                                             <div class="row">
 
-                                                <div class="col-md-3">
-                                                    <label for="documentNo" class="form-label">Document No</label>
-                                                    <div class="input-group mb-3">
-                                                        <input id="document_no" name="document_no" type="text"
-                                                            placeholder="Reference No" class="form-control">
-
-                                                        <button class="btn btn-info" type="button"
-                                                            data-bs-toggle="modal" data-bs-target="#stockAdjustmentModal">
-                                                            <i class="uil uil-ellipsis-h"></i>
-                                                        </button>
-
+                                                <div class="col-md-2">
+                                                    <label class="form-label d-block">Select Adjustment Type</label>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio"
+                                                            name="adjustment_type" id="additions" value="additions"
+                                                            checked> <label class="form-check-label"
+                                                            for="additions">Additions</label>
                                                     </div>
-                                                </div>
-
-                                                <div class="col-md-3">
-                                                    <label class="form-label" for="date">Date</label>
-                                                    <input id="date" name="date" type="date"
-                                                        class="form-control">
-                                                </div>
-
-                                                <div class="col-md-8">
-                                                    <label for="specialInstructions" class="form-label">Special Instructions</label>
-                                                    <div class="input-group mb-3">
-                                                        <input id="special_instructions" name="special_instructions" type="text"
-                                                            placeholder="Enter Special Instructions" class="form-control">
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio"
+                                                            name="adjustment_type" id="deductions" value="deductions">
+                                                        <label class="form-check-label"
+                                                            for="deductions">Deductions</label>
                                                     </div>
                                                 </div>
 
                                                 <div class="col-md-3">
                                                     <label for="Department" class="form-label">Department</label>
                                                     <div class="input-group mb-3">
-                                                        <select id="department_id" name="department_id" class="form-select">
+                                                        <select id="department_id" name="department_id"
+                                                            class="form-select">
+                                                            <?php
+                                                            $DEPARTMENT_MASTER = new DepartmentMaster(NUll);
+                                                            foreach ($DEPARTMENT_MASTER->getActiveDepartment() as $departments) {
+                                                                if ($US->type != 1) {
+                                                                    if ($departments['id'] = $US->department_id) {
+                                                                        ?>
+                                                                        <option value="<?php echo $departments['id'] ?>">
+                                                                            <?php echo $departments['name'] ?>
+                                                                        </option>
+                                                                    <?php }
+                                                                } else {
+                                                                    ?>
+                                                                    <option value="<?php echo $departments['id'] ?>">
+                                                                        <?php echo $departments['name'] ?>
+                                                                    </option>
+                                                                    <?php
+                                                                }
+                                                            } ?>
 
-                                                            
 
                                                         </select>
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-2"> 
-                                                    <label class="form-label d-block">Type</label> 
-                                                    <div class="form-check form-check-inline"> 
-                                                        <input class="form-check-input" type="radio" name="adjustment_type" id="additions" 
-                                                        value="additions" checked> <label class="form-check-label" for="additions">Additions</label> 
-                                                    </div> <div class="form-check form-check-inline"> 
-                                                        <input class="form-check-input" type="radio" name="adjustment_type" id="deductions" 
-                                                        value="deductions"> <label class="form-check-label" for="deductions">Deductions</label> 
+                                                <div class="col-md-7">
+                                                    <label for="specialInstructions" class="form-label">Special
+                                                        Instructions</label>
+                                                    <div class="input-group mb-3">
+                                                        <input id="special_instructions" name="special_instructions"
+                                                            type="text" placeholder="Enter Special Instructions"
+                                                            class="form-control">
                                                     </div>
                                                 </div>
 
                                                 <hr class="my-4">
 
+                                                <div class="col-md-4">
+                                                    <label for="itemCode" class="form-label">Item Code</label>
+                                                    <div class="input-group mb-3">
+                                                        <input id="itemCode" name="itemCode" type="text"
+                                                            placeholder="Item Code" class="form-control" readonly>
 
-                                                <h5 class="mb-3">Item Details</h5>
+                                                        <button class="btn btn-info" type="button"
+                                                            data-bs-toggle="modal" data-bs-target="#item_master">
+                                                            <i class="uil uil-search me-1"></i>
+                                                        </button>
 
+                                                    </div>
+                                                </div>
+                                                <!-- hidden item id -->
+                                                <input type="hidden" id="item_id" name="item_id">
+                                                <div class="col-md-4">
+                                                    <label for="Description" class="form-label">Item Name</label>
+                                                    <div class="input-group mb-3">
+                                                        <input id="itemName" name="itemName" type="text"
+                                                            class="form-control" placeholder="item name" readonly>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Quantity</label>
+                                                    <div class="input-group mb-3">
+                                                        <input type="number" id="itemQty" min="0" class="form-control"
+                                                            placeholder="Qty">
+
+                                                        <button class="btn btn-info ms-1" type="button" id="add_item">
+                                                            <i class="uil uil-plus"></i>Add
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <h5 class="mt-3">Item Details</h5>
                                                 <!-- Table -->
-                                                <div class="table-responsive mt-4">
-                                                    <table class="table table-bordered" id="invoiceTable">
+                                                <div class="table-responsive ">
+                                                    <table class="table table-bordered" id="itemTable">
                                                         <thead class="table-light">
                                                             <tr>
+                                                                <th>Id</th>
                                                                 <th>Code</th>
-                                                                <th>Description</th>
-                                                                <th>Part No</th>
+                                                                <th>Name</th>
                                                                 <th>Qty</th>
+                                                                <th>Action</th>
                                                             </tr>
                                                         </thead>
-                                                        <tbody id="invoiceItemsBody">
+                                                        <tbody id="show_table">
                                                             <tr id="noItemRow">
                                                                 <td colspan="8" class="text-center text-muted">No items
                                                                     added</td>
                                                             </tr>
                                                         </tbody>
-                                                    </table>
-
+                                                    </table> 
                                                 </div>
 
-                                            
-                                                <div class="col-md-2">
-                                                    <label for="Total" class="form-label">Total</label>
-                                                    <div class="input-group mb-3">
-                                                        <input id="total" name="total" type="text"
-                                                        placeholder="Total" class="form-control" readonly>
+
+                                                <div class="row">
+                                                    <div class="col-md-5">
+                                                        <div class="  p-2 border rounded bg-light"
+                                                            style="max-width: 500px;">
+                                                            <div class="row mb-2">
+                                                                <div class="col-5">
+                                                                    <input type="text"
+                                                                        class="form-control text_purchase3"
+                                                                        value=" Available Quantity " disabled>
+                                                                </div>
+                                                                <div class="col-7">
+                                                                    <input type="text"
+                                                                        class="form-control text-danger fw-bold"
+                                                                        id="available_qty" value="0" disabled>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
-
                                             </div>
-
-
                                         </form>
                                     </div>
                                 </div>
@@ -233,10 +273,6 @@ $stock_id = 'SA00' . $lastId + 1;
         <!-- JAVASCRIPT -->
         <script src="assets/libs/jquery/jquery.min.js"></script>
         <script src="ajax/js/stock-adjustment.js"></script>
-
-        <!-- /////////////////////////// -->
-
-        <script src="ajax/js/sales-invoice.js"></script>
 
         <script src="assets/libs/sweetalert/sweetalert-dev.js"></script>
         <script src="assets/js/jquery.preloader.min.js"></script>
