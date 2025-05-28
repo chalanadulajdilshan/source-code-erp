@@ -4,17 +4,23 @@ class PurchaseOrder
 {
     public $id;
     public $po_number;
-    public $supplier_id	;
-    public $order_date;
-    public $expected_date;
-    public $status;
-    public $total_amount;
+    public $entry_date;
+    public $supplier_id;
+    public $pi_no;
+    public $address;
+    public $lc_tt_no;
+    public $brand;
+    public $bl_no;
+    public $country;
+    public $ci_no;
+    public $department;
+    public $order_by;
     public $remarks;
     public $created_by;
     public $created_at;
     public $updated_at;
 
-    // Constructor to initialize the SalesInvoice object with an ID
+    // Constructor to initialize the PurchaseOrder object with an ID
     public function __construct($id = null)
     {
         if ($id) {
@@ -25,11 +31,16 @@ class PurchaseOrder
             if ($result) {
                 $this->id = $result['id'];
                 $this->po_number = $result['po_number'];
+                $this->entry_date = $result['entry_date'];
                 $this->supplier_id = $result['supplier_id'];
-                $this->order_date = $result['order_date'];
-                $this->expected_date = $result['expected_date'];
-                $this->status = $result['status'];
-                $this->total_amount = $result['total_amount'];
+                $this->pi_no = $result['pi_no'];
+                $this->address = $result['address'];
+                $this->lc_tt_no = $result['lc_tt_no'];
+                $this->brand = $result['brand'];
+                $this->bl_no = $result['bl_no'];
+                $this->country = $result['country'];
+                $this->department = $result['department'];
+                $this->order_by = $result['order_by'];
                 $this->remarks = $result['remarks'];
                 $this->created_by = $result['created_by'];
                 $this->created_at = $result['created_at'];
@@ -38,15 +49,15 @@ class PurchaseOrder
         }
     }
 
-    // Create a new sales invoice record
+    // Create a new purchase order record
     public function create()
     {
         $query = "INSERT INTO `purchase_orders` (
-            `po_number`, `supplier_id`, `order_date`, `expected_date`, `status`, 
-            `total_amount`, `remarks`, `created_by`, `created_at`, `updated_at`
+            `po_number`, `entry_date`, `supplier_id`, `pi_no`, `address`, `lc_tt_no`, 
+            `brand`, `bl_no`, `country`, `department`, `order_by`, `remarks`, `created_by`, `created_at`, `updated_at`
         ) VALUES (
-            '{$this->po_number}', '{$this->supplier_id}', '{$this->order_date}', '{$this->expected_date}', '{$this->status}', 
-            '{$this->total_amount}', '{$this->remarks}', '{$this->created_by}', '{$this->created_at}', '{$this->updated_at}'
+            '{$this->po_number}', '{$this->entry_date}', '{$this->supplier_id}', '{$this->pi_no}', '{$this->address}', '{$this->lc_tt_no}','{$this->brand}',
+            '{$this->bl_no}', '{$this->country}', '{$this->department}', '{$this->order_by}', '{$this->remarks}', '{$this->created_by}', '{$this->created_at}', '{$this->updated_at}'
         )";
 
         $db = new Database();
@@ -59,16 +70,21 @@ class PurchaseOrder
         }
     }
 
-    // Update an existing sales invoice record
+    // Update an existing purchase order record
     public function update()
     {
         $query = "UPDATE `purchase_orders` SET 
             `po_number` = '{$this->po_number}', 
+            `entry_date` = '{$this->entry_date}',
             `supplier_id` = '{$this->supplier_id}', 
-            `order_date` = '{$this->order_date}', 
-            `expected_date` = '{$this->expected_date}', 
-            `status` = '{$this->status}', 
-            `total_amount` = '{$this->total_amount}', 
+            `pi_no` = '{$this->pi_no}', 
+            `address` = '{$this->address}', 
+            `lc_tt_no` = '{$this->lc_tt_no}', 
+            `brand` = '{$this->brand}', 
+            `bl_no` = '{$this->bl_no}',
+            `country` = '{$this->country}',
+            `department` = '{$this->department}',
+            `order_by` = '{$this->order_by}',
             `remarks` = '{$this->remarks}', 
             `created_by` = '{$this->created_by}', 
             `created_at` = '{$this->created_at}', 
@@ -108,87 +124,23 @@ class PurchaseOrder
         return $array_res;
     }
 
-    public function fetchInvoicesForDataTable($request)
-{
-    $db = new Database();
-    $conn = $db->DB_CON;
+    public function checkPurchaseIdExist($quotation_no)
+    {
+        $query = "SELECT * FROM `quotation` where `quotation_no` = '$quotation_no' ";
 
-    $start = isset($request['start']) ? (int)$request['start'] : 0;
-    $length = isset($request['length']) ? (int)$request['length'] : 100;
-    $search = $request['search']['value'] ?? '';
+        $db = new Database();
+        $result = mysqli_fetch_array($db->readQuery($query));
 
-    $where = "WHERE 1=1";
-
-    // Search filter
-    if (!empty($search)) {
-        $escapedSearch = mysqli_real_escape_string($conn, $search);
-        $where .= " AND (invoice_no LIKE '%$escapedSearch%' OR remark LIKE '%$escapedSearch%')";
+        return ($result) ? true : false;
     }
-
-    // Total records (without filters)
-    $totalSql = "SELECT COUNT(*) as count FROM sales_invoice";
-    $totalResult = $db->readQuery($totalSql);
-    $totalData = mysqli_fetch_assoc($totalResult)['count'];
-
-    // Total filtered records
-    $filteredSql = "SELECT COUNT(*) as count FROM sales_invoice $where";
-    $filteredResult = $db->readQuery($filteredSql);
-    $filteredData = mysqli_fetch_assoc($filteredResult)['count'];
-
-    // Paginated query
-    $query = "SELECT * FROM sales_invoice $where ORDER BY invoice_date DESC LIMIT $start, $length";
-     
-
-    $result = $db->readQuery($query);
-
-    $data = [];
-
-    while ($row = mysqli_fetch_assoc($result)) {
-        // Optionally load related names if needed
-        $CUSTOMER = new CustomerMaster($row['customer_id']);
-        $DEPARTMENT = new DepartmentMaster($row['department_id']);
-
-        $nestedData = [
-            "invoice_no"    => $row['invoice_no'],
-            "invoice_date"  => $row['invoice_date'],
-            "customer"      => $CUSTOMER->name ?? $row['customer_id'],
-            "department"    => $DEPARTMENT->name ?? $row['department_id'],
-            "grand_total"   => number_format($row['grand_total'], 2),
-            "remark"        => $row['remark']
-        ];
-
-        $data[] = $nestedData;
-    } 
-    return [
-        "draw" => intval($request['draw']),
-        "recordsTotal" => intval($totalData),
-        "recordsFiltered" => intval($filteredData),
-        "data" => $data
-    ];
-}
-
 
     public function getLastID()
     {
-        $query = "SELECT * FROM `sales_invoice` ORDER BY `id` DESC LIMIT 1";
+        $query = "SELECT * FROM `purchase_orders` ORDER BY `id` DESC LIMIT 1";
         $db = new Database();
         $result = mysqli_fetch_array($db->readQuery($query));
         return $result['id'];
     }
-
-
-    public function activeCountry()
-    {
-        $query = "SELECT * FROM `country` WHERE is_active = 1 ORDER BY name ASC";
-        $db = new Database();
-        $result = $db->readQuery($query);
-        $array = [];
-
-        while ($row = mysqli_fetch_array($result)) {
-            array_push($array, $row);
-        }
-
-        return $array;
-    }
+    
 }
 ?>
