@@ -212,6 +212,67 @@ class StockMaster
         return ['status' => 'success', 'message' => 'Stock transferred successfully.'];
     }
 
+    public function adjustQuantity($item_id, $department_id, $adjust_qty, $adjust_type , $remark = '')
+    {
+        
+        $db = new Database();
+        $DEPARTMENT = new DepartmentMaster($department_id);
+
+        // Get existing stock record
+        $query = "SELECT * FROM `stock_master`
+              WHERE `item_id` = '" . (int) $item_id . "'
+              AND `department_id` = '" . (int) $department_id . "'
+              AND `is_active` = 1
+              LIMIT 1";
+ 
+
+        $result = mysqli_fetch_assoc($db->readQuery($query));
+
+        if ($result) {
+            
+            if ($adjust_type === 'additions') {
+                $newQty = $result['quantity'] + $adjust_qty;
+                $transactionType = 6; // custom code for adjustment increase Get by stock adjusestment table
+            } elseif ($adjust_type === 'deductions') {
+                if ($result['quantity'] < $adjust_qty) {
+                    return ['status' => 'error', 'message' => 'Insufficient stock to adjust.'];
+                }
+                $newQty = $result['quantity'] - $adjust_qty;
+                $transactionType = 7; // custom code for adjustment decrease Get by stock adjusestment table
+            } else {
+                return ['status' => 'error', 'message' => 'Invalid adjustment type.'];
+            }
+
+            $update = "UPDATE `stock_master` SET `quantity` = '" . (int) $newQty . "', `remark` = '" . $remark . "' 
+                   WHERE `id` = '" . (int) $result['id'] . "'";
+            $db->readQuery($update);
+
+        } else {
+            // No existing record, only allow increase
+            if ($adjust_type !== 'additions') {
+                return ['status' => 'error', 'message' => 'No existing stock to decrease.'];
+            }
+
+            $insert = "INSERT INTO `stock_master` (`item_id`, `department_id`, `quantity`, `is_active`, `remark`, `created_at`)
+                   VALUES ('" . (int) $item_id . "', '" . (int) $department_id . "', '" . (int) $adjust_qty . "', 1, '" . $remark . "', NOW())";
+            $db->readQuery($insert);
+            $transactionType = 6; // adjustment increase
+        }
+
+        // Record in stock transaction
+        $STOCK_TRANSACTION = new StockTransaction(NULL);
+        $STOCK_TRANSACTION->item_id = $item_id;
+        $STOCK_TRANSACTION->type = $transactionType;
+        $STOCK_TRANSACTION->date = date('Y-m-d');
+        $STOCK_TRANSACTION->qty_in = ($adjust_type === 'additions') ? $adjust_qty : 0;
+        $STOCK_TRANSACTION->qty_out = ($adjust_type === 'deductions') ? $adjust_qty : 0;
+        $STOCK_TRANSACTION->remark = 'Stock adjustment in ' . $DEPARTMENT->name . ' - ' . $remark;
+        $STOCK_TRANSACTION->create();
+
+        return ['status' => 'success', 'message' => 'Stock adjusted successfully.'];
+    }
+
+
 }
 
 ?>

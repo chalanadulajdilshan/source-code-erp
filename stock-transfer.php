@@ -3,12 +3,6 @@
 include 'class/include.php';
 include 'auth.php';
 
-$SALES_INVOICE = new SalesInvoice(NULL);
-
-// Get the last inserted package id
-$lastId = $SALES_INVOICE->getLastID();
-$invoice_id = 'IN00' . $lastId + 1;
-
 $DEPARTMENT_MASTER = new DepartmentMaster($US->department_id)
     ?>
 
@@ -148,12 +142,20 @@ $DEPARTMENT_MASTER = new DepartmentMaster($US->department_id)
                                                         <?php
                                                         $DEPARTMENT_MASTER = new DepartmentMaster(NUll);
                                                         foreach ($DEPARTMENT_MASTER->getActiveDepartment() as $departments) {
-                                                            if ($departments['id'] != $US->department_id) {
+                                                            if ($US->type != 1) {
+                                                                if ($departments['id'] = $US->department_id) {
+                                                                    ?>
+                                                                    <option value="<?php echo $departments['id'] ?>">
+                                                                        <?php echo $departments['name'] ?>
+                                                                    </option>
+                                                                <?php }
+                                                            } else {
                                                                 ?>
                                                                 <option value="<?php echo $departments['id'] ?>">
                                                                     <?php echo $departments['name'] ?>
                                                                 </option>
-                                                            <?php }
+                                                                <?php
+                                                            }
                                                         } ?>
                                                     </select>
                                                 </div>
@@ -177,7 +179,7 @@ $DEPARTMENT_MASTER = new DepartmentMaster($US->department_id)
                                                 <label for="Description" class="form-label">Item Name</label>
                                                 <div class="input-group mb-3">
                                                     <input id="itemName" name="itemName" type="text"
-                                                        class="form-control" placeholder="Description" readonly>
+                                                        class="form-control" placeholder="item name" readonly>
                                                 </div>
                                             </div>
 
@@ -192,21 +194,23 @@ $DEPARTMENT_MASTER = new DepartmentMaster($US->department_id)
                                                     </button>
                                                 </div>
                                             </div>
-
-                                            <div id="show_table" style="display: none;">
-                                                <hr>
-                                                <h5>Transfer Items</h5>
+                                            <hr>
+                                            <div class="table-responsive ">
                                                 <table class="table table-bordered" id="itemTable">
-                                                    <thead>
+                                                    <thead class="table-light">
                                                         <tr>
-                                                            <th>Item Code</th>
-                                                            <th>Item Name</th>
-                                                            <th>Quantity</th>
+                                                            <th>Id</th>
+                                                            <th>Code</th>
+                                                            <th>Name</th>
+                                                            <th>Qty</th>
                                                             <th>Action</th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody>
-                                                        <!-- Added items will appear here -->
+                                                    <tbody id="show_table">
+                                                        <tr id="noItemRow">
+                                                            <td colspan="8" class="text-center text-muted">No items
+                                                                added</td>
+                                                        </tr>
                                                     </tbody>
                                                 </table>
                                             </div>
