@@ -104,6 +104,20 @@ class Country
         $result = mysqli_fetch_array($db->readQuery($query));
         return $result['id'];
     }
+
+    public function activeCountry()
+    {
+        $query = "SELECT * FROM `country` WHERE is_active = 1 ORDER BY name ASC";
+        $db = new Database();
+        $result = $db->readQuery($query);
+        $array = [];
+
+        while ($row = mysqli_fetch_array($result)) {
+            array_push($array, $row);
+        }
+
+        return $array;
+    }
 }
 
 ?>

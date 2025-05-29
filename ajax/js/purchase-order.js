@@ -1,586 +1,766 @@
 jQuery(document).ready(function () {
-  //windows loder
-  loadCustomer();
 
-  // DataTable config
-  var table = $("#datatable").DataTable({
-    processing: true,
-    serverSide: true,
-    ajax: {
-      url: "ajax/php/purchase-order.php",
-      type: "POST",
-      data: function (d) {
-        d.filter = true;
-        d.status = 1;
-        d.stock_only = 1;
-      },
-      dataSrc: function (json) {
-        return json.data;
-      },
-      error: function (xhr) {
-        console.error("Server Error Response:", xhr.responseText);
-      },
-    },
-    columns: [
-      { data: "id", title: "#ID" },
-      { data: "code", title: "Code" },
-      { data: "name", title: "Name" },
-      { data: "brand", title: "Brand" },
-      { data: "cost", title: "Cost" },
-      { data: "whole_sale_price", title: "Wholesale" },
-      { data: "retail_price", title: "Retail" },
-      { data: "cash_discount", title: "Cash Dis %" },
-      { data: "credit_discount", title: "Credit Dis %" },
-      { data: "status_label", title: "Status" },
-    ],
-    order: [[0, "desc"]],
-    pageLength: 100,
-  });
 
-  // On row click, load selected item into input fields
-  $("#datatable tbody").on("click", "tr", function () {
-    var data = table.row(this).data();
-    if (!data) return;
+    // DataTable config
+    var table = $('#datatable').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: "ajax/php/item-master.php",
+            type: "POST",
+            data: function (d) {
+                d.filter = true;
+                d.status = 1;
+                d.stock_only = 1;
+            },
+            dataSrc: function (json) {
 
-    const salesType = $("#sales_type").val();
-    const paymentType = $("#payment_type").val();
-
-    if (salesType == 1) {
-      // Whole Sales
-      $("#itemPrice").val(data.whole_sale_price.replace(/,/g, ""));
-    } else if (salesType == 2) {
-      // Retail Sales
-      $("#itemPrice").val(data.retail_price.replace(/,/g, ""));
-    }
-
-    if (paymentType == 1) {
-      $("#itemDiscount").val(data.cash_discount);
-    } else if (paymentType == 2) {
-      $("#itemDiscount").val(data.credit_discount);
-    } else {
-      $("#itemDiscount").val(0);
-    }
-
-    $("#item_id").val(data.id);
-    $("#itemCode").val(data.code);
-    $("#itemName").val(data.name);
-    $("#itemQty").val(1);
-    $("#available_qty").val(data.id);
-
-    calculatePayment();
-
-    setTimeout(() => $("#itemQty").focus(), 200);
-
-    $(".bs-example-modal-xl").modal("hide");
-  });
-
-  var table = $("#customerTable").DataTable({
-    processing: true,
-    serverSide: true,
-    ajax: {
-      url: "ajax/php/customer-master.php",
-      type: "POST",
-      data: function (d) {
-        d.filter = true;
-      },
-      dataSrc: function (json) {
-        return json.data;
-      },
-      error: function (xhr) {
-        console.error("Server Error Response:", xhr.responseText);
-      },
-    },
-    columns: [
-      { data: "id", title: "#ID" },
-      { data: "code", title: "Code" },
-      { data: "name", title: "Name" },
-      { data: "mobile_number", title: "Mobile" },
-      { data: "email", title: "Email" },
-      { data: "category", title: "Category" },
-      { data: "province", title: "Province" },
-      { data: "credit_limit", title: "Credit Limit" },
-      { data: "vat_no", title: "Is Vat" },
-      { data: "status_label", title: "Status" },
-    ],
-    order: [[0, "desc"]],
-    pageLength: 100,
-  });
-
-  $("#customerTable tbody").on("click", "tr", function () {
-    var data = table.row(this).data();
-    if (!data) return;
-
-    // Fill form fields
-    $("#customer_id").val(data.id);
-    $("#code").val(data.code);
-    $("#name").val(data.name);
-    $("#address").val(data.address);
-    $("#mobile_number").val(data.mobile_number);
-    $("#mobile_number_2").val(data.mobile_number_2);
-    $("#email").val(data.email);
-    $("#contact_person").val(data.contact_person);
-    $("#contact_person_number").val(data.contact_person_number);
-    $("#credit_limit").val(data.credit_limit);
-    $("#outstanding").val(data.outstanding);
-    $("#overdue").val(data.overdue);
-    $("#vat_no").val(data.vat_no);
-    $("#svat_no").val(data.svat_no);
-    $("#vat_group").val(data.vat_group).trigger("change");
-    $("#category").val(data.category_id).trigger("change");
-    $("#province").val(data.province_id).trigger("change");
-    $("#district").val(data.district_id).trigger("change");
-    $("#remark").val(data.remark);
-
-    // Checkbox for active status
-    $("#is_active").prop("checked", data.status == "1");
-
-    // Hide Save (Create) Button
-    $("#create").hide();
-
-    // Hide modal if open
-    $(".bs-example-modal-xl").modal("hide");
-  });
-
-  //get first row cash sales customer
-  function loadCustomer() {
-    $.ajax({
-      url: "ajax/php/customer-master.php",
-      method: "POST",
-      data: { action: "get_first_customer" }, // you can customize this key/value
-      dataType: "json",
-      success: function (data) {
-        if (!data.error) {
-          $("#customer_code").val(data.customer_code);
-          $("#customer_name").val(data.customer_name);
-          $("#customer_address").val(data.customer_address);
-          $("#customer_mobile").val(data.mobile_number); // adjust key if needed
-        } else {
-          console.warn("No customer found");
-        }
-      },
-      error: function () {
-        console.error("AJAX request failed.");
-      },
+                return json.data;
+            },
+            error: function (xhr) {
+                console.error("Server Error Response:", xhr.responseText);
+            }
+        },
+        columns: [
+            { data: "id", title: "#ID" },
+            { data: "code", title: "Code" },
+            { data: "name", title: "Name" },
+            { data: "brand", title: "Brand" },
+            { data: "cost", title: "Cost" },
+            { data: "whole_sale_price", title: "Wholesale" },
+            { data: "retail_price", title: "Retail" },
+            { data: "cash_discount", title: "Cash Dis %" },
+            { data: "credit_discount", title: "Credit Dis %" },
+            { data: "status_label", title: "Status" }
+        ],
+        order: [[0, 'desc']],
+        pageLength: 100
     });
-  }
 
-  // Reset input fields
-  $("#new").click(function (e) {
-    e.preventDefault();
-    $("#form-data")[0].reset();
-    $("#category").prop("selectedIndex", 0); // Optional, if using dropdowns
-    $("#create").show();
-  });
 
-  // Open payment modal and pre-fill total
-  $("#create").on("click", function () {
-    const total = parseFloat($("#finalTotal").text()) || 0;
-    $("#modalFinalTotal").val(total.toFixed(2));
-    $("#amountPaid").val("");
-    $("#balanceAmount").val("0.00").removeClass("text-danger");
-    $("#paymentModal").modal("show");
-  });
+    // On row click, load selected item into input fields
+    $('#datatable tbody').on('click', 'tr', function () {
+        var data = table.row(this).data();
+        if (!data) return;
 
-  // Calculate and display balance or show insufficient message
-  $("#amountPaid").on("input", function () {
-    const paid = parseFloat($(this).val()) || 0;
-    const total = parseFloat($("#modalFinalTotal").val()) || 0;
+        $('#item_id').val(data.id);
+        $('#itemCode').val(data.code);
+        $('#qty').val(1);
+        $('#rate').val(data.cost);
+        $('#available_qty').val(data.id);
 
-    if (paid < total) {
-      $("#balanceAmount").val("Insufficient").addClass("text-danger");
-    } else {
-      const balance = paid - total;
-      $("#balanceAmount").val(balance.toFixed(2)).removeClass("text-danger");
-    }
-  });
+        calculatePayment();
 
-  // Handle payment form submission
-  $("#paymentForm").on("submit", function (e) {
-    e.preventDefault();
+        setTimeout(() => $('#qty').focus(), 200);
 
-    if (!$("#customer_code").val()) {
-      swal({
-        title: "Error!",
-        text: "Please enter customer code",
-        type: "error",
-        timer: 2000,
-        showConfirmButton: false,
-      });
-    } else {
-      const total = parseFloat($("#modalFinalTotal").val()) || 0;
-      const paid = parseFloat($("#amountPaid").val()) || 0;
-      const paymentType = $("#modalPaymentType").val();
+        $('#item_master').modal('hide');
+    });
 
-      if (paid < total) {
-        swal({
-          title: "Error!",
-          text: "Paid amount cannot be less than Final Total",
-          type: "error",
-          timer: 3000,
-          showConfirmButton: false,
-        });
-        return;
-      }
 
-      // Collect invoice items
-      const items = [];
-      $("#invoiceItemsBody tr").each(function () {
-        const code = $(this).find("td:eq(0)").text().trim();
-        const name = $(this).find("td:eq(1)").text().trim();
-        const price = parseFloat($(this).find("td:eq(2)").text()) || 0;
-        const qty = parseFloat($(this).find("td:eq(3)").text()) || 0;
-        const discount = parseFloat($(this).find("td:eq(4)").text()) || 0;
-        const payment = parseFloat($(this).find("td:eq(5)").text()) || 0;
-        const totalItem = parseFloat($(this).find("td:eq(6)").text()) || 0;
-        const item_id = $("#item_id").val();
-
-        if (code && !isNaN(totalItem)) {
-          items.push({
-            item_id,
-            code,
-            name,
-            price,
-            qty,
-            discount,
-            payment,
-            total: totalItem,
-          });
+    $('#item_master').on('hidden.bs.modal', function () {
+        if (focusAfterModal) {
+            $('#qty').focus();
+            focusAfterModal = false;
         }
-      });
+    });
 
-      if (items.length === 0) {
-        swal({
-          title: "Error!",
-          text: "Please add at least one item.",
-          type: "error",
-          timer: 3000,
-          showConfirmButton: false,
-        });
-        return;
-      }
+    // Reset input fields
+    $("#new").click(function (e) {
+        e.preventDefault();
+        $('#form-data')[0].reset();
+        $('#category').prop('selectedIndex', 0); // Optional, if using dropdowns
+        $("#create").show();
+    });
 
-      // Use FormData to include form inputs + invoice items
-      const formData = new FormData($("#form-data")[0]);
-      formData.append("create", true);
-      formData.append("total", total);
-      formData.append("paid", paid);
-      formData.append("payment_type", paymentType);
-      formData.append("items", JSON.stringify(items));
-      formData.append("invoice_no", $("#invoice_no").val());
 
-      // Start Preloader
-      $(".someBlock").preloader();
+    //////////////////////////item add///////////////////////
 
-      $.ajax({
-        url: "ajax/php/purchase-order.php",
-        type: "POST",
-        data: formData,
-        contentType: false,
-        processData: false,
-        beforeSend: function () {
-          $(".someBlock").preloader("remove");
-        },
-        success: function (res) {
-          swal({
-            title: "Success!",
-            text: "Invoice saved successfully!",
-            type: "success",
-            timer: 3000,
-            showConfirmButton: false,
-          });
-          $("#paymentModal").modal("hide");
-          // Optional: Reset or redirect
-          window.location.href =
-            "invoice.php?invoice_no=" + $("#invoice_no").val();
-        },
-        error: function (xhr) {
-          console.error(xhr.responseText);
-          swal({
-            title: "Error",
-            text: "Something went wrong!",
-            type: "error",
-            timer: 3000,
-            showConfirmButton: false,
-          });
-        },
-      });
-    }
-  });
+    // Add item to purchase order table
+    function addItem() {
+        const code = $('#itemCode').val().trim();
+        const qty = parseFloat($('#qty').val()) || 0;
+        const rate = parseFloat($('#rate').val()) || 0;
+        const payment = parseFloat($('#itemPayment').val()) || 0;
 
-  // Open item modal
-  $("#open-item-modal").click(function (e) {
-    e.preventDefault();
-    const myModal = new bootstrap.Modal(
-      document.querySelector(".bs-example-modal-xl")
-    );
-    myModal.show();
-  });
+        if (!code || qty <= 0) {
+            alert("Please fill valid item details.");
+            return;
+        }
 
-  // Add item to invoice table
-  function addItem() {
-    const code = $("#itemCode").val().trim();
-    const name = $("#itemName").val().trim();
-    const price = parseFloat($("#itemPrice").val()) || 0;
-    const qty = parseFloat($("#itemQty").val()) || 0;
-    const discount = parseFloat($("#itemDiscount").val()) || 0;
-    const payment = parseFloat($("#itemPayment").val()) || 0;
+        const total = (rate * qty) - ((rate * qty));
 
-    if (!code || !name || price <= 0 || qty <= 0) {
-      alert("Please fill valid item details.");
-      return;
-    }
+        // Remove no data message if exists
+        $('#noItemRow').remove();
 
-    const total = price * qty - price * qty * (discount / 100);
-
-    // Remove no data message if exists
-    $("#noItemRow").remove();
-
-    const row = `
+        const row = `
         <tr>
             <td>${code}</td>
-            <td>${name}</td>
-            <td class="item-price">${price.toFixed(2)}</td>
-            <td class="item-qty">${qty}</td>
-            <td class="item-discount">${discount}</td>
-            <td>${payment.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}</td>
-            <td>${total.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}</td>
-
+            <td>${qty}</td>
+            <td>${rate}</td>
+            <td>${payment.toFixed(2)}</td>
             <td><button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">Remove</button></td>
         </tr>
     `;
-    $("#invoiceItemsBody").append(row);
+        $('#purchaseOrderBody').append(row);
 
-    // Clear input fields
-    $(
-      "#itemCode, #itemName, #itemPrice, #itemQty, #itemDiscount, #itemPayment"
-    ).val("");
+        // Clear input fields
+        $('#itemCode, #qty, #rate, #itemPayment').val('');
 
-    updateFinalTotal();
-  }
-
-  // Remove item row
-  function removeRow(button) {
-    $(button).closest("tr").remove();
-    updateFinalTotal();
-  }
-
-  // Update total at the bottom
-  function updateFinalTotal() {
-    let total = 0;
-    $("#invoiceItemsBody tr").each(function () {
-      const rowTotal = parseFloat($(this).find("td:eq(6)").text()) || 0;
-      total += rowTotal;
-    });
-    $("#finalTotal").text(total.toFixed(2));
-  }
-
-  // Bind button click
-  $("#addItemBtn").click(addItem);
-
-  // Bind Enter key to add item
-  $(
-    "#itemCode, #itemName, #itemPrice, #itemQty, #itemDiscount, #itemPayment"
-  ).on("keydown", function (e) {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      addItem();
-    }
-  });
-
-  // Calculate payment
-  function calculatePayment() {
-    const price = parseFloat($("#itemPrice").val()) || 0;
-    const qty = parseFloat($("#itemQty").val()) || 0;
-    const discount = parseFloat($("#itemDiscount").val()) || 0;
-
-    const subtotal = price * qty;
-    const discountedAmount = subtotal * (discount / 100);
-    const total = subtotal - discountedAmount;
-
-    $("#itemPayment").val(total.toFixed(2));
-  }
-
-  // Call payment calculation on input change
-  $("#itemPrice, #itemQty, #itemDiscount").on("input", calculatePayment);
-
-  // Global function to remove row
-  window.removeRow = function (button) {
-    $(button).closest("tr").remove();
-
-    // If no rows left, add no-item message
-    if ($("#invoiceItemsBody tr").length === 0) {
-      $("#invoiceItemsBody").append(`
-                <tr id="noItemRow">
-                    <td colspan="8" class="text-center text-muted">No items added</td>
-                </tr>
-            `);
+        updateFinalTotal();
     }
 
-    updateFinalTotal();
-  };
-
-  // Function to calculate final total from all rows
-  function updateFinalTotal() {
-    let subTotal = 0;
-    let discountTotal = 0;
-
-    $("#invoiceItemsBody tr").each(function () {
-      const price = parseFloat($(this).find(".item-price").text()) || 0;
-      const qty = parseFloat($(this).find(".item-qty").text()) || 0;
-      const discount = parseFloat($(this).find(".item-discount").text()) || 0;
-
-      const itemSubTotal = price * qty;
-      const itemDiscount = itemSubTotal * (discount / 100);
-      const itemTotal = itemSubTotal - itemDiscount;
-
-      subTotal += itemSubTotal;
-      discountTotal += itemDiscount;
-    });
-
-    const grandTotal = subTotal - discountTotal;
-    $("#subTotal").html(
-      `<strong>${subTotal.toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })}</strong>`
-    );
-    $("#disTotal").html(
-      `<strong>${discountTotal.toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })}</strong>`
-    );
-    $("#finalTotal").html(
-      `<strong>${grandTotal.toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })}</strong>`
-    );
-  }
-
-  // Disable price field to prevent manual changes
-  $("#itemPrice").prop("readonly", true);
-
-  // Amount Paid focus
-  $("#paymentModal").on("shown.bs.modal", function () {
-    $("#amountPaid").focus();
-  });
-
-  //////////////////////////customer details add//////////////////////////
-
-  $("#supplierModal").on("shown.bs.modal", function () {
-    loadSupplierTable();
-  });
-
-  function loadSupplierTable() {
-    // Destroy if already initialized
-    if ($.fn.DataTable.isDataTable("#supplierTable")) {
-      $("#supplierTable").DataTable().destroy();
+    // Remove item row
+    function removeRow(button) {
+        $(button).closest('tr').remove();
+        updateFinalTotal();
     }
 
-    $("#supplierTable").DataTable({
-      processing: true,
-      serverSide: true,
-      ajax: {
-        url: "ajax/php/customer-master.php",
-        type: "POST",
-        data: function (d) {
-          d.filter = true;
-        },
-        dataSrc: function (json) {
-          return json.data;
-        },
-        error: function (xhr) {
-          console.error("Server Error Response:", xhr.responseText);
-        },
-      },
-      columns: [
-        { data: "id", title: "#ID" },
-        { data: "code", title: "Code" },
-        { data: "name", title: "Name" },
-        { data: "mobile_number", title: "Mobile" },
-        { data: "email", title: "Email" },
-        { data: "category", title: "Category" },
-        { data: "province", title: "Province" },
-        { data: "credit_limit", title: "Credit Limit" },
-        { data: "vat_no", title: "Is Vat" },
-        { data: "status_label", title: "Status" },
-      ],
-      order: [[0, "desc"]],
-      pageLength: 100,
+    // Update total at the bottom
+    function updateFinalTotal() {
+        let subTotal = 0;
+
+        $('#purchaseOrderBody tr').each(function () {
+            const qty = parseFloat($(this).find('td:eq(1)').text()) || 0;
+            const rate = parseFloat($(this).find('td:eq(2)').text()) || 0;
+            const rowTotal = parseFloat($(this).find('td:eq(3)').text()) || 0;
+
+            subTotal += rate * qty;
+            discountTotal += (rate * qty);
+        });
+
+
+        const grandTotal = (subTotal - discountTotal);
+
+        // Update display fields
+        $('#finalTotal').val(subTotal.toFixed(2));        // Sub Total
+        $('#disTotal').val(discountTotal.toFixed(2));     // Discount Total 
+        $('#grandTotal').val(grandTotal.toFixed(2));      // Grand Total
+    }
+
+
+    // Bind button click
+    $('#addItemBtn').click(addItem);
+
+    // Bind Enter key to add item
+    $('#itemCode, #qty, #rate, #itemPayment').on('keydown', function (e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            addItem();
+        }
     });
 
-    $("#supplierTable tbody").on("click", "tr", function () {
-      var data = $("#supplierTable").DataTable().row(this).data();
+    // Calculate payment
+    function calculatePayment() {
+        const rate = parseFloat($('#rate').val()) || 0;
+        const qty = parseFloat($('#qty').val()) || 0;
+        const discount = parseFloat($('#itemDiscount').val()) || 0;
 
-      if (data) {
-        $("#customer_id").val(data.id);
-        $("#customer_code").val(data.code);
-        $("#customer_name").val(data.name);
-        $("#customer_address").val(data.address);
-        $("#customer_mobile").val(data.mobile_number);
-        $("#supplierModal").modal("hide");
-      }
+        const subtotal = rate * qty;
+        const discountedAmount = subtotal * (discount / 100);
+        const total = subtotal - discountedAmount;
+
+        $('#itemPayment').val(total.toFixed(2));
+    }
+
+    // Call payment calculation on input change
+    $('#qty, #rate').on('input', calculatePayment);
+
+    // Global function to remove row
+    let deletedItems = [];
+
+
+    window.removeRow = function (button) {
+        const $row = $(button).closest('tr');
+
+        // Get hidden item_id
+        const itemId = $row.find('input.item-id').val();
+        if (itemId) {
+            deletedItems.push(itemId);
+
+            $row.remove();
+
+            if ($('#purchaseOrderBody tr').length === 0) {
+                $('#purchaseOrderBody').append(`
+            <tr id="noItemRow">
+                <td colspan="8" class="text-center text-muted">No items added</td>
+            </tr>
+        `);
+            }
+
+            updateFinalTotal();
+        };
+
+    }
+
+    // Disable price field to prevent manual changes
+    $('#itemPrice').prop('readonly', true);
+
+    $('#create').click(function (e) {
+        e.preventDefault();
+
+        const customeId = $('#customer_id').val().trim();
+        const customerCode = $('#customer_code').val().trim();
+        const customerName = $('#customer_name').val().trim();
+        const quotationId = $('#quotation_id').val().trim();
+
+        if (!customerCode || !customerName) {
+            swal({
+                title: "Error!",
+                text: "Please select the customer.",
+                type: 'error',
+                timer: 2500,
+                showConfirmButton: false
+            });
+            return;
+        }
+
+        if (!$('#date').val()) {
+            swal({
+                title: "Error!",
+                text: "Please select a date.",
+                type: 'error',
+                timer: 2500,
+                showConfirmButton: false
+            });
+            return;
+        }
+
+        if (!quotationId) {
+            swal({
+                title: "Error!",
+                text: "Quotation No. cannot be blank.",
+                type: 'error',
+                timer: 2500,
+                showConfirmButton: false
+            });
+            return;
+        }
+
+        $.ajax({
+            url: 'ajax/php/quotation.php',
+            method: 'POST',
+            data: {
+                action: 'check_quotation_id',
+                quotation_id: quotationId
+            },
+            dataType: 'json',
+            success: function (checkResponse) {
+
+                if (checkResponse.exists) {
+                    swal({
+                        title: "Duplicate!",
+                        text: "Quotation No <strong>" + quotationId + "</strong> already exists.",
+                        type: 'error',
+                        html: true,
+                        timer: 2500,
+                        showConfirmButton: false
+                    });
+                    return;
+                }
+
+                const items = [];
+                let hasInvalidItem = false;
+
+                $('#purchaseOrderBody tr').each(function () {
+
+                    if ($(this).attr('id') === 'noItemRow') {
+                        return;
+                    }
+
+                    const itemCode = $(this).find('td:eq(0)').text().trim();
+                    const itemName = $(this).find('td:eq(1)').text().trim();
+                    const itemPrice = parseFloat($(this).find('td:eq(2)').text()) || 0;
+                    const qty = parseFloat($(this).find('td:eq(3)').text()) || 0;
+                    const itemDiscount = parseFloat($(this).find('td:eq(4)').text().replace('%', '')) || 0;
+                    const itemTotal = parseFloat($(this).find('td:eq(6)').text()) || 0;
+
+                    if (!itemCode || !itemName || itemPrice <= 0 || qty <= 0) {
+                        hasInvalidItem = true;
+                        return false; // break out of .each()
+                    }
+
+                    items.push({
+                        code: itemCode,
+                        name: itemName,
+                        price: itemPrice,
+                        qty: qty,
+                        discount: itemDiscount,
+                        total: itemTotal
+                    });
+                });
+
+                if (hasInvalidItem) {
+                    swal({
+                        title: "Error!",
+                        text: "Please ensure all items are filled correctly!",
+                        type: 'error',
+                        timer: 2500,
+                        showConfirmButton: false
+                    });
+                    return;
+                }
+
+                if (items.length === 0) {
+                    swal({
+                        title: "Error!",
+                        text: "Please add items to the quotation.",
+                        type: 'error',
+                        timer: 2500,
+                        showConfirmButton: false
+                    });
+                    return;
+                }
+
+
+                const finalTotal = parseFloat($('#finalTotal').val()) || 0;
+
+                const quotationData = {
+                    action: 'create_quotation',
+                    quotation_id: quotationId,
+                    customer_id: customeId,
+                    customer_code: customerCode,
+                    customer_name: customerName,
+                    date: $('#date').val(),
+                    company_id: $('#company_id').val(),
+                    department_id: $('#department_id').val(),
+                    marketing_executive_id: $('#marketing_executive_id').val(),
+                    sales_type: $('#sales_type').val(),
+                    payment_type: $('#payment_type').val(),
+                    remarks: $('#remark').val(),
+                    credit_period: $('#credit_period').val(),
+                    payment_term: $('#payment_type').val(),
+                    validity: $('#validity').val(),
+                    vat_type: $('#vat_type').val(),
+                    grand_total: finalTotal,
+                    items: JSON.stringify(items),
+
+                };
+
+
+                $.ajax({
+                    url: 'ajax/php/quotation.php',
+                    method: 'POST',
+                    data: quotationData,
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response.status === 'success') {
+                            swal({
+                                title: "Success!",
+                                text: "Quotation created successfully!",
+                                type: 'success',
+                                timer: 2500,
+                                showConfirmButton: false
+                            });
+                            setTimeout(function () {
+                                window.location.reload();
+                            }, 2500);
+                        } else {
+                            swal({
+                                title: "Error!",
+                                text: response.message || "Error creating quotation.",
+                                type: 'error',
+                                timer: 2500,
+                                showConfirmButton: false
+                            });
+                        }
+                    },
+                    error: function () {
+                        swal({
+                            title: "Error!",
+                            text: "AJAX request failed. Please try again.",
+                            type: 'error',
+                            timer: 2500,
+                            showConfirmButton: false
+                        });
+                    }
+                });
+            },
+            error: function () {
+                swal({
+                    title: "Error!",
+                    text: "Unable to verify Quotation No. right now.",
+                    type: 'error',
+                    timer: 2500,
+                    showConfirmButton: false
+                });
+            }
+        });
     });
-  }
 
-  //////////// append invoice data to table ///////////////////
-  var table = $("#invoiceTable2").DataTable({
-    processing: true,
-    serverSide: true,
-    destroy: true, // important when initializing inside modal
-    ajax: {
-      url: "ajax/php/purchase-order.php",
-      type: "POST",
-      data: function (d) {
-        d.filter = true;
-      },
-      dataSrc: function (json) {
-        return json.data;
-      },
-      error: function (xhr) {
-        console.error("Server Error Response:", xhr.responseText);
-      },
-    },
-    columns: [
-      { data: "id", title: "#ID" },
-      { data: "invoice_no", title: "Invoice No" },
-      { data: "invoice_date", title: "Date" },
-      { data: "department", title: "Department" }, // e.g., Sales, Marketing (string from JOIN)
-      { data: "customer", title: "Customer" }, // e.g., Customer Name (string from JOIN)
-      { data: "grand_total", title: "Grand Total" },
-      { data: "remark", title: "Remark" },
-    ],
-    order: [[0, "desc"]],
-    pageLength: 100,
-  });
+    $('#update').click(function (e) {
+        e.preventDefault();
 
-  // row click to fill form
-  $("#invoiceTable2 tbody").on("click", "tr", function () {
-    var data = table.row(this).data();
-    if (!data) return;
+        const id = $('#id').val().trim();
+        const quotationId = $('#quotation_id').val().trim();
+        const customerCode = $('#customer_code').val().trim();
+        const customerName = $('#customer_name').val().trim();
 
-    $("#invoice_id").val(data.id);
-    $("#invoice_no").val(data.invoice_no);
-    $("#invoice_date").val(data.invoice_date);
-    $("#department_id").val(data.department_id).trigger("change");
-    $("#customer_id").val(data.customer_id).trigger("change");
-    $("#sale_type").val(data.sale_type).trigger("change");
-    $("#discount_type").val(data.discount_type).trigger("change");
-    $("#payment_type").val(data.payment_type).trigger("change");
-    $("#sub_total").val(data.sub_total);
-    $("#discount").val(data.discount);
-    $("#tax").val(data.tax);
-    $("#grand_total").val(data.grand_total);
-    $("#remark").val(data.remark);
+        if (!id || !quotationId) {
+            swal({
+                title: "Error!",
+                text: "Please select a quotation to update.",
+                type: 'error',
+                timer: 2500,
+                showConfirmButton: false
+            });
+            return;
+        }
 
-    $("#create").hide();
-    $("#invoiceModal").modal("hide");
-  });
+        if (!customerCode || !customerName) {
+            swal({
+                title: "Error!",
+                text: "Please select the customer.",
+                type: 'error',
+                timer: 2500,
+                showConfirmButton: false
+            });
+            return;
+        }
+
+        if (!$('#date').val()) {
+            swal({
+                title: "Error!",
+                text: "Please select a date.",
+                type: 'error',
+                timer: 2500,
+                showConfirmButton: false
+            });
+            return;
+        }
+
+        const items = [];
+        let hasInvalidItem = false;
+
+        $('#purchaseOrderBody tr').each(function () {
+            if ($(this).attr('id') === 'noItemRow') return;
+            const itemCode = $(this).find('td:eq(0)').text().trim();
+            const itemName = $(this).find('td:eq(1)').text().trim();
+            const itemPrice = parseFloat($(this).find('td:eq(2)').text()) || 0;
+            const qty = parseFloat($(this).find('td:eq(3)').text()) || 0;
+            const itemDiscount = parseFloat($(this).find('td:eq(4)').text().replace('%', '')) || 0;
+            const itemTotal = parseFloat($(this).find('td:eq(6)').text()) || 0;
+
+            if (!itemCode || !itemName || itemPrice <= 0 || qty <= 0) {
+                hasInvalidItem = true;
+                return false;
+            }
+
+            items.push({
+                code: itemCode,
+                name: itemName,
+                price: itemPrice,
+                qty: qty,
+                discount: itemDiscount,
+                total: itemTotal
+            });
+        });
+
+        if (hasInvalidItem) {
+            swal({
+                title: "Error!",
+                text: "Please ensure all items are filled correctly!",
+                type: 'error',
+                timer: 2500,
+                showConfirmButton: false
+            });
+            return;
+        }
+
+        if (items.length === 0) {
+            swal({
+                title: "Error!",
+                text: "Please add items to the quotation.",
+                type: 'error',
+                timer: 2500,
+                showConfirmButton: false
+            });
+            return;
+        }
+
+        let finalTotal = parseFloat($('#finalTotal').text()) || 0;
+
+         const quotationData = {
+            action: 'update_quotation',
+            id: id,
+            quotation_id: quotationId,
+            credit_period: $('#credit_period').val(),
+            customer_id: $('#customer_id').val(),
+            customer_name: customerName,
+            date: $('#date').val(),
+            company_id: $('#company_id').val(),
+            department_id: $('#department_id').val(),
+            marketing_executive_id: $('#marketing_executive_id').val(),
+            sales_type: $('#sales_type').val(),
+            payment_type: $('#payment_type').val(),
+            remarks: $('#remark').val(),
+            vat_type: $('#vat_type').val(),
+            sub_total: finalTotal,
+            discount: 0,
+            grand_total: finalTotal,
+            items: JSON.stringify(items),
+            deleted_items: JSON.stringify(deletedItems)
+        };
+
+        $.ajax({
+            url: 'ajax/php/quotation.php',
+            method: 'POST',
+            data: quotationData,
+            dataType: 'json',
+            beforeSend: function () { 
+                $('body').preloader({
+                    text: 'Updating quotation...'
+                });
+            },
+            success: function (response) {
+                $('body').preloader('remove');
+                if (response.status === 'success') {
+                    swal({
+                        title: "Success!",
+                        text: "Quotation updated successfully!",
+                        type: 'success',
+                        timer: 2500,
+                        showConfirmButton: false
+                    });
+
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 2500);
+                } else {
+                    swal({
+                        title: "Error!",
+                        text: response.message || "Error updating quotation.",
+                        type: 'error',
+                        timer: 2500,
+                        showConfirmButton: false
+                    });
+                }
+            },
+            error: function (xhr) {
+                $('body').preloader('remove');
+                console.error("AJAX error:", xhr.responseText);
+                swal({
+                    title: "Error!",
+                    text: "AJAX request failed. Please try again.",
+                    type: 'error',
+                    timer: 2500,
+                    showConfirmButton: false
+                });
+            }
+        });
+    });
+
+    // Handle quotation selection from modal
+    $(document).on('click', '.select-model', function () {
+        const quotationId = $(this).data('id');
+        const quotationNo = $(this).data('quotation_no');
+        const date = $(this).data('date');
+        const customerId = $(this).data('customer_name');
+        const companyId = $(this).data('company_id');
+        const departmentId = $(this).data('department_id');
+
+
+        // Set the quotation ID and date in the form
+        $('#id').val(quotationId);
+        $('#quotation_id').val(quotationNo);
+        $('#date').val(date);
+        $('#company_id').val(companyId);
+        $('#department_id').val(departmentId);
+
+        // Get full quotation details from server
+        $.ajax({
+            url: 'ajax/php/quotation.php',
+            method: 'POST',
+            data: {
+                action: 'get_quotation',
+                id: quotationId
+            },
+            dataType: 'json',
+            beforeSend: function () {
+                // Show loading indicator
+                $('body').preloader({
+                    text: 'Loading quotation...'
+                });
+            },
+            success: function (response) {
+                $('body').preloader('remove');
+
+                if (response.status === 'success') {
+                    const quotation = response.data.quotation;
+                    const items = response.data.items;
+
+                    // Load customer details
+                    loadCustomerById(quotation.customer_id);
+
+                    // Set form values
+                    $('#marketing_executive_id').val(quotation.marketing_executive_id);
+                    $('#sales_type').val(quotation.sale_type || 1);
+                    $('#payment_type').val(quotation.payment_type);
+                    $('#vat_type').val(quotation.vat_type || 1);
+                    $('#remark').val(quotation.remarks);
+
+                    $('#finalTotal').val(quotation.sub_total);
+                    $('#disTotal').val(quotation.discount);
+                    $('#grandTotal').val(quotation.grand_total);
+                    $('#credit_period').val(quotation.credit_period);
+                    $('#validity').val(quotation.validity);
+
+                    // Clear existing items
+                    $('#purchaseOrderBody').empty();
+
+                    // Add items to the table
+                    if (items.length > 0) {
+                        items.forEach(function (item) {
+
+                            const discount = parseFloat(item.discount) || 0;
+                            const price = parseFloat(item.price) || 0;
+                            const qty = parseFloat(item.qty) || 0;
+                            const subtotal = price * qty;
+                            const total = parseFloat(item.sub_total) || 0;
+
+                            const row = `
+                            <tr>
+                                <td>${item.item_code}                                
+                                 <input type="hidden" class="item-id" value="${item.item_id}"></td>
+                                <td>${item.item_name}</td>
+                                <td>${price.toFixed(2)}</td>
+                                <td>${qty}</td>
+                                <td>${discount}%</td>
+                                <td>${subtotal.toFixed(2)}</td>
+                                <td>${total.toFixed(2)}</td>
+                                <td><button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">Remove</button></td>
+                            </tr>
+                            `;
+
+                            $('#purchaseOrderBody').append(row);
+                        });
+                    } else {
+                        // Add "No items" row if no items found
+                        $('#purchaseOrderBody').append(`
+                            <tr id="noItemRow">
+                                <td colspan="8" class="text-center text-muted">No items added</td>
+                            </tr>
+                        `);
+                    }
+
+                    $('#create').hide();
+                    $('#update').show();
+
+
+                    // Update final total
+                    $('#finalTotal').html(`<strong>${quotation.grand_total}</strong>`);
+
+                    // Close the modal
+                    $('#quotationModel').modal('hide');
+
+                } else {
+                    swal({
+                        title: "Error!",
+                        text: "Error loading quotation details.",
+                        type: 'error',
+                        timer: 2500,
+                        showConfirmButton: false
+                    });
+                }
+            },
+            error: function (xhr) {
+                $('body').preloader('remove');
+                console.error("AJAX error:", xhr.responseText);
+                swal({
+                    title: "Error!",
+                    text: "AJAX request failed. Please try again.",
+                    type: 'error',
+                    timer: 2500,
+                    showConfirmButton: false
+                });
+            }
+        });
+    });
+
+    function loadCustomerById(customerId) {
+        $.ajax({
+            url: 'ajax/php/quotation.php',
+            method: 'POST',
+            data: {
+                action: 'get_customer_by_id',
+                customer_id: customerId
+            },
+            dataType: 'json',
+            success: function (response) {
+                if (response.status === 'success') {
+                    const data = response.data;
+                    $('#customer_id').val(data.id);
+                    $('#customer_code').val(data.code);
+                    $('#customer_name').val(data.name);
+                    $('#customer_address').val(data.address);
+                    $('#customer_mobile').val(data.mobile_number);
+                } else {
+                    console.error("Customer not found");
+                }
+            },
+            error: function (xhr) {
+                console.error("AJAX error:", xhr.responseText);
+            }
+        });
+    }
+
+    $(document).on('click', '.delete-quotation', function (e) {
+        e.preventDefault();
+
+        var id = $("#id").val();
+        var quotation_id = $("#quotation_id").val();
+
+        swal({
+            title: "Are you sure?",
+            text: "Do you want to delete quotation  '" + quotation_id + "'?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "Cancel",
+            closeOnConfirm: false
+        }, function (isConfirm) {
+            if (isConfirm) {
+                $('.someBlock').preloader();
+
+                $.ajax({
+                    url: "ajax/php/quotation.php",
+                    type: "POST",
+                    data: {
+                        id: id,
+                        action: 'delete',
+                    },
+                    dataType: 'JSON',
+                    success: function (response) {
+                        $('.someBlock').preloader('remove');
+
+                        if (response.status === 'success') {
+                            swal({
+                                title: "Deleted!",
+                                text: "Quotation has been deleted.",
+                                type: "success",
+                                timer: 2500,
+                                showConfirmButton: false
+                            });
+
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 2500);
+
+                        } else {
+                            swal({
+                                title: "Error!",
+                                text: "Something went wrong.",
+                                type: "error",
+                                timer: 2500,
+                                showConfirmButton: false
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    });
+
+
 });

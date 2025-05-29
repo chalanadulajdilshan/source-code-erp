@@ -3,96 +3,125 @@
 include '../../class/include.php';
 header('Content-Type: application/json; charset=UTF8');
 
-// Create a new invoice
-if (isset($_POST['create'])) {
+if (isset($_POST['action']) && $_POST['action'] == 'check_purchase_id') {
 
-    $invoiceId = $_POST['invoice_no'];
-    $items = json_decode($_POST['items'], true); // array of items
-    $paid = $_POST['paid'];
-    $paymentType = $_POST['payment_type'];
+
+    $purchaseNo = trim($_POST['po_no']);
+    $PURCHASE = new PurchaseOrder(NULL);
+    $res = $PURCHASE->checkPurchaseOrderIdExist($purchaseNo);
+
+    // Send JSON response
+    echo json_encode(['exists' => $res]);
+    exit();
+}
+
+// Create a new purchase order
+if (isset($_POST['action']) && $_POST['action'] == 'create_purchase') {
+    $purchaseNo = $_POST['po_no'];
+    $items = json_decode($_POST['items'], true);
+
+
+    // Basic PO details
+    $poNumber = $_POST['po_number'];
+    $entryDate = $_POST['entryDate'];
+    $supplierId = $_POST['supplier_id'];
+    $piNo = $_POST['pi_no'];
+    $address = $_POST['address'];
+    $lcTtNo = $_POST['lc_tt_no'];
+    $brand = $_POST['brand'];
+    $blNo = $_POST['bl_no'];
+    $country = $_POST['country'];
+    $ci_no = $_POST['ci_no'];
+    $department = $_POST['department'];
+    $orderBy = $_POST['order_by'];
+    $remarks = isset($_POST['remarks']) ? $_POST['remarks'] : null;
 
     $totalSubTotal = 0;
     $totalDiscount = 0;
 
-    // Calculate subtotal and discount
     foreach ($items as $item) {
         $price = floatval($item['price']);
         $qty = floatval($item['qty']);
-        $discount = isset($item['discount']) ? floatval($item['discount']) : 0; // item-wise discount
+        $discount = isset($item['discount']) ? floatval($item['discount']) : 0;
 
         $itemTotal = $price * $qty;
         $totalSubTotal += $itemTotal;
-        $totalDiscount += $discount;
+        $discountAmount = ($itemTotal * $discount) / 100;
+        $totalDiscount += $discountAmount;
     }
 
-    $netTotal = $totalSubTotal - $totalDiscount;
 
-    $USER = new User($_SESSION['id']);
-    $COMPANY_PROFILE = new CompanyProfile($USER->company_id);
+    $grandTotal = ($totalSubTotal - $totalDiscount);
 
-    // VAT calculation (18% of net total)
-    $vat = round(($netTotal * $COMPANY_PROFILE->vat_percentage) / 100, 2);
+    // Create purchase order
+    $PURCHASE_ORDER = new PurchaseOrder(NULL);
 
-    // Grand total = net total + VAT
-    $grandTotal = $netTotal + $vat;
+    $PURCHASE_ORDER->po_number = $poNumber;
+    $PURCHASE_ORDER->entry_date = $entryDate;
+    $PURCHASE_ORDER->supplier_id = $supplierId;
+    $PURCHASE_ORDER->pi_no = $piNo;
+    $PURCHASE_ORDER->address = $address;
+    $PURCHASE_ORDER->lc_tt_no = $lcTtNo;
+    $PURCHASE_ORDER->brand = $brand;
+    $PURCHASE_ORDER->bl_no = $blNo;
+    $PURCHASE_ORDER->country = $country;
+    $PURCHASE_ORDER->ci_no = $ci_no;
+    $PURCHASE_ORDER->department = $department;
+    $PURCHASE_ORDER->order_by = $orderBy;
+    $PURCHASE_ORDER->remarks = $remarks;
+    $PURCHASE_ORDER->created_by = $createdBy;
+    $PURCHASE_ORDER->created_at = $createdAt;
+    $PURCHASE_ORDER->updated_at = $updatedAt;
 
-    // Create invoice
-    $SALES_INVOICE = new SalesInvoice(NULL);
+    $poResult = $PURCHASE_ORDER->create();
 
-    $SALES_INVOICE->invoice_no = $invoiceId;
-    $SALES_INVOICE->invoice_date = date("Y-m-d H:i:s");
-    $SALES_INVOICE->company_id = $_POST['company_id'];
-    $SALES_INVOICE->customer_id = $_POST['customer_code'];
-    $SALES_INVOICE->department_id = $_POST['department_id'];
-    $SALES_INVOICE->sale_type = $_POST['sales_type'];
-    $SALES_INVOICE->discount_type = $paymentType;
-    $SALES_INVOICE->sub_total = $totalSubTotal;
-    $SALES_INVOICE->discount = $totalDiscount;
-    $SALES_INVOICE->tax = $vat;
-    $SALES_INVOICE->grand_total = $grandTotal;
-    $SALES_INVOICE->remark = !empty($_POST['remark']) ? $_POST['remark'] : null;
 
-    $invoiceResult = $SALES_INVOICE->create();
+    if ($poResult) {
 
-    if ($invoiceResult) {
-        $invoiceId = $invoiceResult;
+
+        $newPurchaseId = $poResult;
 
         foreach ($items as $item) {
-
             $ITEM_MASTER = new ItemMaster(NULL);
-            $item_code = $ITEM_MASTER->getIdbyItemCode($item['code']);
+            $item_id = $ITEM_MASTER->getIdbyItemCode($item['code']);
 
+            $QUOTATION_ITEM = new QuotationItem(NULL);
+            $QUOTATION_ITEM->poNumber = $newPurchaseId;
+            $QUOTATION_ITEM->item_code = $item_id;
+            $QUOTATION_ITEM->item_name = $item['name'];
+            $QUOTATION_ITEM->pattern = $item['pattern'];
+            $QUOTATION_ITEM->qty = $item['qty'];
+            $QUOTATION_ITEM->discount = isset($item['discount']) ? $item['discount'] : 0;
 
-            $SALES_ITEM = new TempSalesItem(NULL);
-            $SALES_ITEM->temp_invoice_id = $invoiceId;
-            $SALES_ITEM->product_id = $item['item_id'];
-            ;
-            $SALES_ITEM->product_name = $item['name'];
-            $SALES_ITEM->price = $item['price'];
-            $SALES_ITEM->quantity = $item['qty'];
-            $SALES_ITEM->discount = isset($item['discount']) ? $item['discount'] : 0;
-            $SALES_ITEM->total = ($item['price'] * $item['qty']) - $SALES_ITEM->discount;
-            // $SALES_ITEM->user_id = $_SESSION['user_id'];
-            $SALES_ITEM->created_at = date("Y-m-d H:i:s");
-            $SALES_ITEM->create();
+            // Calculate item subtotal with discount
+            $itemTotal = $item['price'] * $item['qty'];
+            $discountAmount = ($itemTotal * $QUOTATION_ITEM->discount) / 100;
+            $QUOTATION_ITEM->sub_total = $itemTotal - $discountAmount;
+
+            $QUOTATION_ITEM->create();
+
+            $DOCUMENT_TRACKING = new DocumentTracking(null);
+            $DOCUMENT_TRACKING->incrementDocumentId('quotation');
+
         }
 
         echo json_encode([
             "status" => 'success',
-            "invoice_id" => $invoiceId,
+            "poNumber" => $newPurchaseId,
             "sub_total" => $totalSubTotal,
-            "discount" => $totalDiscount,
-            "vat" => $vat,
+            "discount" => $totalDiscount, 
             "grand_total" => $grandTotal
         ]);
-        exit();
 
+        exit();
     } else {
-        echo json_encode(["status" => 'error']);
+        echo json_encode([
+            "status" => 'error',
+            "message" => "Failed to create quotation"
+        ]);
         exit();
     }
 }
-
 
 // Update invoice details
 if (isset($_POST['update'])) {
