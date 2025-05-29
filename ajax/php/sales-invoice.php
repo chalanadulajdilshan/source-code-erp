@@ -4,10 +4,24 @@ include '../../class/include.php';
 header('Content-Type: application/json; charset=UTF8');
 session_start();
 
+
+if (isset($_POST['action']) && $_POST['action'] == 'check_invoice_id') {
+
+
+    $invoice_no = trim($_POST['invoice_no']);
+    $SALES_INVOICE = new SalesInvoice(NULL);
+    $res = $SALES_INVOICE->checkInvoiceIdExist($invoice_no);
+
+    // Send JSON response
+    echo json_encode(['exists' => $res]);
+    exit();
+}
+
+
 // Create a new invoice
 if (isset($_POST['create'])) {
 
-    $invoiceId = $_POST['invoice_no']; 
+    $invoiceId = $_POST['invoice_no'];
     $items = json_decode($_POST['items'], true); // array of items 
     $paid = $_POST['paid'];
     $paymentType = $_POST['payment_type'];
@@ -55,7 +69,16 @@ if (isset($_POST['create'])) {
     $SALES_INVOICE->remark = !empty($_POST['remark']) ? $_POST['remark'] : null;
 
     $invoiceResult = $SALES_INVOICE->create();
+    $DOCUMENT_TRACKING = new DocumentTracking(null);
+   
+    if ($paymentType == 'cash') {
+        $DOCUMENT_TRACKING->incrementDocumentId('cash');
+    } else if ($paymentType == 'credit') {
+        $DOCUMENT_TRACKING->incrementDocumentId('credit');
+    } else {
 
+        $DOCUMENT_TRACKING->incrementDocumentId('invoice');
+    }
     if ($invoiceResult) {
         $invoiceId = $invoiceResult;
 
@@ -92,9 +115,13 @@ if (isset($_POST['create'])) {
             $STOCK->date = date("Y-m-d");
             $STOCK->qty_in = 0;
             $STOCK->qty_out = $item['qty'];
-            $STOCK->remark = 'Invoice No: ' . $invoiceId;
+            $STOCK->remark = $invoiceId;
             $STOCK->created_at = date("Y-m-d H:i:s");
             $STOCK->create();
+
+
+
+
 
         }
 

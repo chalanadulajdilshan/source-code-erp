@@ -111,13 +111,7 @@
                     <a class="dropdown-item" href="log-out.php"><i class="uil uil-sign-out-alt me-1"></i> Sign out</a>
                 </div>
             </div>
-
-            <!-- Right Sidebar Toggle -->
-            <div class="dropdown d-inline-block">
-                <button type="button" class="btn header-item noti-icon right-bar-toggle waves-effect">
-                    <i class="uil-cog"></i>
-                </button>
-            </div>
+ 
         </div>
     </div>
 

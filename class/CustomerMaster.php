@@ -179,12 +179,14 @@ class CustomerMaster
 
         $data = [];
 
+        $key = 1;
         while ($row = mysqli_fetch_assoc($dataQuery)) {
             $CATEGORY = new CustomerCategory($row['category']);
             $PROVINCE = new Province($row['province']);
             $DISTRICT = new District($row['district']);
 
             $nestedData = [
+                "key"=>$key,
                 "id" => $row['id'],
                 "code" => $row['code'],
                 "name" => $row['name'],
@@ -214,6 +216,7 @@ class CustomerMaster
             ];
 
             $data[] = $nestedData;
+            $key++;
         }
 
         return [

@@ -183,7 +183,7 @@ class SalesInvoice
             "data" => $data
         ];
     }
- 
+
     public function getLastID()
     {
         $query = "SELECT * FROM `sales_invoice` ORDER BY `id` DESC LIMIT 1";
@@ -195,6 +195,17 @@ class SalesInvoice
         } else {
             return 0; // Or null, depending on how you want to handle "no results"
         }
+    }
+
+    public function checkInvoiceIdExist($id)
+    {
+        $query = "SELECT * FROM `sales_invoice` where `invoice_no` = '$id' ";
+
+
+        $db = new Database();
+        $result = mysqli_fetch_array($db->readQuery($query));
+
+        return ($result) ? true : false;
     }
 
 }

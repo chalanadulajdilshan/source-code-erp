@@ -48,19 +48,19 @@ include 'class/include.php';
 
     <body data-layout="horizontal" data-topbar="colored">
 
-    <!-- Begin page -->
-    <div id="layout-wrapper">
+        <!-- Begin page -->
+        <div id="layout-wrapper">
 
-        <?php include 'navigation.php' ?>
+            <?php include 'navigation.php' ?>
 
             <!-- ============================================================== -->
             <!-- Start right Content here -->
             <!-- ============================================================== -->
 
-        <div class="main-content">
-            <div class="page-content">
-                <div class="container-fluid">
-                    <div class="row mb-4">
+            <div class="main-content">
+                <div class="page-content">
+                    <div class="container-fluid">
+                        <div class="row mb-4">
                             <div class="col-md-8 d-flex align-items-center flex-wrap gap-2">
                                 <a href="#" class="btn btn-primary" id="create">
                                     <i class="uil uil-save me-1"></i> Print Bin Card
@@ -71,7 +71,7 @@ include 'class/include.php';
                                 <a href="#" class="btn btn-primary" id="create">
                                     <i class="uil uil-save me-1"></i> Print Po. Card
                                 </a>
-  
+
 
                             </div>
 
@@ -94,116 +94,119 @@ include 'class/include.php';
                             <div class="row g-3">
 
                                 <div class="p-4">
-                                
-                                        <div class="d-flex align-items-center">
-                                            <div class="flex-shrink-0 me-3">
-                                                <div class="avatar-xs">
-                                                    <div
-                                                        class="avatar-title rounded-circle bg-soft-primary text-primary">
-                                                        01
-                                                    </div>
+
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-shrink-0 me-3">
+                                            <div class="avatar-xs">
+                                                <div class="avatar-title rounded-circle bg-soft-primary text-primary">
+                                                    01
                                                 </div>
                                             </div>
-                                            <div class="flex-grow-1 overflow-hidden">
-                                                <h5 class="font-size-16 mb-1">Bin Card </h5>
-                                                <p class="text-muted text-truncate mb-0">Fill all information below</p>
+                                        </div>
+                                        <div class="flex-grow-1 overflow-hidden">
+                                            <h5 class="font-size-16 mb-1">Bin Card </h5>
+                                            <p class="text-muted text-truncate mb-0">Fill all information below</p>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <i class="mdi mdi-chevron-up accor-down-icon font-size-24"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-10">
+
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="itemNo" class="form-label">Item No</label>
+                                            <div class="input-group">
+                                                <input id="item_no" name="item_no" type="text" placeholder="Item No"
+                                                    class="form-control">
+                                                <button class="btn btn-info" type="button" data-bs-toggle="modal"
+                                                    data-bs-target="#itemModal">
+                                                    <i class="uil uil-ellipsis-h"></i>
+                                                </button>
                                             </div>
-                                            <div class="flex-shrink-0">
-                                                <i class="mdi mdi-chevron-up accor-down-icon font-size-24"></i>
+                                        </div>
+
+                                        <div class="col">
+                                            <label for="partNo" class="form-label">Part No</label>
+                                            <div class="input-group">
+                                                <input id="part_no" name="part_no" type="text" class="form-control"
+                                                    placeholder="Enter Part No" readonly>
+                                            </div>
+                                        </div>
+
+                                        <div class="col">
+                                            <label for="Department" class="form-label">Department</label>
+                                            <div class="input-group">
+                                                <select id="department_id" name="department_id"
+                                                    class="form-select"></select>
+                                            </div>
+                                        </div>
+
+                                        <div class="col">
+                                            <label for="itemName" class="form-label">Item Name</label>
+                                            <div class="input-group">
+                                                <input id="item_name" name="item_name" type="text" class="form-control"
+                                                    placeholder="Enter Item Name" readonly>
+                                            </div>
+                                        </div>
+
+                                        <div class="col">
+                                            <label for="selling" class="form-label">Selling</label>
+                                            <div class="input-group">
+                                                <input id="selling" name="selling" type="text" class="form-control"
+                                                    placeholder="" readonly>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div class="col-md-10">
-                                        
-                                        <div class="row mb-3">
-                                            <div class="col">
-                                                <label for="itemNo" class="form-label">Item No</label>
-                                                <div class="input-group">
-                                                    <input id="item_no" name="item_no" type="text" placeholder="Item No" class="form-control">
-                                                    <button class="btn btn-info" type="button" data-bs-toggle="modal" data-bs-target="#itemModal">
-                                                        <i class="uil uil-ellipsis-h"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
 
-                                            <div class="col">
-                                                <label for="partNo" class="form-label">Part No</label>
-                                                <div class="input-group">
-                                                    <input id="part_no" name="part_no" type="text" class="form-control" placeholder="Enter Part No" readonly>
-                                                </div>
-                                            </div>
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label class="form-label" for="date">From</label>
+                                            <input id="date" name="date" type="date" class="form-control">
+                                        </div>
 
-                                            <div class="col">
-                                                <label for="Department" class="form-label">Department</label>
-                                                <div class="input-group">
-                                                    <select id="department_id" name="department_id" class="form-select"></select>
-                                                </div>
-                                            </div>
-
-                                            <div class="col">
-                                                <label for="itemName" class="form-label">Item Name</label>
-                                                <div class="input-group">
-                                                    <input id="item_name" name="item_name" type="text" class="form-control" placeholder="Enter Item Name" readonly>
-                                                </div>
-                                            </div>
-
-                                            <div class="col">
-                                                <label for="selling" class="form-label">Selling</label>
-                                                <div class="input-group">
-                                                    <input id="selling" name="selling" type="text" class="form-control" placeholder="" readonly>
-                                                </div>
+                                        <div class="col-md-3">
+                                            <label for="discount1" class="form-label">Discount 1</label>
+                                            <div class="input-group">
+                                                <input id="discount1" name="discount1" type="text" class="form-control"
+                                                    placeholder="">
                                             </div>
                                         </div>
 
-                                        
-                                        <div class="row">
-                                            <div class="col-md-3">
-                                                <label class="form-label" for="date">From</label>
-                                                <input id="date" name="date" type="date" class="form-control">
+                                        <div class="col-md-3">
+                                            <label for="discount2" class="form-label">Discount 2</label>
+                                            <div class="input-group">
+                                                <input id="discount2" name="discount2" type="text" class="form-control"
+                                                    placeholder="">
                                             </div>
+                                        </div>
 
-                                            <div class="col-md-3">
-                                                <label for="discount1" class="form-label">Discount 1</label>
-                                                <div class="input-group">
-                                                    <input id="discount1" name="discount1" type="text" class="form-control" placeholder="">
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-3">
-                                                <label for="discount2" class="form-label">Discount 2</label>
-                                                <div class="input-group">
-                                                    <input id="discount2" name="discount2" type="text" class="form-control" placeholder="">
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-3">
-                                                <label for="total" class="form-label">Total</label>
-                                                <div class="input-group">
-                                                    <input id="total" name="total" type="text" class="form-control" placeholder="" readonly>
-                                                </div>
+                                        <div class="col-md-3">
+                                            <label for="total" class="form-label">Total</label>
+                                            <div class="input-group">
+                                                <input id="total" name="total" type="text" class="form-control"
+                                                    placeholder="" readonly>
                                             </div>
                                         </div>
                                     </div>
+                                </div>
 
-                                    <div class="col-md-2 d-flex flex-column justify-content-center align-items-center">
-                                        <div class="text-center mb-4">
-                                            <div class="col-md-12">
-                                                <!-- Over 90 Stock -->
-                                                <div class="mb-3">
-                                                    <div class="bg-danger text-white text-center p-1 rounded">
-                                                        Over 90 Stock<br><strong>10</strong>
-                                                    </div>
-                                                </div>
-                                                <!-- Stock in Hand -->
-                                                <div>
-                                                    <div class="bg-primary text-white text-center p-1 rounded">
-                                                        Stock in Hand<br><strong>10</strong>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                <div class="col-md-2 d-flex flex-column">
+                                    <div class="d-flex flex-column justify-content-between flex-grow-1 h-100 w-100">
+                                        <!-- Over 90 Stock -->
+                                        <div class="bg-danger text-white text-center p-2   rounded">
+                                            Over 90 Stock<br><strong>10</strong>
+                                        </div>
+                                        <!-- Stock in Hand -->
+                                        <div class="bg-primary text-white text-center p-2 rounded">
+                                            Stock in Hand<br><strong>10</strong>
                                         </div>
                                     </div>
+                                </div>
+
 
                         </form>
 
@@ -237,7 +240,7 @@ include 'class/include.php';
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td colspan="13"class="text-center text-muted">No items
+                                                <td colspan="13" class="text-center text-muted">No items
                                                     added</td>
                                             </tr>
                                         </tbody>
@@ -268,9 +271,9 @@ include 'class/include.php';
                                 </thead>
                                 <tbody class="text-center">
                                     <tr>
-                                        <td colspan="12"class="text-center text-muted">No items
+                                        <td colspan="12" class="text-center text-muted">No items
                                             added</td>
-                                        </tr>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -288,9 +291,9 @@ include 'class/include.php';
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td colspan="12"class="text-center text-muted">No items
+                                        <td colspan="12" class="text-center text-muted">No items
                                             added</td>
-                                        </tr>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>

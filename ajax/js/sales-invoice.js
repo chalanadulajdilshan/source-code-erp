@@ -3,6 +3,8 @@ jQuery(document).ready(function () {
 
     //windows loder
     loadCustomer();
+    getInvoiceData();
+
 
     // DataTable config
     var table = $('#datatable').DataTable({
@@ -25,7 +27,7 @@ jQuery(document).ready(function () {
             }
         },
         columns: [
-            { data: "id", title: "#ID" },
+            { data: "key", title: "#ID" },
             { data: "code", title: "Code" },
             { data: "name", title: "Name" },
             { data: "brand", title: "Brand" },
@@ -68,7 +70,7 @@ jQuery(document).ready(function () {
         $('#itemCode').val(data.code);
         $('#itemName').val(data.name);
         $('#itemQty').val(1);
-        $('#available_qty').val(data.id);
+        $('#available_qty').val(data.available_qty);
 
         calculatePayment();
 
@@ -109,19 +111,45 @@ jQuery(document).ready(function () {
         });
     }
 
+    $('input[name="payment_type"]').on('change', function () {
+        getInvoiceData();
+    });
+
+    //get invoice id 
+    function getInvoiceData() {
+        const paymentType = $('input[name="payment_type"]:checked').val(); // 'cash' or 'credit'
+
+        $.ajax({
+            url: 'ajax/php/common.php',
+            method: 'POST',
+            data: {
+                action: 'get_invoice_id_by_type',
+                payment_type: paymentType
+            },
+            dataType: 'json',
+            success: function (response) {
+                if (response.invoice_id) {
+                    $('#invoice_no').val(response.invoice_id);
+                } else {
+                    console.warn('Invoice ID generation failed');
+                }
+            },
+            error: function () {
+                console.error('Failed to fetch invoice ID');
+            }
+        });
+    }
+
 
     // Reset input fields
     $("#new").click(function (e) {
         e.preventDefault();
-        $('#form-data')[0].reset();
-        $('#category').prop('selectedIndex', 0); // Optional, if using dropdowns
-        $("#create").show();
+        location.reload();
     });
-
 
     // Open payment modal and pre-fill total
     $('#create').on('click', function () {
-        const total = parseFloat($('#finalTotal').text().replace(/,/g, '')) || 0;
+        const total = parseFloat($('#finalTotal').val().replace(/,/g, '')) || 0;
 
         $('#modalFinalTotal').val(total.toFixed(2));
         $('#amountPaid').val('');
@@ -146,7 +174,6 @@ jQuery(document).ready(function () {
     $('#paymentForm').on('submit', function (e) {
         e.preventDefault();
 
-
         if (!$('#customer_id').val()) {
             swal({
                 title: "Error!",
@@ -155,110 +182,144 @@ jQuery(document).ready(function () {
                 timer: 2000,
                 showConfirmButton: false
             });
-
-
-        } else {
-
-            const total = parseFloat($('#modalFinalTotal').val()) || 0;
-            const paid = parseFloat($('#amountPaid').val()) || 0;
-            const paymentType = $('#modalPaymentType').val();
-
-            if (paid < total) {
-                swal({
-                    title: "Error!",
-                    text: "Paid amount cannot be less than Final Total",
-                    type: 'error',
-                    timer: 3000,
-                    showConfirmButton: false
-                });
-                return;
-            }
-
-            // Collect invoice items
-            const items = [];
-            $('#invoiceItemsBody tr').each(function () {
-                const code = $(this).find('td:eq(0)').text().trim();
-                const name = $(this).find('td:eq(1)').text().trim();
-                const price = parseFloat($(this).find('td:eq(2)').text()) || 0;
-                const qty = parseFloat($(this).find('td:eq(3)').text()) || 0;
-                const discount = parseFloat($(this).find('td:eq(4)').text()) || 0;
-                const payment = parseFloat($(this).find('td:eq(5)').text()) || 0;
-                const totalItem = parseFloat($(this).find('td:eq(6)').text()) || 0;
-                const item_id = $('#item_id').val();
-
-                if (code && !isNaN(totalItem)) {
-                    items.push({
-                        item_id,
-                        code,
-                        name,
-                        price,
-                        qty,
-                        discount,
-                        payment,
-                        total: totalItem
-                    });
-                }
-            });
-
-            if (items.length === 0) {
-                swal({
-                    title: "Error!",
-                    text: "Please add at least one item.",
-                    type: 'error',
-                    timer: 3000,
-                    showConfirmButton: false
-                });
-                return;
-            }
-
-            // Use FormData to include form inputs + invoice items
-            const formData = new FormData($("#form-data")[0]);
-            formData.append('create', true);
-            formData.append('total', total);
-            formData.append('paid', paid);
-            formData.append('payment_type', $('#payment_type').val());
-            formData.append('items', JSON.stringify(items));
-            formData.append('invoice_no', $('#invoice_no').val());
-
-
-            // Start Preloader
-            $('.someBlock').preloader();
-
-            $.ajax({
-                url: 'ajax/php/sales-invoice.php',
-                type: 'POST',
-                data: formData,
-                contentType: false,
-                processData: false,
-                beforeSend: function () {
-                    $('.someBlock').preloader('remove');
-                },
-                success: function (res) {
-                    swal({
-                        title: "Success!",
-                        text: "Invoice saved successfully!",
-                        type: 'success',
-                        timer: 3000,
-                        showConfirmButton: false
-                    });
-                    $('#paymentModal').modal('hide');
-                    // Optional: Reset or redirect
-                    window.location.href = "invoice.php?invoice_no=" + res.invoice_id;
-                },
-                error: function (xhr) {
-                    console.error(xhr.responseText);
-                    swal({
-                        title: "Error",
-                        text: "Something went wrong!",
-                        type: 'error',
-                        timer: 3000,
-                        showConfirmButton: false
-                    });
-                }
-            });
-
+            return;
         }
+
+        const invoiceNo = $('#invoice_no').val().trim();
+
+        $.ajax({
+            url: 'ajax/php/sales-invoice.php',
+            method: 'POST',
+            data: {
+                action: 'check_invoice_id',
+                invoice_no: invoiceNo
+            },
+            dataType: 'json',
+            success: function (checkRes) {
+                if (checkRes.exists) {
+                    swal({
+                        title: "Duplicate!",
+                        text: "Invoice No <strong>" + invoiceNo + "</strong> already exists.",
+                        type: 'error',
+                        html: true,
+                        timer: 2500,
+                        showConfirmButton: false
+                    });
+                    return;
+                }
+
+                processInvoiceCreation(); // move your creation logic into a function
+            },
+            error: function () {
+                swal({
+                    title: "Error!",
+                    text: "Unable to verify Invoice No. right now.",
+                    type: 'error',
+                    timer: 2500,
+                    showConfirmButton: false
+                });
+            }
+        });
     });
+
+
+
+    function processInvoiceCreation() {
+        const total = parseFloat($('#modalFinalTotal').val());
+        const paid = parseFloat($('#amountPaid').val()) || 0;
+        const paymentType = $('#modalPaymentType').val();
+
+        if (paid < total) {
+            swal({
+                title: "Error!",
+                text: "Paid amount cannot be less than Final Total",
+                type: 'error',
+                timer: 3000,
+                showConfirmButton: false
+            });
+            return;
+        }
+
+        const items = [];
+        $('#invoiceItemsBody tr').each(function () {
+            const code = $(this).find('td:eq(0)').text().trim();
+            const name = $(this).find('td:eq(1)').text().trim();
+            const price = parseFloat($(this).find('td:eq(2)').text()) || 0;
+            const qty = parseFloat($(this).find('td:eq(3)').text()) || 0;
+            const discount = parseFloat($(this).find('td:eq(4)').text()) || 0;
+            const payment = parseFloat($(this).find('td:eq(5)').text()) || 0;
+            const totalItem = parseFloat($(this).find('td:eq(6)').text()) || 0;
+            const item_id = $('#item_id').val();
+
+            if (code && !isNaN(totalItem)) {
+                items.push({
+                    item_id,
+                    code,
+                    name,
+                    price,
+                    qty,
+                    discount,
+                    payment,
+                    total: totalItem
+                });
+            }
+        });
+
+        if (items.length === 0) {
+            swal({
+                title: "Error!",
+                text: "Please add at least one item.",
+                type: 'error',
+                timer: 3000,
+                showConfirmButton: false
+            });
+            return;
+        }
+
+        const formData = new FormData($("#form-data")[0]);
+        formData.append('create', true);
+        formData.append('total', total);
+        formData.append('paid', paid);
+        formData.append('payment_type', $('input[name="payment_type"]:checked').val());
+        formData.append('customer_id', $('#customer_id').val());
+        formData.append('items', JSON.stringify(items));
+        formData.append('invoice_no', $('#invoice_no').val());
+
+        $('.someBlock').preloader();
+
+        $.ajax({
+            url: 'ajax/php/sales-invoice.php',
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            beforeSend: function () {
+                $('.someBlock').preloader('remove');
+            },
+            success: function (res) {
+                swal({
+                    title: "Success!",
+                    text: "Invoice saved successfully!",
+                    type: 'success',
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+                $('#paymentModal').modal('hide');
+                location.reload();
+                window.open("invoice.php?invoice_no=" + res.invoice_id, "_blank");
+            },
+            error: function (xhr) {
+                console.error(xhr.responseText);
+                swal({
+                    title: "Error",
+                    text: "Something went wrong!",
+                    type: 'error',
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+            }
+        });
+    }
 
 
 
@@ -321,7 +382,7 @@ jQuery(document).ready(function () {
             const rowTotal = parseFloat($(this).find('td:eq(6)').text()) || 0;
             total += rowTotal;
         });
-        $('#finalTotal').text(total.toFixed(2));
+        $('#finalTotal').val(total.toFixed(2));
     }
 
     // Bind button click
@@ -386,10 +447,10 @@ jQuery(document).ready(function () {
         });
 
         const grandTotal = subTotal - discountTotal;
-        $('#subTotal').val(subTotal.toLocaleString(undefined, {  minimumFractionDigits: 2,  maximumFractionDigits: 2  }));
-        $('#disTotal').val(discountTotal.toLocaleString(undefined, {  minimumFractionDigits: 2,  maximumFractionDigits: 2  }));
-        $('#finalTotal').val(grandTotal.toLocaleString(undefined, {  minimumFractionDigits: 2,  maximumFractionDigits: 2  }));
- 
+        $('#subTotal').val(subTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+        $('#disTotal').val(discountTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+        $('#finalTotal').val(grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+
     }
 
     // Disable price field to prevent manual changes
@@ -399,6 +460,6 @@ jQuery(document).ready(function () {
     $('#paymentModal').on('shown.bs.modal', function () {
         $('#amountPaid').focus();
     });
-  
+
 
 });
