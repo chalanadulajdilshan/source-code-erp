@@ -73,6 +73,19 @@ class StockMaster
         }
     }
 
+    public static function updateQtyByItemAndDepartment($department_id, $item_id, $new_quantity)
+    {
+        $db = new Database();
+
+        $query = "UPDATE `stock_master` 
+              SET `quantity` = '" . (float) $new_quantity . "'
+              WHERE `item_id` = '" . (int) $item_id . "' 
+              AND `department_id` = '" . (int) $department_id . "' 
+              AND `is_active` = 1";
+
+        return $db->readQuery($query);
+    }
+
     // Delete a stock_master record
     public function delete()
     {
@@ -212,9 +225,9 @@ class StockMaster
         return ['status' => 'success', 'message' => 'Stock transferred successfully.'];
     }
 
-    public function adjustQuantity($item_id, $department_id, $adjust_qty, $adjust_type , $remark = '')
+    public function adjustQuantity($item_id, $department_id, $adjust_qty, $adjust_type, $remark = '')
     {
-        
+
         $db = new Database();
         $DEPARTMENT = new DepartmentMaster($department_id);
 
@@ -224,12 +237,12 @@ class StockMaster
               AND `department_id` = '" . (int) $department_id . "'
               AND `is_active` = 1
               LIMIT 1";
- 
+
 
         $result = mysqli_fetch_assoc($db->readQuery($query));
 
         if ($result) {
-            
+
             if ($adjust_type === 'additions') {
                 $newQty = $result['quantity'] + $adjust_qty;
                 $transactionType = 6; // custom code for adjustment increase Get by stock adjusestment table

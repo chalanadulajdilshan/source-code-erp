@@ -210,6 +210,7 @@ jQuery(document).ready(function () {
                 $('#supplier_id').val(data.id);
                 $('#supplier_code').val(data.code);
                 $('#supplier_name').val(data.name);
+                $('#supplier_address').val(data.address);
             }
 
             $('#supplierModal').modal('hide');
@@ -421,6 +422,7 @@ jQuery(document).ready(function () {
         $('#show-less-btn').addClass('d-none');
     });
 
+    //index alerts
     $(document).ready(function () {
         const totalMessages = $('.alert').length;
         const toggleLink = $('#toggle-messages');

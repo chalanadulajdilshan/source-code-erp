@@ -1,20 +1,24 @@
 <!doctype html>
 <?php
 include 'class/include.php';
+include './auth.php';
 
-$PURCHASE_ORDER = new PurchaseOrder(NULL);
 
-// Get the last inserted package id
-$lastId = $PURCHASE_ORDER->getLastID();
-$po_number = 'PO-00' . $lastId + 1;
+//doc id get by session 
+$DOCUMENT_TRACKING = new DocumentTracking($doc_id);
+
+// Get the last inserted quotation
+$lastId = $DOCUMENT_TRACKING->po_id;
+$po_id = $COMPANY_PROFILE_DETAILS->company_code . '/PO/00/0' . $lastId + 1;
 
 ?>
 
-<html lang="en"> 
+<html lang="en">
+
 <head>
 
     <meta charset="utf-8" />
-    <title>Horizontal Layout | Minible - Admin & Dashboard Template</title>
+    <title>Purchase Order | <?php echo $COMPANY_PROFILE_DETAILS->name ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="#" name="description" />
     <meta content="Themesbrand" name="author" />
@@ -41,7 +45,7 @@ $po_number = 'PO-00' . $lastId + 1;
         type="text/css" />
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
 
-     
+
 </head>
 
 <body data-layout="horizontal" data-topbar="colored" class="someBlock">
@@ -72,7 +76,7 @@ $po_number = 'PO-00' . $lastId + 1;
                                 <a href="#" class="btn btn-warning" id="update">
                                     <i class="uil uil-edit me-1"></i> Update
                                 </a>
-                                <a href="#" class="btn btn-danger delete-order">
+                                <a href="#" class="btn btn-danger delete-purchase-order">
                                     <i class="uil uil-trash-alt me-1"></i> Delete
                                 </a>
                             </div>
@@ -86,7 +90,9 @@ $po_number = 'PO-00' . $lastId + 1;
                         </div>
                         <!--- Hidden Values -->
                         <input type="hidden" id="item_id">
-                        <input type="hidden" id="availableQty">
+                        <input type="hidden" id="purchase_order_id">
+
+                        
 
                         <!-- end page title -->
 
@@ -123,38 +129,35 @@ $po_number = 'PO-00' . $lastId + 1;
                                                 <div class="col-md-2">
                                                     <label for="PO_No" class="form-label">PO No</label>
                                                     <div class="input-group mb-3">
-                                                        <input id="po_no" name="po_no" type="text"
-                                                            placeholder="PO No" class="form-control" value="<?php echo $po_number; ?>" readonly>
+                                                        <input id="po_no" name="po_no" type="text" placeholder="PO No"
+                                                            class="form-control" value="<?php echo $po_id; ?>" readonly>
                                                         <button class="btn btn-info" type="button"
                                                             data-bs-toggle="modal" data-bs-target="#po_number_modal">
                                                             <i class="uil uil-search me-1"></i>
                                                         </button>
-
                                                     </div>
-                                                    <div id="POList" class="list-group position-absolute w-100">
-                                                    </div>
-
                                                 </div>
 
-                                                <div class="col-md-3">
-                                                    <label for="name" class="form-label">Quotation Date</label>
+                                                <div class="col-md-2">
+                                                    <label for="name" class="form-label">Purchase Date</label>
                                                     <div class="input-group" id="datepicker2">
-
-                                                        <input type="text" class="form-control date-picker" id="entry_date"
-                                                            name="entry_date"> <span class="input-group-text"><i
-                                                                class="mdi mdi-calendar"></i></span>
+                                                        <input type="text" class="form-control date-picker"
+                                                            id="order_date" name="order_date">
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-4">
+                                                <input type="hidden" id="supplier_id">
+
+                                                <div class="col-md-5">
                                                     <label for="supplier" class="form-label">Supplier</label>
                                                     <div class="input-group mb-3">
                                                         <div class="input-group-prepend" style="flex: 0 0 auto;">
-                                                            <input id="customer_id" name="customer_id" type="text"
-                                                                class="form-control ms-10 me-2" style="width: 120px;" placeholder="Id" readonly>
+                                                            <input id="supplier_code" name="supplier_code" type="text"
+                                                                class="form-control ms-10 me-2" style="width: 200px;"
+                                                                placeholder="Supplier Code" readonly>
                                                         </div>
-                                                        <input id="customer_name" name="customer_name" type="text"
-                                                            class="form-control" placeholder="Name" readonly>
+                                                        <input id="supplier_name" name="supplier_name" type="text"
+                                                            class="form-control" placeholder="Supplier Name" readonly>
 
                                                         <button class="btn btn-info" type="button"
                                                             data-bs-toggle="modal" data-bs-target="#supplierModal">
@@ -162,112 +165,116 @@ $po_number = 'PO-00' . $lastId + 1;
                                                         </button>
                                                     </div>
                                                 </div>
+                                                <div class="col-md-3">
+                                                    <label for="supplierAddress" class="form-label">Address</label>
+                                                    <div class="input-group mb-3">
+                                                        <input id="supplier_address" name="supplier_address" type="text"
+                                                            class="form-control" placeholder="Address" readonly>
+                                                    </div>
+                                                </div>
 
                                                 <div class="col-md-2">
                                                     <label for="PI_No" class="form-label">PI No</label>
                                                     <div class="input-group mb-3">
                                                         <input id="pi_no" name="pi_no" type="text"
-                                                            placeholder="PI No" class="form-control">
+                                                            placeholder="Enter PI No" class="form-control">
+                                                    </div>
+
+                                                </div>
+
+
+
+                                                <div class="col-md-2">
+                                                    <label for="LC_TT_No" class="form-label">LC / TT No</label>
+                                                    <div class="input-group mb-3">
+                                                        <input id="lc_tt_no" name="lc_tt_no" type="text"
+                                                            placeholder="Enter LC / TT No" class="form-control">
                                                     </div>
 
                                                 </div>
 
                                                 <div class="col-md-3">
-                                                    <label for="supplierAddress" class="form-label">Address</label>
-                                                    <div class="input-group mb-3">
-                                                        <input id="supplier_address" name="supplier_address" type="text"
-                                                            class="form-control" placeholder="Address">
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-2">
-                                                    <label for="LC/TT_No" class="form-label">LC/TT No</label>
-                                                    <div class="input-group mb-3">
-                                                        <input id="lc/tt_no" name="lc/tt_no" type="text"
-                                                            placeholder="LC/TT No" class="form-control">
-                                                    </div>
-
-                                                </div>
-
-                                                <div class="col-md-2">
                                                     <label for="brand" class="form-label">Brand</label>
                                                     <div class="input-group mb-3">
                                                         <select id="brand" name="brand" class="form-select">
-                                                            <option value="">-- Select Brand --</option>
-                                                        <?php
-                                                        $BRAND = new Brand(NULL);
-                                                        foreach ($BRAND->activeBrands() as $brand) {
-                                                            echo "<option value='{$brand['id']}'>{$brand['name']}</option>";
-                                                        }
-                                                        ?>
+                                                            <option value="">-- All Brands --</option>
+                                                            <?php
+                                                            $BRAND = new Brand(NULL);
+                                                            foreach ($BRAND->activeBrands() as $brand) {
+                                                                echo "<option value='{$brand['id']}'>{$brand['name']}</option>";
+                                                            }
+                                                            ?>
                                                         </select>
                                                     </div>
                                                 </div>
-                                                
+
                                                 <div class="col-md-2">
                                                     <label for="BL_No" class="form-label">BL No</label>
                                                     <div class="input-group mb-3">
                                                         <input id="bl_no" name="bl_no" type="text"
-                                                            placeholder="BL No" class="form-control">
+                                                            placeholder="Enter BL No" class="form-control">
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <label for="Country" class="form-label">Country</label>
+                                                    <div class="input-group mb-3">
+                                                        <select id="country" name="Country" class="form-select">
+                                                            <option value="">-- Select Country --</option>
+                                                            <?php
+                                                            $COUNTRY = new Country(NULL);
+                                                            foreach ($COUNTRY->activeCountry() as $country) {
+                                                                echo "<option value='{$country['id']}'>{$country['name']}</option>";
+                                                            }
+                                                            ?>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <label for="CI_no" class="form-label">CI No</label>
+                                                    <div class="input-group mb-3">
+                                                        <input id="ci_no" name="ci_no" type="text"
+                                                            placeholder="Enter CI No" class="form-control">
                                                     </div>
 
                                                 </div>
 
                                                 <div class="col-md-2">
-                                                    <label for="Country" class="form-label">Country</label>
-                                                    <div class="input-group mb-3">
-                                                        <select id="country_id" name="Country" class="form-select">
-                                                            <option value="">-- Select Country --</option>
-                                                        <?php
-                                                        $COUNTRY = new Country(NULL);
-                                                        foreach ($COUNTRY->activeCountry() as $country) {
-                                                            echo "<option value='{$country['id']}'>{$country['name']}</option>";
-                                                        }
-                                                        ?>
-                                                        </select>
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-3">
-                                                    <label for="CI_no" class="form-label">CI No</label>
-                                                    <div class="input-group mb-3">
-                                                        <input id="ci_no" name="ci_no" type="text"
-                                                            placeholder="CI No" class="form-control">
-                                                    </div>
-
-                                                </div>
-
-                                                <div class="col-md-3">
                                                     <label for="Department" class="form-label">Department</label>
                                                     <div class="input-group mb-3">
-                                                        <select id="department_id" name="department_id" class="form-select">
-                                                            <option value="">-- Select Department --</option>
-                                                        <?php
-                                                            $DEPARTMENT_MASTER = new DepartmentMaster(NULL);
+                                                        <select id="department_id" name="department_id"
+                                                            class="form-select">
+                                                            <?php
+                                                            $DEPARTMENT_MASTER = new DepartmentMaster(NUll);
                                                             foreach ($DEPARTMENT_MASTER->getActiveDepartment() as $departments) {
-                                                                ?>
-                                                                <option value="<?php echo $departments['id'] ?>">
-                                                                    <?php echo $departments['name'] ?>
-                                                                </option>
-                                                            <?php } ?>
+                                                                if ($US->type != 1) {
+                                                                    if ($departments['id'] = $US->department_id) {
+                                                                        ?>
+                                                                        <option value="<?php echo $departments['id'] ?>">
+                                                                            <?php echo $departments['name'] ?>
+                                                                        </option>
+                                                                    <?php }
+                                                                } else {
+                                                                    ?>
+                                                                    <option value="<?php echo $departments['id'] ?>">
+                                                                        <?php echo $departments['name'] ?>
+                                                                    </option>
+                                                                    <?php
+                                                                }
+                                                            } ?>
+
+
                                                         </select>
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-3">
-                                                    <label for="Order_By" class="form-label">Order By</label>
-                                                    <div class="input-group mb-3">
-                                                        <select id="order_by" name="order_by" class="form-select">
-                                                        <option value="1">Customer</option>  
-                                                        <option value="2">Supplier</option>           
-                                                        </select>
-                                                    </div>
-                                                </div>
 
-                                                <div class="col-6 mt-3">
+                                                <div class="col-md-8 ">
                                                     <label for="remark" class="form-label">Remarks</label>
-                                                    <textarea id="remark" name="remark" class="form-control" rows="4"
-                                                        placeholder="Enter any remarks or notes..."></textarea>
+                                                    <input type="text" class="form-control" name="remark" id="remark"
+                                                        placeholder="Enter any remarks or notes...">
                                                 </div>
 
 
@@ -294,7 +301,7 @@ $po_number = 'PO-00' . $lastId + 1;
                                                         <input type="number" id="qty" class="form-control"
                                                             placeholder="Quantity" oninput="calculatePayment()">
                                                     </div>
-                                                    
+
                                                     <div class="col-md-3">
                                                         <label class="form-label">Rate</label>
                                                         <input type="number" id="rate" class="form-control"
@@ -314,13 +321,13 @@ $po_number = 'PO-00' . $lastId + 1;
                                                 </div>
 
                                             </div>
-                                            
+
                                             <!-- Table -->
                                             <div class="table-responsive mt-4">
                                                 <table class="table table-bordered" id="invoiceTable">
                                                     <thead class="table-light">
                                                         <tr>
-                                                            <th>Code</th>
+                                                            <th>Code and Name </th>
                                                             <th>Qty</th>
                                                             <th>Rate</th>
                                                             <th>Total Amount</th>
@@ -339,52 +346,38 @@ $po_number = 'PO-00' . $lastId + 1;
 
                                             </div>
 
-                                            <hr>
-                                                <div class="row">
-                                                    
-                                                    <div class="col-md-3"></div>
 
-                                                    <div class="col-md-4">
-                                                        <div class="  p-2 border rounded bg-light"
-                                                            style="max-width: 600px;">
-                                                            <div class="row mb-2">
-                                                                <div class="col-7">
-                                                                    <input type="text" class="form-control  "
-                                                                        value="Sub Total" disabled>
-                                                                </div>
-                                                                <div class="col-5">
-                                                                    <input type="text" class="form-control"
-                                                                        id="finalTotal" value="0.00" disabled>
-                                                                </div>
+                                            <div class="row">
+
+                                                <div class="col-md-8"></div>
+                                                <div class="col-md-4">
+                                                    <div class="  p-2 border rounded bg-light"
+                                                        style="max-width: 600px;">
+                                                        <div class="row mb-2">
+                                                            <div class="col-7">
+                                                                <input type="text" class="form-control  "
+                                                                    value="Sub Total" disabled>
                                                             </div>
-
-                                                            <div class="row mb-2">
-                                                                <div class="col-7">
-                                                                    <input type="text" class="form-control  "
-                                                                        value="Discount Total:" disabled>
-                                                                </div>
-                                                                <div class="col-5">
-                                                                    <input type="text" class="form-control"
-                                                                        id="disTotal" value="0.00" disabled>
-                                                                </div>
+                                                            <div class="col-5">
+                                                                <input type="text" class="form-control" id="finalTotal"
+                                                                    value="0.00" disabled>
                                                             </div>
+                                                        </div>
 
-
-                                                            <div class="row mb-2">
-                                                                <div class="col-7">
-                                                                    <input type="text" class="form-control   fw-bold"
-                                                                        value="Grand Total:" disabled>
-                                                                </div>
-                                                                <div class="col-5">
-                                                                    <input type="text" class="form-control  fw-bold"
-                                                                        id="grandTotal" value="0.00" disabled>
-                                                                </div>
+                                                        <div class="row mb-2">
+                                                            <div class="col-7">
+                                                                <input type="text" class="form-control   fw-bold"
+                                                                    value="Grand Total:" disabled>
+                                                            </div>
+                                                            <div class="col-5">
+                                                                <input type="text" class="form-control  fw-bold"
+                                                                    id="grandTotal" value="0.00" disabled>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
 
+                                            </div>
                                         </form>
                                     </div>
                                 </div>
@@ -402,8 +395,8 @@ $po_number = 'PO-00' . $lastId + 1;
         <!-- END layout-wrapper -->
 
         <!-- model open here -->
-        <div class="modal fade bs-example-modal-xl" id="po_number_modal" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel"
-            aria-hidden="true">
+        <div class="modal fade bs-example-modal-xl" id="po_number_modal" tabindex="-1" role="dialog"
+            aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
 
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
@@ -415,24 +408,18 @@ $po_number = 'PO-00' . $lastId + 1;
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-12">
-                                <table id="datatable" class="table table-bordered dt-responsive nowrap"
+                                <table id="purchase_table" class="table table-bordered dt-responsive nowrap"
                                     style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                     <thead>
                                         <tr>
                                             <th>#id</th>
                                             <th>PO No</th>
-                                            <th>Entry Date</th>
-                                            <th>Supplier ID</th>
+                                            <th>Order Date</th>
+                                            <th>Supplier Code and Name</th>
                                             <th>PI No</th>
-                                            <th>Address</th>
                                             <th>LC/TT No</th>
-                                            <th>Brand</th>
-                                            <th>BL No</th>
-                                            <th>Country</th>
-                                            <th>CI No</th>
                                             <th>Department</th>
-                                            <th>Order By</th>
-                                            <th>Remarks</th>
+                                            <th>Grand Total</th>
                                         </tr>
                                     </thead>
 
@@ -440,40 +427,40 @@ $po_number = 'PO-00' . $lastId + 1;
                                         <?php
                                         $PURCHASE_ORDER = new PurchaseOrder(null);
                                         foreach ($PURCHASE_ORDER->all() as $key => $purchase_order) {
+                                            $CUSTOMER_MASTER = new CustomerMaster($purchase_order['supplier_id']);
+                                            $DEPARTMENT_MASTER = new DepartmentMaster($purchase_order['department']);
                                             $key++;
                                             ?>
-                                            <tr class="select-purchase-order" data-id="<?php echo $purchase_order['id']; ?>"
-                                                data-po_number="<?php echo htmlspecialchars($purchase_order['po_number']); ?>"
-                                                data-entry_date="<?php echo htmlspecialchars($purchase_order['entry_date']); ?>"
-                                                data-supplier_id="<?php echo htmlspecialchars($purchase_order['supplier_id']); ?>"
-                                                data-pi_no="<?php echo htmlspecialchars($purchase_order['pi_no']); ?>"
-                                                data-address="<?php echo htmlspecialchars($purchase_order['address']); ?>"
-                                                data-lc_tt_no="<?php echo htmlspecialchars($purchase_order['lc_tt_no']); ?>"
-                                                data-brand="<?php echo htmlspecialchars($purchase_order['brand']); ?>"
-                                                data-bl_no="<?php echo htmlspecialchars($purchase_order['bl_no']); ?>"
-                                                data-country="<?php echo htmlspecialchars($purchase_order['country']); ?>"
-                                                data-ci_no="<?php echo htmlspecialchars($purchase_order['ci_no']); ?>"
-                                                data-department="<?php echo htmlspecialchars($purchase_order['department']); ?>"
-                                                data-order_by="<?php echo htmlspecialchars($purchase_order['order_by']); ?>"
-                                                data-remarks="<?php echo htmlspecialchars($purchase_order['remarks']); ?>">
-                                                
-                                                <td><?php echo $key; ?></td>
-                                                <td><?php echo htmlspecialchars($purchase_order['po_number']); ?></td>
-                                                <td><?php echo htmlspecialchars($purchase_order['entry_date']); ?></td>
-                                                <td><?php echo htmlspecialchars($purchase_order['supplier_id']); ?></td>
-                                                <td><?php echo htmlspecialchars($purchase_order['pi_no']); ?></td>
-                                                <td><?php echo htmlspecialchars($purchase_order['address']); ?></td>
-                                                <td><?php echo htmlspecialchars($purchase_order['lc_tt_no']); ?></td>
-                                                <td><?php echo htmlspecialchars($purchase_order['brand']); ?></td>
-                                                <td><?php echo htmlspecialchars($purchase_order['bl_no']); ?></td>
-                                                <td><?php echo htmlspecialchars($purchase_order['country']); ?></td>
-                                                <td><?php echo htmlspecialchars($purchase_order['ci_no']); ?></td>
-                                                <td><?php echo htmlspecialchars($purchase_order['department']); ?></td>
-                                                <td><?php echo htmlspecialchars($purchase_order['order_by']); ?></td>
-                                                <td><?php echo htmlspecialchars($purchase_order['remarks']); ?></td>
+                                            <tr class="select-purchase-order" data-id="<?= $purchase_order['id']; ?>"
+                                                data-po_number="<?= htmlspecialchars($purchase_order['po_number']); ?>"
+                                                data-order_date="<?= htmlspecialchars($purchase_order['order_date']); ?>"
+                                                data-supplier_id="<?= htmlspecialchars($purchase_order['supplier_id']); ?>"
+                                                data-supplier_code="<?= htmlspecialchars($CUSTOMER_MASTER->code); ?>"
+                                                data-supplier_name="<?= htmlspecialchars($CUSTOMER_MASTER->name); ?>"
+                                                data-supplier_address="<?= htmlspecialchars($CUSTOMER_MASTER->address); ?>"
+                                                data-pi_no="<?= htmlspecialchars($purchase_order['pi_no']); ?>"
+                                                data-address="<?= htmlspecialchars($purchase_order['address']); ?>"
+                                                data-lc_tt_no="<?= htmlspecialchars($purchase_order['lc_tt_no']); ?>"
+                                                data-brand="<?= htmlspecialchars($purchase_order['brand']); ?>"
+                                                data-bl_no="<?= htmlspecialchars($purchase_order['bl_no']); ?>"
+                                                data-country="<?= htmlspecialchars($purchase_order['country']); ?>"
+                                                data-department="<?= htmlspecialchars($purchase_order['department']); ?>"
+                                                data-grand_total="<?= htmlspecialchars($purchase_order['grand_total']); ?>"
+                                                data-order_by="<?= htmlspecialchars($purchase_order['order_by']); ?>"
+                                                data-remarks="<?= htmlspecialchars($purchase_order['remarks']); ?>">
+                                                <td><?= $key; ?></td>
+                                                <td><?= htmlspecialchars($purchase_order['po_number']); ?></td>
+                                                <td><?= htmlspecialchars($purchase_order['order_date']); ?></td>
+                                                <td><?= htmlspecialchars($CUSTOMER_MASTER->code . ' - ' . $CUSTOMER_MASTER->name); ?>
+                                                </td>
+                                                <td><?= htmlspecialchars($purchase_order['pi_no']); ?></td>
+                                                <td><?= htmlspecialchars($purchase_order['lc_tt_no']); ?></td>
+                                                <td><?= htmlspecialchars($DEPARTMENT_MASTER->name); ?></td>
+                                                <td><?= htmlspecialchars($purchase_order['grand_total']); ?></td>
                                             </tr>
                                         <?php } ?>
                                     </tbody>
+
                                 </table>
                             </div> <!-- end col -->
                         </div> <!-- end row -->
@@ -481,10 +468,6 @@ $po_number = 'PO-00' . $lastId + 1;
                 </div><!-- /.modal-content -->
             </div><!-- /.modal-dialog -->
         </div>
-        
-        
-         
-        
 
         <!-- Right bar overlay-->
         <div class="rightbar-overlay"></div>
@@ -533,7 +516,7 @@ $po_number = 'PO-00' . $lastId + 1;
         <script src="assets/js/app.js"></script>
         <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
         <script>
-            $('#quotation_table').DataTable();
+            $('#purchase_table').DataTable();
             $(function () {
                 // Initialize the datepicker
                 $(".date-picker").datepicker({

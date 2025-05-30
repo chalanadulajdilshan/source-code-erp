@@ -399,7 +399,7 @@ include './auth.php';
                                                                 <div class="col-7">
                                                                     <input type="text"
                                                                         class="form-control text-danger fw-bold"
-                                                                        id="available_qty" value="0" disabled>
+                                                                        id="available_qty"   disabled>
                                                                 </div>
                                                             </div>
 

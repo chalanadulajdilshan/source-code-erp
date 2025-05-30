@@ -32,21 +32,11 @@ include './auth.php';
         type="text/css" />
     <link href="assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet"
         type="text/css" />
-
-
-
-
+ 
 </head>
 
 <body data-layout="horizontal" data-topbar="colored" class="someBlock">
-
-
-
-    </head>
-
-    <body data-layout="horizontal" data-topbar="colored">
-
-        <!-- Begin page -->
+   <!-- Begin page -->
         <div id="layout-wrapper">
 
             <?php include 'navigation.php' ?>

@@ -12,7 +12,6 @@ class ItemMaster
     public $group;
     public $category;
     public $cost;
-    public $available_qty;
     public $re_order_level;
     public $re_order_qty;
     public $whole_sale_price;
@@ -40,7 +39,6 @@ class ItemMaster
                 $this->group = $result['group'];
                 $this->category = $result['category'];
                 $this->cost = $result['cost'];
-                $this->available_qty = $result['available_qty'];
                 $this->re_order_level = $result['re_order_level'];
                 $this->re_order_qty = $result['re_order_qty'];
                 $this->whole_sale_price = $result['whole_sale_price'];
@@ -58,16 +56,16 @@ class ItemMaster
     {
         $query = "INSERT INTO `item_master` (
     `code`, `name`, `brand`, `size`, `pattern`, `group`, `category`, 
-    `cost`, `re_order_level`, `re_order_qty`, `available_qty`, `whole_sale_price`, 
+    `cost`, `re_order_level`, `re_order_qty`,   `whole_sale_price`, 
     `retail_price`, `cash_discount`, `credit_discount`, `stock_type`, `note`, `is_active`
 ) VALUES (
     '$this->code', '$this->name', '$this->brand', '$this->size', '$this->pattern', '$this->group',
-    '$this->category', '$this->cost', '$this->re_order_level', '$this->re_order_qty', '$this->available_qty',
+    '$this->category', '$this->cost', '$this->re_order_level', '$this->re_order_qty',  
     '$this->whole_sale_price', '$this->retail_price', '$this->cash_discount',
     '$this->credit_discount', '$this->stock_type', '$this->note', '$this->is_active'
 )";
 
-    
+
 
         $db = new Database();
         $result = $db->readQuery($query);
@@ -85,8 +83,7 @@ class ItemMaster
             `code` = '$this->code', 
             `name` = '$this->name', 
             `brand` = '$this->brand', 
-            `size` = '$this->size', 
-            `available_qty` = '$this->available_qty',  
+            `size` = '$this->size',  
             `pattern` = '$this->pattern', 
             `group` = '$this->group', 
             `category` = '$this->category', 
@@ -176,6 +173,15 @@ class ItemMaster
             $where .= " AND (name LIKE '%$search%' OR code LIKE '%$search%')";
         }
 
+        $brandId = $request['brand'] ?? null;
+ 
+
+        if (!empty($brandId)) {
+            $brandId = (int) $brandId;
+            $where .= " AND brand = {$brandId}";
+        }
+
+
         // Status filter
         if (!empty($status)) {
             if ($status === 'active' || $status === '1' || $status === 1) {
@@ -225,7 +231,6 @@ class ItemMaster
                 "brand" => $BRAND->name,
                 "category_id" => $row['category'],
                 "cost" => number_format($row['cost'], 2),
-                "available_qty" => $row['available_qty'],
                 "category" => $CATEGORY->name,
                 "whole_sale_price" => number_format($row['whole_sale_price'], 2),
                 "retail_price" => number_format($row['retail_price'], 2),
@@ -269,19 +274,19 @@ class ItemMaster
     public static function checkReorderLevel()
     {
         $db = new Database();
-        $query = "SELECT `id`, `code`, `name`, `available_qty`, `re_order_level` FROM `item_master`";
+        $query = "SELECT `id`, `code`, `name`,   `re_order_level` FROM `item_master`";
         $result = $db->readQuery($query);
 
         $reorderItems = [];
 
         while ($row = mysqli_fetch_assoc($result)) {
-            if ((float) $row['available_qty'] < (float) $row['re_order_level']) {
-                $reorderItems[] = [
-                    'id' => $row['id'],
-                    'code' => $row['code'],
-                    'name' => $row['name'],
-                ];
-            }
+
+            $reorderItems[] = [
+                'id' => $row['id'],
+                'code' => $row['code'],
+                'name' => $row['name'],
+            ];
+
         }
 
         return $reorderItems;

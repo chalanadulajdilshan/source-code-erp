@@ -1,6 +1,8 @@
 jQuery(document).ready(function () {
 
-
+    $('#brand').on('change', function () {
+        table.ajax.reload();
+    });
     // DataTable config
     var table = $('#datatable').DataTable({
         processing: true,
@@ -12,6 +14,7 @@ jQuery(document).ready(function () {
                 d.filter = true;
                 d.status = 1;
                 d.stock_only = 1;
+                d.brand = $('#brand').val();
             },
             dataSrc: function (json) {
 
@@ -36,7 +39,6 @@ jQuery(document).ready(function () {
         order: [[0, 'desc']],
         pageLength: 100
     });
-
 
     // On row click, load selected item into input fields
     $('#datatable tbody').on('click', 'tr', function () {
@@ -75,37 +77,64 @@ jQuery(document).ready(function () {
 
     //////////////////////////item add///////////////////////
 
-    // Add item to purchase order table
     function addItem() {
+
+        const item_id = $('#item_id').val().trim();
         const code = $('#itemCode').val().trim();
         const qty = parseFloat($('#qty').val()) || 0;
         const rate = parseFloat($('#rate').val()) || 0;
-        const payment = parseFloat($('#itemPayment').val()) || 0;
+        const discount = parseFloat($('#itemDiscount').val()) || 0;
 
-        if (!code || qty <= 0) {
-            alert("Please fill valid item details.");
+        if (!code || qty <= 0 || rate <= 0) {
+            swal({
+                title: "Validation Error!",
+                text: "Please enter valid item code, quantity, and rate.",
+                type: 'error',
+                timer: 2500,
+                showConfirmButton: false
+            });
             return;
         }
 
-        const total = (rate * qty) - ((rate * qty));
+        let duplicate = false;
+        $('#purchaseOrderBody tr').each(function () {
+            const existingCode = $(this).find('td:first').text().trim();
+            if (existingCode === code) {
+                duplicate = true;
+                return false; // Break loop
+            }
+        });
 
-        // Remove no data message if exists
+        if (duplicate) {
+            swal({
+                title: "Duplicate Item!",
+                text: `Item "${code}" is already added.`,
+                type: 'warning',
+                timer: 2000,
+                showConfirmButton: false
+            });
+            return;
+        }
+
+        const subtotal = qty * rate;
+        const discountAmt = subtotal * (discount / 100);
+        const total = subtotal - discountAmt;
+
         $('#noItemRow').remove();
 
         const row = `
-        <tr>
+        <tr data-item-id="${item_id}">
             <td>${code}</td>
             <td>${qty}</td>
-            <td>${rate}</td>
-            <td>${payment.toFixed(2)}</td>
-            <td><button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">Remove</button></td>
+            <td>${rate.toFixed(2)}</td>
+            <td>${total.toFixed(2)}</td>
+             <td><button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">Remove</button></td>
         </tr>
     `;
+
         $('#purchaseOrderBody').append(row);
 
-        // Clear input fields
-        $('#itemCode, #qty, #rate, #itemPayment').val('');
-
+        $('#itemCode, #qty, #rate, #itemDiscount, #itemPayment').val('');
         updateFinalTotal();
     }
 
@@ -114,42 +143,52 @@ jQuery(document).ready(function () {
         $(button).closest('tr').remove();
         updateFinalTotal();
     }
+    // Global function to remove row
+    let deletedItems = [];
 
-    // Update total at the bottom
+    window.removeRow = function (button) {
+        const $row = $(button).closest('tr');
+
+        // Get hidden item_id (if exists)
+        const itemId = $row.find('input.item-id').val();
+        if (itemId) {
+            deletedItems.push(itemId);
+        }
+
+        $row.remove();
+
+        if ($('#purchaseOrderBody tr').length === 0) {
+            $('#purchaseOrderBody').append(`
+            <tr id="noItemRow">
+                <td colspan="5" class="text-center text-muted">No items added</td>
+            </tr>
+        `);
+        }
+
+        updateFinalTotal();
+    };
+
+
     function updateFinalTotal() {
         let subTotal = 0;
+        let discountTotal = 0;
 
         $('#purchaseOrderBody tr').each(function () {
             const qty = parseFloat($(this).find('td:eq(1)').text()) || 0;
             const rate = parseFloat($(this).find('td:eq(2)').text()) || 0;
-            const rowTotal = parseFloat($(this).find('td:eq(3)').text()) || 0;
+            const totalAmount = parseFloat($(this).find('td:eq(3)').text()) || 0;
 
-            subTotal += rate * qty;
-            discountTotal += (rate * qty);
+            subTotal += qty * rate;
+            discountTotal += (qty * rate) - totalAmount;
         });
 
+        const grandTotal = subTotal - discountTotal;
 
-        const grandTotal = (subTotal - discountTotal);
-
-        // Update display fields
-        $('#finalTotal').val(subTotal.toFixed(2));        // Sub Total
-        $('#disTotal').val(discountTotal.toFixed(2));     // Discount Total 
-        $('#grandTotal').val(grandTotal.toFixed(2));      // Grand Total
+        $('#finalTotal').val(subTotal.toFixed(2));
+        $('#disTotal').val(discountTotal.toFixed(2));
+        $('#grandTotal').val(grandTotal.toFixed(2));
     }
 
-
-    // Bind button click
-    $('#addItemBtn').click(addItem);
-
-    // Bind Enter key to add item
-    $('#itemCode, #qty, #rate, #itemPayment').on('keydown', function (e) {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            addItem();
-        }
-    });
-
-    // Calculate payment
     function calculatePayment() {
         const rate = parseFloat($('#rate').val()) || 0;
         const qty = parseFloat($('#qty').val()) || 0;
@@ -162,51 +201,31 @@ jQuery(document).ready(function () {
         $('#itemPayment').val(total.toFixed(2));
     }
 
-    // Call payment calculation on input change
-    $('#qty, #rate').on('input', calculatePayment);
+    $('#qty, #rate, #itemDiscount').on('input', calculatePayment);
+    $('#addItemBtn').click(addItem);
 
-    // Global function to remove row
-    let deletedItems = [];
+    $('#itemCode, #qty, #rate, #itemDiscount').on('keydown', function (e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            addItem();
+        }
+    });
 
 
-    window.removeRow = function (button) {
-        const $row = $(button).closest('tr');
 
-        // Get hidden item_id
-        const itemId = $row.find('input.item-id').val();
-        if (itemId) {
-            deletedItems.push(itemId);
-
-            $row.remove();
-
-            if ($('#purchaseOrderBody tr').length === 0) {
-                $('#purchaseOrderBody').append(`
-            <tr id="noItemRow">
-                <td colspan="8" class="text-center text-muted">No items added</td>
-            </tr>
-        `);
-            }
-
-            updateFinalTotal();
-        };
-
-    }
-
-    // Disable price field to prevent manual changes
-    $('#itemPrice').prop('readonly', true);
 
     $('#create').click(function (e) {
         e.preventDefault();
 
-        const customeId = $('#customer_id').val().trim();
-        const customerCode = $('#customer_code').val().trim();
-        const customerName = $('#customer_name').val().trim();
-        const quotationId = $('#quotation_id').val().trim();
+        const supplierCode = $('#supplier_code').val().trim();
+        const supplier_id = $('#supplier_id').val().trim();
+        const supplierName = $('#supplier_name').val().trim();
+        const poId = $('#po_no').val().trim();
 
-        if (!customerCode || !customerName) {
+        if (!supplierCode || !supplierName) {
             swal({
                 title: "Error!",
-                text: "Please select the customer.",
+                text: "Please select the supplier.",
                 type: 'error',
                 timer: 2500,
                 showConfirmButton: false
@@ -214,7 +233,7 @@ jQuery(document).ready(function () {
             return;
         }
 
-        if (!$('#date').val()) {
+        if (!$('#order_date').val()) {
             swal({
                 title: "Error!",
                 text: "Please select a date.",
@@ -225,10 +244,10 @@ jQuery(document).ready(function () {
             return;
         }
 
-        if (!quotationId) {
+        if (!poId) {
             swal({
                 title: "Error!",
-                text: "Quotation No. cannot be blank.",
+                text: "Purchase Order No. cannot be blank.",
                 type: 'error',
                 timer: 2500,
                 showConfirmButton: false
@@ -236,20 +255,20 @@ jQuery(document).ready(function () {
             return;
         }
 
+        // Check duplicate PO ID
         $.ajax({
-            url: 'ajax/php/quotation.php',
+            url: 'ajax/php/purchase-order.php',
             method: 'POST',
             data: {
-                action: 'check_quotation_id',
-                quotation_id: quotationId
+                action: 'check_po_id',
+                po_no: poId
             },
             dataType: 'json',
             success: function (checkResponse) {
-
                 if (checkResponse.exists) {
                     swal({
                         title: "Duplicate!",
-                        text: "Quotation No <strong>" + quotationId + "</strong> already exists.",
+                        text: "Purchase Order No <strong>" + poId + "</strong> already exists.",
                         type: 'error',
                         html: true,
                         timer: 2500,
@@ -262,29 +281,23 @@ jQuery(document).ready(function () {
                 let hasInvalidItem = false;
 
                 $('#purchaseOrderBody tr').each(function () {
-
-                    if ($(this).attr('id') === 'noItemRow') {
-                        return;
-                    }
-
+                    if ($(this).attr('id') === 'noItemRow') return;
+                    const itemId = $(this).data('item-id');
                     const itemCode = $(this).find('td:eq(0)').text().trim();
-                    const itemName = $(this).find('td:eq(1)').text().trim();
+                    const qty = parseFloat($(this).find('td:eq(1)').text()) || 0;
                     const itemPrice = parseFloat($(this).find('td:eq(2)').text()) || 0;
-                    const qty = parseFloat($(this).find('td:eq(3)').text()) || 0;
-                    const itemDiscount = parseFloat($(this).find('td:eq(4)').text().replace('%', '')) || 0;
-                    const itemTotal = parseFloat($(this).find('td:eq(6)').text()) || 0;
+                    const itemTotal = parseFloat($(this).find('td:eq(3)').text()) || 0;
 
-                    if (!itemCode || !itemName || itemPrice <= 0 || qty <= 0) {
+                    if (!itemCode || itemPrice <= 0 || qty <= 0) {
                         hasInvalidItem = true;
-                        return false; // break out of .each()
+                        return false;
                     }
 
                     items.push({
+                        item_id: itemId,
                         code: itemCode,
-                        name: itemName,
                         price: itemPrice,
                         qty: qty,
-                        discount: itemDiscount,
                         total: itemTotal
                     });
                 });
@@ -303,7 +316,7 @@ jQuery(document).ready(function () {
                 if (items.length === 0) {
                     swal({
                         title: "Error!",
-                        text: "Please add items to the quotation.",
+                        text: "Please add items to the purchase order.",
                         type: 'error',
                         timer: 2500,
                         showConfirmButton: false
@@ -311,42 +324,36 @@ jQuery(document).ready(function () {
                     return;
                 }
 
-
                 const finalTotal = parseFloat($('#finalTotal').val()) || 0;
 
-                const quotationData = {
-                    action: 'create_quotation',
-                    quotation_id: quotationId,
-                    customer_id: customeId,
-                    customer_code: customerCode,
-                    customer_name: customerName,
-                    date: $('#date').val(),
-                    company_id: $('#company_id').val(),
-                    department_id: $('#department_id').val(),
-                    marketing_executive_id: $('#marketing_executive_id').val(),
-                    sales_type: $('#sales_type').val(),
-                    payment_type: $('#payment_type').val(),
+                const poData = {
+                    action: 'create_purchase_order',
+                    po_id: poId,
+                    supplier_id: supplier_id,
+                    pi_no: $('#pi_no').val(),
+                    brand: $('#brand').val(),
+                    lc_tt_no: $('#lc_tt_no').val(),
+                    lc_tt_no: $('#lc_tt_no').val(),
+                    bl_no: $('#bl_no').val(),
+                    country: $('#country').val(),
+                    ci_no: $('#ci_no').val(),
+                    date: $('#order_date').val(),
+                    department: $('#department_id').val(),
                     remarks: $('#remark').val(),
-                    credit_period: $('#credit_period').val(),
-                    payment_term: $('#payment_type').val(),
-                    validity: $('#validity').val(),
-                    vat_type: $('#vat_type').val(),
                     grand_total: finalTotal,
-                    items: JSON.stringify(items),
-
+                    items: JSON.stringify(items)
                 };
 
-
                 $.ajax({
-                    url: 'ajax/php/quotation.php',
+                    url: 'ajax/php/purchase-order.php',
                     method: 'POST',
-                    data: quotationData,
+                    data: poData,
                     dataType: 'json',
                     success: function (response) {
                         if (response.status === 'success') {
                             swal({
                                 title: "Success!",
-                                text: "Quotation created successfully!",
+                                text: "Purchase Order created successfully!",
                                 type: 'success',
                                 timer: 2500,
                                 showConfirmButton: false
@@ -357,7 +364,7 @@ jQuery(document).ready(function () {
                         } else {
                             swal({
                                 title: "Error!",
-                                text: response.message || "Error creating quotation.",
+                                text: response.message || "Error creating purchase order.",
                                 type: 'error',
                                 timer: 2500,
                                 showConfirmButton: false
@@ -374,11 +381,12 @@ jQuery(document).ready(function () {
                         });
                     }
                 });
+
             },
             error: function () {
                 swal({
                     title: "Error!",
-                    text: "Unable to verify Quotation No. right now.",
+                    text: "Unable to verify Purchase Order No. right now.",
                     type: 'error',
                     timer: 2500,
                     showConfirmButton: false
@@ -390,40 +398,41 @@ jQuery(document).ready(function () {
     $('#update').click(function (e) {
         e.preventDefault();
 
-        const id = $('#id').val().trim();
-        const quotationId = $('#quotation_id').val().trim();
-        const customerCode = $('#customer_code').val().trim();
-        const customerName = $('#customer_name').val().trim();
+        const id = $('#purchase_order_id').val().trim();
+        const poNo = $('#po_no').val().trim();
+        const supplierId = $('#supplier_id').val().trim();
+        const orderDate = $('#order_date').val().trim();
 
-        if (!id || !quotationId) {
+        if (!id || !poNo) {
             swal({
                 title: "Error!",
-                text: "Please select a quotation to update.",
+                text: "Please select a purchase order to update.",
                 type: 'error',
                 timer: 2500,
                 showConfirmButton: false
             });
             return;
+
         }
 
-        if (!customerCode || !customerName) {
+        if (!supplierId) {
             swal({
                 title: "Error!",
-                text: "Please select the customer.",
-                type: 'error',
+                text: "Please select a supplier.",
+                icon: 'error',
                 timer: 2500,
-                showConfirmButton: false
+                buttons: false
             });
             return;
         }
 
-        if (!$('#date').val()) {
+        if (!orderDate) {
             swal({
                 title: "Error!",
-                text: "Please select a date.",
-                type: 'error',
+                text: "Please select a valid order date.",
+                icon: 'error',
                 timer: 2500,
-                showConfirmButton: false
+                buttons: false
             });
             return;
         }
@@ -433,35 +442,35 @@ jQuery(document).ready(function () {
 
         $('#purchaseOrderBody tr').each(function () {
             if ($(this).attr('id') === 'noItemRow') return;
-            const itemCode = $(this).find('td:eq(0)').text().trim();
-            const itemName = $(this).find('td:eq(1)').text().trim();
-            const itemPrice = parseFloat($(this).find('td:eq(2)').text()) || 0;
-            const qty = parseFloat($(this).find('td:eq(3)').text()) || 0;
-            const itemDiscount = parseFloat($(this).find('td:eq(4)').text().replace('%', '')) || 0;
-            const itemTotal = parseFloat($(this).find('td:eq(6)').text()) || 0;
 
-            if (!itemCode || !itemName || itemPrice <= 0 || qty <= 0) {
+            const itemId = $(this).data('item-id');
+            const itemText = $(this).find('td:eq(0)').text().trim();
+            const qty = parseFloat($(this).find('td:eq(1)').text()) || 0;
+            const unitPrice = parseFloat($(this).find('td:eq(2)').text()) || 0;
+            const total = parseFloat($(this).find('td:eq(3)').text()) || 0;
+
+            if (!itemId || unitPrice <= 0 || qty <= 0) {
                 hasInvalidItem = true;
                 return false;
             }
 
+            const [itemCode, itemName] = itemText.split(' - ');
+
             items.push({
-                code: itemCode,
-                name: itemName,
-                price: itemPrice,
+                item_id: itemId,
+                price: unitPrice,
                 qty: qty,
-                discount: itemDiscount,
-                total: itemTotal
+                total: total
             });
         });
 
         if (hasInvalidItem) {
             swal({
                 title: "Error!",
-                text: "Please ensure all items are filled correctly!",
-                type: 'error',
+                text: "Please ensure all items have valid quantities and prices.",
+                icon: 'error',
                 timer: 2500,
-                showConfirmButton: false
+                buttons: false
             });
             return;
         }
@@ -469,196 +478,193 @@ jQuery(document).ready(function () {
         if (items.length === 0) {
             swal({
                 title: "Error!",
-                text: "Please add items to the quotation.",
-                type: 'error',
+                text: "Please add at least one item to the purchase order.",
+                icon: 'error',
                 timer: 2500,
-                showConfirmButton: false
+                buttons: false
             });
             return;
         }
 
-        let finalTotal = parseFloat($('#finalTotal').text()) || 0;
 
-         const quotationData = {
-            action: 'update_quotation',
+
+        const purchaseOrderData = {
+            action: 'update_purchase_order',
             id: id,
-            quotation_id: quotationId,
-            credit_period: $('#credit_period').val(),
-            customer_id: $('#customer_id').val(),
-            customer_name: customerName,
-            date: $('#date').val(),
-            company_id: $('#company_id').val(),
+            po_no: poNo,
+            order_date: orderDate,
+            supplier_id: supplierId,
+            pi_no: $('#pi_no').val(),
+            lc_tt_no: $('#lc_tt_no').val(),
+            brand: $('#brand').val(),
+            bl_no: $('#bl_no').val(),
+            country: $('#country').val(),
+            ci_no: $('#ci_no').val(),
             department_id: $('#department_id').val(),
-            marketing_executive_id: $('#marketing_executive_id').val(),
-            sales_type: $('#sales_type').val(),
-            payment_type: $('#payment_type').val(),
+            order_by: $('#order_by').val(),
             remarks: $('#remark').val(),
-            vat_type: $('#vat_type').val(),
-            sub_total: finalTotal,
-            discount: 0,
-            grand_total: finalTotal,
             items: JSON.stringify(items),
-            deleted_items: JSON.stringify(deletedItems)
+            deleted_items: JSON.stringify(deletedItems || [])
         };
 
         $.ajax({
-            url: 'ajax/php/quotation.php',
+            url: 'ajax/php/purchase-order.php',
             method: 'POST',
-            data: quotationData,
+            data: purchaseOrderData,
             dataType: 'json',
-            beforeSend: function () { 
-                $('body').preloader({
-                    text: 'Updating quotation...'
-                });
+            beforeSend: function () {
+                $('body').preloader({ text: 'Updating purchase order...' });
             },
             success: function (response) {
                 $('body').preloader('remove');
+
                 if (response.status === 'success') {
+
                     swal({
                         title: "Success!",
-                        text: "Quotation updated successfully!",
+                        text: "Purchase Order update successfully!",
                         type: 'success',
                         timer: 2500,
                         showConfirmButton: false
                     });
-
                     setTimeout(function () {
                         window.location.reload();
                     }, 2500);
                 } else {
                     swal({
                         title: "Error!",
-                        text: response.message || "Error updating quotation.",
-                        type: 'error',
+                        text: response.message || "Error updating purchase order.",
+                        icon: 'error',
                         timer: 2500,
-                        showConfirmButton: false
+                        buttons: false
                     });
                 }
             },
             error: function (xhr) {
                 $('body').preloader('remove');
-                console.error("AJAX error:", xhr.responseText);
+                console.error("AJAX Error:", xhr.responseText);
                 swal({
                     title: "Error!",
                     text: "AJAX request failed. Please try again.",
-                    type: 'error',
+                    icon: 'error',
                     timer: 2500,
-                    showConfirmButton: false
+                    buttons: false
                 });
             }
         });
     });
 
     // Handle quotation selection from modal
-    $(document).on('click', '.select-model', function () {
-        const quotationId = $(this).data('id');
-        const quotationNo = $(this).data('quotation_no');
-        const date = $(this).data('date');
-        const customerId = $(this).data('customer_name');
-        const companyId = $(this).data('company_id');
-        const departmentId = $(this).data('department_id');
+    $(document).on('click', '.select-purchase-order', function () {
+        // Get all data attributes from clicked row
+        const id = $(this).data('id');
+        const poNumber = $(this).data('po_number');
+        const orderDate = $(this).data('order_date');
+        const supplierId = $(this).data('supplier_id');
+        const supplierCode = $(this).data('supplier_code');
+        const supplierName = $(this).data('supplier_name');
+        const supplierAddress = $(this).data('supplier_address');
+        const piNo = $(this).data('pi_no');
+        const lcTtNo = $(this).data('lc_tt_no');
+        const brand = $(this).data('brand');
+        const blNo = $(this).data('bl_no');
+        const country = $(this).data('country');
+        const ciNo = $(this).data('ci_no');
+        const department = $(this).data('department');
+        const orderBy = $(this).data('order_by');
+        const remarks = $(this).data('remarks');
+        const grandTotal = $(this).data('grand_total');
 
+        // Set values to form inputs
+        $('#purchase_order_id').val(id);
+        $('#po_no').val(poNumber);
+        $('#order_date').val(orderDate);
+        $('#supplier_id').val(supplierId);
+        $('#supplier_code').val(supplierCode);
+        $('#supplier_name').val(supplierName);
+        $('#supplier_address').val(supplierAddress);
+        $('#pi_no').val(piNo);
+        $('#lc_tt_no').val(lcTtNo);
+        $('#brand').val(brand);
+        $('#bl_no').val(blNo);
+        $('#country').val(country);
+        $('#ci_no').val(ciNo);
+        $('#department_id').val(department);
+        $('#order_by').val(orderBy);
+        $('#remarks').val(remarks);
+        $('#grandTotal').val(grandTotal);
+        $('#finalTotal').val(grandTotal);
+        // Optional: load supplier details if needed
+        if (typeof loadSupplierById === 'function') {
+            loadSupplierById(supplierId);
+        }
 
-        // Set the quotation ID and date in the form
-        $('#id').val(quotationId);
-        $('#quotation_id').val(quotationNo);
-        $('#date').val(date);
-        $('#company_id').val(companyId);
-        $('#department_id').val(departmentId);
-
-        // Get full quotation details from server
+        // Fetch detailed purchase order items via AJAX
         $.ajax({
-            url: 'ajax/php/quotation.php',
+            url: 'ajax/php/purchase-order.php',
             method: 'POST',
             data: {
-                action: 'get_quotation',
-                id: quotationId
+                action: 'get_purchase_order',
+                id: id
             },
             dataType: 'json',
             beforeSend: function () {
-                // Show loading indicator
-                $('body').preloader({
-                    text: 'Loading quotation...'
-                });
+                $('body').preloader({ text: 'Loading purchase order...' });
             },
             success: function (response) {
                 $('body').preloader('remove');
 
                 if (response.status === 'success') {
-                    const quotation = response.data.quotation;
                     const items = response.data.items;
-
-                    // Load customer details
-                    loadCustomerById(quotation.customer_id);
-
-                    // Set form values
-                    $('#marketing_executive_id').val(quotation.marketing_executive_id);
-                    $('#sales_type').val(quotation.sale_type || 1);
-                    $('#payment_type').val(quotation.payment_type);
-                    $('#vat_type').val(quotation.vat_type || 1);
-                    $('#remark').val(quotation.remarks);
-
-                    $('#finalTotal').val(quotation.sub_total);
-                    $('#disTotal').val(quotation.discount);
-                    $('#grandTotal').val(quotation.grand_total);
-                    $('#credit_period').val(quotation.credit_period);
-                    $('#validity').val(quotation.validity);
 
                     // Clear existing items
                     $('#purchaseOrderBody').empty();
 
-                    // Add items to the table
                     if (items.length > 0) {
-                        items.forEach(function (item) {
-
-                            const discount = parseFloat(item.discount) || 0;
-                            const price = parseFloat(item.price) || 0;
-                            const qty = parseFloat(item.qty) || 0;
+                        items.forEach(item => {
+                            const price = parseFloat(item.unit_price) || 0;
+                            const qty = parseFloat(item.quantity) || 0;
+                            const total = parseFloat(item.total_price) || 0;
                             const subtotal = price * qty;
-                            const total = parseFloat(item.sub_total) || 0;
+
+
+
 
                             const row = `
-                            <tr>
-                                <td>${item.item_code}                                
-                                 <input type="hidden" class="item-id" value="${item.item_id}"></td>
-                                <td>${item.item_name}</td>
-                                <td>${price.toFixed(2)}</td>
+                                <tr data-item-id="${item.item_id}">
+                                <td>${item.item_code} - ${item.item_name}</td>
                                 <td>${qty}</td>
-                                <td>${discount}%</td>
-                                <td>${subtotal.toFixed(2)}</td>
+                                <td>${price.toFixed(2)}</td>
+                               
+                                
                                 <td>${total.toFixed(2)}</td>
                                 <td><button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">Remove</button></td>
                             </tr>
-                            `;
-
+                        `;
                             $('#purchaseOrderBody').append(row);
                         });
                     } else {
-                        // Add "No items" row if no items found
                         $('#purchaseOrderBody').append(`
-                            <tr id="noItemRow">
-                                <td colspan="8" class="text-center text-muted">No items added</td>
-                            </tr>
-                        `);
+                        <tr id="noItemRow">
+                            <td colspan="7" class="text-center text-muted">No items found</td>
+                        </tr>
+                    `);
                     }
 
+                    // Show/hide buttons as needed
                     $('#create').hide();
                     $('#update').show();
+                    $('.delete-po').show();
 
-
-                    // Update final total
-                    $('#finalTotal').html(`<strong>${quotation.grand_total}</strong>`);
-
-                    // Close the modal
-                    $('#quotationModel').modal('hide');
-
+                    // Hide modal
+                    $('#po_number_modal').modal('hide');
                 } else {
                     swal({
                         title: "Error!",
-                        text: "Error loading quotation details.",
-                        type: 'error',
+                        text: "Failed to load purchase order.",
+                        icon: 'error',
                         timer: 2500,
-                        showConfirmButton: false
+                        buttons: false
                     });
                 }
             },
@@ -668,50 +674,36 @@ jQuery(document).ready(function () {
                 swal({
                     title: "Error!",
                     text: "AJAX request failed. Please try again.",
-                    type: 'error',
+                    icon: 'error',
                     timer: 2500,
-                    showConfirmButton: false
+                    buttons: false
                 });
             }
         });
     });
 
-    function loadCustomerById(customerId) {
-        $.ajax({
-            url: 'ajax/php/quotation.php',
-            method: 'POST',
-            data: {
-                action: 'get_customer_by_id',
-                customer_id: customerId
-            },
-            dataType: 'json',
-            success: function (response) {
-                if (response.status === 'success') {
-                    const data = response.data;
-                    $('#customer_id').val(data.id);
-                    $('#customer_code').val(data.code);
-                    $('#customer_name').val(data.name);
-                    $('#customer_address').val(data.address);
-                    $('#customer_mobile').val(data.mobile_number);
-                } else {
-                    console.error("Customer not found");
-                }
-            },
-            error: function (xhr) {
-                console.error("AJAX error:", xhr.responseText);
-            }
-        });
-    }
 
-    $(document).on('click', '.delete-quotation', function (e) {
+
+    $(document).on('click', '.delete-purchase-order', function (e) {
         e.preventDefault();
 
-        var id = $("#id").val();
-        var quotation_id = $("#quotation_id").val();
+
+        var id = $('#purchase_order_id').val();
+        if (!id ) {
+            swal({
+                title: "Error!",
+                text: "Please select a purchase order to delete.",
+                type: 'error',
+                timer: 2500,
+                showConfirmButton: false
+            });
+            return;
+
+        }
 
         swal({
             title: "Are you sure?",
-            text: "Do you want to delete quotation  '" + quotation_id + "'?",
+            text: "Do you want to delete this purchase order?",
             type: "warning",
             showCancelButton: true,
             confirmButtonColor: "#d33",
@@ -724,7 +716,7 @@ jQuery(document).ready(function () {
                 $('.someBlock').preloader();
 
                 $.ajax({
-                    url: "ajax/php/quotation.php",
+                    url: "ajax/php/purchase-order.php", // Adjust filename if different
                     type: "POST",
                     data: {
                         id: id,
@@ -737,7 +729,7 @@ jQuery(document).ready(function () {
                         if (response.status === 'success') {
                             swal({
                                 title: "Deleted!",
-                                text: "Quotation has been deleted.",
+                                text: "Purchase order has been deleted.",
                                 type: "success",
                                 timer: 2500,
                                 showConfirmButton: false

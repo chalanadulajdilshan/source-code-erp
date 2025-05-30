@@ -4,7 +4,7 @@ class PurchaseOrderItem
 {
     public $id;
     public $purchase_order_id;
-    public $product_id;
+    public $item_id;
     public $quantity;
     public $unit_price;
     public $total_price;
@@ -20,7 +20,7 @@ class PurchaseOrderItem
             if ($result) {
                 $this->id = $result['id'];
                 $this->purchase_order_id = $result['purchase_order_id'];
-                $this->product_id = $result['product_id'];
+                $this->item_id = $result['item_id'];
                 $this->quantity = $result['quantity'];
                 $this->unit_price = $result['unit_price'];
                 $this->total_price = $result['total_price'];
@@ -31,11 +31,11 @@ class PurchaseOrderItem
     public function create()
     {
         $query = "INSERT INTO `purchase_order_items` 
-                  (`purchase_order_id`, `product_id`, `quantity`, `unit_price`, `total_price`) 
+                  (`purchase_order_id`, `item_id`, `quantity`, `unit_price`, `total_price`) 
                   VALUES 
-                  ('" . $this->purchase_order_id . "', '" . $this->product_id . "', '" . $this->quantity . "', '" .
+                  ('" . $this->purchase_order_id . "', '" . $this->item_id . "', '" . $this->quantity . "', '" .
             $this->unit_price . "', '" . $this->total_price . "')";
-
+ 
         $db = new Database();
         $result = $db->readQuery($query);
 
@@ -50,7 +50,7 @@ class PurchaseOrderItem
     {
         $query = "UPDATE `purchase_order_items` SET 
                   `purchase_order_id` = '" . $this->purchase_order_id . "',
-                  `product_id` = '" . $this->product_id . "',
+                  `item_id` = '" . $this->item_id . "',
                   `quantity` = '" . $this->quantity . "',
                   `unit_price` = '" . $this->unit_price . "',
                   `total_price` = '" . $this->total_price . "'";
@@ -65,6 +65,16 @@ class PurchaseOrderItem
         $db = new Database();
         return $db->readQuery($query);
     }
+
+
+
+    public static function deleteByPurchaseOrderId($purchaseOrderId)
+    {
+        $query = "DELETE FROM `purchase_order_items` WHERE `purchase_order_id` = '" . intval($purchaseOrderId) . "'";
+        $db = new Database();
+        return $db->readQuery($query);
+    }
+
 
     public function all()
     {
@@ -81,18 +91,18 @@ class PurchaseOrderItem
     }
 
 
-    public function checkPurchaseOrderIdExist($purchase_order_id, $product_id)
+    public function checkPurchaseOrderIdExist($purchase_order_id, $item_id)
     {
         $db = new Database();
-        $query = "SELECT id FROM `purchase_order_items` WHERE `purchase_order_id` = '{$purchase_order_id}' AND `product_id` = '{$product_id}'";
+        $query = "SELECT id FROM `purchase_order_items` WHERE `purchase_order_id` = '{$purchase_order_id}' AND `item_id` = '{$item_id}'";
         $result = mysqli_fetch_array($db->readQuery($query));
 
-        return ($result) ? $result['id'] : false;  
+        return ($result) ? $result['id'] : false;
     }
 
-    public function getByPurchaseOrderId($product_id)
+    public function getByPurchaseOrderId($item_id)
     {
-        $query = "SELECT * FROM `purchase_order_items` WHERE `product_id` = '" . (int) $product_id . "'";
+        $query = "SELECT * FROM `purchase_order_items` WHERE `purchase_order_id` = '" . (int) $item_id . "'";
         $db = new Database();
         $result = $db->readQuery($query);
         $array_res = array();
