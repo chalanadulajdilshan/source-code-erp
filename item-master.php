@@ -205,18 +205,7 @@ $item_id = 'IM' . str_pad($lastId + 1, 3, '0', STR_PAD_LEFT);
                                                         ?>
                                                     </select>
                                                 </div>
-                                            </div>
-
-                                            <div class="col-md-3">
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="available_qty">Availabel QTY <span
-                                                            class="text-danger">*</span></label>
-                                                    <input id="available_qty" name="available_qty" type="number" min="0"
-                                                        class="form-control" placeholder="Enter item available qty">
-                                                </div>
-                                            </div>
-
-
+                                            </div> 
                                         </div>
 
                                         <hr class="my-4">

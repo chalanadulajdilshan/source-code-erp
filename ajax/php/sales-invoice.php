@@ -70,7 +70,7 @@ if (isset($_POST['create'])) {
 
     $invoiceResult = $SALES_INVOICE->create();
     $DOCUMENT_TRACKING = new DocumentTracking(null);
-   
+
     if ($paymentType == 'cash') {
         $DOCUMENT_TRACKING->incrementDocumentId('cash');
     } else if ($paymentType == 'credit') {
@@ -88,7 +88,7 @@ if (isset($_POST['create'])) {
 
             $SALES_ITEM = new TempSalesItem(NULL);
             $SALES_ITEM->invoice_id = $invoiceId;
-            $SALES_ITEM->item_code = $item['code'];
+            $SALES_ITEM->item_code = $item['item_id'];
             $SALES_ITEM->item_name = $item['name'];
             $SALES_ITEM->price = $item['price'];
             $SALES_ITEM->quantity = $item['qty'];
@@ -98,31 +98,25 @@ if (isset($_POST['create'])) {
             $SALES_ITEM->created_at = date("Y-m-d H:i:s");
             $SALES_ITEM->create();
 
+            //stock master update quantity
+            $STOCK_MASTER = new StockMaster(NULL);
 
-            $ITEM_MASTER = new ItemMaster($item['item_id']);
-
-            $currentQty = $ITEM_MASTER->available_qty;
+            $currentQty = $STOCK_MASTER->getAvailableQuantity($_POST['department_id'], $item['item_id']);
             $newQty = $currentQty - $item['qty'];
-            $ITEM_MASTER->available_qty = $newQty;
-            $ITEM_MASTER->update();
+            $STOCK_MASTER->quantity = $newQty;
+            $STOCK_MASTER->updateQtyByItemAndDepartment($_POST['department_id'], $item['item_id'], $newQty);
 
-            $STOCK = new StockTransaction(NULL);
-            $STOCK->item_id = $item['item_id'];
+            $STOCK_TRANSACTION = new StockTransaction(NULL);
+            $STOCK_TRANSACTION->item_id = $item['item_id'];
 
-            $STOCK_ADJ_TYPE = new StockAdjustmentType(4);
-            //SALE
-            $STOCK->type = $STOCK_ADJ_TYPE->name;
-            $STOCK->date = date("Y-m-d");
-            $STOCK->qty_in = 0;
-            $STOCK->qty_out = $item['qty'];
-            $STOCK->remark = $invoiceId;
-            $STOCK->created_at = date("Y-m-d H:i:s");
-            $STOCK->create();
-
-
-
-
-
+            //stock transaction table update
+            $STOCK_TRANSACTION->type = 4;
+            $STOCK_TRANSACTION->date = date("Y-m-d");
+            $STOCK_TRANSACTION->qty_in = 0;
+            $STOCK_TRANSACTION->qty_out = $item['qty'];
+            $STOCK_TRANSACTION->remark = 'Sale income on ' . date("Y-m-d H:i:s");
+            $STOCK_TRANSACTION->created_at = date("Y-m-d H:i:s");
+            $STOCK_TRANSACTION->create();
         }
 
         echo json_encode([

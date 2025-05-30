@@ -128,6 +128,7 @@ class DocumentTracking
 
         // Map accepted types to column names
         $columns = [
+            'purchase' => 'po_id',
             'quotation' => 'quotation_id',
             'invoice' => 'invoice_id',
             'cash' => 'cash_id',

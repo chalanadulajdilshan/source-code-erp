@@ -15,8 +15,7 @@ if (isset($_POST['create'])) {
     $ITEM->size = $_POST['size'];
     $ITEM->pattern = $_POST['pattern'];
     $ITEM->group = $_POST['group'];
-    $ITEM->category = $_POST['category'];
-    $ITEM->available_qty = $_POST['available_qty']; 
+    $ITEM->category = $_POST['category']; 
 
     $ITEM->cost = str_replace(',', '', $_POST['cost']); 
     $ITEM->re_order_level = $_POST['re_order_level'];
@@ -60,8 +59,7 @@ if (isset($_POST['update'])) {
     $ITEM->pattern = $_POST['pattern'];
     $ITEM->group = $_POST['group'];
     $ITEM->category = $_POST['category'];
-    $ITEM->cost = str_replace(',', '', $_POST['cost']);
-    $ITEM->available_qty = $_POST['available_qty']; 
+    $ITEM->cost = str_replace(',', '', $_POST['cost']); 
     $ITEM->re_order_level = $_POST['re_order_level'];
     $ITEM->re_order_qty = $_POST['re_order_qty'];
     $ITEM->whole_sale_price = str_replace(',', '', $_POST['whole_sale_price']);

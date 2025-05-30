@@ -67,16 +67,15 @@ jQuery(document).ready(function () {
         $('#item_id').val(data.id);
         $('#code').val(data.code);
         $('#name').val(data.name);
-        $('#brand').val(data.brand_id);  // assuming brand ID is sent
+        $('#brand').val(data.brand_id);   
         $('#size').val(data.size);
-        $('#pattern').val(data.pattern);   // assuming group ID is sent
-        $('#category').val(data.category_id);  // assuming category ID is sent
-        $('#available_qty').val(data.available_qty);  // assuming available qty is sent
+        $('#pattern').val(data.pattern);    
+        $('#category').val(data.category_id);   
         $('#cost').val(data.cost);
         $('#group').val(data.group);
         $('#re_order_level').val(data.re_order_level);
         $('#re_order_qty').val(data.re_order_qty);
-        $('#stock_type').val(data.stock_type);  // assuming stock type ID is sent
+        $('#stock_type').val(data.stock_type);  
         $('#whole_sale_price').val(data.whole_sale_price);
         $('#retail_price').val(data.retail_price);
         $('#cash_discount').val(data.cash_discount);

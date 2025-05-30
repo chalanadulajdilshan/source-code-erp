@@ -70,7 +70,46 @@ jQuery(document).ready(function () {
         $('#itemCode').val(data.code);
         $('#itemName').val(data.name);
         $('#itemQty').val(1);
-        $('#available_qty').val(data.available_qty);
+
+
+        const departmentId = $('#department_id').val();
+        const itemId = data.id;
+
+
+        $.ajax({
+            url: 'ajax/php/stock-transfer.php',
+            method: 'POST',
+            data: {
+                action: 'get_available_qty',
+                department_id: departmentId,
+                item_id: itemId
+            },
+            success: function (res) {
+                if (res.status === 'success') {
+                    $('#available_qty').val(res.available_qty);
+                } else {
+                    $('#available_qty').val(0);
+                    swal({
+                        title: "Error!",
+                        text: res.message || "Failed to load available quantity.",
+                        type: 'error',
+                        timer: 2500,
+                        showConfirmButton: false
+                    });
+                }
+            },
+            error: function () {
+                $('#available_qty').val(0);
+                swal({
+                    title: "Error!",
+                    text: "Could not load available quantity.",
+                    type: 'error',
+                    timer: 2500,
+                    showConfirmButton: false
+                });
+            }
+
+        });
 
         calculatePayment();
 
@@ -79,12 +118,25 @@ jQuery(document).ready(function () {
         $('#item_master').modal('hide');
     });
 
+    $('#department_id').on('change', function () {
+        $('#item_id').val('');
+        $('#itemCode').val('');
+        $('#itemName').val('');
+        $('#itemQty').val('');
+        $('#itemPrice').val('');
+        $('#itemPayment').val('');
+        $('#available_qty').val(0);
+
+    });
+
+
     $('#item_master').on('hidden.bs.modal', function () {
         if (focusAfterModal) {
             $('#itemQty').focus();
             focusAfterModal = false;
         }
     });
+
 
     //get first row cash sales customer
     function loadCustomer() {
@@ -249,7 +301,8 @@ jQuery(document).ready(function () {
             const discount = parseFloat($(this).find('td:eq(4)').text()) || 0;
             const payment = parseFloat($(this).find('td:eq(5)').text()) || 0;
             const totalItem = parseFloat($(this).find('td:eq(6)').text()) || 0;
-            const item_id = $('#item_id').val();
+            const item_id = $(this).find('input[name="item_id[]"]').val();
+
 
             if (code && !isNaN(totalItem)) {
                 items.push({
@@ -325,49 +378,82 @@ jQuery(document).ready(function () {
 
     // Add item to invoice table
     function addItem() {
+        const item_id = $('#item_id').val().trim();
         const code = $('#itemCode').val().trim();
         const name = $('#itemName').val().trim();
         const price = parseFloat($('#itemPrice').val()) || 0;
         const qty = parseFloat($('#itemQty').val()) || 0;
         const discount = parseFloat($('#itemDiscount').val()) || 0;
         const payment = parseFloat($('#itemPayment').val()) || 0;
+        const availableQty = parseFloat($('#available_qty').val()) || 0; // You must have this field in your form
 
         if (!code || !name || price <= 0 || qty <= 0) {
             swal({
                 title: "Error!",
-                text: "Please fill valid item quantity..!",
+                text: "Please enter valid item details including quantity and price.",
                 type: 'error',
                 timer: 3000,
                 showConfirmButton: false
             });
             return;
-        }
+        } else if (qty > availableQty) {
+            swal({
+                title: "Error!",
+                text: "Transfer quantity cannot exceed available quantity!",
+                type: "error",
+                timer: 2500,
+                showConfirmButton: false,
+            });
+            return;
+        } else {
 
-        const total = (price * qty) - ((price * qty) * (discount / 100));
 
-        // Remove no data message if exists
-        $('#noItemRow').remove();
 
-        const row = `
+            const table = document.getElementById('invoiceTable').querySelector('tbody');
+
+            // Check for duplicate item code
+            const existingItems = table.querySelectorAll('input[name="item_codes[]"]');
+            for (let i = 0; i < existingItems.length; i++) {
+                if (existingItems[i].value === code) {
+                    swal({
+                        title: "Duplicate Item!",
+                        text: "This item has already been added.",
+                        type: "warning",
+                        timer: 2500,
+                        showConfirmButton: false,
+                    });
+                    return;
+
+                }
+            }
+
+            const total = (price * qty) - ((price * qty) * (discount / 100));
+
+            // Remove "no data" message
+            $('#noItemRow').remove();
+
+            const row = `
         <tr>
-            <td>${code}</td>
+            <td>${code}<input type="hidden" name="item_id[]" value="${item_id}"></td>
             <td>${name}</td>
             <td class="item-price">${price.toFixed(2)}</td>
             <td class="item-qty">${qty}</td>
             <td class="item-discount">${discount}</td>
             <td>${payment.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
             <td>${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-
             <td><button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">Remove</button></td>
-        </tr>  `;
+        </tr>
+    `;
 
-        $('#invoiceItemsBody').append(row);
+            $('#invoiceItemsBody').append(row);
+            $('#available_qty').val(0);
+            // Clear inputs
+            $('#itemCode, #itemName, #itemPrice, #itemQty, #itemDiscount, #itemPayment').val('');
 
-        // Clear input fields
-        $('#itemCode, #itemName, #itemPrice, #itemQty, #itemDiscount, #itemPayment').val('');
-
-        updateFinalTotal();
+            updateFinalTotal();
+        }
     }
+
 
     // Remove item row
     function removeRow(button) {

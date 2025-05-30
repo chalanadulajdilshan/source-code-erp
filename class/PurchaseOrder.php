@@ -4,7 +4,7 @@ class PurchaseOrder
 {
     public $id;
     public $po_number;
-    public $entry_date;
+    public $order_date;
     public $supplier_id;
     public $pi_no;
     public $address;
@@ -14,6 +14,7 @@ class PurchaseOrder
     public $country;
     public $ci_no;
     public $department;
+    public $grand_total;
     public $order_by;
     public $remarks;
     public $created_by;
@@ -24,14 +25,14 @@ class PurchaseOrder
     public function __construct($id = null)
     {
         if ($id) {
-            $query = "SELECT * FROM `purchase_orders` WHERE `id` = " . (int)$id;
+            $query = "SELECT * FROM `purchase_orders` WHERE `id` = " . (int) $id;
             $db = new Database();
             $result = mysqli_fetch_array($db->readQuery($query));
 
             if ($result) {
                 $this->id = $result['id'];
                 $this->po_number = $result['po_number'];
-                $this->entry_date = $result['entry_date'];
+                $this->order_date = $result['order_date'];
                 $this->supplier_id = $result['supplier_id'];
                 $this->pi_no = $result['pi_no'];
                 $this->address = $result['address'];
@@ -42,7 +43,7 @@ class PurchaseOrder
                 $this->department = $result['department'];
                 $this->order_by = $result['order_by'];
                 $this->remarks = $result['remarks'];
-                $this->created_by = $result['created_by'];
+                $this->grand_total = $result['grand_total'];
                 $this->created_at = $result['created_at'];
                 $this->updated_at = $result['updated_at'];
             }
@@ -53,12 +54,13 @@ class PurchaseOrder
     public function create()
     {
         $query = "INSERT INTO `purchase_orders` (
-            `po_number`, `entry_date`, `supplier_id`, `pi_no`, `address`, `lc_tt_no`, 
-            `brand`, `bl_no`, `country`, `department`, `order_by`, `remarks`, `created_by`, `created_at`, `updated_at`
+            `po_number`, `order_date`, `supplier_id`, `pi_no`, `address`, `lc_tt_no`, 
+            `brand`, `bl_no`, `country`, `department`, `order_by`, `remarks`, `grand_total`, `created_at`, `updated_at`
         ) VALUES (
-            '{$this->po_number}', '{$this->entry_date}', '{$this->supplier_id}', '{$this->pi_no}', '{$this->address}', '{$this->lc_tt_no}','{$this->brand}',
-            '{$this->bl_no}', '{$this->country}', '{$this->department}', '{$this->order_by}', '{$this->remarks}', '{$this->created_by}', '{$this->created_at}', '{$this->updated_at}'
+            '{$this->po_number}', '{$this->order_date}', '{$this->supplier_id}', '{$this->pi_no}', '{$this->address}', '{$this->lc_tt_no}','{$this->brand}',
+            '{$this->bl_no}', '{$this->country}', '{$this->department}', '{$this->order_by}', '{$this->remarks}', '{$this->grand_total}', '{$this->created_at}', '{$this->updated_at}'
         )";
+
 
         $db = new Database();
         $result = $db->readQuery($query);
@@ -75,7 +77,7 @@ class PurchaseOrder
     {
         $query = "UPDATE `purchase_orders` SET 
             `po_number` = '{$this->po_number}', 
-            `entry_date` = '{$this->entry_date}',
+            `order_date` = '{$this->order_date}',
             `supplier_id` = '{$this->supplier_id}', 
             `pi_no` = '{$this->pi_no}', 
             `address` = '{$this->address}', 
@@ -86,6 +88,7 @@ class PurchaseOrder
             `department` = '{$this->department}',
             `order_by` = '{$this->order_by}',
             `remarks` = '{$this->remarks}', 
+             `grand_total` = '{$this->grand_total}', 
             `created_by` = '{$this->created_by}', 
             `created_at` = '{$this->created_at}', 
             `updated_at` = '{$this->updated_at}'
@@ -95,7 +98,7 @@ class PurchaseOrder
         $result = $db->readQuery($query);
 
         if ($result) {
-            return $this->__construct($this->id);
+            return true;
         } else {
             return false;
         }
@@ -104,6 +107,8 @@ class PurchaseOrder
     // Delete a sales invoice record by ID
     public function delete()
     {
+        PurchaseOrderItem::deleteByPurchaseOrderId($this->id);
+        
         $query = "DELETE FROM `purchase_orders` WHERE `id` = '{$this->id}'";
         $db = new Database();
         return $db->readQuery($query);
@@ -124,9 +129,10 @@ class PurchaseOrder
         return $array_res;
     }
 
-    public function checkPurchaseIdExist($quotation_no)
+    public function checkPurchaseIdExist($po_no)
     {
-        $query = "SELECT * FROM `quotation` where `quotation_no` = '$quotation_no' ";
+        $query = "SELECT * FROM `purchase_orders` where `po_number` = '$po_no'";
+
 
         $db = new Database();
         $result = mysqli_fetch_array($db->readQuery($query));
@@ -141,6 +147,6 @@ class PurchaseOrder
         $result = mysqli_fetch_array($db->readQuery($query));
         return $result['id'];
     }
-    
+
 }
 ?>

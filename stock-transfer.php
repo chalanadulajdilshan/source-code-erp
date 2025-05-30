@@ -142,19 +142,23 @@ $DEPARTMENT_MASTER = new DepartmentMaster($US->department_id)
                                                         <?php
                                                         $DEPARTMENT_MASTER = new DepartmentMaster(NUll);
                                                         foreach ($DEPARTMENT_MASTER->getActiveDepartment() as $departments) {
+                                                            echo $US->type;
                                                             if ($US->type != 1) {
-                                                                if ($departments['id'] = $US->department_id) {
+
+                                                                if ($departments['id'] != $US->department_id) {
+                                                                    ?>
+                                                                    <option value="<?php echo $departments['id'] ?>">
+                                                                        <?php echo $US->department_id . ' - ' . $departments['name'] ?>
+                                                                    </option>
+                                                                <?php }
+                                                            } else {
+                                                                if ($departments['id'] != $US->department_id) {
                                                                     ?>
                                                                     <option value="<?php echo $departments['id'] ?>">
                                                                         <?php echo $departments['name'] ?>
                                                                     </option>
-                                                                <?php }
-                                                            } else {
-                                                                ?>
-                                                                <option value="<?php echo $departments['id'] ?>">
-                                                                    <?php echo $departments['name'] ?>
-                                                                </option>
-                                                                <?php
+                                                                    <?php
+                                                                }
                                                             }
                                                         } ?>
                                                     </select>
