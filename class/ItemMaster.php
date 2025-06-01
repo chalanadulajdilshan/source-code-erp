@@ -14,6 +14,8 @@ class ItemMaster
     public $cost;
     public $re_order_level;
     public $re_order_qty;
+    public $list_price;
+
     public $whole_sale_price;
     public $retail_price;
     public $cash_discount;
@@ -40,6 +42,7 @@ class ItemMaster
                 $this->category = $result['category'];
                 $this->cost = $result['cost'];
                 $this->re_order_level = $result['re_order_level'];
+                $this->list_price = $result['list_price'];
                 $this->re_order_qty = $result['re_order_qty'];
                 $this->whole_sale_price = $result['whole_sale_price'];
                 $this->retail_price = $result['retail_price'];
@@ -88,6 +91,7 @@ class ItemMaster
             `group` = '$this->group', 
             `category` = '$this->category', 
             `cost` = '$this->cost', 
+             `list_price` = '$this->list_price', 
             `re_order_level` = '$this->re_order_level', 
             `re_order_qty` = '$this->re_order_qty', 
             `whole_sale_price` = '$this->whole_sale_price', 
@@ -174,7 +178,7 @@ class ItemMaster
         }
 
         $brandId = $request['brand'] ?? null;
- 
+
 
         if (!empty($brandId)) {
             $brandId = (int) $brandId;

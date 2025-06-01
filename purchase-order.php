@@ -92,7 +92,7 @@ $po_id = $COMPANY_PROFILE_DETAILS->company_code . '/PO/00/0' . $lastId + 1;
                         <input type="hidden" id="item_id">
                         <input type="hidden" id="purchase_order_id">
 
-                        
+
 
                         <!-- end page title -->
 
@@ -179,10 +179,7 @@ $po_id = $COMPANY_PROFILE_DETAILS->company_code . '/PO/00/0' . $lastId + 1;
                                                         <input id="pi_no" name="pi_no" type="text"
                                                             placeholder="Enter PI No" class="form-control">
                                                     </div>
-
                                                 </div>
-
-
 
                                                 <div class="col-md-2">
                                                     <label for="LC_TT_No" class="form-label">LC / TT No</label>
@@ -419,6 +416,7 @@ $po_id = $COMPANY_PROFILE_DETAILS->company_code . '/PO/00/0' . $lastId + 1;
                                             <th>PI No</th>
                                             <th>LC/TT No</th>
                                             <th>Department</th>
+                                            <th>Status</th>
                                             <th>Grand Total</th>
                                         </tr>
                                     </thead>
@@ -443,10 +441,11 @@ $po_id = $COMPANY_PROFILE_DETAILS->company_code . '/PO/00/0' . $lastId + 1;
                                                 data-lc_tt_no="<?= htmlspecialchars($purchase_order['lc_tt_no']); ?>"
                                                 data-brand="<?= htmlspecialchars($purchase_order['brand']); ?>"
                                                 data-bl_no="<?= htmlspecialchars($purchase_order['bl_no']); ?>"
+                                                data-ci_no="<?= htmlspecialchars($purchase_order['ci_no']); ?>"
                                                 data-country="<?= htmlspecialchars($purchase_order['country']); ?>"
                                                 data-department="<?= htmlspecialchars($purchase_order['department']); ?>"
                                                 data-grand_total="<?= htmlspecialchars($purchase_order['grand_total']); ?>"
-                                                data-order_by="<?= htmlspecialchars($purchase_order['order_by']); ?>"
+                                                data-status="<?= htmlspecialchars($purchase_order['status']); ?>"
                                                 data-remarks="<?= htmlspecialchars($purchase_order['remarks']); ?>">
                                                 <td><?= $key; ?></td>
                                                 <td><?= htmlspecialchars($purchase_order['po_number']); ?></td>
@@ -456,6 +455,15 @@ $po_id = $COMPANY_PROFILE_DETAILS->company_code . '/PO/00/0' . $lastId + 1;
                                                 <td><?= htmlspecialchars($purchase_order['pi_no']); ?></td>
                                                 <td><?= htmlspecialchars($purchase_order['lc_tt_no']); ?></td>
                                                 <td><?= htmlspecialchars($DEPARTMENT_MASTER->name); ?></td>
+
+                                                <td>
+                                                    <?php if ($purchase_order['status'] == 1): ?>
+                                                        <span class="badge bg-soft-success font-size-12">Approved</span>
+                                                    <?php else: ?>
+                                                        <span class="badge bg-soft-danger font-size-12"> Not Approved</span>
+                                                    <?php endif; ?>
+                                                </td>
+
                                                 <td><?= htmlspecialchars($purchase_order['grand_total']); ?></td>
                                             </tr>
                                         <?php } ?>

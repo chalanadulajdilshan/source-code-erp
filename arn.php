@@ -40,6 +40,8 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
     <link href="assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet"
         type="text/css" />
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
 
     <style>
         .col-lg-1 {
@@ -99,6 +101,10 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
                         <!--- Hidden Values -->
                         <input type="hidden" id="item_id">
                         <input type="hidden" id="availableQty">
+                        <input type="hidden" id="purchase_order_id">
+                        <input type="hidden" id="supplier_id">
+                        <input type="hidden" id="status" value="1">
+
 
                         <!-- end page title -->
 
@@ -132,18 +138,13 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
 
                                                 <div class="col-md-2">
                                                     <label for="arn_no" class="form-label">ARN No</label>
-                                                    <div class="input-group mb-3">
+                                                    <div class="input-group">
                                                         <input id="arn_no" name="arn_no" type="text"
                                                             class="form-control" value="<?php echo $arn_id ?>" readonly>
-                                                    </div>
-                                                </div>
 
-                                                <div class="col-md-2">
-                                                    <label for="Entry_Date" class="form-label">Entry Date</label>
-                                                    <div class="input-group mb-3">
-                                                        <input id="entry_date" name="entry_date" type="text"
-                                                            class="form-control" value="<?php echo date('Y-m-d') ?> "
-                                                            readonly>
+                                                        <button class="btn btn-info" type="button" id="open-item-modal">
+                                                            <i class="uil uil-search me-1"></i>
+                                                        </button>
                                                     </div>
                                                 </div>
 
@@ -151,25 +152,26 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
                                                     <label for="PO_No" class="form-label">PO No</label>
                                                     <div class="input-group">
                                                         <input id="po_no" type="text" class="form-control"
-                                                            placeholder="Select Po No">
+                                                            placeholder="Select Po No" readonly>
 
-                                                        <button class="btn btn-info" type="button" id="open-item-modal">
+                                                        <button class="btn btn-info" type="button"
+                                                            data-bs-toggle="modal" data-bs-target="#po_number_modal">
                                                             <i class="uil uil-search me-1"></i>
                                                         </button>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-2">
                                                     <label class="form-label" for="entry_date">PO Date</label>
-                                                    <input id="po_date" name="po_date" type="text"
-                                                        class="form-control date-picker" placeholder="Select Po Date">
+                                                    <input id="order_date" name="order_date" type="text"
+                                                        class="form-control  " placeholder="Select Po Date" readonly>
                                                 </div>
 
                                                 <div class="col-md-4">
                                                     <label for="supplier" class="form-label">Supplier</label>
                                                     <div class="input-group mb-3">
                                                         <input id="supplier_code" name="supplier_code" type="text"
-                                                            class="form-control ms-2 me-2" style="max-width: 200px;"
-                                                            readonly placeholder="Select Supplier Code">
+                                                            class="form-control ms-2 me-2" style="max-width: 150px;"
+                                                            readonly placeholder=" Supplier Code">
                                                         <input id="supplier_name" name="supplier_name" type="text"
                                                             class="form-control" placeholder="Select Suplier Name"
                                                             readonly>
@@ -181,7 +183,14 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
                                                     </div>
 
                                                 </div>
-
+                                                <div class="col-md-2">
+                                                    <label for="Entry_Date" class="form-label">Entry Date</label>
+                                                    <div class="input-group mb-3">
+                                                        <input id="entry_date" name="entry_date" type="text"
+                                                            class="form-control" value="<?php echo date('Y-m-d') ?> "
+                                                            readonly>
+                                                    </div>
+                                                </div>
 
 
                                                 <div class="col-md-2">
@@ -190,13 +199,25 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
                                                         <select id="department_id" name="department_id"
                                                             class="form-select">
                                                             <?php
-                                                            $DEPARTMENT_MASTER = new DepartmentMaster(NULL);
-                                                            foreach ($DEPARTMENT_MASTER->getActiveDepartment() as $department_master) {
-                                                                ?>
-                                                                <option value="<?php echo $department_master['id'] ?> ">
-                                                                    <?php echo $department_master['name'] ?>
-                                                                </option>
-                                                            <?php } ?>
+                                                            $DEPARTMENT_MASTER = new DepartmentMaster(NUll);
+                                                            foreach ($DEPARTMENT_MASTER->getActiveDepartment() as $departments) {
+                                                                if ($US->type != 1) {
+                                                                    if ($departments['id'] = $US->department_id) {
+                                                                        ?>
+                                                                        <option value="<?php echo $departments['id'] ?>">
+                                                                            <?php echo $departments['name'] ?>
+                                                                        </option>
+                                                                    <?php }
+                                                                } else {
+                                                                    ?>
+                                                                    <option value="<?php echo $departments['id'] ?>">
+                                                                        <?php echo $departments['name'] ?>
+                                                                    </option>
+                                                                    <?php
+                                                                }
+                                                            } ?>
+
+
                                                         </select>
                                                     </div>
                                                 </div>
@@ -220,17 +241,14 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
                                                 <div class="col-md-2">
                                                     <label for="Brand" class="form-label">Brand</label>
                                                     <div class="input-group mb-3">
-                                                        <select id="brand_id" name="brand_id" class="form-select">
+                                                        <select id="brand" name="brand" class="form-select">
+                                                            <option value="">-- All Brands --</option>
                                                             <?php
                                                             $BRAND = new Brand(NULL);
-                                                            foreach ($BRAND->all() as $brand) {
-                                                                ?>
-                                                                <option value="<?php echo $brand['id'] ?> ">
-                                                                    <?php echo $brand['name'] ?>
-                                                                </option>
-                                                            <?php } ?>
-
-
+                                                            foreach ($BRAND->activeBrands() as $brand) {
+                                                                echo "<option value='{$brand['id']}'>{$brand['name']}</option>";
+                                                            }
+                                                            ?>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -253,8 +271,8 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
                                                 <div class="col-md-2">
                                                     <label for="LC?TT_No" class="form-label">LC/TT No</label>
                                                     <div class="input-group mb-3">
-                                                        <input id="lc/tt_no" name="lc/tt_no" type="text"
-                                                            placeholder="Enter LC/TT No" class="form-control">
+                                                        <input id="lc_tt_no" name="lc_tt_no" type="text"
+                                                            placeholder="Enter LC / TT No" class="form-control">
                                                     </div>
                                                 </div>
 
@@ -270,9 +288,13 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
                                                     <label for="Order_By" class="form-label">Order By</label>
                                                     <div class="input-group mb-3">
                                                         <select id="order_by" name="order_by" class="form-select">
-
-
-
+                                                            <?php
+                                                            $DEFAULT_DATA = new DefaultData();
+                                                            foreach ($DEFAULT_DATA->getOrderByOptions() as $key => $order_by) {
+                                                                ?>
+                                                                <option value="<?php echo $key ?>"><?php echo $order_by ?>
+                                                                </option>
+                                                            <?php } ?>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -316,15 +338,12 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
                                                     <label for="Country" class="form-label">Country</label>
                                                     <div class="input-group mb-3">
                                                         <select id="country_id" name="country_id" class="form-select">
-
                                                             <?php
                                                             $COUNTRY = new Country(NULL);
-                                                            foreach ($COUNTRY->all() as $country) {
-                                                                ?>
-                                                                <option value="<?php echo $country['id'] ?>">
-                                                                    <?php echo $country['name'] ?>
-                                                                </option>
-                                                            <?php } ?>
+                                                            foreach ($COUNTRY->activeCountry() as $country) {
+                                                                echo "<option value='{$country['id']}'>{$country['name']}</option>";
+                                                            }
+                                                            ?>
 
                                                         </select>
                                                     </div>
@@ -362,7 +381,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
 
                                                 <h5>Item Details</h5>
 
-                                                <div class="row gx-2 gy-2">
+                                                <div class="row gx-2 gy-2" id="arn-item-table">
                                                     <!-- ────────── First Line of Fields ────────── -->
 
 
@@ -475,6 +494,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
                                                         </button>
                                                     </div>
                                                 </div>
+
                                                 <table id="itemTable" class="table table-bordered table-sm mt-5">
                                                     <thead class="table-light">
                                                         <tr>
@@ -482,7 +502,9 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
                                                             <th>Order Qty</th>
                                                             <th>Rec Qty</th>
                                                             <th>Com Cost</th>
-                                                            <th>Discounts (1/2/3)</th>
+                                                            <th>Dis 1%</th>
+                                                            <th>Dis 2%</th>
+                                                            <th>Dis 3%</th>
                                                             <th>Actual Cost</th>
                                                             <th>Unit Total</th>
                                                             <th>List Price</th>
@@ -568,31 +590,178 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
                                 </div>
                             </div>
                         </div>
-                    </div> <!-- container-fluid -->
+                    </div>
                 </div>
-
                 <?php include 'footer.php' ?>
-
             </div>
-            <!-- end main content-->
-
         </div>
-        <!-- END layout-wrapper -->
+
+
+        <!-- purchase Order -->
+        <div class="modal fade bs-example-modal-xl" id="po_number_modal" tabindex="-1" role="dialog"
+            aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="myExtraLargeModalLabel">Manage Purchase Orders</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <table id="purchase_table" class="table table-bordered dt-responsive nowrap"
+                                    style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>#id</th>
+                                            <th>PO No</th>
+                                            <th>Order Date</th>
+                                            <th>Supplier Code and Name</th>
+                                            <th>PI No</th>
+                                            <th>LC/TT No</th>
+                                            <th>Department</th>
+                                            <th>Grand Total</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <?php
+                                        $PURCHASE_ORDER = new PurchaseOrder(null);
+                                        foreach ($PURCHASE_ORDER->getAllByStatus(0) as $key => $purchase_order) {
+                                            $CUSTOMER_MASTER = new CustomerMaster($purchase_order['supplier_id']);
+                                            $DEPARTMENT_MASTER = new DepartmentMaster($purchase_order['department']);
+                                            $key++;
+                                            ?>
+                                            <tr class="select-purchase-order" data-id="<?= $purchase_order['id']; ?>"
+                                                data-po_number="<?= htmlspecialchars($purchase_order['po_number']); ?>"
+                                                data-order_date="<?= htmlspecialchars($purchase_order['order_date']); ?>"
+                                                data-supplier_id="<?= htmlspecialchars($purchase_order['supplier_id']); ?>"
+                                                data-supplier_code="<?= htmlspecialchars($CUSTOMER_MASTER->code); ?>"
+                                                data-supplier_name="<?= htmlspecialchars($CUSTOMER_MASTER->name); ?>"
+                                                data-supplier_address="<?= htmlspecialchars($CUSTOMER_MASTER->address); ?>"
+                                                data-pi_no="<?= htmlspecialchars($purchase_order['pi_no']); ?>"
+                                                data-address="<?= htmlspecialchars($purchase_order['address']); ?>"
+                                                data-lc_tt_no="<?= htmlspecialchars($purchase_order['lc_tt_no']); ?>"
+                                                data-brand="<?= htmlspecialchars($purchase_order['brand']); ?>"
+                                                data-bl_no="<?= htmlspecialchars($purchase_order['bl_no']); ?>"
+                                                data-ci_no="<?= htmlspecialchars($purchase_order['ci_no']); ?>"
+                                                data-country="<?= htmlspecialchars($purchase_order['country']); ?>"
+                                                data-department="<?= htmlspecialchars($purchase_order['department']); ?>"
+                                                data-grand_total="<?= htmlspecialchars($purchase_order['grand_total']); ?>"
+                                                data-status="<?= htmlspecialchars($purchase_order['status']); ?>"
+                                                data-remarks="<?= htmlspecialchars($purchase_order['remarks']); ?>">
+                                                <td><?= $key; ?></td>
+                                                <td><?= htmlspecialchars($purchase_order['po_number']); ?></td>
+                                                <td><?= htmlspecialchars($purchase_order['order_date']); ?></td>
+                                                <td><?= htmlspecialchars($CUSTOMER_MASTER->code . ' - ' . $CUSTOMER_MASTER->name); ?>
+                                                </td>
+                                                <td><?= htmlspecialchars($purchase_order['pi_no']); ?></td>
+                                                <td><?= htmlspecialchars($purchase_order['lc_tt_no']); ?></td>
+                                                <td><?= htmlspecialchars($DEPARTMENT_MASTER->name); ?></td>
+
+                                                <td><?= htmlspecialchars($purchase_order['grand_total']); ?></td>
+                                            </tr>
+                                        <?php } ?>
+                                    </tbody>
+
+                                </table>
+                            </div> <!-- end col -->
+                        </div> <!-- end row -->
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div>
+
+        <!-- ARN -->
+        <div class="modal fade bs-example-modal-xl" id="arn_modal" tabindex="-1" role="dialog"
+            aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="myExtraLargeModalLabel">Manage Purchase Orders</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <table id="purchase_table" class="table table-bordered dt-responsive nowrap"
+                                    style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>#id</th>
+                                            <th>PO No</th>
+                                            <th>Order Date</th>
+                                            <th>Supplier Code and Name</th>
+                                            <th>PI No</th>
+                                            <th>LC/TT No</th>
+                                            <th>Department</th>
+                                            <th>Grand Total</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <?php
+                                        $PURCHASE_ORDER = new PurchaseOrder(null);
+                                        foreach ($PURCHASE_ORDER->getAllByStatus(0) as $key => $purchase_order) {
+                                            $CUSTOMER_MASTER = new CustomerMaster($purchase_order['supplier_id']);
+                                            $DEPARTMENT_MASTER = new DepartmentMaster($purchase_order['department']);
+                                            $key++;
+                                            ?>
+                                            <tr class="select-purchase-order" data-id="<?= $purchase_order['id']; ?>"
+                                                data-po_number="<?= htmlspecialchars($purchase_order['po_number']); ?>"
+                                                data-order_date="<?= htmlspecialchars($purchase_order['order_date']); ?>"
+                                                data-supplier_id="<?= htmlspecialchars($purchase_order['supplier_id']); ?>"
+                                                data-supplier_code="<?= htmlspecialchars($CUSTOMER_MASTER->code); ?>"
+                                                data-supplier_name="<?= htmlspecialchars($CUSTOMER_MASTER->name); ?>"
+                                                data-supplier_address="<?= htmlspecialchars($CUSTOMER_MASTER->address); ?>"
+                                                data-pi_no="<?= htmlspecialchars($purchase_order['pi_no']); ?>"
+                                                data-address="<?= htmlspecialchars($purchase_order['address']); ?>"
+                                                data-lc_tt_no="<?= htmlspecialchars($purchase_order['lc_tt_no']); ?>"
+                                                data-brand="<?= htmlspecialchars($purchase_order['brand']); ?>"
+                                                data-bl_no="<?= htmlspecialchars($purchase_order['bl_no']); ?>"
+                                                data-ci_no="<?= htmlspecialchars($purchase_order['ci_no']); ?>"
+                                                data-country="<?= htmlspecialchars($purchase_order['country']); ?>"
+                                                data-department="<?= htmlspecialchars($purchase_order['department']); ?>"
+                                                data-grand_total="<?= htmlspecialchars($purchase_order['grand_total']); ?>"
+                                                data-status="<?= htmlspecialchars($purchase_order['status']); ?>"
+                                                data-remarks="<?= htmlspecialchars($purchase_order['remarks']); ?>">
+                                                <td><?= $key; ?></td>
+                                                <td><?= htmlspecialchars($purchase_order['po_number']); ?></td>
+                                                <td><?= htmlspecialchars($purchase_order['order_date']); ?></td>
+                                                <td><?= htmlspecialchars($CUSTOMER_MASTER->code . ' - ' . $CUSTOMER_MASTER->name); ?>
+                                                </td>
+                                                <td><?= htmlspecialchars($purchase_order['pi_no']); ?></td>
+                                                <td><?= htmlspecialchars($purchase_order['lc_tt_no']); ?></td>
+                                                <td><?= htmlspecialchars($DEPARTMENT_MASTER->name); ?></td>
+
+                                                <td><?= htmlspecialchars($purchase_order['grand_total']); ?></td>
+                                            </tr>
+                                        <?php } ?>
+                                    </tbody>
+
+                                </table>
+                            </div> <!-- end col -->
+                        </div> <!-- end row -->
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div>
 
         <!-- Right bar overlay-->
         <div class="rightbar-overlay"></div>
 
         <!-- JAVASCRIPT -->
-       <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <!-- add js files -->
         <script src="ajax/js/arn-master.js"></script>
         <script src="ajax/js/common.js"></script>
 
-
-
         <script src="assets/libs/sweetalert/sweetalert-dev.js"></script>
         <script src="assets/js/jquery.preloader.min.js"></script>
-
         <script src="assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
 
         <!-- Required datatable js -->
@@ -620,6 +789,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
         <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
         <script>
             $(function () {
+                $('#purchase_table').DataTable();
                 // Initialize the datepicker
                 $(".date-picker").datepicker({
                     dateFormat: 'yy-mm-dd' // or 'dd-mm-yy' as per your format

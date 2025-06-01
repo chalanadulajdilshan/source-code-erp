@@ -35,7 +35,7 @@ class PurchaseOrderItem
                   VALUES 
                   ('" . $this->purchase_order_id . "', '" . $this->item_id . "', '" . $this->quantity . "', '" .
             $this->unit_price . "', '" . $this->total_price . "')";
- 
+
         $db = new Database();
         $result = $db->readQuery($query);
 
@@ -100,9 +100,14 @@ class PurchaseOrderItem
         return ($result) ? $result['id'] : false;
     }
 
-    public function getByPurchaseOrderId($item_id)
+    public function getByPurchaseOrderId($item_id, $status = null)
     {
         $query = "SELECT * FROM `purchase_order_items` WHERE `purchase_order_id` = '" . (int) $item_id . "'";
+        if ($status !== null) {
+            // Assuming the purchase_order_items table has a 'status' column
+            $query .= " AND `status` = '" . $status . "'";
+        }
+
         $db = new Database();
         $result = $db->readQuery($query);
         $array_res = array();
