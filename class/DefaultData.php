@@ -134,4 +134,19 @@ class DefaultData {
         );
     }
 
+    function DagType()
+    {
+        return array(
+            "canvas" => "CANVAS", 
+            "radial" => "RADIAL",
+        );
+    }
+
+    function DagMake()
+    {
+        return array(
+            "arpico" => "Arpico", 
+            "ceat" => "Ceat",
+        );
+    }
 }

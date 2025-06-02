@@ -56,6 +56,7 @@ include_once(dirname(__FILE__) . '/CreditPeriod.php');
 include_once(dirname(__FILE__) . '/SalesType.php'); 
 include_once(dirname(__FILE__) . '/PurchaseOrder.php'); 
 include_once(dirname(__FILE__) . '/StockMaster.php'); 
+include_once(dirname(__FILE__) . '/CreateDag.php'); 
 
  
 
