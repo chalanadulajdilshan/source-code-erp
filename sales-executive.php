@@ -122,7 +122,7 @@ $marketing_ex_id = 'ME00' . $lastId + 1;
                                                         placeholder="Enter Department Code" readonly
                                                         value="<?php echo $marketing_ex_id ?>">
                                                     <button class="btn btn-info" type="button" data-bs-toggle="modal"
-                                                        data-bs-target=".bs-example-modal-xl">
+                                                        data-bs-target="#executivetModel">
                                                         <i class="uil uil-search me-1"></i> Find Executive
                                                     </button>
                                                 </div>
@@ -212,7 +212,7 @@ $marketing_ex_id = 'ME00' . $lastId + 1;
     <!-- END layout-wrapper -->
 
     <!-- ---sale executive model----- -->
-    <div class="modal fade bs-example-modal-xl" tabindex="-1" role="dialog"
+    <div class="modal fade bs-example-modal-xl" id="executivetModel" tabindex="-1" role="dialog"
         aria-labelledby="marketingExecutiveModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
