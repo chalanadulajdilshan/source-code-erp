@@ -1,19 +1,20 @@
 <!doctype html>
 <?php
 include 'class/include.php';
+include './auth.php';
 
 
 $MARKETING_EXECUTIVE = new MarketingExecutive(NULL);
 
 // Get the last inserted package id
 $lastId = $MARKETING_EXECUTIVE->getLastID();
-$marketing_ex_id = 'ME00' . $lastId + 1;
+$marketing_ex_id = 'ME/00/' . $lastId + 1;
 ?>
 
 <html lang="en">
 
 <meta charset="utf-8" />
-<title>Horizontal Layout | Department Master </title>
+<title>Sales Executive | <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta content="#" name="description" />
 <meta content="Themesbrand" name="author" />

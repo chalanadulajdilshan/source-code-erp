@@ -1,12 +1,12 @@
 <!doctype html>
 <?php
 include 'class/include.php';
-
+include 'auth.php';
 $INVOICE_REMARK = new InvoiceRemark();
 
 // Get the last inserted package id
 $lastId = $INVOICE_REMARK->getLastID();
-$remark_id = 'IR00' . $lastId + 1;
+$remark_id = 'IR/00/' . $lastId + 1;
 
 ?>
 <html lang="en">
@@ -14,7 +14,7 @@ $remark_id = 'IR00' . $lastId + 1;
 <head>
 
     <meta charset="utf-8" />
-    <title>Horizontal Layout | Minible - Admin & Dashboard Template</title>
+    <title>Invoice Remark   | <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="#" name="description" />
     <meta content="Themesbrand" name="author" />

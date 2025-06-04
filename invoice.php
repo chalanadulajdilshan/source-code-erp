@@ -1,9 +1,8 @@
 <!doctype html>
 <?php
 include 'class/include.php';
-if (!isset($_SESSION)) {
-    session_start();
-}
+include 'auth.php';
+
 
 $invoice_id = $_GET['invoice_no'];
 $US = new User($_SESSION['id']);
@@ -16,7 +15,7 @@ $CUSTOMER_MASTER = new CustomerMaster($SALES_INVOICE->customer_id);
 
 <head>
     <meta charset="utf-8" />
-    <title>Invoice Detail</title>
+    <title>Invoice Details   | <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Unicons CDN -->
     <link href="https://unicons.iconscout.com/release/v4.0.8/css/line.css" rel="stylesheet">
@@ -127,7 +126,8 @@ $CUSTOMER_MASTER = new CustomerMaster($SALES_INVOICE->customer_id);
 
                             <p><?php echo $CUSTOMER_MASTER->name ?><br><?php echo $CUSTOMER_MASTER->address ?>
                                 <br><?php echo $CUSTOMER_MASTER->mobile_number ?><br>
-                                <?php echo $CUSTOMER_MASTER->email ?></p>
+                                <?php echo $CUSTOMER_MASTER->email ?>
+                            </p>
                         </div>
                     </div>
 

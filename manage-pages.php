@@ -1,12 +1,7 @@
 <!doctype html>
 <?php
 include 'class/include.php';
-
-$ITEM_MASTER = new ItemMaster();
-
-// Get the last inserted package id
-$lastId = $ITEM_MASTER->getLastID();
-$item_id = 'IM00' . $lastId + 1;
+include 'auth.php';
 
 ?>
 <html lang="en">
@@ -14,7 +9,7 @@ $item_id = 'IM00' . $lastId + 1;
 <head>
 
     <meta charset="utf-8" />
-    <title>Horizontal Layout | Minible - Admin & Dashboard Template</title>
+    <title> Manage Pages   | <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="#" name="description" />
     <meta content="Themesbrand" name="author" />
@@ -68,7 +63,7 @@ $item_id = 'IM00' . $lastId + 1;
                             <a href="#" class="btn btn-warning" id="update">
                                 <i class="uil uil-edit me-1"></i> Update
                             </a>
-                         
+
                             <!-- <a href="#" class="btn btn-danger delete-branch">
                                 <i class="uil uil-trash-alt me-1"></i> Delete
                             </a> -->
@@ -114,46 +109,47 @@ $item_id = 'IM00' . $lastId + 1;
 
                                     <form id="form-data" autocomplete="off">
                                         <div class="row">
-                                        <div class="col-md-2">
-                                            <label for="Group" class="form-label">Page Category  </label>
-                                            <div class="input-group mb-3">
-                                                <select id="page_category" name="page_category" class="form-select">
+                                            <div class="col-md-2">
+                                                <label for="Group" class="form-label">Page Category </label>
+                                                <div class="input-group mb-3">
+                                                    <select id="page_category" name="page_category" class="form-select">
 
-                                                <option value="">-- Select Category --</option>
-                                                <?php
-                                                $PAGE_CATEGORY = new PageCategory(NULL);
-                                                foreach ($PAGE_CATEGORY->getActiveCategory() as $key => $page_category) {
-                                                    ?>
-                                                    <option value="<?php echo $page_category['id']; ?>"><?php echo $page_category['name']; ?></option>
-                                                <?php
-                                                }   
-                                                ?>
-                                                    
-                                                </select>
+                                                        <option value="">-- Select Category --</option>
+                                                        <?php
+                                                        $PAGE_CATEGORY = new PageCategory(NULL);
+                                                        foreach ($PAGE_CATEGORY->getActiveCategory() as $key => $page_category) {
+                                                            ?>
+                                                            <option value="<?php echo $page_category['id']; ?>">
+                                                                <?php echo $page_category['name']; ?></option>
+                                                            <?php
+                                                        }
+                                                        ?>
+
+                                                    </select>
+                                                </div>
                                             </div>
-                                        </div>
- 
-                                        <div class="col-md-3">
+
+                                            <div class="col-md-3">
                                                 <label class="form-label" for="page_name">Page Name</label>
                                                 <div class="input-group mb-3">
-                                                <input id="page_name" name="page_name" type="text"
-                                                placeholder="Enter Page Name" class="form-control">
-                                                    <button class="btn btn-info" type="button"  data-bs-toggle="modal"
-                                                    data-bs-target="#manage-pages">
+                                                    <input id="page_name" name="page_name" type="text"
+                                                        placeholder="Enter Page Name" class="form-control">
+                                                    <button class="btn btn-info" type="button" data-bs-toggle="modal"
+                                                        data-bs-target="#manage-pages">
                                                         <i class="uil uil-search me-1"></i> Find Page
                                                     </button>
                                                 </div>
                                             </div>
 
 
-                                        <div class="col-md-3">
-                                            <label for="PageUrl" class="form-label">Page Url</label>
-                                            <div class="input-group mb-3">
-                                                <input id="page_url" name="page_url" type="text"
-                                                placeholder="Enter Page Url" class="form-control">
+                                            <div class="col-md-3">
+                                                <label for="PageUrl" class="form-label">Page Url</label>
+                                                <div class="input-group mb-3">
+                                                    <input id="page_url" name="page_url" type="text"
+                                                        placeholder="Enter Page Url" class="form-control">
+                                                </div>
                                             </div>
-                                        </div>
-                                        <input type="hidden" id="page_id" name="page_id" value="0">
+                                            <input type="hidden" id="page_id" name="page_id" value="0">
                                     </form>
 
                                 </div>
@@ -172,61 +168,60 @@ $item_id = 'IM00' . $lastId + 1;
     </div>
     <!-- END layout-wrapper -->
 
-    <div class="modal fade bs-example-modal-xl" id="manage-pages" tabindex="-1" role="dialog" aria-labelledby="categoryModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
+    <div class="modal fade bs-example-modal-xl" id="manage-pages" tabindex="-1" role="dialog"
+        aria-labelledby="categoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
 
-            <div class="modal-header">
-                <h5 class="modal-title" id="categoryModalLabel">Manage Pages</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="categoryModalLabel">Manage Pages</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
 
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-12">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
 
-                        <table id="datatable" class="table table-bordered dt-responsive nowrap"
-                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Page Category</th>
-                                    <th>Page Name</th>
-                                    <th>Page Url</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                            <?php
-                                $PAGES = new Pages(NULL);
-                                foreach ($PAGES->all() as $key => $page) {
-                                    $PAGE_CATEGORY = new PageCategory($page['page_category']);
-                                    $key++;
-                                    ?>
-                                    <tr class="select-pages" data-id="<?php echo $page['id']; ?>"
-                                        data-category="<?php echo htmlspecialchars($page['page_category']); ?>"
-                                        data-name="<?php echo htmlspecialchars($page['page_name']); ?>"
-                                        data-url="<?php echo htmlspecialchars($page['page_url']); ?>"
-                                      >
-
-                                        <td><?php echo $key; ?></td>
-                                        <td><?php echo htmlspecialchars($PAGE_CATEGORY->name); ?></td>
-                                        <td><?php echo htmlspecialchars($page['page_name']); ?></td>
-                                        <td><?php echo htmlspecialchars($page['page_url']); ?></td>
-                                        
+                            <table id="datatable" class="table table-bordered dt-responsive nowrap"
+                                style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Page Category</th>
+                                        <th>Page Name</th>
+                                        <th>Page Url</th>
                                     </tr>
-                                <?php } ?>
-                            </tbody>
-                        </table>
+                                </thead>
 
-                    </div> <!-- end col -->
-                </div> <!-- end row -->
-            </div>
+                                <tbody>
+                                    <?php
+                                    $PAGES = new Pages(NULL);
+                                    foreach ($PAGES->all() as $key => $page) {
+                                        $PAGE_CATEGORY = new PageCategory($page['page_category']);
+                                        $key++;
+                                        ?>
+                                        <tr class="select-pages" data-id="<?php echo $page['id']; ?>"
+                                            data-category="<?php echo htmlspecialchars($page['page_category']); ?>"
+                                            data-name="<?php echo htmlspecialchars($page['page_name']); ?>"
+                                            data-url="<?php echo htmlspecialchars($page['page_url']); ?>">
 
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div>
+                                            <td><?php echo $key; ?></td>
+                                            <td><?php echo htmlspecialchars($PAGE_CATEGORY->name); ?></td>
+                                            <td><?php echo htmlspecialchars($page['page_name']); ?></td>
+                                            <td><?php echo htmlspecialchars($page['page_url']); ?></td>
+
+                                        </tr>
+                                    <?php } ?>
+                                </tbody>
+                            </table>
+
+                        </div> <!-- end col -->
+                    </div> <!-- end row -->
+                </div>
+
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
 
 
     <!-- Right bar overlay-->

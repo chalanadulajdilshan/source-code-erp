@@ -1,6 +1,7 @@
 <!doctype html>
 <?php
 include 'class/include.php';
+include 'auth.php';
 
 $EMPLOYEE_MASTER = new EmployeeMaster();
 

@@ -207,9 +207,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'get_purchase_order') {
 
     echo json_encode(['status' => 'success', 'data' => $data]);
 }
-// Delete invoice
-
-
+// Delete purchase order
 if (isset($_POST['action']) && $_POST['action'] == 'delete') {
 
     $PURCHASE_ORDER = new PurchaseOrder($_POST['id']);
@@ -223,4 +221,17 @@ if (isset($_POST['action']) && $_POST['action'] == 'delete') {
     }
 }
 
+// Delete purchase order items
+if (isset($_POST['action']) && $_POST['action'] == 'delete_items') {
+
+    $PURCHASE_ORDER_ITEM = new PurchaseOrderItem($_POST['item_id']);
+
+    $result = $PURCHASE_ORDER_ITEM->delete();
+
+    if ($result) {
+        echo json_encode(['status' => 'success']);
+    } else {
+        echo json_encode(['status' => 'error']);
+    }
+}
 ?>

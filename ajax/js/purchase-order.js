@@ -211,9 +211,7 @@ jQuery(document).ready(function () {
         }
     });
 
-
-
-
+    //create purchase order
     $('#create').click(function (e) {
         e.preventDefault();
 
@@ -395,6 +393,7 @@ jQuery(document).ready(function () {
         });
     });
 
+    //update purchase order
     $('#update').click(function (e) {
         e.preventDefault();
 
@@ -571,7 +570,7 @@ jQuery(document).ready(function () {
         const country = $(this).data('country');
         const ciNo = $(this).data('ci_no');
         const department = $(this).data('department');
-        const orderBy = $(this).data('order_by');
+        const status = $(this).data('status');
         const remarks = $(this).data('remarks');
         const grandTotal = $(this).data('grand_total');
 
@@ -590,7 +589,7 @@ jQuery(document).ready(function () {
         $('#country').val(country);
         $('#ci_no').val(ciNo);
         $('#department_id').val(department);
-        $('#order_by').val(orderBy);
+        $('#status').val(status);
         $('#remarks').val(remarks);
         $('#grandTotal').val(grandTotal);
         $('#finalTotal').val(grandTotal);
@@ -625,11 +624,7 @@ jQuery(document).ready(function () {
                             const price = parseFloat(item.unit_price) || 0;
                             const qty = parseFloat(item.quantity) || 0;
                             const total = parseFloat(item.total_price) || 0;
-                            const subtotal = price * qty;
-
-
-
-
+                              
                             const row = `
                                 <tr data-item-id="${item.item_id}">
                                 <td>${item.item_code} - ${item.item_name}</td>
@@ -652,9 +647,16 @@ jQuery(document).ready(function () {
                     }
 
                     // Show/hide buttons as needed
-                    $('#create').hide();
-                    $('#update').show();
-                    $('.delete-po').show();
+                    if (status == 1) {
+                        // status 1 = "active" (or whatever logic you want)
+                        $('#create').hide();
+                        $('#update').hide();
+                        $('.delete-purchase-order').hide();
+                    } else {
+                        $('#create').hide();
+                        $('#update').show();
+                        $('.delete-purchase-order').show();
+                    }
 
                     // Hide modal
                     $('#po_number_modal').modal('hide');
@@ -683,13 +685,13 @@ jQuery(document).ready(function () {
     });
 
 
-
+    //delete purchase order
     $(document).on('click', '.delete-purchase-order', function (e) {
         e.preventDefault();
 
 
         var id = $('#purchase_order_id').val();
-        if (!id ) {
+        if (!id) {
             swal({
                 title: "Error!",
                 text: "Please select a purchase order to delete.",

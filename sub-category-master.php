@@ -1,12 +1,13 @@
 <!doctype html>
 <?php
 include 'class/include.php';
+include './auth.php';
 
 $SUBCATEGORY = new Subcategory();
 
 // Get the last inserted package id
 $lastId = $SUBCATEGORY->getLastID();
-$sub_category_id = 'IM00' . $lastId + 1;
+$sub_category_id = 'SC/00/' . $lastId + 1;
 
 ?>
 <html lang="en">
@@ -14,7 +15,7 @@ $sub_category_id = 'IM00' . $lastId + 1;
 <head>
 
     <meta charset="utf-8" />
-    <title>Horizontal Layout | Minible - Admin & Dashboard Template</title>
+    <title>Sub Category | <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="#" name="description" />
     <meta content="Themesbrand" name="author" />

@@ -82,7 +82,7 @@ class StockMaster
               WHERE `item_id` = '" . (int) $item_id . "' 
               AND `department_id` = '" . (int) $department_id . "' 
               AND `is_active` = 1";
-
+ 
         return $db->readQuery($query);
     }
 
@@ -134,10 +134,13 @@ class StockMaster
                   AND `item_id` = " . (int) $item_id . " 
                   AND `is_active` = 1 LIMIT 1";
 
+
         $db = new Database();
         $result = mysqli_fetch_array($db->readQuery($query));
-        return $result ? $result['quantity'] : 0;
+           return $result ? (int)$result['quantity'] : 0;
     }
+
+    
 
     public function transferQuantity($item_id, $from_department_id, $to_department_id, $transfer_qty, $remark = '')
     {

@@ -8,7 +8,7 @@ include 'auth.php';
 <head>
 
     <meta charset="utf-8" />
-    <title>Horizontal Layout | Minible - Admin & Dashboard Template</title>
+    <title>Company Profile | <?php echo $COMPANY_PROFILE_DETAILS->name ?></title> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="#" name="description" />
     <meta content="Themesbrand" name="author" />
@@ -37,9 +37,7 @@ include 'auth.php';
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet" />
 
     <script src="https://cdn.jsdelivr.net/npm/upscaler@0.6.0"></script>
-
-
-
+ 
 
 </head>
 

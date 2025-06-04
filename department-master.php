@@ -1,19 +1,19 @@
 <!doctype html>
 <?php
 include 'class/include.php';
-
+include 'auth.php';
 
 $DEPARTMENT_MASTER = new DepartmentMaster(NULL);
 
 // Get the last inserted package id
 $lastId = $DEPARTMENT_MASTER->getLastID();
-$department_id = 'DP00' . $lastId + 1;
+$department_id = 'DP/00/' . $lastId + 1;
 ?>
 
 <html lang="en">
 
 <meta charset="utf-8" />
-<title>Horizontal Layout | Department Master </title>
+<title>Department Master| <?php echo $COMPANY_PROFILE_DETAILS->name ?></title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta content="#" name="description" />
 <meta content="Themesbrand" name="author" />

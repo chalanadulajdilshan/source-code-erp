@@ -28,18 +28,21 @@ class DefaultData
 
         return $years;
     }
-  
+
     //get branches
-    public function Days()
+    function getOrderByOptions()
     {
-        return array(
-            "30" => "30 Days",
-            "60" => "60 Days",
-            "90" => "90 Days",
-            "120" => "120 Days",
-        );
+        return [
+            "arn_number" => "ARN Number",
+            "po_number" => "PO Number",
+            "supplier_name" => "Supplier",
+            "invoice_date" => "Invoice Date",
+            "entry_date" => "Entry Date",
+            "arn_status" => "ARN Status",
+        ];
     }
 
+    
 
 
     function DagType()

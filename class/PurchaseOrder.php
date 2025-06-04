@@ -15,7 +15,7 @@ class PurchaseOrder
     public $ci_no;
     public $department;
     public $grand_total;
-    public $order_by;
+    public $status;
     public $remarks;
     public $created_by;
     public $created_at;
@@ -39,9 +39,10 @@ class PurchaseOrder
                 $this->lc_tt_no = $result['lc_tt_no'];
                 $this->brand = $result['brand'];
                 $this->bl_no = $result['bl_no'];
+                $this->ci_no = $result['ci_no'];
                 $this->country = $result['country'];
                 $this->department = $result['department'];
-                $this->order_by = $result['order_by'];
+                $this->status = $result['status'];
                 $this->remarks = $result['remarks'];
                 $this->grand_total = $result['grand_total'];
                 $this->created_at = $result['created_at'];
@@ -55,10 +56,10 @@ class PurchaseOrder
     {
         $query = "INSERT INTO `purchase_orders` (
             `po_number`, `order_date`, `supplier_id`, `pi_no`, `address`, `lc_tt_no`, 
-            `brand`, `bl_no`, `country`, `department`, `order_by`, `remarks`, `grand_total`, `created_at`, `updated_at`
+            `brand`, `bl_no`,`ci_no`, `country`, `department`, `status`, `remarks`, `grand_total`, `created_at`, `updated_at`
         ) VALUES (
             '{$this->po_number}', '{$this->order_date}', '{$this->supplier_id}', '{$this->pi_no}', '{$this->address}', '{$this->lc_tt_no}','{$this->brand}',
-            '{$this->bl_no}', '{$this->country}', '{$this->department}', '{$this->order_by}', '{$this->remarks}', '{$this->grand_total}', '{$this->created_at}', '{$this->updated_at}'
+            '{$this->bl_no}','{$this->ci_no}', '{$this->country}', '{$this->department}', '{$this->status}', '{$this->remarks}', '{$this->grand_total}', '{$this->created_at}', '{$this->updated_at}'
         )";
 
 
@@ -84,9 +85,10 @@ class PurchaseOrder
             `lc_tt_no` = '{$this->lc_tt_no}', 
             `brand` = '{$this->brand}', 
             `bl_no` = '{$this->bl_no}',
+            `ci_no` = '{$this->ci_no}',
             `country` = '{$this->country}',
             `department` = '{$this->department}',
-            `order_by` = '{$this->order_by}',
+            `status` = '{$this->status}',
             `remarks` = '{$this->remarks}', 
              `grand_total` = '{$this->grand_total}', 
             `created_by` = '{$this->created_by}', 
@@ -108,7 +110,7 @@ class PurchaseOrder
     public function delete()
     {
         PurchaseOrderItem::deleteByPurchaseOrderId($this->id);
-        
+
         $query = "DELETE FROM `purchase_orders` WHERE `id` = '{$this->id}'";
         $db = new Database();
         return $db->readQuery($query);
@@ -129,6 +131,19 @@ class PurchaseOrder
         return $array_res;
     }
 
+    public function getAllByStatus($status)
+    {
+        $query = "SELECT * FROM `purchase_orders` where `status` = $status ORDER BY `id` DESC";
+        $db = new Database();
+        $result = $db->readQuery($query);
+        $array_res = array();
+
+        while ($row = mysqli_fetch_array($result)) {
+            array_push($array_res, $row);
+        }
+
+        return $array_res;
+    }
     public function checkPurchaseIdExist($po_no)
     {
         $query = "SELECT * FROM `purchase_orders` where `po_number` = '$po_no'";

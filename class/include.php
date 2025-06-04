@@ -49,7 +49,8 @@ include_once(dirname(__FILE__) . '/DiscountType.php');
 include_once(dirname(__FILE__) . '/SupplierDiscount.php');
 include_once(dirname(__FILE__) . '/Bank.php');
 include_once(dirname(__FILE__) . '/EmployeeMaster.php'); 
-include_once(dirname(__FILE__) . '/ArnMaster.php'); 
+include_once(dirname(__FILE__) . '/ArnMaster.php');
+include_once(dirname(__FILE__) . '/ArnItem.php'); 
 include_once(dirname(__FILE__) . '/DocumentTracking.php'); 
 include_once(dirname(__FILE__) . '/PurchaseType.php'); 
 include_once(dirname(__FILE__) . '/CreditPeriod.php');
@@ -57,7 +58,10 @@ include_once(dirname(__FILE__) . '/SalesType.php');
 include_once(dirname(__FILE__) . '/PurchaseOrder.php'); 
 include_once(dirname(__FILE__) . '/PurchaseOrderItem.php');  
 include_once(dirname(__FILE__) . '/StockMaster.php'); 
+include_once(dirname(__FILE__) . '/AuditLog.php'); 
+include_once(dirname(__FILE__) . '/PurchaseReturn.php'); 
 include_once(dirname(__FILE__) . '/CreateDag.php'); 
+
 
  
 

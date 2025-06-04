@@ -61,7 +61,7 @@ class ArnMaster
             '{$this->total_discount}', '{$this->total_arn_value}', '{$this->total_received_qty}',
             '{$this->total_order_qty}', NOW()
         )";
-      
+     
 
         $db = new Database();
         $result = $db->readQuery($query);

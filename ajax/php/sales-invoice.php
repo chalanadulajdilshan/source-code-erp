@@ -114,7 +114,7 @@ if (isset($_POST['create'])) {
             $STOCK_TRANSACTION->date = date("Y-m-d");
             $STOCK_TRANSACTION->qty_in = 0;
             $STOCK_TRANSACTION->qty_out = $item['qty'];
-            $STOCK_TRANSACTION->remark = 'Sale income on ' . date("Y-m-d H:i:s");
+            $STOCK_TRANSACTION->remark = "INVOICE #$invoiceId Issued" . date("Y-m-d H:i:s"); 
             $STOCK_TRANSACTION->created_at = date("Y-m-d H:i:s");
             $STOCK_TRANSACTION->create();
         }
