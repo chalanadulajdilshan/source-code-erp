@@ -50,9 +50,7 @@ $po_id = $COMPANY_PROFILE_DETAILS->company_code . '/PO/00/0' . $lastId + 1;
 
 <body data-layout="horizontal" data-topbar="colored" class="someBlock">
 
-    </head>
-
-    <body data-layout="horizontal" data-topbar="colored" class="someBlock">
+    
 
         <!-- Begin page -->
         <div id="layout-wrapper">

@@ -11,6 +11,7 @@ class DocumentTracking
     public $credit_id;
     public $quotation_id;
     public $po_id;
+    public $pr_id;
     public $arn_id;
     public $vat_percentage;
     public $created_at;

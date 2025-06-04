@@ -1,6 +1,7 @@
 <!doctype html>
 <?php
 include 'class/include.php';
+include './auth.php';
 
 $VEHICLE_MODEL = new VehicleModel();
 
@@ -14,7 +15,7 @@ $vehiclemodel_id = 'VM00' . $lastId + 1;
 <head>
 
     <meta charset="utf-8" />
-    <title>Horizontal Layout | Minible - Admin & Dashboard Template</title>
+     <title>Vehicle Model | <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="#" name="description" />
     <meta content="Themesbrand" name="author" />

@@ -82,9 +82,8 @@ jQuery(document).ready(function () {
         $('#category').prop('selectedIndex', 0); // Optional, if using dropdowns
         $("#create").show();
     });
-
+    
     function calculatePayment() {
-
         const recQty = parseFloat($('#rec_quantity').val()) || 0;
         const comCost = parseFloat($('#cost').val()) || 0;
 
@@ -93,39 +92,33 @@ jQuery(document).ready(function () {
         const dis3 = parseFloat($('#dis_3').val()) || 0;
 
         const listPrice = parseFloat($('#list_price').val()) || 0;
-        const cashPrice = parseFloat($('#cash_price').val()) || 0;
-        const creditPrice = parseFloat($('#credit_price').val()) || 0;
 
-        // Step 1: Apply discount 1
+        // Step 1–3: Apply successive discounts
         let disAmount1 = comCost * (dis1 / 100);
-        let priceAfterDis1 = comCost - disAmount1;
+        let disAmount2 = (comCost - disAmount1) * (dis2 / 100);
+        let disAmount3 = (comCost - disAmount1 - disAmount2) * (dis3 / 100);
 
-        // Step 2: Apply discount 2 on result of discount 1
-        let disAmount2 = priceAfterDis1 * (dis2 / 100);
-        let priceAfterDis2 = priceAfterDis1 - disAmount2;
+        let finalCost = comCost - disAmount1 - disAmount2 - disAmount3;
 
-        // Step 3: Apply discount 3 on result of discount 2
-        let disAmount3 = priceAfterDis2 * (dis3 / 100);
-        let finalCost = priceAfterDis2 - disAmount3;
-
-        // Step 4: Unit total = finalCost × received qty
+        // Step 4: Total
         let unitTotal = finalCost * recQty;
 
-        // Step 5: Tax (optional logic – here 15% VAT as an example)
-        let tax = finalCost * 0.15;
+        // Step 5: Tax on total
+        let tax = unitTotal * 0.15;
 
-        // Step 6: Margin % from list price
-        let margin = listPrice > 0 ? ((listPrice - finalCost) / finalCost) * 100 : 0;
+        // Step 6: Margin
+        let margin = (finalCost > 0) ? ((listPrice - finalCost) / finalCost) * 100 : 0;
 
-        // Display values
+        // Output
         $('#actual_cost').val(finalCost.toFixed(2));
         $('#unit_total').val(unitTotal.toFixed(2));
         $('#tax').val(tax.toFixed(2));
         $('#margin').val(margin.toFixed(2));
     }
 
+
     $('#addItemBtn').on('click', function () {
-        const code = $('#itemCode').val(); // Fixed selector
+        const code = $('#itemCode').val();
         let orderQty = parseFloat($('#order_qty').val()) || 0;
         const recQty = parseFloat($('#rec_quantity').val()) || 0;
         const cost = parseFloat($('#cost').val()) || 0;
@@ -139,7 +132,8 @@ jQuery(document).ready(function () {
         const creditPrice = parseFloat($('#credit_price').val()) || 0;
         const tax = parseFloat($('#tax').val()) || 0;
 
-        // Validation
+
+        // Validations
         if (!code) {
             return swal({ title: "Error!", text: "Please select an Item Code", type: "error", timer: 2000, showConfirmButton: false });
         }
@@ -158,21 +152,23 @@ jQuery(document).ready(function () {
         if (!creditPrice || creditPrice <= 0) {
             return swal({ title: "Error!", text: "Please enter Credit Price", type: "error", timer: 2000, showConfirmButton: false });
         }
+
         if (!orderQty || orderQty === 0) {
             orderQty = recQty;
-            $('#order_qty').val(recQty);
         }
 
-        $('#noDataRow').remove(); // Remove "No Data" row if present
+        $('#noDataRow').remove();
 
-        // Add item to table
-        const newRow = `
-        <tr>
+        // Add to table
+        const newRow = ` 
+        <tr data-itemid="${itemId}">
             <td>${code}</td>
             <td>${orderQty}</td>
             <td>${recQty}</td>
             <td>${cost.toFixed(2)}</td>
-            <td>${dis1} / ${dis2} / ${dis3}</td>
+            <td>${dis1}</td>
+            <td>${dis2}</td>
+            <td>${dis3}</td>
             <td>${actualCost.toFixed(2)}</td>
             <td>${unitTotal.toFixed(2)}</td>
             <td>${listPrice.toFixed(2)}</td>
@@ -183,7 +179,7 @@ jQuery(document).ready(function () {
     `;
         $('#itemTableBody').append(newRow);
 
-        // Totals
+        // Update Totals
         const currentARN = parseFloat($('#total_arn').val()) || 0;
         $('#total_arn').val((currentARN + unitTotal).toFixed(2));
 
@@ -193,7 +189,17 @@ jQuery(document).ready(function () {
         const currentDiscount = parseFloat($('#total_discount').val()) || 0;
         const discountValue = (cost - actualCost) * recQty;
         $('#total_discount').val((currentDiscount + discountValue).toFixed(2));
+
+        // Clear inputs if needed
+        $('#rec_quantity').val('');
+        $('#cost').val('');
+        $('#dis_1, #dis_2, #dis_3').val('');
+        $('#actual_cost').val('');
+        $('#unit_total').val('');
+        $('#list_price, #cash_price, #credit_price').val('');
     });
+
+
 
     $(document).on('click', '.select-purchase-order', function () {
         const id = $(this).data('id');
@@ -243,7 +249,7 @@ jQuery(document).ready(function () {
         $.ajax({
             url: 'ajax/php/purchase-order.php',
             method: 'POST',
-            data: { action: 'get_purchase_order', id: id ,status:status},
+            data: { action: 'get_purchase_order', id: id, status: status },
             dataType: 'json',
             beforeSend: function () {
                 $('body').preloader({ text: 'Loading purchase order...' });

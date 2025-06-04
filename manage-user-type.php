@@ -1,6 +1,8 @@
 <!doctype html>
 <?php
-include 'class/include.php'; 
+include 'class/include.php';
+include './auth.php';
+
 ?>
 <html lang="en">
 
@@ -8,7 +10,7 @@ include 'class/include.php';
 <head>
 
     <meta charset="utf-8" />
-    <title>Horizontal Layout | Minible - Admin & Dashboard Template</title>
+    <title> Manage Users | <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="#" name="description" />
     <meta content="Themesbrand" name="author" />
@@ -115,14 +117,14 @@ include 'class/include.php';
                                                 <label class="form-label" for="itemCode">User Type Name</label>
                                                 <div class="input-group mb-3">
                                                     <input id="name" name="name" type="text" class="form-control"
-                                                        placeholder="Enter user type name"  >
+                                                        placeholder="Enter user type name">
                                                     <button class="btn btn-info" type="button" data-bs-toggle="modal"
                                                         data-bs-target=".bs-example-modal-xl">
                                                         <i class="uil uil-search me-1"></i> Find User Type
                                                     </button>
                                                 </div>
                                             </div>
- 
+
 
                                             <!-- Active Status -->
                                             <div class="col-md-1 d-flex justify-content-center align-items-center">
@@ -160,9 +162,9 @@ include 'class/include.php';
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="myExtraLargeModalLabel">Manage User Types <h5>   
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                    </button>
+                    <h5 class="modal-title" id="myExtraLargeModalLabel">Manage User Types <h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                            </button>
                 </div>
                 <div class="modal-body">
                     <div class="row">
@@ -174,7 +176,7 @@ include 'class/include.php';
                                 style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                 <thead>
                                     <tr>
-                                        <th>#Id</th> 
+                                        <th>#Id</th>
                                         <th>User Type</th>
                                         <th>Status</th>
 
@@ -187,14 +189,14 @@ include 'class/include.php';
                                     $USER_TYPE = new UserType(null);
                                     foreach ($USER_TYPE->all() as $key => $user_type) {
                                         $key++;
-                                       
+
                                         ?>
-                                        <tr class="select-user-type" data-id="<?php echo $user_type['id']; ?>"  
-                                            data-name="<?php echo htmlspecialchars($user_type['name']); ?>" 
+                                        <tr class="select-user-type" data-id="<?php echo $user_type['id']; ?>"
+                                            data-name="<?php echo htmlspecialchars($user_type['name']); ?>"
                                             data-active="<?php echo $user_type['is_active']; ?>">
 
-                                            <td><?php echo $key; ?></td>  
-                                            <td><?php echo htmlspecialchars($user_type['name']); ?></td> 
+                                            <td><?php echo $key; ?></td>
+                                            <td><?php echo htmlspecialchars($user_type['name']); ?></td>
                                             <td>
                                                 <?php if ($user_type['is_active'] == 1): ?>
                                                     <span class="badge bg-soft-success font-size-12">Active</span>

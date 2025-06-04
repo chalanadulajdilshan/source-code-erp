@@ -1,6 +1,8 @@
 <!doctype html>
 <?php
 include 'class/include.php';
+include './auth.php';
+
 ?>
 <html lang="en">
 
@@ -8,7 +10,7 @@ include 'class/include.php';
 <head>
 
     <meta charset="utf-8" />
-    <title>Horizontal Layout | Minible - Admin & Dashboard Template</title>
+    <title>Manage User Permission | <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="#" name="description" />
     <meta content="Themesbrand" name="author" />
@@ -53,7 +55,7 @@ include 'class/include.php';
                 <div class="container-fluid">
                     <div class="row mb-4">
                         <div class="col-md-8 d-flex align-items-center flex-wrap gap-2">
-                            
+
                         </div>
 
                         <div class="col-md-4 text-md-end text-start mt-3 mt-md-0">
@@ -98,7 +100,8 @@ include 'class/include.php';
 
 
                                     <div class="p-4">
-                                        <form id="permissionsForm" method="post" action="save_permissions.php" autocomplete="off">
+                                        <form id="permissionsForm" method="post" action="save_permissions.php"
+                                            autocomplete="off">
                                             <div class="row">
                                                 <div class="col-md-3">
                                                     <label for="userType" class="form-label">Select User Type</label>
@@ -116,7 +119,8 @@ include 'class/include.php';
                                                 </div>
                                             </div>
 
-                                            <div class="mt-3 " id="permissionsTable" style="display: none; margin-top:10px">
+                                            <div class="mt-3 " id="permissionsTable"
+                                                style="display: none; margin-top:10px">
                                                 <table class="table thead-light">
                                                     <thead>
                                                         <tr>

@@ -2,19 +2,19 @@
 
 <?php
 include 'class/include.php';
-
+include 'auth.php';
 
 $CUSTOMER_MASTER = new CustomerMaster(NULL);
 
 // Get the last inserted package id
 $lastId = $CUSTOMER_MASTER->getLastID();
-$customer_id = 'CM00' . $lastId + 1;
+$customer_id = 'CM/00/' . $lastId + 1;
 ?>
 
 <head>
 
     <meta charset="utf-8" />
-    <title>Horizontal Layout | Minible - Admin & Dashboard Template</title>
+    <title>Customer Master | <?php echo $COMPANY_PROFILE_DETAILS->name ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="#" name="description" />
     <meta content="Themesbrand" name="author" />

@@ -1,12 +1,12 @@
 <!doctype html>
 <?php
 include 'class/include.php';
-
+include 'auth.php';
 $DESIGN_MASTER = new DesignMaster();
 
 // Get the last inserted package id
 $lastId = $DESIGN_MASTER->getLastID();
-$design_id = 'DM00' . $lastId + 1;
+$design_id = 'DM/00/' . $lastId + 1;
 
 ?>
 <html lang="en">
@@ -14,7 +14,7 @@ $design_id = 'DM00' . $lastId + 1;
 <head>
 
     <meta charset="utf-8" />
-    <title>Horizontal Layout | Minible - Admin & Dashboard Template</title>
+    <title>Design Master | <?php echo $COMPANY_PROFILE_DETAILS->name ?></title> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="#" name="description" />
     <meta content="Themesbrand" name="author" />

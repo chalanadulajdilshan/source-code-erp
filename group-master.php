@@ -1,20 +1,20 @@
 <!doctype html>
 <?php
 include 'class/include.php';
-
+include 'auth.php';
 
 $GROUP_MASTER = new GroupMaster(NULL);
 
 // Get the last inserted package id
 $lastId = $GROUP_MASTER->getLastID();
-$group_id = 'GR00' . $lastId + 1;
+$group_id = 'GR/00/' . $lastId + 1;
 ?>
 <html lang="en">
 
 <head>
 
     <meta charset="utf-8" />
-    <title>Horizontal Layout | Minible - Admin & Dashboard Template</title>
+    <title>Group Master   | <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="#" name="description" />
     <meta content="Themesbrand" name="author" />
@@ -101,7 +101,7 @@ $group_id = 'GR00' . $lastId + 1;
                                         <div class="flex-grow-1 overflow-hidden">
                                             <h5 class="font-size-16 mb-1">Group Master</h5>
                                             <p class="text-muted text-truncate mb-0">Fill all information below to add
-                                            Group</p>
+                                                Group</p>
                                         </div>
                                         <div class="flex-shrink-0">
                                             <i class="mdi mdi-chevron-up accor-down-icon font-size-24"></i>
@@ -117,7 +117,7 @@ $group_id = 'GR00' . $lastId + 1;
                                                 <label class="form-label" for="itemCode">Group Code</label>
                                                 <div class="input-group mb-3">
                                                     <input id="code" name="code" type="text" class="form-control"
-                                                          readonly value="<?php echo $group_id ?>">
+                                                        readonly value="<?php echo $group_id ?>">
                                                     <button class="btn btn-info" type="button" data-bs-toggle="modal"
                                                         data-bs-target=".bs-example-modal-xl">
                                                         <i class="uil uil-search me-1"></i> Find Group
@@ -167,9 +167,66 @@ $group_id = 'GR00' . $lastId + 1;
     <!-- END layout-wrapper -->
 
 
-    <?php include 'group-master-model.php' ?>
 
+    <div class="modal fade bs-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="groupModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
 
+                <div class="modal-header">
+                    <h5 class="modal-title" id="groupModalLabel">Manage Groups</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+
+                            <table id="datatable" class="table table-bordered dt-responsive nowrap"
+                                style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>#Id</th>
+                                        <th>Code</th>
+                                        <th>Name</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <?php
+                                    $GROUP = new GroupMaster(NULL);
+                                    foreach ($GROUP->all() as $key => $group) {
+                                        $key++;
+                                        ?>
+                                        <tr class="select-group" data-id="<?php echo $group['id']; ?>"
+                                            data-code="<?php echo htmlspecialchars($group['code']); ?>"
+                                            data-name="<?php echo htmlspecialchars($group['name']); ?>"
+                                            data-queue="<?php echo htmlspecialchars($group['queue']); ?>"
+                                            data-active="<?php echo $group['is_active']; ?>">
+
+                                            <td><?php echo $key; ?></td>
+                                            <td><?php echo htmlspecialchars($group['code']); ?></td>
+                                            <td><?php echo htmlspecialchars($group['name']); ?></td>
+                                            <td>
+                                                <?php if ($group['is_active'] == 1): ?>
+                                                    <span class="badge bg-soft-success font-size-12">Active</span>
+                                                <?php else: ?>
+                                                    <span class="badge bg-soft-danger font-size-12">Inactive</span>
+                                                <?php endif; ?>
+                                            </td>
+                                        </tr>
+                                    <?php } ?>
+                                </tbody>
+                            </table>
+
+                        </div> <!-- end col -->
+                    </div> <!-- end row -->
+                </div>
+
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
     <!-- Right bar overlay-->
     <div class="rightbar-overlay"></div>
 

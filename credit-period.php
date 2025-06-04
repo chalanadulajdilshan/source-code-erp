@@ -1,12 +1,12 @@
 <!doctype html>
 <?php
 include 'class/include.php';
-
+include 'auth.php';
 $CREDIT_PERIOD = new CreditPeriod();
 
 // Get the last inserted package id
 $lastId = $CREDIT_PERIOD->getLastID();
-$credit_id = 'CP00' . $lastId + 1;
+$credit_id = 'CP/00/' . $lastId + 1;
 
 ?>
 <html lang="en">
@@ -14,7 +14,7 @@ $credit_id = 'CP00' . $lastId + 1;
 <head>
 
     <meta charset="utf-8" />
-    <title>Horizontal Layout | Minible - Admin & Dashboard Template</title>
+    <title>Company Profile | <?php echo $COMPANY_PROFILE_DETAILS->name ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="#" name="description" />
     <meta content="Themesbrand" name="author" />
@@ -113,26 +113,26 @@ $credit_id = 'CP00' . $lastId + 1;
 
                                     <form id="form-data" autocomplete="off">
                                         <div class="row">
- 
-                                         
+
+
                                             <div class="col-md-3">
-                                                    <label class="form-label" for="code">Ref No </label>
-                                                    <div class="input-group mb-3">
-                                                        <input id="code" name="code" type="text" value="<?php echo $credit_id; ?>"
-                                                            placeholder="Ref No" class="form-control" readonly>
-                                                        <button class="btn btn-info" type="button"
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target="#creditModel">
-                                                            <i class="uil uil-search me-1"></i> Find
-                                                        </button>
-                                                    </div>
+                                                <label class="form-label" for="code">Ref No </label>
+                                                <div class="input-group mb-3">
+                                                    <input id="code" name="code" type="text"
+                                                        value="<?php echo $credit_id; ?>" placeholder="Ref No"
+                                                        class="form-control" readonly>
+                                                    <button class="btn btn-info" type="button" data-bs-toggle="modal"
+                                                        data-bs-target="#creditModel">
+                                                        <i class="uil uil-search me-1"></i> Find
+                                                    </button>
                                                 </div>
+                                            </div>
 
                                             <div class="col-md-3">
                                                 <label for="days" class="form-label">Days</label>
                                                 <div class="input-group mb-3">
                                                     <input id="days" name="days" type="number"
-                                                    placeholder="Enter Time Period (Days)" class="form-control">
+                                                        placeholder="Enter Time Period (Days)" class="form-control">
                                                 </div>
                                             </div>
 
@@ -145,10 +145,10 @@ $credit_id = 'CP00' . $lastId + 1;
                                                     </label>
                                                 </div>
                                             </div>
-                                            
+
                                         </div>
                                         <input type="hidden" id="id" name="id" value="0">
-                                        
+
                                     </form>
 
                                 </div>
@@ -156,54 +156,53 @@ $credit_id = 'CP00' . $lastId + 1;
                         </div>
                     </div>
                 </div> <!-- container-fluid -->
-            </div>  
+            </div>
             <?php include 'footer.php' ?>
 
-        </div> 
+        </div>
     </div>
-    
-  
-<!-- model open here -->
-<div class="modal fade bs-example-modal-xl" id="creditModel" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="myExtraLargeModalLabel">Manage Credit Period</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-12">
-  
-
-                        <table id="datatable" class="table table-bordered dt-responsive nowrap"
-                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Ref No</th>
-                                    <th>Days</th>
-                                    <th>Is Active</th>
-
-                                </tr>
-                            </thead>
 
 
-                            <tbody>
-                                <?php
-                                $CREDIT = new CreditPeriod(null);
-                                foreach ($CREDIT->all() as $key => $credit) {
-                                    $key++;
-                                    ?>
-                                    <tr class="select-credit" data-id="<?php echo $credit['id']; ?>"
+    <!-- model open here -->
+    <div class="modal fade bs-example-modal-xl" id="creditModel" tabindex="-1" role="dialog"
+        aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myExtraLargeModalLabel">Manage Credit Period</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+
+
+                            <table id="datatable" class="table table-bordered dt-responsive nowrap"
+                                style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Ref No</th>
+                                        <th>Days</th>
+                                        <th>Is Active</th>
+
+                                    </tr>
+                                </thead>
+
+
+                                <tbody>
+                                    <?php
+                                    $CREDIT = new CreditPeriod(null);
+                                    foreach ($CREDIT->all() as $key => $credit) {
+                                        $key++;
+                                        ?>
+                                        <tr class="select-credit" data-id="<?php echo $credit['id']; ?>"
                                             data-code="<?php echo htmlspecialchars($credit['code']); ?>"
                                             data-days="<?php echo htmlspecialchars($credit['days']); ?>"
-                                            data-is_active="<?php echo htmlspecialchars($credit['is_active']); ?>"
-                                    >
+                                            data-is_active="<?php echo htmlspecialchars($credit['is_active']); ?>">
 
-                                    <td><?php echo $key; ?></td>
+                                            <td><?php echo $key; ?></td>
                                             <td><?php echo htmlspecialchars($credit['code']); ?></td>
                                             <td><?php echo htmlspecialchars($credit['days']); ?></td>
                                             <td>
@@ -213,18 +212,18 @@ $credit_id = 'CP00' . $lastId + 1;
                                                     <span class="badge bg-soft-danger font-size-12">Inactive</span>
                                                 <?php endif; ?>
                                             </td>
-                                    </tr>
+                                        </tr>
 
-                                <?php } ?>
-                            </tbody>
-                        </table>
-                    </div> <!-- end col -->
-                </div> <!-- end row -->
-            </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div>
-<!-- model close here -->
+                                    <?php } ?>
+                                </tbody>
+                            </table>
+                        </div> <!-- end col -->
+                    </div> <!-- end row -->
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+    <!-- model close here -->
 
     <!-- Right bar overlay-->
     <div class="rightbar-overlay"></div>

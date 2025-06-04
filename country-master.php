@@ -1,12 +1,12 @@
 <!doctype html>
 <?php
 include 'class/include.php';
-
+include 'auth.php';
 $COUNTRY = new Country();
 
 // Get the last inserted package id
 $lastId = $COUNTRY->getLastID();
-$country_id = 'IM00' . $lastId + 1;
+$country_id = 'COU/00/' . $lastId + 1;
 
 ?>
 <html lang="en">
@@ -14,7 +14,7 @@ $country_id = 'IM00' . $lastId + 1;
 <head>
 
     <meta charset="utf-8" />
-    <title>Horizontal Layout | Minible - Admin & Dashboard Template</title>
+    <title>Country Management | <?php echo $COMPANY_PROFILE_DETAILS->name ?></title> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="#" name="description" />
     <meta content="Themesbrand" name="author" />

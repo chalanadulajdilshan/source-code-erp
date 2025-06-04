@@ -1,13 +1,14 @@
 <!doctype html>
 <?php
 include 'class/include.php';
+include 'auth.php';
 ?>
 
 <html lang="en">
 
 <head>
     <meta charset="utf-8" />
-    <title>Horizontal Layout | Minible - Admin & Dashboard Template</title>
+    <title>Live Stocks | <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="#" name="description" />
     <meta content="Themesbrand" name="author" />
@@ -23,11 +24,13 @@ include 'class/include.php';
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
     <link href="assets/libs/sweetalert/sweetalert.css" rel="stylesheet" type="text/css" />
     <link href="assets/css/preloader.css" rel="stylesheet" type="text/css" />
-    
+
     <!-- DataTables -->
     <link href="assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
-    <link href="assets/libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css" rel="stylesheet" type="text/css" />
-    <link href="assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css" rel="stylesheet"
+        type="text/css" />
+    <link href="assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet"
+        type="text/css" />
 </head>
 
 <body data-layout="horizontal" data-topbar="colored">
@@ -51,10 +54,11 @@ include 'class/include.php';
                                 <div class="p-4">
                                     <form id="form-data">
                                         <div class="row">
-                                            
+
                                             <!-- DataTable -->
                                             <div class="table-responsive mt-4">
-                                                <table class="table table-bordered dt-responsive nowrap" id="stockTable" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                                <table class="table table-bordered dt-responsive nowrap" id="stockTable"
+                                                    style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                                     <thead class="table-light">
                                                         <tr>
                                                             <th>Item Code</th>
@@ -82,8 +86,10 @@ include 'class/include.php';
                                                             <td>$12.00</td>
                                                             <td>25</td>
                                                             <td>
-                                                                <div class="form-check form-switch d-flex justify-content-center">
-                                                                    <input class="form-check-input" type="checkbox" checked>
+                                                                <div
+                                                                    class="form-check form-switch d-flex justify-content-center">
+                                                                    <input class="form-check-input" type="checkbox"
+                                                                        checked>
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -98,7 +104,8 @@ include 'class/include.php';
                                                             <td>$25.00</td>
                                                             <td>50</td>
                                                             <td>
-                                                                <div class="form-check form-switch d-flex justify-content-center">
+                                                                <div
+                                                                    class="form-check form-switch d-flex justify-content-center">
                                                                     <input class="form-check-input" type="checkbox">
                                                                 </div>
                                                             </td>
@@ -117,8 +124,8 @@ include 'class/include.php';
                 </div>
                 <!-- container-fluid -->
             </div>
-        </div> 
-        <!-- end main content-->                    
+        </div>
+        <!-- end main content-->
     </div>
     <!-- END layout-wrapper -->
 
@@ -129,7 +136,7 @@ include 'class/include.php';
     <!-- Required datatable js -->
     <script src="assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
     <script src="assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
-    
+
     <!-- Buttons examples -->
     <script src="assets/libs/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
     <script src="assets/libs/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js"></script>
@@ -146,11 +153,11 @@ include 'class/include.php';
 
     <!-- Datatable init js -->
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             // Initialize DataTable
             $('#stockTable').DataTable({
                 lengthChange: true,
-                
+
                 responsive: true,
                 language: {
                     paginate: {
@@ -170,4 +177,5 @@ include 'class/include.php';
     </script>
 
 </body>
+
 </html>
