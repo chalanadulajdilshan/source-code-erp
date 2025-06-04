@@ -179,7 +179,19 @@ class BeltMaster
         return null;
     }
     
-    
+    public function getActiveBelt()
+    {
+        $query = "SELECT * FROM `belt_master` WHERE `is_active` = 1 ORDER BY `id` ASC";
+        $db = new Database();
+        $result = $db->readQuery($query);
+        $array = [];
+
+        while ($row = mysqli_fetch_array($result)) {
+            array_push($array, $row);
+        }
+
+        return $array;
+    }
 
 }
 
