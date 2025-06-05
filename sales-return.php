@@ -1,12 +1,14 @@
 <!doctype html>
 <?php
 include 'class/include.php';
+include './auth.php';
 
-$SALES_INVOICE = new SalesInvoice(NULL);
+//doc id get by session 
+$DOCUMENT_TRACKING = new DocumentTracking($doc_id);
 
-// Get the last inserted package id
-$lastId = $SALES_INVOICE->getLastID();
-$invoice_id = 'IN00' . $lastId + 1;
+// Get the last purchase return if 
+$lastId = $DOCUMENT_TRACKING->sales_return_id;
+$sales_return_id = $COMPANY_PROFILE_DETAILS->company_code . '/SR/00/0' . $lastId + 1;
 ?>
 
 <html lang="en">
@@ -14,7 +16,7 @@ $invoice_id = 'IN00' . $lastId + 1;
 <head>
 
     <meta charset="utf-8" />
-    <title>Horizontal Layout | Minible - Admin & Dashboard Template</title>
+    <title>Sales Return | Minible - Admin & Dashboard Template</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="#" name="description" />
     <meta content="Themesbrand" name="author" />
@@ -39,7 +41,7 @@ $invoice_id = 'IN00' . $lastId + 1;
     <link href="assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet"
         type="text/css" />
 
-     
+
 
 
 </head>
@@ -124,14 +126,15 @@ $invoice_id = 'IN00' . $lastId + 1;
                                             <div class="row">
 
                                                 <div class="col-md-2">
-                                                    <label for="GRN_No" class="form-label">GRN No</label>
+                                                    <label for="GRN_No" class="form-label">Ref No</label>
                                                     <div class="input-group mb-3">
                                                         <input id="grn_no" name="grn_no" type="text"
-                                                            placeholder="GRN No" class="form-control">
+                                                            placeholder="GRN No" class="form-control"
+                                                            value="<?php echo $sales_return_id ?>" readonly>
 
                                                         <button class="btn btn-info" type="button"
                                                             data-bs-toggle="modal" data-bs-target="#grn_no">
-                                                            View
+                                                            <i class="uil uil-search me-1"></i>
                                                         </button>
 
                                                     </div>
@@ -139,23 +142,39 @@ $invoice_id = 'IN00' . $lastId + 1;
 
                                                 <div class="col-md-2">
                                                     <label class="form-label" for="date">Date</label>
-                                                    <input id="date" name="date" type="date"
-                                                        class="form-control">
+                                                    <input id="date" name="date" type="text" class="form-control"
+                                                        placeholder="Select Sales Return Date">
                                                 </div>
 
 
-                                                <div class="col-md-2">
+                                                <div class="col-md-3">
                                                     <label for="Department" class="form-label">Department</label>
                                                     <div class="input-group mb-3">
-                                                        <select id="department_id" name="department_id" class="form-select">
-
-                                                            
-
+                                                        <select id="department_id" name="department_id"
+                                                            class="form-select">
+                                                            <?php
+                                                            $DEPARTMENT_MASTER = new DepartmentMaster(NUll);
+                                                            foreach ($DEPARTMENT_MASTER->getActiveDepartment() as $departments) {
+                                                                if ($US->type != 1) {
+                                                                    if ($departments['id'] = $US->department_id) {
+                                                                        ?>
+                                                                        <option value="<?php echo $departments['id'] ?>">
+                                                                            <?php echo $departments['name'] ?>
+                                                                        </option>
+                                                                    <?php }
+                                                                } else {
+                                                                    ?>
+                                                                    <option value="<?php echo $departments['id'] ?>">
+                                                                        <?php echo $departments['name'] ?>
+                                                                    </option>
+                                                                    <?php
+                                                                }
+                                                            } ?>
                                                         </select>
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-2">
+                                                <div class="col-md-3">
                                                     <label for="StoRef" class="form-label">Sto. Ref.</label>
                                                     <div class="input-group mb-3">
                                                         <input id="sto_ref" name="sto_ref" type="text"
@@ -166,10 +185,16 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                 <div class="col-md-2">
                                                     <label for="payment_type" class="form-label">Payment Type</label>
                                                     <div class="input-group mb-3">
-                                                        <select id="payment_type" name="payment_type" class="form-select">
-                                                            
-                                                        
-
+                                                        <select id="payment_type" name="payment_type"
+                                                            class="form-select">
+                                                            <?php
+                                                            $PAYMENT_TYPE = new PaymentType(NULL);
+                                                            foreach ($PAYMENT_TYPE->getActivePaymentType() as $payment_type) {
+                                                                ?>
+                                                                <option value="<?php echo $payment_type['id'] ?>">
+                                                                    <?php echo $payment_type['name'] ?>
+                                                                </option>
+                                                            <?php } ?>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -178,25 +203,48 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                     <label for="VatType" class="form-label">Vat Type</label>
                                                     <div class="input-group mb-3">
                                                         <select id="vat_type" name="vat_type" class="form-select">
-                                                            <option value="1">VAT Invoice</option>
-                                                            <option value="2">Non VAT Invoice</option>
-                                                            <option value="3">SVAT Invoice</option>
-                                                            <option value="4">EVAT Invoice</option>
+
+                                                            <?php
+                                                            $VAT_TYPE = new VatType(NULL);
+                                                            foreach ($VAT_TYPE->all() as $vat_type) {
+                                                                ?>
+                                                                <option value="<?php echo $vat_type['id'] ?>">
+                                                                    <?php echo $vat_type['name'] ?>
+                                                                </option>
+                                                            <?php } ?>
                                                         </select>
                                                     </div>
                                                 </div>
 
+
                                                 <div class="col-md-2">
-                                                    <label for="Customer" class="form-label">Customer</label>
+                                                    <label for="customerCode" class="form-label">Customer Code</label>
                                                     <div class="input-group mb-3">
-                                                        <input id="customer_id" name="customer_id" type="text"
-                                                            placeholder="Customer" class="form-control">
-
+                                                        <input id="customer_code" name="customer_code" type="text"
+                                                            placeholder="Customer code" class="form-control" readonly>
                                                         <button class="btn btn-info" type="button"
-                                                            data-bs-toggle="modal" data-bs-target="#customer">
-                                                            <i class="uil uil-search me-1"></i> Search
+                                                            data-bs-toggle="modal" data-bs-target="#customerModal">
+                                                            <i class="uil uil-search me-1"></i>
                                                         </button>
+                                                    </div>
+                                                </div>
 
+                                                <div class="col-md-4">
+                                                    <label for="customerName" class="form-label">Customer Name</label>
+                                                    <div class="input-group mb-3">
+                                                        <input id="customer_name" name="customer_name" type="text"
+                                                            class="form-control" placeholder="Enter Customer Name"
+                                                            readonly>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <label for="customerAddress" class="form-label">Customer
+                                                        Address</label>
+                                                    <div class="input-group mb-3">
+                                                        <input id="customer_address" name="customer_address" type="text"
+                                                            class="form-control" placeholder="Enter customer address"
+                                                            readonly>
                                                     </div>
                                                 </div>
 
@@ -204,28 +252,20 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                     <label for="InvoiceNo" class="form-label">Invoice No</label>
                                                     <div class="input-group mb-3">
                                                         <input id="invoice_no" name="invoice_no" type="text"
-                                                            placeholder="Invoice No" class="form-control">
+                                                            placeholder="Invoice No" class="form-control" readonly>
 
                                                         <button class="btn btn-info" type="button"
                                                             data-bs-toggle="modal" data-bs-target="#invoiceNo">
-                                                            <i class="uil uil-search me-1"></i> Search
+                                                            <i class="uil uil-search me-1"></i>
                                                         </button>
 
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-3">
-                                                    <label for="Address" class="form-label">Address</label>
-                                                    <div class="input-group mb-3">
-                                                        <input id="address" name="address" type="text"
-                                                            class="form-control" placeholder="Address">
-                                                    </div>
-                                                </div>
-
                                                 <div class="col-md-2">
                                                     <label class="form-label" for="date">Invoice Date</label>
-                                                    <input id="date" name="date" type="date"
-                                                        class="form-control">
+                                                    <input id="date" name="date" type="text" class="form-control"
+                                                        placeholder="Invoice Date" readonly>
                                                 </div>
 
                                                 <div class="col-md-3">
@@ -233,18 +273,20 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                     <div class="input-group mb-3">
                                                         <select id="brand_id" name="brand_id" class="form-select">
 
-                                                            
+
 
                                                         </select>
                                                     </div>
                                                 </div>
 
                                                 <div class="col-md-3">
-                                                    <label for="MarketingExecutive" class="form-label">Marketing Executive</label>
+                                                    <label for="MarketingExecutive" class="form-label">Marketing
+                                                        Executive</label>
                                                     <div class="input-group mb-3">
-                                                        <select id="marketing_executive" name="marketing_executive" class="form-select">
+                                                        <select id="marketing_executive" name="marketing_executive"
+                                                            class="form-select">
 
-                                                            
+
 
                                                         </select>
                                                     </div>
@@ -255,30 +297,11 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                     <div class="input-group mb-3">
                                                         <select id="cost_center" name="cost_center" class="form-select">
 
-                                                            
+
 
                                                         </select>
                                                     </div>
                                                 </div>
-
-                                                <div class="col-md-2">
-                                                    <label for="Serial_No" class="form-label">Serial No (MC)</label>
-                                                    <div class="input-group mb-3">
-                                                        <input id="serial_no" name="serial_no" type="text"
-                                                            class="form-control" placeholder="Serial No (MC)">
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-1 d-flex justify-content-center align-items-center">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="is_active"
-                                                        name="is_active">
-                                                    <label class="form-check-label" for="is_active">
-                                                        Invoice No
-                                                    </label>
-                                                </div>
-                                            </div>
-
 
                                                 <hr class="my-4">
 
@@ -286,7 +309,7 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                 <h5 class="mb-3">Item Details</h5>
 
                                                 <!-- Table -->
-                                                <div class="table-responsive mt-4">
+                                                <div class="table-responsive  ">
                                                     <table class="table table-bordered" id="invoiceTable">
                                                         <thead class="table-light">
                                                             <tr>
@@ -309,48 +332,71 @@ $invoice_id = 'IN00' . $lastId + 1;
                                                     </table>
 
                                                 </div>
+                                              
+                                                <div class="row">
+                                                    <div class="col-md-8">
 
-                                                <div class="col-6 mt-3">
-                                                    <label for="remark" class="form-label"></label>
-                                                    <textarea id="remark" name="remark" class="form-control" rows="4"
-                                                        placeholder="Enter any remarks or notes..."></textarea>
-                                                </div>
-
-                                                <div class="container" style="max-width: 400px;">
-                                                    
-                                                    <div class="col-md-6">
-                                                        <label for="SubTotal" class="form-label">Sub Total</label>
-                                                        <div class="input-group mb-3">
-                                                            <input id="sub_total" name="sub_total" type="text"
-                                                            placeholder="Sub Total" class="form-control" readonly>
-                                                        </div>
+                                                        <label for="remark" class="form-label"></label>
+                                                        <textarea id="remark" name="remark" class="form-control"
+                                                            rows="4"
+                                                            placeholder="Enter any remarks or notes..."></textarea>
                                                     </div>
 
-                                                    <div class="col-md-6">
-                                                        <label for="Discount" class="form-label">Discount</label>
-                                                        <div class="input-group mb-3">
-                                                            <input id="discount" name="discount" type="text"
-                                                            placeholder="Discount" class="form-control" readonly>
+
+                                                    <div class="col-md-4">
+                                                        <div class="  p-2 border rounded bg-light"
+                                                            style="max-width: 600px;">
+                                                            <div class="row mb-2">
+                                                                <div class="col-7">
+                                                                    <input type="text"
+                                                                        class="form-control text_purchase3"
+                                                                        value="Sub Total" disabled>
+                                                                </div>
+                                                                <div class="col-5">
+                                                                    <input type="text" class="form-control"
+                                                                        id="subTotal" value="0.00" disabled>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="row mb-2">
+                                                                <div class="col-7">
+                                                                    <input type="text"
+                                                                        class="form-control text_purchase3"
+                                                                        value="Discount Total:" disabled>
+                                                                </div>
+                                                                <div class="col-5">
+                                                                    <input type="text" class="form-control"
+                                                                        id="disTotal" value="0.00" disabled>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="row mb-2">
+                                                                <div class="col-7">
+                                                                    <input type="text"
+                                                                        class="form-control text_purchase3"
+                                                                        value="Tax Total:" disabled>
+                                                                </div>
+                                                                <div class="col-5">
+                                                                    <input type="text" class="form-control" id="tax"
+                                                                        value="0.00" disabled>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row mb-2">
+                                                                <div class="col-7">
+                                                                    <input type="text"
+                                                                        class="form-control text_purchase3 fw-bold"
+                                                                        value="Grand Total:" disabled>
+                                                                </div>
+                                                                <div class="col-5">
+                                                                    <input type="text" class="form-control  fw-bold"
+                                                                        id="finalTotal" value="0.00" disabled>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
+                                                </div> 
 
-                                                    <div class="col-md-6">
-                                                        <label for="Tax" class="form-label">Tax</label>
-                                                        <div class="input-group mb-3">
-                                                            <input id="tax" name="tax" type="text"
-                                                            placeholder="Tax" class="form-control" readonly>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="col-md-6">
-                                                        <label for="InvoiceTotal" class="form-label">Invoice Total</label>
-                                                        <div class="input-group mb-3">
-                                                            <input id="invoice_total" name="invoice_total" type="text"
-                                                            placeholder="Invoice Total" class="form-control" readonly>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
+                                                
                                             </div>
 
 

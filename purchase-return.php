@@ -6,7 +6,7 @@ include './auth.php';
 //doc id get by session 
 $DOCUMENT_TRACKING = new DocumentTracking($doc_id);
 
-// Get the last inserted quotation
+// Get the last purchase return if 
 $lastId = $DOCUMENT_TRACKING->pr_id;
 $purchase_return_id = $COMPANY_PROFILE_DETAILS->company_code . '/PR/00/0' . $lastId + 1;
 ?>

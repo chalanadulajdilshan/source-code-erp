@@ -29,8 +29,8 @@ jQuery(document).ready(function () {
             { data: "name", title: "Name" },
             { data: "brand", title: "Brand" },
             { data: "cost", title: "Cost" },
-            { data: "whole_sale_price", title: "Wholesale" },
-            { data: "retail_price", title: "Retail" },
+            { data: "cash_price", title: "Cash" },
+            { data: "credit_price", title: "Credit" },
             { data: "cash_discount", title: "Cash Dis %" },
             { data: "credit_discount", title: "Credit Dis %" },
             { data: "status_label", title: "Status" }
@@ -50,9 +50,9 @@ jQuery(document).ready(function () {
 
         // Prices and Discounts
         if (salesType == 1) {
-            $('#itemPrice').val(data.whole_sale_price.replace(/,/g, ''));
+            $('#itemPrice').val(data.cash_price.replace(/,/g, ''));
         } else if (salesType == 2) {
-            $('#itemPrice').val(data.retail_price.replace(/,/g, ''));
+            $('#itemPrice').val(data.credit_price.replace(/,/g, ''));
         }
 
         if (paymentType == 1) {
@@ -76,8 +76,8 @@ jQuery(document).ready(function () {
         $('#re_order_level').val(data.re_order_level);
         $('#re_order_qty').val(data.re_order_qty);
         $('#stock_type').val(data.stock_type);  
-        $('#whole_sale_price').val(data.whole_sale_price);
-        $('#retail_price').val(data.retail_price);
+        $('#cash_price').val(data.cash_price);
+        $('#credit_price').val(data.credit_price);
         $('#cash_discount').val(data.cash_discount);
         $('#credit_discount').val(data.credit_discount);
         $('#note').val(data.note);
@@ -152,7 +152,7 @@ jQuery(document).ready(function () {
                 timer: 2000,
                 showConfirmButton: false
             });
-        } else if (!$('#whole_sale_price').val() || $('#whole_sale_price').val().length === 0) {
+        } else if (!$('#cash_price').val() || $('#cash_price').val().length === 0) {
             swal({
                 title: "Error!",
                 text: "Please enter wholesale price",
@@ -160,7 +160,7 @@ jQuery(document).ready(function () {
                 timer: 2000,
                 showConfirmButton: false
             });
-        } else if (!$('#retail_price').val() || $('#retail_price').val().length === 0) {
+        } else if (!$('#credit_price').val() || $('#credit_price').val().length === 0) {
             swal({
                 title: "Error!",
                 text: "Please enter retail price",
@@ -270,7 +270,7 @@ jQuery(document).ready(function () {
                 timer: 2000,
                 showConfirmButton: false
             });
-        } else if (!$('#whole_sale_price').val() || $('#whole_sale_price').val().length === 0) {
+        } else if (!$('#cash_price').val() || $('#cash_price').val().length === 0) {
             swal({
                 title: "Error!",
                 text: "Please enter wholesale price",
@@ -278,7 +278,7 @@ jQuery(document).ready(function () {
                 timer: 2000,
                 showConfirmButton: false
             });
-        } else if (!$('#retail_price').val() || $('#retail_price').val().length === 0) {
+        } else if (!$('#credit_price').val() || $('#credit_price').val().length === 0) {
             swal({
                 title: "Error!",
                 text: "Please enter retail price",

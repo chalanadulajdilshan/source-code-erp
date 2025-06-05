@@ -30,8 +30,8 @@ jQuery(document).ready(function () {
             { data: "name", title: "Name" },
             { data: "brand", title: "Brand" },
             { data: "cost", title: "Cost" },
-            { data: "whole_sale_price", title: "Wholesale" },
-            { data: "retail_price", title: "Retail" },
+            { data: "cash_price", title: "Wholesale" },
+            { data: "credit_price", title: "Retail" },
             { data: "cash_discount", title: "Cash Dis %" },
             { data: "credit_discount", title: "Credit Dis %" },
             { data: "status_label", title: "Status" }
