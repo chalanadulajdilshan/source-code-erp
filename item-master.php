@@ -260,20 +260,20 @@ $item_id = 'IM' . str_pad($lastId + 1, 3, '0', STR_PAD_LEFT);
                                             <!-- Wholesale Price -->
                                             <div class="col-md-3">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="whole_sale_price">Wholesale Price
+                                                    <label class="form-label" for="cash_price">Cash Price
                                                         <span class="text-danger">*</span></label>
-                                                    <input id="whole_sale_price" name="whole_sale_price" type="text"
-                                                        class="form-control" placeholder="Enter wholesale price">
+                                                    <input id="cash_price" name="cash_price" type="text"
+                                                        class="form-control" placeholder="Enter Cash Price">
                                                 </div>
                                             </div>
 
                                             <!-- Retail Price -->
                                             <div class="col-md-3">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="retail_price">Retail Price <span
+                                                    <label class="form-label" for="credit_price">Credit Price <span
                                                             class="text-danger">*</span></label>
-                                                    <input id="retail_price" name="retail_price" type="text"
-                                                        class="form-control" placeholder="Enter retail price">
+                                                    <input id="credit_price" name="credit_price" type="text"
+                                                        class="form-control" placeholder="Enter Credit price">
                                                 </div>
                                             </div>
 

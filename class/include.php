@@ -6,7 +6,7 @@ include_once(dirname(__FILE__) . '/UserType.php');
 include_once(dirname(__FILE__) . '/DefaultData.php');
 include_once(dirname(__FILE__) . '/Message.php');
 include_once(dirname(__FILE__) . '/Upload.php');
-include_once(dirname(__FILE__) . '/Helper.php');  
+include_once(dirname(__FILE__) . '/Helper.php');
 include_once(dirname(__FILE__) . '/ItemMaster.php');
 include_once(dirname(__FILE__) . '/Bank.php');
 include_once(dirname(__FILE__) . '/Branch.php');
@@ -30,14 +30,14 @@ include_once(dirname(__FILE__) . '/Pages.php');
 include_once(dirname(__FILE__) . '/Permission.php');
 include_once(dirname(__FILE__) . '/UserPermission.php');
 include_once(dirname(__FILE__) . '/MarketingExecutive.php');
-include_once(dirname(__FILE__) . '/Quotation.php'); 
-include_once(dirname(__FILE__) . '/QuotationItem.php'); 
+include_once(dirname(__FILE__) . '/Quotation.php');
+include_once(dirname(__FILE__) . '/QuotationItem.php');
 include_once(dirname(__FILE__) . '/VatType.php');
 include_once(dirname(__FILE__) . '/LabourMaster.php');
-include_once(dirname(__FILE__) . '/LabourType.php'); 
+include_once(dirname(__FILE__) . '/LabourType.php');
 include_once(dirname(__FILE__) . '/ExpenseTypeMaster.php');
 include_once(dirname(__FILE__) . '/SubCategoryMaster.php');
-include_once(dirname(__FILE__) . '/SizeMaster.php');  
+include_once(dirname(__FILE__) . '/SizeMaster.php');
 include_once(dirname(__FILE__) . '/BeltMaster.php');
 include_once(dirname(__FILE__) . '/DesignMaster.php');
 include_once(dirname(__FILE__) . '/StockTransaction.php');
@@ -48,32 +48,36 @@ include_once(dirname(__FILE__) . '/InvoiceRemark.php');
 include_once(dirname(__FILE__) . '/DiscountType.php');
 include_once(dirname(__FILE__) . '/SupplierDiscount.php');
 include_once(dirname(__FILE__) . '/Bank.php');
-include_once(dirname(__FILE__) . '/EmployeeMaster.php'); 
+include_once(dirname(__FILE__) . '/EmployeeMaster.php');
 include_once(dirname(__FILE__) . '/ArnMaster.php');
-include_once(dirname(__FILE__) . '/ArnItem.php'); 
-include_once(dirname(__FILE__) . '/DocumentTracking.php'); 
-include_once(dirname(__FILE__) . '/PurchaseType.php'); 
+include_once(dirname(__FILE__) . '/ArnItem.php');
+include_once(dirname(__FILE__) . '/DocumentTracking.php');
+include_once(dirname(__FILE__) . '/PurchaseType.php');
 include_once(dirname(__FILE__) . '/CreditPeriod.php');
-include_once(dirname(__FILE__) . '/SalesType.php'); 
-include_once(dirname(__FILE__) . '/PurchaseOrder.php'); 
-include_once(dirname(__FILE__) . '/PurchaseOrderItem.php');  
-include_once(dirname(__FILE__) . '/StockMaster.php'); 
-include_once(dirname(__FILE__) . '/AuditLog.php'); 
-include_once(dirname(__FILE__) . '/PurchaseReturn.php'); 
-include_once(dirname(__FILE__) . '/CreateDag.php'); 
+include_once(dirname(__FILE__) . '/SalesType.php');
+include_once(dirname(__FILE__) . '/PurchaseOrder.php');
+include_once(dirname(__FILE__) . '/PurchaseOrderItem.php');
+include_once(dirname(__FILE__) . '/StockMaster.php');
+include_once(dirname(__FILE__) . '/AuditLog.php');
+include_once(dirname(__FILE__) . '/PurchaseReturn.php');
+include_once(dirname(__FILE__) . '/CreateDag.php');
 
 
- 
 
 
-function dd($data) {
+
+function dd($data)
+{
 
     var_dump($data);
 
     exit();
 }
-
-function redirect($url) {
+if (!isset($_SESSION)) {
+    session_start();
+}
+function redirect($url)
+{
 
     $string = '<script type="text/javascript">';
 

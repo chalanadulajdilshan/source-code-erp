@@ -2,9 +2,9 @@
 
 class AuditLog
 {
-    public $id;
-    public $table_name;
-    public $record_id;
+    public $id; 
+    public $ref_id;
+    public $ref_code;
     public $action;
     public $description;
     public $user_id;
@@ -18,9 +18,9 @@ class AuditLog
             $result = mysqli_fetch_array($db->readQuery($query));
 
             if ($result) {
-                $this->id = $result['id'];
-                $this->table_name = $result['table_name'];
-                $this->record_id = $result['record_id'];
+                $this->id = $result['id']; 
+                $this->ref_id = $result['ref_id']; 
+                $this->ref_code = $result['ref_code'];
                 $this->action = $result['action'];
                 $this->description = $result['description'];
                 $this->user_id = $result['user_id'];
@@ -32,10 +32,12 @@ class AuditLog
     public function create()
     {
         $query = "INSERT INTO `audit_log` (
-            `table_name`, `record_id`, `action`, `description`, `user_id`, `created_at`
+             `ref_id`, `ref_code`, `action`, `description`, `user_id`, `created_at`
         ) VALUES (
-            '$this->table_name', '$this->record_id', '$this->action', '$this->description', '$this->user_id', NOW()
+            '$this->ref_id', '$this->ref_code', '$this->action', '$this->description', '$this->user_id', NOW()
         )";
+
+ 
 
         $db = new Database();
         $result = $db->readQuery($query);
@@ -76,11 +78,10 @@ class AuditLog
         return $result['id'] ?? null;
     }
 
-    public function getLogsByRecord($table_name, $record_id)
+    public function getLogsByRef( $ref_code)
     {
-        $query = "SELECT * FROM `audit_log` 
-                  WHERE `table_name` = '$table_name' 
-                  AND `record_id` = '$record_id' 
+        $query = "SELECT * FROM `audit_log`  
+                  AND `ref_code` = '$ref_code' 
                   ORDER BY `created_at` DESC";
 
         $db = new Database();

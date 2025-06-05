@@ -20,8 +20,8 @@ if (isset($_POST['create'])) {
     $ITEM->cost = str_replace(',', '', $_POST['cost']); 
     $ITEM->re_order_level = $_POST['re_order_level'];
     $ITEM->re_order_qty = $_POST['re_order_qty'];
-    $ITEM->whole_sale_price = str_replace(',', '', $_POST['whole_sale_price']);
-    $ITEM->retail_price = str_replace(',', '', $_POST['retail_price']);
+    $ITEM->cash_price = str_replace(',', '', $_POST['cash_price']);
+    $ITEM->credit_price = str_replace(',', '', $_POST['credit_price']);
     $ITEM->cash_discount = $_POST['cash_discount'];
     $ITEM->credit_discount = $_POST['credit_discount'];
     $ITEM->stock_type = $_POST['stock_type'];
@@ -62,8 +62,8 @@ if (isset($_POST['update'])) {
     $ITEM->cost = str_replace(',', '', $_POST['cost']); 
     $ITEM->re_order_level = $_POST['re_order_level'];
     $ITEM->re_order_qty = $_POST['re_order_qty'];
-    $ITEM->whole_sale_price = str_replace(',', '', $_POST['whole_sale_price']);
-    $ITEM->retail_price = str_replace(',', '', $_POST['retail_price']);
+    $ITEM->cash_price = str_replace(',', '', $_POST['cash_price']);
+    $ITEM->credit_price = str_replace(',', '', $_POST['credit_price']);
     $ITEM->cash_discount = $_POST['cash_discount'];
     $ITEM->credit_discount = $_POST['credit_discount'];
     $ITEM->stock_type = $_POST['stock_type'];

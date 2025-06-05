@@ -88,8 +88,8 @@ if (isset($data['create'])) {
                 // Example: update cost fields here, adjust as per your business logic
                 $itemMaster->cost = $item['actual_cost'];
                 $itemMaster->list_price = $item['list_price'];
-                $itemMaster->whole_sale_price = $item['cash_price'];
-                $itemMaster->retail_price = $item['credit_price'];
+                $itemMaster->cash_price = $item['cash_price'];
+                $itemMaster->credit_price = $item['credit_price'];
                 $itemMaster->update();
             }
 

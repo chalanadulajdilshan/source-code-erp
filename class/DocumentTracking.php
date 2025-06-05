@@ -13,6 +13,8 @@ class DocumentTracking
     public $po_id;
     public $pr_id;
     public $arn_id;
+
+    public $sales_return_id;
     public $vat_percentage;
     public $created_at;
     public $updated_at;
@@ -134,6 +136,7 @@ class DocumentTracking
             'invoice' => 'invoice_id',
             'cash' => 'cash_id',
             'credit' => 'credit_id',
+            'sales_return'=>'sales_return_id',
             'arn' => 'arn_id'
         ];
 
