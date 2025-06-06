@@ -43,15 +43,19 @@ class Bank
     // Update an existing bank record
     public function update()
     {
-        $query = "UPDATE `banks` SET `name` = '" . $this->name . "', `code` = '" .
-            $this->code . "' WHERE `id` = '" . $this->id . "'";
+        $query = "UPDATE `banks` SET 
+            `name` = '$this->name',
+            `code` = '$this->code'
+            WHERE `id` = '$this->id'";
+ 
+
         $db = new Database();
         $result = $db->readQuery($query);
 
         if ($result) {
-            return $this->__construct($this->id); // Refresh the object with updated data
+            return true;
         } else {
-            return false; // Return false if the update fails
+            return false;
         }
     }
 
