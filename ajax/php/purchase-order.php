@@ -44,7 +44,6 @@ if (isset($_POST['action']) && $_POST['action'] == 'create_purchase_order') {
 
         $itemTotal = $price * $qty;
         $totalSubTotal += $itemTotal;
-
     }
 
 
@@ -66,8 +65,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'create_purchase_order') {
     $PURCHASE_ORDER->department = $department;
     $PURCHASE_ORDER->remarks = $remarks;
     $PURCHASE_ORDER->grand_total = $grandTotal;
-    $PURCHASE_ORDER->created_at = date("Y-m-d H:i:s");
-    ;
+    $PURCHASE_ORDER->created_at = date("Y-m-d H:i:s");;
 
     $poResult = $PURCHASE_ORDER->create();
 
@@ -94,7 +92,6 @@ if (isset($_POST['action']) && $_POST['action'] == 'create_purchase_order') {
 
             $DOCUMENT_TRACKING = new DocumentTracking(null);
             $DOCUMENT_TRACKING->incrementDocumentId('purchase');
-
         }
 
         //audit log
@@ -151,7 +148,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'update_purchase_order') {
 
         $itemTotal = $price * $qty;
         $totalSubTotal += $itemTotal;
-
     }
 
 
@@ -263,4 +259,3 @@ if (isset($_POST['action']) && $_POST['action'] == 'delete_items') {
         echo json_encode(['status' => 'error']);
     }
 }
-?>
