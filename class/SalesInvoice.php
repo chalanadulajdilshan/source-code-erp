@@ -10,6 +10,7 @@ class SalesInvoice
     public $department_id;
     public $sale_type;
     public $discount_type;
+    public $final_cost;
     public $payment_type;
     public $sub_total;
     public $discount;
@@ -34,6 +35,7 @@ class SalesInvoice
                 $this->department_id = $result['department_id'];
                 $this->sale_type = $result['sale_type'];
                 $this->discount_type = $result['discount_type'];
+                $this->final_cost = $result['final_cost'];
                 $this->payment_type = $result['payment_type'];
                 $this->sub_total = $result['sub_total'];
                 $this->discount = $result['discount'];
@@ -49,11 +51,11 @@ class SalesInvoice
     {
         $query = "INSERT INTO `sales_invoice` (
             `invoice_no`, `invoice_date`, `company_id`, `customer_id`, `department_id`, 
-            `sale_type`, `discount_type`, `payment_type`, `sub_total`, `discount`, 
+            `sale_type`, `discount_type`,`final_cost`, `payment_type`, `sub_total`, `discount`, 
             `tax`, `grand_total`, `remark`
         ) VALUES (
             '{$this->invoice_no}', '{$this->invoice_date}', '{$this->company_id}', '{$this->customer_id}', '{$this->department_id}', 
-            '{$this->sale_type}', '{$this->discount_type}', '{$this->payment_type}', '{$this->sub_total}', '{$this->discount}', 
+            '{$this->sale_type}', '{$this->discount_type}', '{$this->final_cost}','{$this->payment_type}', '{$this->sub_total}', '{$this->discount}', 
             '{$this->tax}', '{$this->grand_total}', '{$this->remark}'
         )";
 
@@ -206,6 +208,120 @@ class SalesInvoice
         $result = mysqli_fetch_array($db->readQuery($query));
 
         return ($result) ? true : false;
+    }
+
+    public static function filterSalesInvoices($filters)
+    {
+        $db = new Database();
+        $conditions = [];
+
+        // Customer filter
+        if (empty($filters['all_customers']) && !empty($filters['customer_code'])) {
+            $conditions[] = "`customer_id` = '" . $db->escapeString($filters['customer_code']) . "'";
+        }
+
+        // Date range or from-to
+        if (!empty($filters['from_date']) && !empty($filters['to_date'])) {
+            $conditions[] = "`invoice_date` BETWEEN '" . $db->escapeString($filters['from_date']) . "' AND '" . $db->escapeString($filters['to_date']) . "'";
+        }
+
+        if (!empty($filters['date_range'])) {
+            $today = date('Y-m-d');
+            switch ($filters['date_range']) {
+                case 'today':
+                    $conditions[] = "`invoice_date` = '$today'";
+                    break;
+                case 'this_week':
+                    $start = date('Y-m-d', strtotime('monday this week'));
+                    $end = date('Y-m-d', strtotime('sunday this week'));
+                    $conditions[] = "`invoice_date` BETWEEN '$start' AND '$end'";
+                    break;
+                case 'this_month':
+                    $start = date('Y-m-01');
+                    $end = date('Y-m-t');
+                    $conditions[] = "`invoice_date` BETWEEN '$start' AND '$end'";
+                    break;
+            }
+        }
+
+        // // Status filter
+        // if (!empty($filters['status'])) {
+        //     $conditions[] = "`status` = '" . $db->escapeString($filters['status']) . "'";
+        // }
+
+        // Build WHERE clause
+        $where = !empty($conditions) ? "WHERE " . implode(" AND ", $conditions) : "";
+
+        $sql = "SELECT 
+                `id`, `invoice_no`, `invoice_date`, `customer_id`, `final_cost`, `grand_total`, `status`
+            FROM `sales_invoice`
+            $where
+            ORDER BY `invoice_date` DESC";
+
+        $result = $db->readQuery($sql);
+
+        $data = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $data[] = $row;
+        }
+
+        return $data;
+    }
+
+    public static function getProfitTable($filters)
+    {
+        $db = new Database();
+        $conditions = [];
+
+        // Filter: Customer
+        if (empty($filters['all_customers']) && !empty($filters['customer_id'])) {
+            $conditions[] = "`customer_id` = '" . $db->escapeString($filters['customer_id']) . "'";
+        }
+
+        // Filter: Department
+        if (!empty($filters['department_id'])) {
+            $conditions[] = "`department_id` = '" . $db->escapeString($filters['department_id']) . "'";
+        }
+
+        //company vise
+        if (!empty($filters['company_id'])) {
+            $conditions[] = "`company_id` = '" . $db->escapeString($filters['company_id']) . "'";
+        }
+
+
+        // Filter: Date range
+        if (!empty($filters['from_date']) && !empty($filters['to_date'])) {
+            $conditions[] = "`invoice_date` BETWEEN '" . $db->escapeString($filters['from_date']) . "' AND '" . $db->escapeString($filters['to_date']) . "'";
+        }
+
+
+        // Build WHERE clause
+        $where = count($conditions) > 0 ? "WHERE " . implode(" AND ", $conditions) : "";
+
+        // Final SQL query
+        $sql = "SELECT * FROM `sales_invoice`
+            $where
+            ORDER BY `invoice_date` DESC";
+
+        $result = $db->readQuery($sql);
+
+        $data = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $COMPANY_PROFILE = new CompanyProfile($row['company_id']);
+            $CUSTOMER_MASTER = new CustomerMaster($row['customer_id']);
+            $DEPARTMENT_MASTER = new DepartmentMaster($row['department_id']);
+            $SALES_TYPE = new SalesType($row['sale_type']);
+
+
+            $row['company_name'] = $COMPANY_PROFILE->name;
+            $row['customer_name'] = $CUSTOMER_MASTER->name;
+            $row['department_name'] = $DEPARTMENT_MASTER->name;
+            $row['sales_type'] = $SALES_TYPE->code;
+
+            $data[] = $row;
+        }
+
+        return $data;
     }
 
 }

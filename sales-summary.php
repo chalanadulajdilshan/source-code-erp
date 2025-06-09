@@ -62,15 +62,10 @@ include 'class/include.php';
                                 <a href="#" class="btn btn-success" id="new">
                                     <i class="uil uil-plus me-1"></i> New
                                 </a>
-                                <a href="#" class="btn btn-primary" id="create">
-                                    <i class="uil uil-save me-1"></i> Save
+                                <a href="#" class="btn btn-primary" id="print_btn">
+                                    <i class="uil uil-save me-1"></i> View
                                 </a>
-                                <a href="#" class="btn btn-warning" id="update">
-                                    <i class="uil uil-edit me-1"></i> Update
-                                </a>
-                                <a href="#" class="btn btn-danger delete-summary  " style="display:none">
-                                    <i class="uil uil-trash-alt me-1"></i> Delete
-                                </a>
+                               
 
                             </div>
 
@@ -114,10 +109,12 @@ include 'class/include.php';
                                                 <div class="row">
 
                                                     <div class="col-md-2">
-                                                        <label for="customerCode" class="form-label">Customer Code</label>
+                                                        <label for="customerCode" class="form-label">Customer
+                                                            Code</label>
                                                         <div class="input-group mb-3">
                                                             <input id="customer_code" name="customer_code" type="text"
-                                                                placeholder="Customer code" class="form-control" readonly>
+                                                                placeholder="Customer code" class="form-control"
+                                                                readonly>
                                                             <button class="btn btn-info" type="button"
                                                                 data-bs-toggle="modal" data-bs-target="#customerModal">
                                                                 <i class="uil uil-search me-1"></i>
@@ -125,8 +122,9 @@ include 'class/include.php';
                                                         </div>
                                                     </div>
 
-                                                    <div class="col-md-3">
-                                                        <label for="customerName" class="form-label">Customer Name</label>
+                                                    <div class="col-md-4">
+                                                        <label for="customerName" class="form-label">Customer
+                                                            Name</label>
                                                         <div class="input-group mb-3">
                                                             <input id="customer_name" name="customer_name" type="text"
                                                                 class="form-control" placeholder="Enter Customer Name"
@@ -138,16 +136,28 @@ include 'class/include.php';
                                                         <label for="customerAddress" class="form-label">Customer
                                                             Address</label>
                                                         <div class="input-group mb-3">
-                                                            <input id="customer_address" name="customer_address" type="text"
-                                                                class="form-control" placeholder="Enter customer address"
-                                                                readonly>
+                                                            <input id="customer_address" name="customer_address"
+                                                                type="text" class="form-control"
+                                                                placeholder="Enter customer address" readonly>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-md-2 d-flex align-items-end">
+                                                        <div class="form-check mb-4">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                id="checkAllStudents">
+                                                            <label class="form-check-label" for="checkAllStudents">
+                                                                Check All Customers
+                                                            </label>
                                                         </div>
                                                     </div>
 
                                                     <div class="col-md-3">
-                                                        <label for="select" class="form-label">Select Status</Select></label>
+                                                        <label for="select" class="form-label">Select
+                                                            Status</Select></label>
                                                         <div class="input-group mb-3">
-                                                            <select id="select" name="select" class="form-select">
+                                                            <select id="selectStatus" name="selectStatus"
+                                                                class="form-select">
                                                                 <option value="">-- Select Status--</option>
                                                                 <option value="sales">Sales</option>
                                                                 <option value="return">Return</option>
@@ -158,28 +168,32 @@ include 'class/include.php';
                                                         </div>
                                                     </div>
 
-                                                    <div class="col-md-2">
+                                                    <div class="col-md-3">
                                                         <label for="from_date" class="form-label">From Date</label>
                                                         <div class="input-group" id="datepicker2">
-                                                            <input type="texentry_datet" class="form-control date-picker" id="from_date"
+                                                            <input type="texentry_datet"
+                                                                class="form-control date-picker" id="from_date"
                                                                 name="from_date"> <span class="input-group-text"><i
                                                                     class="mdi mdi-calendar"></i></span>
                                                         </div>
                                                     </div>
 
-                                                    <div class="col-md-2">
+                                                    <div class="col-md-3">
                                                         <label for="to_date" class="form-label">To Date</label>
                                                         <div class="input-group" id="datepicker2">
-                                                            <input type="texentry_datet" class="form-control date-picker" id="to_date"
+                                                            <input type="texentry_datet"
+                                                                class="form-control date-picker" id="to_date"
                                                                 name="to_date"> <span class="input-group-text"><i
                                                                     class="mdi mdi-calendar"></i></span>
                                                         </div>
                                                     </div>
 
                                                     <div class="col-md-3">
-                                                        <label for="date_range" class="form-label">Date Range</Select></label>
+                                                        <label for="date_range" class="form-label">Date
+                                                            Range</Select></label>
                                                         <div class="input-group mb-3">
-                                                            <select id="date_range" name="date_range" class="form-select">
+                                                            <select id="date_range" name="date_range"
+                                                                class="form-select">
                                                                 <option value="">-- Date Range --</option>
                                                                 <option value="1">One Week</option>
                                                                 <option value="2">One Month</option>
@@ -187,18 +201,20 @@ include 'class/include.php';
                                                                 <option value="4">120 Days</option>
                                                             </select>
                                                         </div>
-                                                    </div>        
+                                                    </div>
                                                 </div>
                                             </form>
                                         </div>
-                                    </div> 
-                                </div> 
-                            </div> 
-                        </div> 
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                    <?php include 'footer.php' ?>
                 </div>
             </div>
         </div>
+
 
 
         <!-- Right bar overlay-->
@@ -207,9 +223,9 @@ include 'class/include.php';
         <!-- JAVASCRIPT -->
         <script src="assets/libs/jquery/jquery.min.js"></script>
         <!-- /////////////////////////// -->
-        <script src="ajax/js/quotation.js"></script>
+        <script src="ajax/js/sales-summary.js"></script> 
         <script src="ajax/js/common.js"></script>
- 
+
 
         <script src="assets/libs/sweetalert/sweetalert-dev.js"></script>
         <script src="assets/js/jquery.preloader.min.js"></script>

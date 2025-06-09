@@ -150,8 +150,10 @@ class ItemMaster
         return $array_res;
     }
 
-    public function getItemsFiltered($category_id = 0, $brand_id = 0, $group_id = 0)
+    public function getItemsFiltered($category_id = 0, $brand_id = 0, $group_id = 0, $department_id = 0, $item_code = '')
     {
+
+
         $conditions = [];
 
         if ((int) $category_id > 0) {
@@ -166,20 +168,37 @@ class ItemMaster
             $conditions[] = "`group` = '" . (int) $group_id . "'";
         }
 
+        if (!empty($item_code)) {
+            $conditions[] = "`code` LIKE '%" . $item_code . "%'";
+        }
+
+        // Join condition to filter department stock
+        $join = "";
+        if ((int) $department_id > 0) {
+            $join = "INNER JOIN stock_master sm ON sm.item_id = im.id AND sm.department_id = '" . (int) $department_id . "'";
+        }
+
         $where = "";
         if (count($conditions) > 0) {
             $where = "WHERE " . implode(" AND ", $conditions);
         }
 
-        $query = "SELECT * FROM `item_master` $where ORDER BY name ASC";
-  
+        $query = "SELECT DISTINCT im.* FROM item_master im $join $where ORDER BY im.name ASC";
+
 
         $db = new Database();
         $result = $db->readQuery($query);
 
         $items = [];
         while ($row = mysqli_fetch_assoc($result)) {
+
+            $STOCK_MASTER = new StockMaster(NULL);
+            $departments = $STOCK_MASTER->getAvailableQuantityBy($row['id']);
+
+            $row['departments'] = $departments; // assign department-wise qty
+
             $items[] = $row;
+
         }
 
         return $items;
@@ -330,6 +349,9 @@ class ItemMaster
 
         return $reorderItems;
     }
+
+
+
 
 
 }

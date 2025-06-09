@@ -134,6 +134,27 @@ include 'auth.php';
                                                     </select>
                                                 </div>
                                             </div>
+                                            <div class="col-md-3" style="display: none;">
+                                                <label for="Group" class="form-label">Page Sub Category </label>
+                                                <div class="input-group mb-3">
+                                                    <select id="sub_page_category" name="sub_page_category"
+                                                        class="form-select">
+
+                                                        <option value="">-- Select Category --</option>
+                                                        <?php
+                                                        $DEFAULT_DATA = new DefaultData();
+                                                        foreach ($DEFAULT_DATA->pagesSubCategory() as $key => $page_category) {
+                                                            ?>
+                                                            <option value="<?php echo $key; ?>">
+                                                                <?php echo $page_category; ?>
+                                                            </option>
+                                                            <?php
+                                                        }
+                                                        ?>
+
+                                                    </select>
+                                                </div>
+                                            </div>
 
                                             <div class="col-md-3">
                                                 <label class="form-label" for="page_name">Page Name</label>

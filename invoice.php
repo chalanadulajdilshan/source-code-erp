@@ -1,8 +1,10 @@
 <!doctype html>
 <?php
 include 'class/include.php';
-include 'auth.php';
-
+ 
+if (!isset($_SESSION)) {
+    session_start();
+}
 
 $invoice_id = $_GET['invoice_no'];
 $US = new User($_SESSION['id']);

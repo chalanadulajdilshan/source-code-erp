@@ -249,7 +249,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'update_quotation') {
         $AUDIT_LOG->ref_id = $QUOTATION_->id;
         $AUDIT_LOG->ref_code = $QUOTATION_->quotation_no;
         $AUDIT_LOG->action = 'UPDATE';
-        $AUDIT_LOG->description = 'UPDATE QUATATION NO #' . $$QUOTATION_->quotation_no;
+        $AUDIT_LOG->description = 'UPDATE QUATATION NO #' . $QUOTATION_->quotation_no;
         $AUDIT_LOG->user_id = $_SESSION['id'];
         $AUDIT_LOG->created_at = date("Y-m-d H:i:s");
         $AUDIT_LOG->create();
