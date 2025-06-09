@@ -29,12 +29,19 @@ if (isset($_POST['create'])) {
 
     $totalSubTotal = 0;
     $totalDiscount = 0;
-
+    $final_cost = 0;
+    
     // Calculate subtotal and discount
     foreach ($items as $item) {
         $price = floatval($item['price']);
         $qty = floatval($item['qty']);
         $discount = isset($item['discount']) ? floatval($item['discount']) : 0; // item-wise discount
+
+        $ITEM_MASTER = new ItemMaster($item['item_id']);
+
+        $cost = $ITEM_MASTER->cost;
+        $final_cost_item = $cost * $item['qty'];
+        $final_cost += $final_cost_item;
 
         $itemTotal = $price * $qty;
         $totalSubTotal += $itemTotal;
@@ -61,6 +68,7 @@ if (isset($_POST['create'])) {
     $SALES_INVOICE->customer_id = $_POST['customer_id'];
     $SALES_INVOICE->department_id = $_POST['department_id'];
     $SALES_INVOICE->sale_type = $_POST['sales_type'];
+    $SALES_INVOICE->final_cost = $final_cost;
     $SALES_INVOICE->payment_type = $paymentType;
     $SALES_INVOICE->sub_total = $totalSubTotal;
     $SALES_INVOICE->discount = $totalDiscount;
@@ -86,10 +94,13 @@ if (isset($_POST['create'])) {
 
             $item_discount = isset($item['discount']) ? $item['discount'] : 0;
 
+            $ITEM_MASTER = new ItemMaster($item['item_id']);
+
             $SALES_ITEM = new TempSalesItem(NULL);
             $SALES_ITEM->invoice_id = $invoiceId;
             $SALES_ITEM->item_code = $item['item_id'];
             $SALES_ITEM->item_name = $item['name'];
+            $SALES_ITEM->cost = $ITEM_MASTER->cost;
             $SALES_ITEM->price = $item['price'];
             $SALES_ITEM->quantity = $item['qty'];
             $SALES_ITEM->discount = $item_discount;
@@ -114,9 +125,21 @@ if (isset($_POST['create'])) {
             $STOCK_TRANSACTION->date = date("Y-m-d");
             $STOCK_TRANSACTION->qty_in = 0;
             $STOCK_TRANSACTION->qty_out = $item['qty'];
-            $STOCK_TRANSACTION->remark = "INVOICE #$invoiceId Issued" . date("Y-m-d H:i:s"); 
+            $STOCK_TRANSACTION->remark = "INVOICE #$invoiceId Issued" . date("Y-m-d H:i:s");
             $STOCK_TRANSACTION->created_at = date("Y-m-d H:i:s");
             $STOCK_TRANSACTION->create();
+
+
+            //audit log
+            $AUDIT_LOG = new AuditLog(NUll);
+            $AUDIT_LOG->ref_id = $invoiceId;
+            $AUDIT_LOG->ref_code = $_POST['invoice_no'];
+            $AUDIT_LOG->action = 'CREATE';
+            $AUDIT_LOG->description = 'CREATE INVOICE NO #' . $invoiceId;
+            $AUDIT_LOG->user_id = $_SESSION['id'];
+            $AUDIT_LOG->created_at = date("Y-m-d H:i:s");
+            $AUDIT_LOG->create();
+
         }
 
         echo json_encode([
@@ -155,6 +178,7 @@ if (isset($_POST['update'])) {
     $SALES_INVOICE->tax = $_POST['tax'];
     $SALES_INVOICE->grand_total = $_POST['grand_total']; // New grand total
     $SALES_INVOICE->remark = $_POST['remark'];
+
 
     // Attempt to update the invoice
     $result = $SALES_INVOICE->update();

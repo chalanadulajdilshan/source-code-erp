@@ -74,7 +74,7 @@ include 'auth.php';
                         <div class="col-md-4 text-md-end text-start mt-3 mt-md-0">
                             <ol class="breadcrumb m-0 justify-content-md-end">
                                 <li class="breadcrumb-item"><a href="javascript: void(0);">Dashboard</a></li>
-                                <li class="breadcrumb-item active">Brand Master</li>
+                                <li class="breadcrumb-item active">Company Profile </li>
                             </ol>
                         </div>
                     </div>
@@ -97,9 +97,9 @@ include 'auth.php';
                                                 </div>
                                             </div>
                                             <div class="flex-grow-1 overflow-hidden">
-                                                <h5 class="font-size-16 mb-1">Brand Master</h5>
+                                                <h5 class="font-size-16 mb-1">Company Profile </h5>
                                                 <p class="text-muted text-truncate mb-0">Fill all information below to
-                                                    Item Brands</p>
+                                                   Company Profile </p>
                                             </div>
                                             <div class="flex-shrink-0">
                                                 <i class="mdi mdi-chevron-up accor-down-icon font-size-24"></i>
@@ -121,7 +121,7 @@ include 'auth.php';
                                                         <button class="btn btn-info" type="button"
                                                             data-bs-toggle="modal"
                                                             data-bs-target=".bs-example-modal-xl">
-                                                            <i class="uil uil-search me-1"></i> Find Company
+                                                            <i class="uil uil-search me-1"></i> 
                                                         </button>
                                                     </div>
                                                 </div>

@@ -67,23 +67,23 @@ jQuery(document).ready(function () {
       return false;
     });
   
-    // Update Page
+        // Update Page
     $("#update").click(function (event) {
       event.preventDefault();
   
       // Validation
-      if (!$("#name").val() || $("#name").val().length === 0) {
+      if (!$("#code").val() || $("#code").val().length === 0) {
         swal({
           title: "Error!",
-          text: "Please enter bank name",
+          text: "Please enter a Bank Code",
           type: "error",
           timer: 2000,
           showConfirmButton: false,
         });
-      } else if (!$("#code").val() || $("#code").val().length === 0) {
+      } else if (!$("#name").val() || $("#name").val().length === 0) {
         swal({
           title: "Error!",
-          text: "Please enter bank code",
+          text: "Please enter a Bank Name",
           type: "error",
           timer: 2000,
           showConfirmButton: false,

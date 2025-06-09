@@ -41,7 +41,7 @@ if (isset($data['create'])) {
     $ARN->po_date = $purchase_date;
 
     $PURCHASE_ORDER = new PurchaseOrder($purchase_order_id);
-    $PURCHASE_ORDER->status =1;
+    $PURCHASE_ORDER->status = 1;
     $PURCHASE_ORDER->update();
 
 
@@ -53,6 +53,16 @@ if (isset($data['create'])) {
     $ARN->total_received_qty = $totalReceivedQty;
     $ARN->total_order_qty = $totalOrderQty;
     $arn_id = $ARN->create();
+
+    //audit log
+    $AUDIT_LOG = new AuditLog(NUll);
+    $AUDIT_LOG->ref_id = $arn_id;
+    $AUDIT_LOG->ref_code = $arnNo;
+    $AUDIT_LOG->action = 'CREATE';
+    $AUDIT_LOG->description = 'CREATE ARN NO #' . $arnNo;
+    $AUDIT_LOG->user_id = $_SESSION['id'];
+    $AUDIT_LOG->created_at = date("Y-m-d H:i:s");
+    $AUDIT_LOG->create();
 
     if ($arn_id) {
 
@@ -88,8 +98,8 @@ if (isset($data['create'])) {
                 // Example: update cost fields here, adjust as per your business logic
                 $itemMaster->cost = $item['actual_cost'];
                 $itemMaster->list_price = $item['list_price'];
-                $itemMaster->whole_sale_price = $item['cash_price'];
-                $itemMaster->retail_price = $item['credit_price'];
+                $itemMaster->cash_price = $item['cash_price'];
+                $itemMaster->credit_price = $item['credit_price'];
                 $itemMaster->update();
             }
 

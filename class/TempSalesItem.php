@@ -7,8 +7,9 @@ class TempSalesItem
     public $item_code;
     public $item_name;
     public $quantity;
+    public $cost;
     public $price;
-     public $discount;
+    public $discount;
     public $total;
     public $created_at;
 
@@ -26,8 +27,9 @@ class TempSalesItem
                 $this->invoice_id = $result['invoice_id'];
                 $this->item_code = $result['item_code'];
                 $this->item_name = $result['product_id'];
-                $this->quantity = $result['quantity'];                
+                $this->quantity = $result['quantity'];
                 $this->discount = $result['discount'];
+                $this->cost = $result['cost'];
                 $this->price = $result['price'];
                 $this->total = $result['total'];
                 $this->created_at = $result['created_at'];
@@ -40,11 +42,12 @@ class TempSalesItem
 
 
         $query = "INSERT INTO `temp_sales_items` 
-    (`invoice_id`, `item_code`, `item_name`, `price`, `discount`,`quantity`, `total`, `created_at`) 
+    (`invoice_id`, `item_code`, `item_name`,`cost`, `price`, `discount`,`quantity`, `total`, `created_at`) 
     VALUES (
         '{$this->invoice_id}', 
         '{$this->item_code}', 
         '{$this->item_name}', 
+        '{$this->cost}', 
         '{$this->price}', 
         '{$this->discount}', 
         '{$this->quantity}', 

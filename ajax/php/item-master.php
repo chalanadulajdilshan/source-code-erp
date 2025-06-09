@@ -1,6 +1,7 @@
 <?php
 
 include '../../class/include.php';
+
 header('Content-Type: application/json; charset=UTF8');
 
 // Create a new item
@@ -20,8 +21,8 @@ if (isset($_POST['create'])) {
     $ITEM->cost = str_replace(',', '', $_POST['cost']); 
     $ITEM->re_order_level = $_POST['re_order_level'];
     $ITEM->re_order_qty = $_POST['re_order_qty'];
-    $ITEM->whole_sale_price = str_replace(',', '', $_POST['whole_sale_price']);
-    $ITEM->retail_price = str_replace(',', '', $_POST['retail_price']);
+    $ITEM->cash_price = str_replace(',', '', $_POST['cash_price']);
+    $ITEM->credit_price = str_replace(',', '', $_POST['credit_price']);
     $ITEM->cash_discount = $_POST['cash_discount'];
     $ITEM->credit_discount = $_POST['credit_discount'];
     $ITEM->stock_type = $_POST['stock_type'];
@@ -30,6 +31,17 @@ if (isset($_POST['create'])) {
 
     // Attempt to create the item
     $res = $ITEM->create();
+
+    
+    //audit log
+    $AUDIT_LOG = new AuditLog(NUll);
+    $AUDIT_LOG->ref_id = $res;
+    $AUDIT_LOG->ref_code = $_POST['code'];
+    $AUDIT_LOG->action = 'CREATE';
+    $AUDIT_LOG->description = 'CREATE ITEM NO #' . $_POST['code'];
+    $AUDIT_LOG->user_id = $_SESSION['id'];
+    $AUDIT_LOG->created_at = date("Y-m-d H:i:s");
+    $AUDIT_LOG->create();
 
     if ($res) {
         $result = [
@@ -62,8 +74,8 @@ if (isset($_POST['update'])) {
     $ITEM->cost = str_replace(',', '', $_POST['cost']); 
     $ITEM->re_order_level = $_POST['re_order_level'];
     $ITEM->re_order_qty = $_POST['re_order_qty'];
-    $ITEM->whole_sale_price = str_replace(',', '', $_POST['whole_sale_price']);
-    $ITEM->retail_price = str_replace(',', '', $_POST['retail_price']);
+    $ITEM->cash_price = str_replace(',', '', $_POST['cash_price']);
+    $ITEM->credit_price = str_replace(',', '', $_POST['credit_price']);
     $ITEM->cash_discount = $_POST['cash_discount'];
     $ITEM->credit_discount = $_POST['credit_discount'];
     $ITEM->stock_type = $_POST['stock_type'];
@@ -72,6 +84,17 @@ if (isset($_POST['update'])) {
 
     // Attempt to update the item
     $result = $ITEM->update();
+
+     
+    //audit log
+    $AUDIT_LOG = new AuditLog(NUll);
+    $AUDIT_LOG->ref_id = $_POST['item_id'];
+    $AUDIT_LOG->ref_code = $_POST['code'];
+    $AUDIT_LOG->action = 'UPDATE';
+    $AUDIT_LOG->description = 'UPDATE ITEM NO #' . $_POST['code'];
+    $AUDIT_LOG->user_id = $_SESSION['id'];
+    $AUDIT_LOG->created_at = date("Y-m-d H:i:s");
+    $AUDIT_LOG->create();
 
     if ($result) {
         $result = [
@@ -111,6 +134,8 @@ if (isset($_POST['filter'])) {
     echo json_encode($response);
     exit;  
 }
+
+
 
 
 ?>

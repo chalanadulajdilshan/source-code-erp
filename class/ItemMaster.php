@@ -16,8 +16,8 @@ class ItemMaster
     public $re_order_qty;
     public $list_price;
 
-    public $whole_sale_price;
-    public $retail_price;
+    public $cash_price;
+    public $credit_price;
     public $cash_discount;
     public $credit_discount;
     public $stock_type;
@@ -44,8 +44,8 @@ class ItemMaster
                 $this->re_order_level = $result['re_order_level'];
                 $this->list_price = $result['list_price'];
                 $this->re_order_qty = $result['re_order_qty'];
-                $this->whole_sale_price = $result['whole_sale_price'];
-                $this->retail_price = $result['retail_price'];
+                $this->cash_price = $result['cash_price'];
+                $this->credit_price = $result['credit_price'];
                 $this->cash_discount = $result['cash_discount'];
                 $this->credit_discount = $result['credit_discount'];
                 $this->stock_type = $result['stock_type'];
@@ -59,12 +59,12 @@ class ItemMaster
     {
         $query = "INSERT INTO `item_master` (
     `code`, `name`, `brand`, `size`, `pattern`, `group`, `category`, 
-    `cost`, `re_order_level`, `re_order_qty`,   `whole_sale_price`, 
-    `retail_price`, `cash_discount`, `credit_discount`, `stock_type`, `note`, `is_active`
+    `cost`, `re_order_level`, `re_order_qty`,   `cash_price`, 
+    `credit_price`, `cash_discount`, `credit_discount`, `stock_type`, `note`, `is_active`
 ) VALUES (
     '$this->code', '$this->name', '$this->brand', '$this->size', '$this->pattern', '$this->group',
     '$this->category', '$this->cost', '$this->re_order_level', '$this->re_order_qty',  
-    '$this->whole_sale_price', '$this->retail_price', '$this->cash_discount',
+    '$this->cash_price', '$this->credit_price', '$this->cash_discount',
     '$this->credit_discount', '$this->stock_type', '$this->note', '$this->is_active'
 )";
 
@@ -94,8 +94,8 @@ class ItemMaster
              `list_price` = '$this->list_price', 
             `re_order_level` = '$this->re_order_level', 
             `re_order_qty` = '$this->re_order_qty', 
-            `whole_sale_price` = '$this->whole_sale_price', 
-            `retail_price` = '$this->retail_price', 
+            `cash_price` = '$this->cash_price', 
+            `credit_price` = '$this->credit_price', 
             `cash_discount` = '$this->cash_discount', 
             `credit_discount` = '$this->credit_discount', 
             `stock_type` = '$this->stock_type', 
@@ -148,6 +148,60 @@ class ItemMaster
         }
 
         return $array_res;
+    }
+
+    public function getItemsFiltered($category_id = 0, $brand_id = 0, $group_id = 0, $department_id = 0, $item_code = '')
+    {
+
+
+        $conditions = [];
+
+        if ((int) $category_id > 0) {
+            $conditions[] = "`category` = '" . (int) $category_id . "'";
+        }
+
+        if ((int) $brand_id > 0) {
+            $conditions[] = "`brand` = '" . (int) $brand_id . "'";
+        }
+
+        if ((int) $group_id > 0) {
+            $conditions[] = "`group` = '" . (int) $group_id . "'";
+        }
+
+        if (!empty($item_code)) {
+            $conditions[] = "`code` LIKE '%" . $item_code . "%'";
+        }
+
+        // Join condition to filter department stock
+        $join = "";
+        if ((int) $department_id > 0) {
+            $join = "INNER JOIN stock_master sm ON sm.item_id = im.id AND sm.department_id = '" . (int) $department_id . "'";
+        }
+
+        $where = "";
+        if (count($conditions) > 0) {
+            $where = "WHERE " . implode(" AND ", $conditions);
+        }
+
+        $query = "SELECT DISTINCT im.* FROM item_master im $join $where ORDER BY im.name ASC";
+
+
+        $db = new Database();
+        $result = $db->readQuery($query);
+
+        $items = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+
+            $STOCK_MASTER = new StockMaster(NULL);
+            $departments = $STOCK_MASTER->getAvailableQuantityBy($row['id']);
+
+            $row['departments'] = $departments; // assign department-wise qty
+
+            $items[] = $row;
+
+        }
+
+        return $items;
     }
 
 
@@ -236,8 +290,8 @@ class ItemMaster
                 "category_id" => $row['category'],
                 "cost" => number_format($row['cost'], 2),
                 "category" => $CATEGORY->name,
-                "whole_sale_price" => number_format($row['whole_sale_price'], 2),
-                "retail_price" => number_format($row['retail_price'], 2),
+                "cash_price" => number_format($row['cash_price'], 2),
+                "credit_price" => number_format($row['credit_price'], 2),
                 "cash_discount" => $row['cash_discount'],
                 "credit_discount" => $row['credit_discount'],
                 "stock_type" => $row['stock_type'],
@@ -295,6 +349,9 @@ class ItemMaster
 
         return $reorderItems;
     }
+
+
+
 
 
 }

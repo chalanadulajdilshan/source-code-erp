@@ -94,6 +94,16 @@ if (isset($_POST['action']) && $_POST['action'] == 'create_purchase_order') {
             $DOCUMENT_TRACKING->incrementDocumentId('purchase');
         }
 
+        //audit log
+        $AUDIT_LOG = new AuditLog(NUll);
+        $AUDIT_LOG->ref_id = $newPurchaseId;
+        $AUDIT_LOG->ref_code = $purchaseNo;
+        $AUDIT_LOG->action = 'CREATE';
+        $AUDIT_LOG->description = 'CREATE PURCHASE ORDER NO #' . $purchaseNo;
+        $AUDIT_LOG->user_id = $_SESSION['id'];
+        $AUDIT_LOG->created_at = date("Y-m-d H:i:s");
+        $AUDIT_LOG->create();
+
         echo json_encode([
             "status" => 'success',
             "poNumber" => $newPurchaseId,
@@ -169,6 +179,16 @@ if (isset($_POST['action']) && $_POST['action'] === 'update_purchase_order') {
             $PURCHASE_ORDER_ITEM->create();
         }
 
+        //audit log
+        $AUDIT_LOG = new AuditLog(NUll);
+        $AUDIT_LOG->ref_id = $purchaseOrderId;
+        $AUDIT_LOG->ref_code = $PURCHASE_ORDER->po_number;
+        $AUDIT_LOG->action = 'UPDATE';
+        $AUDIT_LOG->description = 'UPDATE PURCHASE ORDER NO #' . $PURCHASE_ORDER->po_number;
+        $AUDIT_LOG->user_id = $_SESSION['id'];
+        $AUDIT_LOG->created_at = date("Y-m-d H:i:s");
+        $AUDIT_LOG->create();
+
         echo json_encode(['status' => 'success']);
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Failed to update purchase order']);
@@ -209,6 +229,15 @@ if (isset($_POST['action']) && $_POST['action'] == 'delete') {
     $PURCHASE_ORDER = new PurchaseOrder($_POST['id']);
 
     $result = $PURCHASE_ORDER->delete();
+
+    $AUDIT_LOG = new AuditLog(NUll);
+    $AUDIT_LOG->ref_id = $_POST['id'];
+    $AUDIT_LOG->ref_code = $PURCHASE_ORDER->po_number;
+    $AUDIT_LOG->action = 'DELETE';
+    $AUDIT_LOG->description = 'DELETE PURCHASE ORDER NO #' . $PURCHASE_ORDER->po_number;
+    $AUDIT_LOG->user_id = $_SESSION['id'];
+    $AUDIT_LOG->created_at = date("Y-m-d H:i:s");
+    $AUDIT_LOG->create();
 
     if ($result) {
         echo json_encode(['status' => 'success']);

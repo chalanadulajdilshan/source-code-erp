@@ -31,6 +31,17 @@ if (isset($_POST['create'])) {
 
     $res = $CUSTOMER->create();
 
+    //audit log
+    $AUDIT_LOG = new AuditLog(NUll);
+    $AUDIT_LOG->ref_id = $re;
+    $AUDIT_LOG->ref_code = $_POST['code'];
+    $AUDIT_LOG->action = 'CREATE';
+    $AUDIT_LOG->description = 'CREATE CUSTOMER NO #' . $_POST['code'];
+    $AUDIT_LOG->user_id = $_SESSION['id'];
+    $AUDIT_LOG->created_at = date("Y-m-d H:i:s");
+    $AUDIT_LOG->create();
+
+
     if ($res) {
         echo json_encode(["status" => "success"]);
         exit();
@@ -68,6 +79,17 @@ if (isset($_POST['update'])) {
 
     $res = $CUSTOMER->update();
 
+    //audit log
+    $AUDIT_LOG = new AuditLog(NUll);
+    $AUDIT_LOG->ref_id = $_POST['customer_id'];
+    $AUDIT_LOG->ref_code = $_POST['code'];
+    $AUDIT_LOG->action = 'UPDATE';
+    $AUDIT_LOG->description = 'UPDATE CUSTOMER NO #' . $_POST['code'];
+    $AUDIT_LOG->user_id = $_SESSION['id'];
+    $AUDIT_LOG->created_at = date("Y-m-d H:i:s");
+    $AUDIT_LOG->create();
+
+
     if ($res) {
         echo json_encode(["status" => "success"]);
         exit();
@@ -81,6 +103,16 @@ if (isset($_POST['update'])) {
 if (isset($_POST['delete']) && isset($_POST['id'])) {
     $CUSTOMER = new CustomerMaster($_POST['id']);
     $res = $CUSTOMER->delete();
+
+    //audit log
+    $AUDIT_LOG = new AuditLog(NUll);
+    $AUDIT_LOG->ref_id = $_POST['id'];
+    $AUDIT_LOG->ref_code = $CUSTOMER->code;
+    $AUDIT_LOG->action = 'DELETE';
+    $AUDIT_LOG->description = 'DELETE CUSTOMER NO #' . $CUSTOMER->code;
+    $AUDIT_LOG->user_id = $_SESSION['id'];
+    $AUDIT_LOG->created_at = date("Y-m-d H:i:s");
+    $AUDIT_LOG->create();
 
     if ($res) {
         echo json_encode(['status' => 'success']);

@@ -25,8 +25,8 @@ jQuery(document).ready(function ($) {
             { data: "name", title: "Name" },
             { data: "brand", title: "Brand" },
             { data: "cost", title: "Cost" },
-            { data: "whole_sale_price", title: "Wholesale" },
-            { data: "retail_price", title: "Retail" },
+            { data: "cash_price", title: "Wholesale" },
+            { data: "credit_price", title: "Retail" },
             { data: "cash_discount", title: "Cash Dis %" },
             { data: "credit_discount", title: "Credit Dis %" },
             { data: "status_label", title: "Status" }
@@ -44,9 +44,9 @@ jQuery(document).ready(function ($) {
         const paymentType = $('#payment_type').val();
 
         if (salesType == 1) {  // Whole Sales
-            $('#itemPrice').val(data.whole_sale_price.replace(/,/g, ''));
+            $('#itemPrice').val(data.cash_price.replace(/,/g, ''));
         } else if (salesType == 2) {  // Retail Sales
-            $('#itemPrice').val(data.retail_price.replace(/,/g, ''));
+            $('#itemPrice').val(data.credit_price.replace(/,/g, ''));
         }
 
         if (paymentType == 1) {

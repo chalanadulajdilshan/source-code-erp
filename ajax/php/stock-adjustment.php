@@ -14,7 +14,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'create_stock_adjustment') {
     $codes = $_POST['item_codes'];
     $names = $_POST['item_names'];
     $qtys = $_POST['item_qtys'];
- 
+
     if (!$department_id || !$adjustment_date || empty($codes)) {
         echo json_encode(['status' => 'error', 'message' => 'Missing required fields.']);
         exit;
@@ -22,8 +22,20 @@ if (isset($_POST['action']) && $_POST['action'] === 'create_stock_adjustment') {
 
     $STOCK_MASTER = new StockMaster(null);
 
+
+    //audit log
+    $AUDIT_LOG = new AuditLog(NUll);
+    $AUDIT_LOG->ref_id = 0;
+    $AUDIT_LOG->ref_code = 'REF/STK/ADJ/00';
+    $AUDIT_LOG->action = 'ADJ';
+    $AUDIT_LOG->description = 'ADJ STOCK NO # REF/STK/ADJ/00';
+    $AUDIT_LOG->user_id = $_SESSION['id'];
+    $AUDIT_LOG->created_at = date("Y-m-d H:i:s");
+    $AUDIT_LOG->create();
+
+
     foreach ($itemIds as $index => $itemId) {
-        
+
         $item_id = $itemId;
         $qty = isset($qtys[$index]) ? (int) $qtys[$index] : 0;
 
@@ -34,7 +46,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'create_stock_adjustment') {
                 department_id: $department_id,
                 adjust_qty: $qty,
                 adjust_type: $adjustment_type,
-                remark:  $special_instructions.' - on '.$adjustment_date
+                remark: $special_instructions . ' - on ' . $adjustment_date
             );
 
 

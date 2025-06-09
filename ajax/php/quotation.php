@@ -103,6 +103,15 @@ if (isset($_POST['action']) && $_POST['action'] == 'create_quotation') {
             $DOCUMENT_TRACKING = new DocumentTracking(null);
             $DOCUMENT_TRACKING->incrementDocumentId('quotation');
 
+            //audit log
+            $AUDIT_LOG = new AuditLog(NUll);
+            $AUDIT_LOG->ref_id = $newQuotationId;
+            $AUDIT_LOG->ref_code = $quotationId;
+            $AUDIT_LOG->action = 'CREATE';
+            $AUDIT_LOG->description = 'CREATE QUATATION NO #' . $quotationId;
+            $AUDIT_LOG->user_id = $_SESSION['id'];
+            $AUDIT_LOG->created_at = date("Y-m-d H:i:s");
+            $AUDIT_LOG->create();
         }
 
         echo json_encode([
@@ -232,7 +241,18 @@ if (isset($_POST['action']) && $_POST['action'] == 'update_quotation') {
                 $QUOTATION_ITEM->sub_total = $subTotal;
                 $QUOTATION_ITEM->create();
             }
+
+
         }
+        //audit log
+        $AUDIT_LOG = new AuditLog(NUll);
+        $AUDIT_LOG->ref_id = $QUOTATION_->id;
+        $AUDIT_LOG->ref_code = $QUOTATION_->quotation_no;
+        $AUDIT_LOG->action = 'UPDATE';
+        $AUDIT_LOG->description = 'UPDATE QUATATION NO #' . $QUOTATION_->quotation_no;
+        $AUDIT_LOG->user_id = $_SESSION['id'];
+        $AUDIT_LOG->created_at = date("Y-m-d H:i:s");
+        $AUDIT_LOG->create();
 
         echo json_encode([
             "status" => 'success'
@@ -255,6 +275,15 @@ if (isset($_POST['action']) && $_POST['action'] == 'delete') {
     $QUOTATION = new Quotation($_POST['id']);
 
     $result = $QUOTATION->delete();
+
+    $AUDIT_LOG = new AuditLog(NUll);
+    $AUDIT_LOG->ref_id = $_POST['id'];
+    $AUDIT_LOG->ref_code = $QUOTATION->payment_type;
+    $AUDIT_LOG->action = 'DELETE';
+    $AUDIT_LOG->description = 'DELETE QUATATION NO #' . $QUOTATION->payment_type;
+    $AUDIT_LOG->user_id = $_SESSION['id'];
+    $AUDIT_LOG->created_at = date("Y-m-d H:i:s");
+    $AUDIT_LOG->create();
 
     if ($result) {
         echo json_encode(['status' => 'success']);

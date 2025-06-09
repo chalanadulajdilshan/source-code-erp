@@ -4,6 +4,7 @@ class Pages
 {
     public $id;
     public $page_category;
+    public $sub_page_category;
     public $page_name;
     public $page_url;
 
@@ -11,13 +12,14 @@ class Pages
     public function __construct($id = null)
     {
         if ($id) {
-            $query = "SELECT `id`, `page_category`, `page_name`, `page_url` FROM `pages` WHERE `id` = " . (int) $id;
+            $query = "SELECT  * FROM `pages` WHERE `id` = " . (int) $id;
             $db = new Database();
             $result = mysqli_fetch_array($db->readQuery($query));
 
             if ($result) {
                 $this->id = $result['id'];
                 $this->page_category = $result['page_category'];
+                $this->sub_page_category = $result['sub_page_category'];
                 $this->page_name = $result['page_name'];
                 $this->page_url = $result['page_url'];
             }
@@ -27,8 +29,9 @@ class Pages
     // Create a new page record in the database
     public function create()
     {
-        $query = "INSERT INTO `pages` (`page_category`, `page_name`, `page_url`) VALUES (
+        $query = "INSERT INTO `pages` (`page_category`,`sub_page_category`, `page_name`, `page_url`) VALUES (
             '" . $this->page_category . "',
+             '" . $this->sub_page_category . "',
             '" . $this->page_name . "',
             '" . $this->page_url . "')";
         $db = new Database();
@@ -46,6 +49,7 @@ class Pages
     {
         $query = "UPDATE `pages` SET 
             `page_category` = '" . $this->page_category . "',
+            `sub_page_category` = '" . $this->sub_page_category . "',
             `page_name` = '" . $this->page_name . "',
             `page_url` = '" . $this->page_url . "'
             WHERE `id` = " . (int) $this->id;
@@ -96,5 +100,21 @@ class Pages
 
         return $array_res;
     }
+
+    public function getPagesBySubCategory($sub_category)
+    {
+        $query = "SELECT * FROM `pages` WHERE `sub_page_category` = '" . $sub_category . "' ORDER BY `queue` ASC";
+        $db = new Database();
+        $result = $db->readQuery($query);
+        $array_res = array();
+
+        while ($row = mysqli_fetch_array($result)) {
+            array_push($array_res, $row);
+        }
+
+        return $array_res;
+    }
+
+
 }
 ?>

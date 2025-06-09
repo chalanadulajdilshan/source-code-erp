@@ -82,7 +82,7 @@ class StockMaster
               WHERE `item_id` = '" . (int) $item_id . "' 
               AND `department_id` = '" . (int) $department_id . "' 
               AND `is_active` = 1";
- 
+
         return $db->readQuery($query);
     }
 
@@ -126,6 +126,8 @@ class StockMaster
         return $array;
     }
 
+
+
     // Get available quantity for item + department
     public static function getAvailableQuantity($department_id, $item_id)
     {
@@ -137,10 +139,38 @@ class StockMaster
 
         $db = new Database();
         $result = mysqli_fetch_array($db->readQuery($query));
-           return $result ? (int)$result['quantity'] : 0;
+        return $result ? (int) $result['quantity'] : 0;
     }
 
-    
+    public static function getAvailableQuantityBy($item_id)
+    {
+        $query = "SELECT 
+                sm.department_id, 
+                d.name AS department_name, 
+                SUM(sm.quantity) AS quantity
+              FROM stock_master sm
+              LEFT JOIN department_master d ON sm.department_id = d.id
+              WHERE sm.item_id = " . (int) $item_id . " 
+              AND sm.is_active = 1
+              GROUP BY sm.department_id
+              ORDER BY d.name ASC";
+
+        $db = new Database();
+        $result = $db->readQuery($query);
+
+        $departments = [];
+
+        while ($row = mysqli_fetch_assoc($result)) {
+            $departments[] = [ 
+                'department_name' => $row['department_name'],
+                'quantity' => (int) $row['quantity']
+            ];
+        }
+
+        return $departments;
+    }
+
+
 
     public function transferQuantity($item_id, $from_department_id, $to_department_id, $transfer_qty, $remark = '')
     {

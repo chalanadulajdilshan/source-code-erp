@@ -9,10 +9,13 @@ include 'auth.php';
 <head>
 
     <meta charset="utf-8" />
-    <title> Manage Pages   | <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
+    <title> Manage Pages | <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="#" name="description" />
     <meta content="Themesbrand" name="author" />
+    <!-- App favicon -->
+    <meta content="#" name="description" />
+    <meta content="Themesbrand" name="#" />
     <!-- App favicon -->
     <link rel="shortcut icon" href="assets/images/favicon.ico">
 
@@ -23,9 +26,9 @@ include 'auth.php';
     <!-- App Css-->
     <link href="assets/css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
-
     <link href="assets/libs/sweetalert/sweetalert.css" rel="stylesheet" type="text/css" />
-
+    <link rel="stylesheet" href="assets/libs/@chenfengyuan/datepicker/datepicker.min.css">
+    <link href="assets/libs/bootstrap-datepicker/css/bootstrap-datepicker.min.css" rel="stylesheet">
     <link href="assets/css/preloader.css" rel="stylesheet" type="text/css" />
     <!-- Responsive datatable examples -->
     <!-- DataTables -->
@@ -34,6 +37,8 @@ include 'auth.php';
         type="text/css" />
     <link href="assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet"
         type="text/css" />
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
+
 
 
 
@@ -120,7 +125,29 @@ include 'auth.php';
                                                         foreach ($PAGE_CATEGORY->getActiveCategory() as $key => $page_category) {
                                                             ?>
                                                             <option value="<?php echo $page_category['id']; ?>">
-                                                                <?php echo $page_category['name']; ?></option>
+                                                                <?php echo $page_category['name']; ?>
+                                                            </option>
+                                                            <?php
+                                                        }
+                                                        ?>
+
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3" style="display: none;">
+                                                <label for="Group" class="form-label">Page Sub Category </label>
+                                                <div class="input-group mb-3">
+                                                    <select id="sub_page_category" name="sub_page_category"
+                                                        class="form-select">
+
+                                                        <option value="">-- Select Category --</option>
+                                                        <?php
+                                                        $DEFAULT_DATA = new DefaultData();
+                                                        foreach ($DEFAULT_DATA->pagesSubCategory() as $key => $page_category) {
+                                                            ?>
+                                                            <option value="<?php echo $key; ?>">
+                                                                <?php echo $page_category; ?>
+                                                            </option>
                                                             <?php
                                                         }
                                                         ?>
@@ -136,7 +163,7 @@ include 'auth.php';
                                                         placeholder="Enter Page Name" class="form-control">
                                                     <button class="btn btn-info" type="button" data-bs-toggle="modal"
                                                         data-bs-target="#manage-pages">
-                                                        <i class="uil uil-search me-1"></i> Find Page
+                                                        <i class="uil uil-search me-1"></i>
                                                     </button>
                                                 </div>
                                             </div>
@@ -182,7 +209,7 @@ include 'auth.php';
                     <div class="row">
                         <div class="col-12">
 
-                            <table id="datatable" class="table table-bordered dt-responsive nowrap"
+                            <table id="datatable2" class="table table-bordered dt-responsive nowrap"
                                 style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                 <thead>
                                     <tr>
@@ -214,11 +241,9 @@ include 'auth.php';
                                     <?php } ?>
                                 </tbody>
                             </table>
-
                         </div> <!-- end col -->
                     </div> <!-- end row -->
                 </div>
-
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div>
@@ -242,6 +267,8 @@ include 'auth.php';
     <script src="assets/libs/node-waves/waves.min.js"></script>
     <script src="assets/libs/waypoints/lib/jquery.waypoints.min.js"></script>
     <script src="assets/libs/jquery.counterup/jquery.counterup.min.js"></script>
+    <script src="assets/libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+    <script src="assets/libs/@chenfengyuan/datepicker/datepicker.min.js"></script>
 
     <!-- Required datatable js -->
     <script src="assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
@@ -268,7 +295,13 @@ include 'auth.php';
 
     <!-- App js -->
     <script src="assets/js/app.js"></script>
-
+    <script>
+        $(document).ready(function () {
+            $('#datatable2').DataTable({
+                responsive: true
+            });
+        });
+    </script>
 </body>
 
 </html>
