@@ -166,4 +166,17 @@ jQuery(document).ready(function () {
     $("#create").hide();
     $(".bs-example-modal-xl").modal("hide"); // Close the modal
   });
+
+  //show sub category section 
+  $('#page_category').on('change', function () {
+    const selectedVal = $(this).val();
+
+    if (selectedVal === '4') {
+      $('#sub_page_category').closest('.col-md-3').show();
+    } else {
+      $('#sub_page_category').closest('.col-md-3').hide();
+      $('#sub_page_category').val(''); // reset value if hidden
+    }
+  });
+
 });

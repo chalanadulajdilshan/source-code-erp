@@ -18,8 +18,8 @@
                                     <th>Name</th>
                                     <th>Brand</th>
                                     <th>Cost</th>
-                                    <th>Wholesale Price</th>
-                                    <th>Retail Price</th>
+                                    <th>Cash Price</th>
+                                    <th>Credit Price</th>
                                     <th>Cash Discount</th>
                                     <th>Credit Discount</th>
                                     <th>Status</th>

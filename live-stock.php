@@ -75,6 +75,9 @@ include 'auth.php';
                                                     </thead>
                                                     <tbody>
                                                         <!-- Sample data - replace with your dynamic data -->
+                                                        <?php
+                                                        $ITEM_MASTER = new ItemMaster()
+                                                            ?>
                                                         <tr>
                                                             <td>ITM001</td>
                                                             <td>Sample Item Description</td>
@@ -93,6 +96,7 @@ include 'auth.php';
                                                                 </div>
                                                             </td>
                                                         </tr>
+
                                                         <tr>
                                                             <td>ITM002</td>
                                                             <td>Another Item Description</td>
@@ -110,6 +114,7 @@ include 'auth.php';
                                                                 </div>
                                                             </td>
                                                         </tr>
+
                                                         <!-- Add more sample rows as needed -->
                                                     </tbody>
                                                 </table>

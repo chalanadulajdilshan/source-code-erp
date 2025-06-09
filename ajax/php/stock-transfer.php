@@ -45,6 +45,16 @@ if (isset($_POST['action']) && $_POST['action'] === 'create_stock_transfer') {
 
     $STOCK_MASTER = new StockMaster(null);
 
+    //audit log
+    $AUDIT_LOG = new AuditLog(NUll);
+    $AUDIT_LOG->ref_id = 01;
+    $AUDIT_LOG->ref_code = 'REF/STK/TRN/01';
+    $AUDIT_LOG->action = 'TRN';
+    $AUDIT_LOG->description = 'TRN STOCK NO # REF/TRN/ADJ/01';
+    $AUDIT_LOG->user_id = $_SESSION['id'];
+    $AUDIT_LOG->created_at = date("Y-m-d H:i:s");
+    $AUDIT_LOG->create();
+
     foreach ($codes as $index => $code) {
         $item_id = $code;
 
@@ -148,11 +158,11 @@ if (isset($_POST['action']) && $_POST['action'] === 'get_department_stock_status
     if ($item_id > 0) {
         $STOCK_MASTER = new StockMaster();
         $DEPARTMENT_MASTER = new DepartmentMaster();
-        
+
 
         $results = [];
 
-        foreach ($DEPARTMENT_MASTER->all()  as $dept) {
+        foreach ($DEPARTMENT_MASTER->all() as $dept) {
             $available_qty = $STOCK_MASTER->getAvailableQuantity($dept['id'], $item_id);
             $pending_orders = 10;
 

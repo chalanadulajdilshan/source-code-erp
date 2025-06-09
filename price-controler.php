@@ -93,8 +93,16 @@ include './auth.php';
                                     <form id="form-data">
                                         <div class="row">
 
+                                            <div class="col-md-2">
+                                                <label for="username" class="form-label">Search By Item Code</label>
+                                                <div class="input-group mb-3">
+                                                    <input id="item_code" name="item_code" type="text" class="form-control"
+                                                        placeholder="Search by item code">
 
-                                            <div class="col-md-4">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-2">
                                                 <label for="Department" class="form-label">Select Brand</label>
                                                 <div class="input-group mb-3">
                                                     <select id="brand_id" name="brand_id" class="form-select">
@@ -109,7 +117,7 @@ include './auth.php';
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-4">
+                                            <div class="col-md-3">
                                                 <label for="Department" class="form-label">Select Category</label>
                                                 <div class="input-group mb-3">
                                                     <select id="category_id" name="category_id" class="form-select">
@@ -126,7 +134,7 @@ include './auth.php';
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-4">
+                                            <div class="col-md-2">
                                                 <label for="Department" class="form-label">Select Group</label>
                                                 <div class="input-group mb-3">
                                                     <select id="group_id" name="group_id" class="form-select">
@@ -142,7 +150,33 @@ include './auth.php';
                                                     </select>
                                                 </div>
                                             </div>
+                                            <div class="col-md-3">
+                                                <label for="department_id" class="form-label">Department</label>
+                                                <div class="input-group mb-3">
+                                                    <select id="department_id" name="department_id" class="form-select">
+                                                        <option value="0"> -- All Departments -- </option>
+                                                        <?php
+                                                        $DEPARTMENT_MASTER = new DepartmentMaster(NUll);
+                                                        foreach ($DEPARTMENT_MASTER->getActiveDepartment() as $departments) {
+                                                            if ($US->type != 1) {
+                                                                if ($departments['id'] = $US->department_id) {
+                                                                    ?>
+                                                                    <option value="<?php echo $departments['id'] ?>">
+                                                                        <?php echo $departments['name'] ?>
+                                                                    </option>
+                                                                <?php }
+                                                            } else {
+                                                                ?>
+                                                                <option value="<?php echo $departments['id'] ?>">
+                                                                    <?php echo $departments['name'] ?>
+                                                                </option>
+                                                                <?php
+                                                            }
+                                                        } ?>
 
+                                                    </select>
+                                                </div>
+                                            </div>
 
 
                                             <hr class="my-4">
@@ -155,6 +189,7 @@ include './auth.php';
                                                             <td>#Id</td>
                                                             <th>Item Code</th>
                                                             <th>Note</th>
+                                                            <th>Available Quantity</th>
                                                             <th>Cost</th>
                                                             <th>List Price</th>
                                                             <th>Cash Prices</th>

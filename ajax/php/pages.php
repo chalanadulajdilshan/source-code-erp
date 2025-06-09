@@ -10,6 +10,7 @@ if (isset($_POST['create'])) {
 
     // Set the page details
     $PAGES->page_category = $_POST['page_category'];
+    $PAGES->sub_page_category = $_POST['sub_page_category'];
     $PAGES->page_name = $_POST['page_name'];
     $PAGES->page_url = $_POST['page_url'];
 
@@ -38,6 +39,7 @@ if (isset($_POST['update'])) {
 
     // Update Page details
     $PAGES->page_category = $_POST['page_category'];
+    $PAGES->sub_page_category = $_POST['sub_page_category'];
     $PAGES->page_name = $_POST['page_name'];
     $PAGES->page_url = $_POST['page_url'];
 

@@ -245,14 +245,14 @@ include './auth.php';
                                                     </select>
                                                 </div>
                                             </div>
-                                            <div class=" ">
+                                            <!-- <div class=" ">
                                                 <div class="form-check form-check-inline">
                                                     <input class="form-check-input" type="checkbox"
                                                         name="payment_type[]" id="cash" value="cash">
                                                     <label class="form-check-label" for="cash">Print Invoice
                                                         Amount</label>
                                                 </div>
-                                            </div>
+                                            </div> -->
 
                                             <!-- <div class="col-md-2">
                                                 <label for="payment_type" class="form-label">Payment Type</label>
@@ -273,7 +273,7 @@ include './auth.php';
 
                                             <hr class="my-4">
 
-                                            <ul class="nav nav-pills nav-justified bg-light left-width" role="tablist">
+                                            <!-- <ul class="nav nav-pills nav-justified bg-light left-width" role="tablist">
                                                 <li class="nav-item waves-effect waves-light">
                                                     <a class="nav-link active" data-bs-toggle="tab"
                                                         href="#navpills2-home" role="tab" aria-selected="true">
@@ -290,7 +290,7 @@ include './auth.php';
                                                         <span class="d-none d-sm-block">Dag</span>
                                                     </a>
                                                 </li>
-                                            </ul>
+                                            </ul> -->
 
                                             <div class="tab-content p-3 text-muted">
                                                 <div class="tab-pane active" id="navpills2-home" role="tabpanel">

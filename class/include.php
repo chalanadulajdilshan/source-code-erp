@@ -65,7 +65,7 @@ include_once(dirname(__FILE__) . '/CreateDag.php');
 
 
 
-
+ session_start();
 function dd($data)
 {
 
@@ -73,9 +73,7 @@ function dd($data)
 
     exit();
 }
-if (!isset($_SESSION)) {
-    session_start();
-}
+ 
 function redirect($url)
 {
 

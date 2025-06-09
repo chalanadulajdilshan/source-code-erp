@@ -42,13 +42,31 @@ class DefaultData
         ];
     }
 
-    
+    //pages sub category
+    function pagesSubCategory()
+    {
+        return [
+            1 => "Main",
+            2 => "Sales",
+            3 => "Customer",
+            4 => "Stores",
+            5 => "Others",
+        ];
+    }
+    public function Days()
+    {
+        return [
+            30 => '30 Days',
+            60 => '90 Days',
+            90 => '120 Days'
+        ];
+    }
 
 
     function DagType()
     {
         return array(
-            "canvas" => "CANVAS", 
+            "canvas" => "CANVAS",
             "radial" => "RADIAL",
         );
     }
@@ -56,7 +74,7 @@ class DefaultData
     function DagMake()
     {
         return array(
-            "arpico" => "Arpico", 
+            "arpico" => "Arpico",
             "ceat" => "Ceat",
         );
     }
