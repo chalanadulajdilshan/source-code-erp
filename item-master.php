@@ -3,11 +3,13 @@
 include 'class/include.php';
 include 'auth.php';
 
-$ITEM_MASTER = new ItemMaster(null);
 
-// Get the last inserted package id
-$lastId = $ITEM_MASTER->getLastID();
-$item_id = 'IM' . str_pad($lastId + 1, 3, '0', STR_PAD_LEFT);
+//doc id get by session 
+$DOCUMENT_TRACKING = new DocumentTracking($doc_id);
+
+// Get the last inserted quotation
+$lastId = $DOCUMENT_TRACKING->item_id;
+$item_id = 'ITM/0' . $lastId + 1;
 
 ?>
 <html lang="en">
@@ -18,27 +20,8 @@ $item_id = 'IM' . str_pad($lastId + 1, 3, '0', STR_PAD_LEFT);
     <title>Item Master | <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="<?php echo $COMPANY_PROFILE_DETAILS->name ?>" name="author" />
-    <!-- App favicon -->
-    <link rel="shortcut icon" href="assets/images/favicon.ico">
-
-    <!-- Bootstrap Css -->
-    <link href="assets/css/bootstrap.min.css" id="bootstrap-style" rel="stylesheet" type="text/css" />
-    <!-- Icons Css -->
-    <link href="assets/css/icons.min.css" rel="stylesheet" type="text/css" />
-    <!-- App Css-->
-    <link href="assets/css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
-
-    <link href="assets/libs/sweetalert/sweetalert.css" rel="stylesheet" type="text/css" />
-
-    <link href="assets/css/preloader.css" rel="stylesheet" type="text/css" />
-    <!-- Responsive datatable examples -->
-    <!-- DataTables -->
-    <link href="assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
-    <link href="assets/libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css" rel="stylesheet"
-        type="text/css" />
-    <link href="assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet"
-        type="text/css" />
+    <!-- include main CSS -->
+    <?php include 'main-css.php' ?>
 
 
 
@@ -59,19 +42,26 @@ $item_id = 'IM' . str_pad($lastId + 1, 3, '0', STR_PAD_LEFT);
                 <div class="container-fluid">
                     <div class="row mb-4">
                         <div class="col-md-8 d-flex align-items-center flex-wrap gap-2">
+
                             <a href="#" class="btn btn-success" id="new">
                                 <i class="uil uil-plus me-1"></i> New
                             </a>
-                            <a href="#" class="btn btn-primary" id="create">
-                                <i class="uil uil-save me-1"></i> Save
-                            </a>
-                            <a href="#" class="btn btn-warning" id="update" style="display:none">
-                                <i class="uil uil-edit me-1"></i> Update
-                            </a>
-                            <!-- <a href="#" class="btn btn-danger delete-branch">
-                                <i class="uil uil-trash-alt me-1"></i> Delete
-                            </a> -->
+                            <?php if ($PERMISSIONS['add_page']): ?>
+                                <a href="#" class="btn btn-primary" id="create">
+                                    <i class="uil uil-save me-1"></i> Save
+                                </a>
+                            <?php endif; ?>
+                            <?php if ($PERMISSIONS['edit_page']): ?>
+                                <a href="#" class="btn btn-warning" id="update">
+                                    <i class="uil uil-edit me-1"></i> Update
+                                </a>
+                            <?php endif; ?>
 
+                            <?php if ($PERMISSIONS['delete_page']): ?>
+                                <a href="#" class="btn btn-danger delete-item">
+                                    <i class="uil uil-trash-alt me-1"></i> Delete
+                                </a>
+                            <?php endif; ?>
                         </div>
 
                         <div class="col-md-4 text-md-end text-start mt-3 mt-md-0">
@@ -119,10 +109,12 @@ $item_id = 'IM' . str_pad($lastId + 1, 3, '0', STR_PAD_LEFT);
                                                 <div class="input-group mb-3">
                                                     <input id="code" name="code" type="text" class="form-control"
                                                         value="<?php echo $item_id ?>" readonly>
-                                                    <button class="btn btn-info" type="button" data-bs-toggle="modal"
-                                                        data-bs-target="#item_master">
-                                                        <i class="uil uil-search me-1"></i>
-                                                    </button>
+                                                    <?php if ($PERMISSIONS['search_page']): ?>
+                                                        <button class="btn btn-info" type="button" data-bs-toggle="modal"
+                                                            data-bs-target="#item_master">
+                                                            <i class="uil uil-search me-1"></i>
+                                                        </button>
+                                                    <?php endif; ?>
                                                 </div>
                                             </div>
 
@@ -142,7 +134,7 @@ $item_id = 'IM' . str_pad($lastId + 1, 3, '0', STR_PAD_LEFT);
                                                     <label class="form-label" for="brand">Manufacturer Brand <span
                                                             class="text-danger">*</span></label>
                                                     <select id="brand" name="brand" class="form-select">
-                                                         
+
                                                         <?php
                                                         $BRAND = new Brand(NULL);
                                                         foreach ($BRAND->activeBrands() as $brand) {
@@ -179,7 +171,7 @@ $item_id = 'IM' . str_pad($lastId + 1, 3, '0', STR_PAD_LEFT);
                                                     <label class="form-label" for="group">Item Group <span
                                                             class="text-danger">*</span></label>
                                                     <select id="group" name="group" class="form-select">
-                                                         
+
                                                         <?php
                                                         $GROUP_MASTER = new GroupMaster(NULL);
                                                         foreach ($GROUP_MASTER->getActiveGroups() as $group) {
@@ -196,7 +188,7 @@ $item_id = 'IM' . str_pad($lastId + 1, 3, '0', STR_PAD_LEFT);
                                                     <label class="form-label" for="category">Item Category <span
                                                             class="text-danger">*</span></label>
                                                     <select id="category" name="category" class="form-select">
-                                                        
+
                                                         <?php
                                                         $CATEGORY_MASTER = new CategoryMaster(NULL);
                                                         foreach ($CATEGORY_MASTER->getActiveCategory() as $category) {
@@ -205,7 +197,7 @@ $item_id = 'IM' . str_pad($lastId + 1, 3, '0', STR_PAD_LEFT);
                                                         ?>
                                                     </select>
                                                 </div>
-                                            </div> 
+                                            </div>
                                         </div>
 
                                         <hr class="my-4">
@@ -246,7 +238,7 @@ $item_id = 'IM' . str_pad($lastId + 1, 3, '0', STR_PAD_LEFT);
                                                     <label class="form-label" for="stock_type">Stock Type <span
                                                             class="text-danger">*</span></label>
                                                     <select id="stock_type" name="stock_type" class="form-select">
-                                                        
+
                                                         <?php
                                                         $STOCK_TYPE = new StockType(NULL);
                                                         foreach ($STOCK_TYPE->getActiveStockType() as $stock_type) {
@@ -323,9 +315,50 @@ $item_id = 'IM' . str_pad($lastId + 1, 3, '0', STR_PAD_LEFT);
                     </div>
                 </div> <!-- container-fluid -->
             </div>
-            <?php include 'footer.php' ?>
+
         </div>
     </div>
+
+    <div id="item_master" class="modal fade  " tabindex="-1" role="dialog" aria-labelledby="brandModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="brandModalLabel">Manage Item</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+
+                            <table id="datatable" class="table table-bordered dt-responsive nowrap"
+                                style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>#ID</th>
+                                        <th>Code</th>
+                                        <th>Name</th>
+                                        <th>Brand</th>
+                                        <th>Cost</th>
+                                        <th>Cash Price</th>
+                                        <th>Credit Price</th>
+                                        <th>Cash %</th>
+                                        <th>Credit %</th>
+                                        <th>Status</th>
+                                    </tr>
+
+                                </thead>
+                            </table>
+
+                        </div> <!-- end col -->
+                    </div> <!-- end row -->
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+
+
 
     <!-- Right bar overlay-->
     <div class="rightbar-overlay"></div>
@@ -333,26 +366,9 @@ $item_id = 'IM' . str_pad($lastId + 1, 3, '0', STR_PAD_LEFT);
     <script src="assets/libs/jquery/jquery.min.js"></script>
     <!-- /////////////////////////// -->
     <script src="ajax/js/item-master.js"></script>
-    <script src="ajax/js/common.js"></script>
 
-    <script src="assets/libs/sweetalert/sweetalert-dev.js"></script>
-    <script src="assets/js/jquery.preloader.min.js"></script>
-
-    <script src="assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Required datatable js -->
-    <script src="assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
-    <script src="assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
-    <!-- Buttons examples -->
-    <script src="assets/libs/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
-    <script src="assets/libs/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js"></script>
-
-    <!-- Responsive examples -->
-    <script src="assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
-    <script src="assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
-
-    <!-- Datatable init js -->
-    <script src="assets/js/pages/datatables.init.js"></script>
+    <!-- include main js  -->
+    <?php include 'main-js.php' ?>
 
 
 </body>

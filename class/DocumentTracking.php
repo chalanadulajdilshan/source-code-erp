@@ -6,6 +6,7 @@ class DocumentTracking
     public $company_code;
     public $accounting_year_start;
     public $accounting_year_end;
+    public $item_id;
     public $invoice_id;
     public $cash_id;
     public $credit_id;
@@ -13,7 +14,7 @@ class DocumentTracking
     public $po_id;
     public $pr_id;
     public $arn_id;
-
+    public $payment_receipt_id;
     public $sales_return_id;
     public $vat_percentage;
     public $created_at;
@@ -131,12 +132,14 @@ class DocumentTracking
 
         // Map accepted types to column names
         $columns = [
+            'item' => 'item_id',
             'purchase' => 'po_id',
             'quotation' => 'quotation_id',
             'invoice' => 'invoice_id',
             'cash' => 'cash_id',
             'credit' => 'credit_id',
-            'sales_return'=>'sales_return_id',
+            'sales_return' => 'sales_return_id',
+            'payment_receipt' => 'payment_receipt_id',
             'arn' => 'arn_id'
         ];
 

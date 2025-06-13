@@ -14,7 +14,7 @@ jQuery(document).ready(function () {
             url: "ajax/php/item-master.php",
             type: "POST",
             data: function (d) {
-                d.filter = true;
+                d.filter_by_invoice = true;
                 d.status = 1;
                 d.stock_only = 1;
             },
@@ -32,11 +32,11 @@ jQuery(document).ready(function () {
             { data: "name", title: "Name" },
             { data: "brand", title: "Brand" },
             { data: "cost", title: "Cost" },
-            { data: "cash_price", title: "Wholesale" },
+            { data: "cash_price", title: "Credit" },
             { data: "credit_price", title: "Retail" },
-            { data: "cash_discount", title: "Cash Dis %" },
-            { data: "credit_discount", title: "Credit Dis %" },
-            { data: "status_label", title: "Status" }
+            { data: "cash_discount", title: "Cash %" },
+            { data: "credit_discount", title: "Credit %" },
+            
         ],
         order: [[0, 'desc']],
         pageLength: 100

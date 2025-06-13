@@ -60,8 +60,8 @@ if (isset($_POST['update'])) {
 }
 
 if (isset($_POST['delete']) && isset($_POST['id'])) {
-    $design = new DesignMaster($_POST['id']);
-    $result = $design->delete(); // Make sure this method exists
+    $$DESIGN_MASTER = new DesignMaster($_POST['id']);
+    $result = $DESIGN_MASTER->delete(); // Make sure this method exists
 
     if ($result) {
         echo json_encode(['status' => 'success']);

@@ -105,6 +105,21 @@ class Branch
         return $array_res;
     }
 
+        public function getByStatus($status)
+    {
+        $query = "SELECT *   FROM `branches` WHERE `active_status` = $status ORDER BY `name` ASC";
+        $db = new Database();
+        $result = $db->readQuery($query);
+        $array_res = array();
+
+        while ($row = mysqli_fetch_array($result)) {
+            array_push($array_res, $row);
+        }
+
+        return $array_res;
+    }
+
+
     // Get all branches for a specific bank
     public function getByBankId($bank_id)
     {

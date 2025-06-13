@@ -233,7 +233,7 @@ $purchase_return_id = $COMPANY_PROFILE_DETAILS->company_code . '/PR/00/0' . $las
 
                                                     <tbody>
                                                         <?php
-                                                        $ARN_RETURN = new ArnReturn(null);
+                                                        $ARN_RETURN = new PurchaseReturn(null);
                                                         foreach ($ARN_RETURN->all() as $key => $return) {
                                                             $key++;
                                                             $DEPARTMENT = new DepartmentMaster($return['department_id']);

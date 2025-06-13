@@ -1,6 +1,6 @@
 <?php
 
-class ArnReturn
+class PurchaseReturn
 {
     public $id;
     public $ref_no;

@@ -26,7 +26,7 @@ function selectArnOrder(arnId, arnNumber) {
         $('#returnModal').show();
     });
 
-   $(document).on('click', '#submitARNReturn', function () {
+   $(document).on('click', '#submitPurchaseReturn', function () {
 
         const refNo = document.getElementById('refNo').value;
         const reason = document.getElementById('returnReason').value;
