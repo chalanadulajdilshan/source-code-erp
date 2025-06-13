@@ -245,6 +245,24 @@ include './auth.php';
                                                     </select>
                                                 </div>
                                             </div>
+
+                                            
+                                            <div class="col-md-3">
+                                                <label for="year" class="form-label">Select Item Year</label>
+                                                <div class="input-group mb-3">
+                                                    <select id="year" name="year" class="form-select">
+                                                        <option> -- Select Year -- </option>
+                                                        <?php
+                                                        $DEFAULT_DATA = new DefaultData();
+                                                        foreach ($DEFAULT_DATA->Years() as $year) {
+                                                            ?>
+                                                            <option value="<?php echo $year ?>">
+                                                                <?php echo $year ?></option>
+                                                        <?php } ?>
+                                                    </select>
+                                                </div>
+                                            </div>
+
                                             <!-- <div class=" ">
                                                 <div class="form-check form-check-inline">
                                                     <input class="form-check-input" type="checkbox"

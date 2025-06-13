@@ -576,8 +576,7 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
     <script src="assets/libs/jquery/jquery.min.js"></script>
     <!-- /////////////////////////// -->
     <script src="ajax/js/quotation.js"></script>
-    <script src="ajax/js/common.js"></script>
-
+ 
 
     <script src="assets/libs/sweetalert/sweetalert-dev.js"></script>
     <script src="assets/js/jquery.preloader.min.js"></script>

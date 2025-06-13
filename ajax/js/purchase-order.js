@@ -30,11 +30,11 @@ jQuery(document).ready(function () {
             { data: "name", title: "Name" },
             { data: "brand", title: "Brand" },
             { data: "cost", title: "Cost" },
-            { data: "cash_price", title: "Wholesale" },
-            { data: "credit_price", title: "Retail" },
-            { data: "cash_discount", title: "Cash Dis %" },
-            { data: "credit_discount", title: "Credit Dis %" },
-            { data: "status_label", title: "Status" }
+            { data: "cash_price", title: "Cash" },
+            { data: "credit_price", title: "Credit" },
+            { data: "cash_discount", title: "Cash %" },
+            { data: "credit_discount", title: "Credit %" },
+
         ],
         order: [[0, 'desc']],
         pageLength: 100
@@ -624,7 +624,7 @@ jQuery(document).ready(function () {
                             const price = parseFloat(item.unit_price) || 0;
                             const qty = parseFloat(item.quantity) || 0;
                             const total = parseFloat(item.total_price) || 0;
-                              
+
                             const row = `
                                 <tr data-item-id="${item.item_id}">
                                 <td>${item.item_code} - ${item.item_name}</td>

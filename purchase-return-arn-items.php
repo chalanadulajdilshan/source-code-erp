@@ -99,7 +99,7 @@ $result = $db->readQuery($query);
                 <textarea id="returnReason" class="form-control" required></textarea>
             </div>
             <div class="modal-footer">
-                <button type="button" id="submitARNReturn" class="btn btn-primary">Save ARN Return</button>
+                <button type="button" id="submitPurchaseReturn" class="btn btn-primary">Save ARN Return</button>
                 <button type="button" class="btn btn-danger" onclick="$('#returnModal').hide();">Cancel</button>
             </div>
         </div>

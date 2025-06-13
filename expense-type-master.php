@@ -15,7 +15,7 @@ $expenses_id = 'EX/00/' . $lastId + 1;
 <head>
 
     <meta charset="utf-8" />
-     <title>Expensewww   | <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
+     <title>Expense Type   | <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="#" name="description" />
     <meta content="Themesbrand" name="author" />

@@ -2,7 +2,7 @@
 include '../../class/include.php';
 
 if (isset($_GET['userTypeId'])) {
-    $userTypeId = $_GET['userTypeId'];
+    $userTypeId = (int)$_GET['userTypeId'];
 
     // Get the pages and their permissions for the selected user type
     $permissionsData = getPermissionsForUserType($userTypeId);
@@ -13,9 +13,6 @@ if (isset($_GET['userTypeId'])) {
 
 function getPermissionsForUserType($userTypeId)
 {
-    // Assume the function fetches pages and their permissions for a specific user type.
-    // This is just a sample, adjust based on your actual database structure.
-
     $pages = [];
     $PAGES = new Pages(null);
 
@@ -23,14 +20,20 @@ function getPermissionsForUserType($userTypeId)
     foreach ($PAGES->all() as $page) {
         $PAGE_CATEGORY = new PageCategory($page['page_category']);
 
-        // Fetch permissions for the user type (you should implement this based on your DB structure)
+        // Fetch permissions for the user type
         $permissions = getPermissionsForPageAndUserType($page['id'], $userTypeId);
 
+        // Flatten permission values for frontend
         $pages[] = [
-            'pageId' => $page['id'],
+            'pageId'       => $page['id'],
             'pageCategory' => $PAGE_CATEGORY->name,
-            'pageName' => $page['page_name'],
-            'permissions' => $permissions
+            'pageName'     => $page['page_name'],
+            'add_page'     => $permissions['add'],
+            'edit_page'    => $permissions['edit'],
+            'delete_page'  => $permissions['delete'],
+            'search_page'  => $permissions['search'],
+            'print_page'   => $permissions['print'],
+            'other_page'   => $permissions['other']
         ];
     }
 
@@ -39,34 +42,34 @@ function getPermissionsForUserType($userTypeId)
 
 function getPermissionsForPageAndUserType($pageId, $userTypeId)
 {
-    $PERMISSIONS = new Permission(null);
-    $USERPERMISSION = new UserPermission(null);
- 
-    // Secure the IDs
     $pageId = (int) $pageId;
     $userTypeId = (int) $userTypeId;
 
-    // Initialize all permissions to false
-    $permissions = [];
-    foreach ($PERMISSIONS->all() as $perm) {
-        $key = strtolower($perm['permission_name']);
-        $permissions[$key] = false;
-    }
+    $permissions = [
+        'add'    => false,
+        'edit'   => false,
+        'delete' => false,
+        'search' => false,
+        'print'  => false,
+        'other'  => false,
+    ];
 
-    // Get all user_permission records for this user and page
-    $userPermissions = $USERPERMISSION->getUserPermissionByPages($userTypeId, $pageId);
+    $db = new Database();
+    $query = "SELECT * FROM `user_permission` 
+              WHERE `user_id` = $userTypeId AND `page_id` = $pageId 
+              LIMIT 1";
 
-    // If user has permissions, map permission IDs to names
-    foreach ($userPermissions as $up) {
-        $permObj = new Permission($up['permission_id']);
-        $key = strtolower($permObj->permission_name);
-        if (isset($permissions[$key])) {
-            $permissions[$key] = true;
-        }
+    $result = $db->readQuery($query);
+
+    if ($row = mysqli_fetch_assoc($result)) {
+        $permissions['add']    = (bool) $row['add_page'];
+        $permissions['edit']   = (bool) $row['edit_page'];
+        $permissions['delete'] = (bool) $row['delete_page'];
+        $permissions['search'] = (bool) $row['search_page'];
+        $permissions['print']  = (bool) $row['print_page'];
+        $permissions['other']  = (bool) $row['other_page'];
     }
 
     return $permissions;
 }
-
-
 ?>

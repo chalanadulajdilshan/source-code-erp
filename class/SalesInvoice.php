@@ -17,6 +17,7 @@ class SalesInvoice
     public $tax;
     public $grand_total;
     public $remark;
+    public $status;
 
     // Constructor to initialize the SalesInvoice object with an ID
     public function __construct($id = null)
@@ -42,6 +43,7 @@ class SalesInvoice
                 $this->tax = $result['tax'];
                 $this->grand_total = $result['grand_total'];
                 $this->remark = $result['remark'];
+                $this->status = $result['status'];
             }
         }
     }
@@ -322,6 +324,21 @@ class SalesInvoice
         }
 
         return $data;
+
+    }
+
+    public function getCreditInvoicesByCustomerAndStatus($status, $customer_id)
+    {
+        $query = "SELECT * FROM `sales_invoice` where `sale_type` = 2 and `status`= $status and `customer_id` = $customer_id ORDER BY `invoice_date` DESC";
+        $db = new Database();
+        $result = $db->readQuery($query);
+        $array_res = array();
+
+        while ($row = mysqli_fetch_array($result)) {
+            array_push($array_res, $row);
+        }
+
+        return $array_res;
     }
 
 }
