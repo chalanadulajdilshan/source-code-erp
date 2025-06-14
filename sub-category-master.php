@@ -123,7 +123,7 @@ $sub_category_id = 'SC/00/' . $lastId + 1;
                                                 
                                                     <button class="btn btn-info" type="button"  data-bs-toggle="modal"
                                                     data-bs-target="#subMasterModel">
-                                                        <i class="uil uil-search me-1"></i> Find
+                                                        <i class="uil uil-search me-1"></i>  
                                                     </button>
                                                 </div>
                                             </div>
@@ -198,7 +198,7 @@ $sub_category_id = 'SC/00/' . $lastId + 1;
                     <div class="row">
                         <div class="col-12">
 
-                            <table id="datatable" class="table table-bordered dt-responsive nowrap"
+                            <table id="sub_category_table" class="table table-bordered dt-responsive nowrap"
                                 style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                 <thead>
                                     <tr>
@@ -293,7 +293,9 @@ $sub_category_id = 'SC/00/' . $lastId + 1;
 
     <!-- App js -->
     <script src="assets/js/app.js"></script>
-
+    <script>
+        $('#sub_category_table').DataTable();
+    </script>
 </body>
 
 </html>

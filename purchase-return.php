@@ -176,12 +176,7 @@ $purchase_return_id = $COMPANY_PROFILE_DETAILS->company_code . '/PR/00/0' . $las
                                                             placeholder="Supply Code" readonly>
                                                     </div>
                                                     <input id="customer_name" name="customer_name" type="text"
-                                                        class="form-control" placeholder="Supply Name" readonly>
-
-                                                    <button class="btn btn-info" type="button" data-bs-toggle="modal"
-                                                        data-bs-target="#supplierModal">
-                                                        <i class="uil uil-search me-1"></i>
-                                                    </button>
+                                                        class="form-control" placeholder="Supply Name" readonly> 
                                                 </div>
                                             </div>
 

@@ -1,5 +1,6 @@
 jQuery(document).ready(function () {
 
+
     var table = $('#datatable').DataTable({
 
         processing: true,
@@ -39,7 +40,6 @@ jQuery(document).ready(function () {
     });
 
 
-
     // On row click, load selected item into input fields
     $('#datatable tbody').on('click', 'tr', function () {
         var data = table.row(this).data();
@@ -67,15 +67,15 @@ jQuery(document).ready(function () {
         $('#item_id').val(data.id);
         $('#code').val(data.code);
         $('#name').val(data.name);
-        $('#brand').val(data.brand_id);
+        $('#brand').val(data.brand_id);   
         $('#size').val(data.size);
-        $('#pattern').val(data.pattern);
-        $('#category').val(data.category_id);
+        $('#pattern').val(data.pattern);    
+        $('#category').val(data.category_id);   
         $('#cost').val(data.cost);
         $('#group').val(data.group);
         $('#re_order_level').val(data.re_order_level);
         $('#re_order_qty').val(data.re_order_qty);
-        $('#stock_type').val(data.stock_type);
+        $('#stock_type').val(data.stock_type);  
         $('#cash_price').val(data.cash_price);
         $('#credit_price').val(data.credit_price);
         $('#cash_discount').val(data.cash_discount);
@@ -155,7 +155,7 @@ jQuery(document).ready(function () {
         } else if (!$('#cash_price').val() || $('#cash_price').val().length === 0) {
             swal({
                 title: "Error!",
-                text: "Please enter Cash price",
+                text: "Please enter wholesale price",
                 type: 'error',
                 timer: 2000,
                 showConfirmButton: false
@@ -163,7 +163,7 @@ jQuery(document).ready(function () {
         } else if (!$('#credit_price').val() || $('#credit_price').val().length === 0) {
             swal({
                 title: "Error!",
-                text: "Please enter Credit price",
+                text: "Please enter retail price",
                 type: 'error',
                 timer: 2000,
                 showConfirmButton: false
@@ -273,7 +273,7 @@ jQuery(document).ready(function () {
         } else if (!$('#cash_price').val() || $('#cash_price').val().length === 0) {
             swal({
                 title: "Error!",
-                text: "Please enter Cash price",
+                text: "Please enter wholesale price",
                 type: 'error',
                 timer: 2000,
                 showConfirmButton: false
@@ -349,77 +349,7 @@ jQuery(document).ready(function () {
         $("#create").show();
     });
 
-    $(document).on("click", ".delete-item", function (e) {
-        e.preventDefault();
 
-        var id = $("#item_id").val();
-        var name = $("#name").val();
-
-        if (!name || name === "") {
-            swal({
-                title: "Error!",
-                text: "Please select a Item Master first.",
-                type: "error",
-                timer: 2000,
-                showConfirmButton: false,
-            });
-            return;
-        }
-
-        swal(
-            {
-                title: "Are you sure?",
-                text: "Do you want to delete '" + name + "' Item Master?",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#d33",
-                cancelButtonColor: "#6c757d",
-                confirmButtonText: "Yes, delete it!",
-                cancelButtonText: "Cancel",
-                closeOnConfirm: false,
-            },
-            function (isConfirm) {
-                if (isConfirm) {
-                    $(".someBlock").preloader();
-
-                    $.ajax({
-                        url: "ajax/php/item-master.php",
-                        type: "POST",
-                        data: {
-                            id: id,
-                            delete: true,
-                        },
-                        dataType: "json",
-                        success: function (response) {
-                            $(".someBlock").preloader("remove");
-
-                            if (response.status === "success") {
-                                swal({
-                                    title: "Deleted!",
-                                    text: "Design Master has been deleted.",
-                                    type: "success",
-                                    timer: 2000,
-                                    showConfirmButton: false,
-                                });
-
-                                setTimeout(() => {
-                                    window.location.reload();
-                                }, 2000);
-                            } else {
-                                swal({
-                                    title: "Error!",
-                                    text: "Something went wrong.",
-                                    type: "error",
-                                    timer: 2000,
-                                    showConfirmButton: false,
-                                });
-                            }
-                        },
-                    });
-                }
-            }
-        );
-    });
-
+    
 
 });
