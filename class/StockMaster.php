@@ -161,7 +161,7 @@ class StockMaster
         $departments = [];
 
         while ($row = mysqli_fetch_assoc($result)) {
-            $departments[] = [ 
+            $departments[] = [
                 'department_name' => $row['department_name'],
                 'quantity' => (int) $row['quantity']
             ];
@@ -316,6 +316,19 @@ class StockMaster
         $STOCK_TRANSACTION->create();
 
         return ['status' => 'success', 'message' => 'Stock adjusted successfully.'];
+    }
+    public static function getTotalAvailableQuantity($item_id)
+    {
+        $query = "SELECT SUM(quantity) AS total_quantity
+              FROM stock_master
+              WHERE item_id = " . (int) $item_id . " 
+                AND is_active = 1";
+
+        $db = new Database();
+        $result = $db->readQuery($query);
+        $row = mysqli_fetch_assoc($result);
+
+        return (int) $row['total_quantity'];
     }
 
 
