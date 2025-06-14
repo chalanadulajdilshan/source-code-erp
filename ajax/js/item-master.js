@@ -27,11 +27,8 @@ jQuery(document).ready(function () {
             { data: "code", title: "Code" },
             { data: "name", title: "Name" },
             { data: "brand", title: "Brand" },
-            { data: "cost", title: "Cost" },
-            { data: "cash_price", title: "Cash" },
-            { data: "credit_price", title: "Credit" },
-            { data: "cash_discount", title: "Cash Dis %" },
-            { data: "credit_discount", title: "Credit Dis %" },
+            { data: "category", title: "Category" },
+            { data: "qty", title: "Quantity" },
             { data: "status_label", title: "Status" }
         ],
         order: [[0, 'desc']],
@@ -48,12 +45,6 @@ jQuery(document).ready(function () {
         const salesType = $('#sales_type').val();
         const paymentType = $('#payment_type').val();
 
-        // Prices and Discounts
-        if (salesType == 1) {
-            $('#itemPrice').val(data.cash_price.replace(/,/g, ''));
-        } else if (salesType == 2) {
-            $('#itemPrice').val(data.credit_price.replace(/,/g, ''));
-        }
 
         if (paymentType == 1) {
             $('#itemDiscount').val(data.cash_discount);
@@ -71,15 +62,11 @@ jQuery(document).ready(function () {
         $('#size').val(data.size);
         $('#pattern').val(data.pattern);
         $('#category').val(data.category_id);
-        $('#cost').val(data.cost);
         $('#group').val(data.group);
         $('#re_order_level').val(data.re_order_level);
         $('#re_order_qty').val(data.re_order_qty);
         $('#stock_type').val(data.stock_type);
-        $('#cash_price').val(data.cash_price);
-        $('#credit_price').val(data.credit_price);
-        $('#cash_discount').val(data.cash_discount);
-        $('#credit_discount').val(data.credit_discount);
+
         $('#note').val(data.note);
 
         // Checkbox
@@ -136,34 +123,10 @@ jQuery(document).ready(function () {
                 timer: 2000,
                 showConfirmButton: false
             });
-        } else if (!$('#cost').val() || $('#cost').val().length === 0) {
-            swal({
-                title: "Error!",
-                text: "Please enter item cost",
-                type: 'error',
-                timer: 2000,
-                showConfirmButton: false
-            });
-        } else if (!$('#re_order_level').val() || $('#re_order_level').val().length === 0) {
+        }else if (!$('#re_order_level').val() || $('#re_order_level').val().length === 0) {
             swal({
                 title: "Error!",
                 text: "Please enter re-order level",
-                type: 'error',
-                timer: 2000,
-                showConfirmButton: false
-            });
-        } else if (!$('#cash_price').val() || $('#cash_price').val().length === 0) {
-            swal({
-                title: "Error!",
-                text: "Please enter Cash price",
-                type: 'error',
-                timer: 2000,
-                showConfirmButton: false
-            });
-        } else if (!$('#credit_price').val() || $('#credit_price').val().length === 0) {
-            swal({
-                title: "Error!",
-                text: "Please enter Credit price",
                 type: 'error',
                 timer: 2000,
                 showConfirmButton: false
@@ -254,15 +217,7 @@ jQuery(document).ready(function () {
                 timer: 2000,
                 showConfirmButton: false
             });
-        } else if (!$('#cost').val() || $('#cost').val().length === 0) {
-            swal({
-                title: "Error!",
-                text: "Please enter item cost",
-                type: 'error',
-                timer: 2000,
-                showConfirmButton: false
-            });
-        } else if (!$('#re_order_level').val() || $('#re_order_level').val().length === 0) {
+        }else if (!$('#re_order_level').val() || $('#re_order_level').val().length === 0) {
             swal({
                 title: "Error!",
                 text: "Please enter re-order level",
@@ -270,23 +225,7 @@ jQuery(document).ready(function () {
                 timer: 2000,
                 showConfirmButton: false
             });
-        } else if (!$('#cash_price').val() || $('#cash_price').val().length === 0) {
-            swal({
-                title: "Error!",
-                text: "Please enter Cash price",
-                type: 'error',
-                timer: 2000,
-                showConfirmButton: false
-            });
-        } else if (!$('#credit_price').val() || $('#credit_price').val().length === 0) {
-            swal({
-                title: "Error!",
-                text: "Please enter retail price",
-                type: 'error',
-                timer: 2000,
-                showConfirmButton: false
-            });
-        } else {
+        }else {
 
             // Preloader start (optional if you use preloader plugin)
             $('.someBlock').preloader();
