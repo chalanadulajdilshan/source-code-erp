@@ -435,6 +435,9 @@ $dag_id = 'CD-00' . $lastId + 1;
         <!-- App js -->
         <script src="assets/js/app.js"></script>
         <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+
+
+        
         <script>
             $('#quotation_table').DataTable();
             $(function () {

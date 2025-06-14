@@ -117,10 +117,11 @@ $category_id = 'CA00' . $lastId + 1;
                                                 <label class="form-label" for="itemCode">Category Code</label>
                                                 <div class="input-group mb-3">
                                                     <input id="code" name="code" type="text" class="form-control"
-                                                        placeholder="Enter Category Code" readonly value="<?php echo $category_id ?>">
+                                                        placeholder="Enter Category Code" readonly
+                                                        value="<?php echo $category_id ?>">
                                                     <button class="btn btn-info" type="button" data-bs-toggle="modal"
                                                         data-bs-target="#category_master">
-                                                        <i class="uil uil-search me-1"></i>  
+                                                        <i class="uil uil-search me-1"></i>
                                                     </button>
                                                 </div>
                                             </div>
@@ -167,69 +168,69 @@ $category_id = 'CA00' . $lastId + 1;
     <!-- END layout-wrapper -->
 
 
-  <!-- category master file model open -->
-  <div class="modal fade  " id="category_master" tabindex="-1" role="dialog" aria-labelledby="categoryModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
+    <!-- category master file model open -->
+    <div class="modal fade  " id="category_master" tabindex="-1" role="dialog" aria-labelledby="categoryModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
 
-            <div class="modal-header">
-                <h5 class="modal-title" id="categoryModalLabel">Manage Categories</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="categoryModalLabel">Manage Categories</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
 
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-12">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
 
-                        <table id="datatable" class="table table-bordered dt-responsive nowrap"
-                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Code</th>
-                                    <th>Name</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                <?php
-                                $CATEGORY = new CategoryMaster(NULL);
-                                foreach ($CATEGORY->all() as $key => $category) {
-                                    $key++;
-                                    ?>
-                                    <tr class="select-category" data-id="<?php echo $category['id']; ?>"
-                                        data-code="<?php echo htmlspecialchars($category['code']); ?>"
-                                        data-name="<?php echo htmlspecialchars($category['name']); ?>"
-                                        data-queue="<?php echo htmlspecialchars($category['queue']); ?>"
-                                        data-active="<?php echo $category['is_active']; ?>">
-
-                                        <td><?php echo $key; ?></td>
-                                        <td><?php echo htmlspecialchars($category['code']); ?></td>
-                                        <td><?php echo htmlspecialchars($category['name']); ?></td>
-                                        <td>
-                                            <?php if ($category['is_active'] == 1): ?>
-                                                <span class="badge bg-soft-success font-size-12">Active</span>
-                                            <?php else: ?>
-                                                <span class="badge bg-soft-danger font-size-12">Inactive</span>
-                                            <?php endif; ?>
-                                        </td>
+                            <table id="category_table" class="table table-bordered dt-responsive nowrap"
+                                style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Code</th>
+                                        <th>Name</th>
+                                        <th>Status</th>
                                     </tr>
-                                <?php } ?>
-                            </tbody>
-                        </table>
+                                </thead>
 
-                    </div> <!-- end col -->
-                </div> <!-- end row -->
-            </div>
+                                <tbody>
+                                    <?php
+                                    $CATEGORY = new CategoryMaster(NULL);
+                                    foreach ($CATEGORY->all() as $key => $category) {
+                                        $key++;
+                                        ?>
+                                        <tr class="select-category" data-id="<?php echo $category['id']; ?>"
+                                            data-code="<?php echo htmlspecialchars($category['code']); ?>"
+                                            data-name="<?php echo htmlspecialchars($category['name']); ?>"
+                                            data-queue="<?php echo htmlspecialchars($category['queue']); ?>"
+                                            data-active="<?php echo $category['is_active']; ?>">
 
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div>
+                                            <td><?php echo $key; ?></td>
+                                            <td><?php echo htmlspecialchars($category['code']); ?></td>
+                                            <td><?php echo htmlspecialchars($category['name']); ?></td>
+                                            <td>
+                                                <?php if ($category['is_active'] == 1): ?>
+                                                    <span class="badge bg-soft-success font-size-12">Active</span>
+                                                <?php else: ?>
+                                                    <span class="badge bg-soft-danger font-size-12">Inactive</span>
+                                                <?php endif; ?>
+                                            </td>
+                                        </tr>
+                                    <?php } ?>
+                                </tbody>
+                            </table>
 
-<!-- model close -->
-  
+                        </div> <!-- end col -->
+                    </div> <!-- end row -->
+                </div>
+
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+
+    <!-- model close -->
+
 
 
     <!-- Right bar overlay-->
@@ -276,7 +277,9 @@ $category_id = 'CA00' . $lastId + 1;
 
     <!-- App js -->
     <script src="assets/js/app.js"></script>
-
+    <script>
+        $('#category_table').DataTable();
+    </script>
 </body>
 
 </html>
