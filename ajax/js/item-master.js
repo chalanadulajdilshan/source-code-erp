@@ -1,6 +1,5 @@
 jQuery(document).ready(function () {
 
-
     var table = $('#datatable').DataTable({
 
         processing: true,
@@ -28,16 +27,14 @@ jQuery(document).ready(function () {
             { data: "code", title: "Code" },
             { data: "name", title: "Name" },
             { data: "brand", title: "Brand" },
-            { data: "cost", title: "Cost" },
-            { data: "cash_price", title: "Cash" },
-            { data: "credit_price", title: "Credit" },
-            { data: "cash_discount", title: "Cash Dis %" },
-            { data: "credit_discount", title: "Credit Dis %" },
+            { data: "category", title: "Category" },
+            { data: "qty", title: "Quantity" },
             { data: "status_label", title: "Status" }
         ],
         order: [[0, 'desc']],
         pageLength: 100
     });
+
 
 
     // On row click, load selected item into input fields
@@ -48,12 +45,6 @@ jQuery(document).ready(function () {
         const salesType = $('#sales_type').val();
         const paymentType = $('#payment_type').val();
 
-        // Prices and Discounts
-        if (salesType == 1) {
-            $('#itemPrice').val(data.cash_price.replace(/,/g, ''));
-        } else if (salesType == 2) {
-            $('#itemPrice').val(data.credit_price.replace(/,/g, ''));
-        }
 
         if (paymentType == 1) {
             $('#itemDiscount').val(data.cash_discount);
@@ -67,19 +58,15 @@ jQuery(document).ready(function () {
         $('#item_id').val(data.id);
         $('#code').val(data.code);
         $('#name').val(data.name);
-        $('#brand').val(data.brand_id);   
+        $('#brand').val(data.brand_id);
         $('#size').val(data.size);
-        $('#pattern').val(data.pattern);    
-        $('#category').val(data.category_id);   
-        $('#cost').val(data.cost);
+        $('#pattern').val(data.pattern);
+        $('#category').val(data.category_id);
         $('#group').val(data.group);
         $('#re_order_level').val(data.re_order_level);
         $('#re_order_qty').val(data.re_order_qty);
-        $('#stock_type').val(data.stock_type);  
-        $('#cash_price').val(data.cash_price);
-        $('#credit_price').val(data.credit_price);
-        $('#cash_discount').val(data.cash_discount);
-        $('#credit_discount').val(data.credit_discount);
+        $('#stock_type').val(data.stock_type);
+
         $('#note').val(data.note);
 
         // Checkbox
@@ -136,34 +123,10 @@ jQuery(document).ready(function () {
                 timer: 2000,
                 showConfirmButton: false
             });
-        } else if (!$('#cost').val() || $('#cost').val().length === 0) {
-            swal({
-                title: "Error!",
-                text: "Please enter item cost",
-                type: 'error',
-                timer: 2000,
-                showConfirmButton: false
-            });
-        } else if (!$('#re_order_level').val() || $('#re_order_level').val().length === 0) {
+        }else if (!$('#re_order_level').val() || $('#re_order_level').val().length === 0) {
             swal({
                 title: "Error!",
                 text: "Please enter re-order level",
-                type: 'error',
-                timer: 2000,
-                showConfirmButton: false
-            });
-        } else if (!$('#cash_price').val() || $('#cash_price').val().length === 0) {
-            swal({
-                title: "Error!",
-                text: "Please enter wholesale price",
-                type: 'error',
-                timer: 2000,
-                showConfirmButton: false
-            });
-        } else if (!$('#credit_price').val() || $('#credit_price').val().length === 0) {
-            swal({
-                title: "Error!",
-                text: "Please enter retail price",
                 type: 'error',
                 timer: 2000,
                 showConfirmButton: false
@@ -254,15 +217,7 @@ jQuery(document).ready(function () {
                 timer: 2000,
                 showConfirmButton: false
             });
-        } else if (!$('#cost').val() || $('#cost').val().length === 0) {
-            swal({
-                title: "Error!",
-                text: "Please enter item cost",
-                type: 'error',
-                timer: 2000,
-                showConfirmButton: false
-            });
-        } else if (!$('#re_order_level').val() || $('#re_order_level').val().length === 0) {
+        }else if (!$('#re_order_level').val() || $('#re_order_level').val().length === 0) {
             swal({
                 title: "Error!",
                 text: "Please enter re-order level",
@@ -270,23 +225,7 @@ jQuery(document).ready(function () {
                 timer: 2000,
                 showConfirmButton: false
             });
-        } else if (!$('#cash_price').val() || $('#cash_price').val().length === 0) {
-            swal({
-                title: "Error!",
-                text: "Please enter wholesale price",
-                type: 'error',
-                timer: 2000,
-                showConfirmButton: false
-            });
-        } else if (!$('#credit_price').val() || $('#credit_price').val().length === 0) {
-            swal({
-                title: "Error!",
-                text: "Please enter retail price",
-                type: 'error',
-                timer: 2000,
-                showConfirmButton: false
-            });
-        } else {
+        }else {
 
             // Preloader start (optional if you use preloader plugin)
             $('.someBlock').preloader();
@@ -349,7 +288,77 @@ jQuery(document).ready(function () {
         $("#create").show();
     });
 
+    $(document).on("click", ".delete-item", function (e) {
+        e.preventDefault();
 
-    
+        var id = $("#item_id").val();
+        var name = $("#name").val();
+
+        if (!name || name === "") {
+            swal({
+                title: "Error!",
+                text: "Please select a Item Master first.",
+                type: "error",
+                timer: 2000,
+                showConfirmButton: false,
+            });
+            return;
+        }
+
+        swal(
+            {
+                title: "Are you sure?",
+                text: "Do you want to delete '" + name + "' Item Master?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#6c757d",
+                confirmButtonText: "Yes, delete it!",
+                cancelButtonText: "Cancel",
+                closeOnConfirm: false,
+            },
+            function (isConfirm) {
+                if (isConfirm) {
+                    $(".someBlock").preloader();
+
+                    $.ajax({
+                        url: "ajax/php/item-master.php",
+                        type: "POST",
+                        data: {
+                            id: id,
+                            delete: true,
+                        },
+                        dataType: "json",
+                        success: function (response) {
+                            $(".someBlock").preloader("remove");
+
+                            if (response.status === "success") {
+                                swal({
+                                    title: "Deleted!",
+                                    text: "Design Master has been deleted.",
+                                    type: "success",
+                                    timer: 2000,
+                                    showConfirmButton: false,
+                                });
+
+                                setTimeout(() => {
+                                    window.location.reload();
+                                }, 2000);
+                            } else {
+                                swal({
+                                    title: "Error!",
+                                    text: "Something went wrong.",
+                                    type: "error",
+                                    timer: 2000,
+                                    showConfirmButton: false,
+                                });
+                            }
+                        },
+                    });
+                }
+            }
+        );
+    });
+
 
 });
