@@ -11,15 +11,9 @@ class ItemMaster
     public $pattern;
     public $group;
     public $category;
-    public $cost;
     public $re_order_level;
     public $re_order_qty;
-    public $list_price;
 
-    public $cash_price;
-    public $credit_price;
-    public $cash_discount;
-    public $credit_discount;
     public $stock_type;
     public $note;
     public $is_active;
@@ -40,14 +34,8 @@ class ItemMaster
                 $this->pattern = $result['pattern'];
                 $this->group = $result['group'];
                 $this->category = $result['category'];
-                $this->cost = $result['cost'];
                 $this->re_order_level = $result['re_order_level'];
-                $this->list_price = $result['list_price'];
                 $this->re_order_qty = $result['re_order_qty'];
-                $this->cash_price = $result['cash_price'];
-                $this->credit_price = $result['credit_price'];
-                $this->cash_discount = $result['cash_discount'];
-                $this->credit_discount = $result['credit_discount'];
                 $this->stock_type = $result['stock_type'];
                 $this->note = $result['note'];
                 $this->is_active = $result['is_active'];
@@ -58,14 +46,12 @@ class ItemMaster
     public function create()
     {
         $query = "INSERT INTO `item_master` (
-    `code`, `name`, `brand`, `size`, `pattern`, `group`, `category`, 
-    `cost`, `re_order_level`, `re_order_qty`,   `cash_price`, 
-    `credit_price`, `cash_discount`, `credit_discount`, `stock_type`, `note`, `is_active`
+    `code`, `name`, `brand`, `size`, `pattern`, `group`, `category`,
+     `re_order_level`, `re_order_qty`, `stock_type`, `note`, `is_active`
 ) VALUES (
     '$this->code', '$this->name', '$this->brand', '$this->size', '$this->pattern', '$this->group',
-    '$this->category', '$this->cost', '$this->re_order_level', '$this->re_order_qty',  
-    '$this->cash_price', '$this->credit_price', '$this->cash_discount',
-    '$this->credit_discount', '$this->stock_type', '$this->note', '$this->is_active'
+    '$this->category', '$this->re_order_level', '$this->re_order_qty',
+     '$this->stock_type', '$this->note', '$this->is_active'
 )";
 
 
@@ -90,14 +76,8 @@ class ItemMaster
             `pattern` = '$this->pattern', 
             `group` = '$this->group', 
             `category` = '$this->category', 
-            `cost` = '$this->cost', 
-             `list_price` = '$this->list_price', 
             `re_order_level` = '$this->re_order_level', 
             `re_order_qty` = '$this->re_order_qty', 
-            `cash_price` = '$this->cash_price', 
-            `credit_price` = '$this->credit_price', 
-            `cash_discount` = '$this->cash_discount', 
-            `credit_discount` = '$this->credit_discount', 
             `stock_type` = '$this->stock_type', 
             `note` = '$this->note', 
             `is_active` = '$this->is_active'
@@ -213,106 +193,111 @@ class ItemMaster
         return $result['id'];
     }
 
-    public function fetchForDataTable($request)
-    {
-        $db = new Database();
+public function fetchForDataTable($request)
+{
+    $db = new Database();
 
-        $start = isset($request['start']) ? (int) $request['start'] : 0;
-        $length = isset($request['length']) ? (int) $request['length'] : 100;
-        $search = $request['search']['value'] ?? '';
+    $start = isset($request['start']) ? (int) $request['start'] : 0;
+    $length = isset($request['length']) ? (int) $request['length'] : 100;
+    $search = $request['search']['value'] ?? '';
 
-        $status = $request['status'] ?? null;
-        $stockOnly = isset($request['stock_only']) ? filter_var($request['stock_only'], FILTER_VALIDATE_BOOLEAN) : false;
+    $status = $request['status'] ?? null;
+    $stockOnly = isset($request['stock_only']) ? filter_var($request['stock_only'], FILTER_VALIDATE_BOOLEAN) : false;
 
-        $where = "WHERE 1=1";
+    $where = "WHERE 1=1";
+    $having = "";
 
-        // Search filter
-        if (!empty($search)) {
-            $where .= " AND (name LIKE '%$search%' OR code LIKE '%$search%')";
-        }
-
-        $brandId = $request['brand'] ?? null;
-
-
-        if (!empty($brandId)) {
-            $brandId = (int) $brandId;
-            $where .= " AND brand = {$brandId}";
-        }
-
-
-        // Status filter
-        if (!empty($status)) {
-            if ($status === 'active' || $status === '1' || $status === 1) {
-                $where .= " AND is_active = 1";
-            } elseif ($status === 'inactive' || $status === '0' || $status === 0) {
-                $where .= " AND is_active = 0";
-            }
-        }
-
-
-        // Stock only filter
-        if ($stockOnly) {
-            $where .= " AND stock_type = 1";
-        }
-
-        // Total records
-        $totalSql = "SELECT * FROM item_master";
-        $totalQuery = $db->readQuery($totalSql);
-        $totalData = mysqli_num_rows($totalQuery);
-
-        // Filtered records
-        $filteredSql = "SELECT * FROM item_master $where";
-        $filteredQuery = $db->readQuery($filteredSql);
-        $filteredData = mysqli_num_rows($filteredQuery);
-
-        // Paginated query
-        $sql = "$filteredSql LIMIT $start, $length";
-        $dataQuery = $db->readQuery($sql);
-
-        $data = [];
-        $key = 1;
-        while ($row = mysqli_fetch_assoc($dataQuery)) {
-            $CATEGORY = new CategoryMaster($row['category']);
-            $BRAND = new Brand($row['brand']);
-
-            $nestedData = [
-                "key" => $key,
-                "id" => $row['id'],
-                "code" => $row['code'],
-                "name" => $row['name'],
-                "pattern" => $row['pattern'],
-                "size" => $row['size'],
-                "group" => $row['group'],
-                "re_order_level" => $row['re_order_level'],
-                "re_order_qty" => $row['re_order_qty'],
-                "brand_id" => $row['brand'],
-                "brand" => $BRAND->name,
-                "category_id" => $row['category'],
-                "cost" => number_format($row['cost'], 2),
-                "category" => $CATEGORY->name,
-                "cash_price" => number_format($row['cash_price'], 2),
-                "credit_price" => number_format($row['credit_price'], 2),
-                "cash_discount" => $row['cash_discount'],
-                "credit_discount" => $row['credit_discount'],
-                "stock_type" => $row['stock_type'],
-                "note" => $row['note'],
-                "status" => $row['is_active'],
-                "status_label" => $row['is_active'] == 1
-                    ? '<span class="badge bg-soft-success font-size-12">Active</span>'
-                    : '<span class="badge bg-soft-danger font-size-12">Inactive</span>'
-            ];
-
-            $data[] = $nestedData;
-            $key++;
-        }
-
-        return [
-            "draw" => intval($request['draw']),
-            "recordsTotal" => intval($totalData),
-            "recordsFiltered" => intval($filteredData),
-            "data" => $data
-        ];
+    // Search filter
+    if (!empty($search)) {
+        $where .= " AND (im.name LIKE '%$search%' OR im.code LIKE '%$search%')";
     }
+
+    $brandId = $request['brand'] ?? null;
+
+    if (!empty($brandId)) {
+        $brandId = (int) $brandId;
+        $where .= " AND im.brand = {$brandId}";
+    }
+
+    // Status filter
+    if (!empty($status)) {
+        if ($status === 'active' || $status === '1' || $status === 1) {
+            $where .= " AND im.is_active = 1";
+        } elseif ($status === 'inactive' || $status === '0' || $status === 0) {
+            $where .= " AND im.is_active = 0";
+        }
+    }
+
+    // Stock only filter
+    if ($stockOnly) {
+        $where .= " AND im.stock_type = 1";
+    }
+
+    // Total records (no filter)
+    $totalSql = "SELECT COUNT(*) as total FROM item_master";
+    $totalQuery = $db->readQuery($totalSql);
+    $totalRow = mysqli_fetch_assoc($totalQuery);
+    $totalData = $totalRow['total'];
+
+    // Filtered records with JOIN and aggregation
+    $filteredSql = "
+        SELECT 
+            im.*, 
+            IFNULL(SUM(sm.quantity), 0) as total_qty 
+        FROM item_master im
+        LEFT JOIN stock_master sm ON im.id = sm.item_id 
+        $where
+        GROUP BY im.id
+    ";
+
+    $filteredQuery = $db->readQuery($filteredSql);
+    $filteredData = mysqli_num_rows($filteredQuery);
+
+    // Paginated query
+    $sql = "$filteredSql LIMIT $start, $length";
+    $dataQuery = $db->readQuery($sql);
+
+    $data = [];
+    $key = 1;
+    while ($row = mysqli_fetch_assoc($dataQuery)) {
+        $CATEGORY = new CategoryMaster($row['category']);
+        $BRAND = new Brand($row['brand']);
+
+        $nestedData = [
+            "key" => $key,
+            "id" => $row['id'],
+            "code" => $row['code'],
+            "name" => $row['name'],
+            "pattern" => $row['pattern'],
+            "size" => $row['size'],
+            "group" => $row['group'],
+            "re_order_level" => $row['re_order_level'],
+            "re_order_qty" => $row['re_order_qty'],
+            "brand_id" => $row['brand'],
+            "brand" => $BRAND->name,
+            "category_id" => $row['category'],
+            "category" => $CATEGORY->name,
+            "stock_type" => $row['stock_type'],
+            "note" => $row['note'],
+            "status" => $row['is_active'],
+            "qty" => $row['total_qty'],
+            "status_label" => $row['is_active'] == 1
+                ? '<span class="badge bg-soft-success font-size-12">Active</span>'
+                : '<span class="badge bg-soft-danger font-size-12">Inactive</span>'
+        ];
+
+        $data[] = $nestedData;
+        $key++;
+    }
+
+    return [
+        "draw" => intval($request['draw']),
+        "recordsTotal" => intval($totalData),
+        "recordsFiltered" => intval($filteredData),
+        "data" => $data
+    ];
+}
+
 
 
 
