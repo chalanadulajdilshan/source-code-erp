@@ -94,10 +94,10 @@ include './auth.php';
                                         <div class="row">
 
                                             <div class="col-md-2">
-                                                <label for="username" class="form-label">Search By Item Code</label>
+                                                <label for="username" class="form-label">Search By Item Code or Name</label>
                                                 <div class="input-group mb-3">
-                                                    <input id="item_code" name="item_code" type="text" class="form-control"
-                                                        placeholder="Search by item code">
+                                                    <input id="item_code" name="item_code" type="text"
+                                                        class="form-control" placeholder="Search by item code or Name">
 
                                                 </div>
                                             </div>
@@ -150,7 +150,7 @@ include './auth.php';
                                                     </select>
                                                 </div>
                                             </div>
-                                            <div class="col-md-3">
+                                            <div class="col-md-2">
                                                 <label for="department_id" class="form-label">Department</label>
                                                 <div class="input-group mb-3">
                                                     <select id="department_id" name="department_id" class="form-select">
@@ -177,6 +177,11 @@ include './auth.php';
                                                     </select>
                                                 </div>
                                             </div>
+                                            <div class="col-md-1 mt-4">
+                                                <button id="view_price_report" class="btn btn-primary delete-item">
+                                                    <i class="uil uil-file   me-1"></i> View
+                                                </button>
+                                            </div>
 
 
                                             <hr class="my-4">
@@ -187,15 +192,13 @@ include './auth.php';
                                                     <thead class="table-light">
                                                         <tr>
                                                             <td>#Id</td>
-                                                            <th>Item Code</th>
-                                                            <th>Note</th>
-                                                            <th>Available Quantity</th>
-                                                            <th>Cost</th>
-                                                            <th>List Price</th>
-                                                            <th>Cash Prices</th>
-                                                            <th>Credit Prices</th>
-                                                            <th>Cash Dis %</th>
-                                                            <th>Credit Dis %</th>
+                                                            <th>Item Code and Name</th>
+                                                            <th>Description</th>
+                                                            <th>All Qty</th>
+                                                            <th>Group</th>
+                                                            <th>Brand</th>
+                                                            <th>Category</th>
+                                                            <th>Status</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>

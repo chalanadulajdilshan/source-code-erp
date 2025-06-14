@@ -132,8 +132,6 @@ class ItemMaster
 
     public function getItemsFiltered($category_id = 0, $brand_id = 0, $group_id = 0, $department_id = 0, $item_code = '')
     {
-
-
         $conditions = [];
 
         if ((int) $category_id > 0) {
@@ -149,8 +147,9 @@ class ItemMaster
         }
 
         if (!empty($item_code)) {
-            $conditions[] = "`code` LIKE '%" . $item_code . "%'";
+            $conditions[] = "(`code` LIKE '%" . $item_code . "%' OR `name` LIKE '%" . $item_code . "%')";
         }
+
 
         // Join condition to filter department stock
         $join = "";
@@ -165,24 +164,43 @@ class ItemMaster
 
         $query = "SELECT DISTINCT im.* FROM item_master im $join $where ORDER BY im.name ASC";
 
-
         $db = new Database();
         $result = $db->readQuery($query);
 
         $items = [];
+        $STOCK_MASTER = new StockMaster(NULL);
+        $STOCK_TMP = new StockItemTmp(NULL);
+
         while ($row = mysqli_fetch_assoc($result)) {
+            $CATEGORY = new CategoryMaster($row['category']);
+            $BRAND = new Brand($row['brand']);
+            $GROUP_MASTER = new GroupMaster($row['group']);
 
-            $STOCK_MASTER = new StockMaster(NULL);
-            $departments = $STOCK_MASTER->getAvailableQuantityBy($row['id']);
+            $row['group'] = $GROUP_MASTER->name;
+            $row['category'] = $CATEGORY->name;
+            $row['brand'] = $BRAND->name;
 
-            $row['departments'] = $departments; // assign department-wise qty
+            $row['stock_tmp'] = $STOCK_TMP->getByItemId($row['id']);
+            $row['total_available_qty'] = StockMaster::getTotalAvailableQuantity($row['id']);
+
+            foreach ($row['stock_tmp'] as $key => $stockRow) {
+                // ARN
+                $arnData = new ArnMaster($stockRow['arn_id']);
+                $row['stock_tmp'][$key]['arn_no'] = $arnData ? $arnData->arn_no : null;
+
+                // Department
+                $DEPARTMENT_MASTER = new DepartmentMaster($stockRow['department_id']);
+                $departmentName = $DEPARTMENT_MASTER ? $DEPARTMENT_MASTER->name : null;
+                $row['stock_tmp'][$key]['department'] = $departmentName; 
+            }
 
             $items[] = $row;
-
         }
+
 
         return $items;
     }
+
 
 
     public function getLastID()
@@ -193,54 +211,54 @@ class ItemMaster
         return $result['id'];
     }
 
-public function fetchForDataTable($request)
-{
-    $db = new Database();
+    public function fetchForDataTable($request)
+    {
+        $db = new Database();
 
-    $start = isset($request['start']) ? (int) $request['start'] : 0;
-    $length = isset($request['length']) ? (int) $request['length'] : 100;
-    $search = $request['search']['value'] ?? '';
+        $start = isset($request['start']) ? (int) $request['start'] : 0;
+        $length = isset($request['length']) ? (int) $request['length'] : 100;
+        $search = $request['search']['value'] ?? '';
 
-    $status = $request['status'] ?? null;
-    $stockOnly = isset($request['stock_only']) ? filter_var($request['stock_only'], FILTER_VALIDATE_BOOLEAN) : false;
+        $status = $request['status'] ?? null;
+        $stockOnly = isset($request['stock_only']) ? filter_var($request['stock_only'], FILTER_VALIDATE_BOOLEAN) : false;
 
-    $where = "WHERE 1=1";
-    $having = "";
+        $where = "WHERE 1=1";
+        $having = "";
 
-    // Search filter
-    if (!empty($search)) {
-        $where .= " AND (im.name LIKE '%$search%' OR im.code LIKE '%$search%')";
-    }
-
-    $brandId = $request['brand'] ?? null;
-
-    if (!empty($brandId)) {
-        $brandId = (int) $brandId;
-        $where .= " AND im.brand = {$brandId}";
-    }
-
-    // Status filter
-    if (!empty($status)) {
-        if ($status === 'active' || $status === '1' || $status === 1) {
-            $where .= " AND im.is_active = 1";
-        } elseif ($status === 'inactive' || $status === '0' || $status === 0) {
-            $where .= " AND im.is_active = 0";
+        // Search filter
+        if (!empty($search)) {
+            $where .= " AND (im.name LIKE '%$search%' OR im.code LIKE '%$search%')";
         }
-    }
 
-    // Stock only filter
-    if ($stockOnly) {
-        $where .= " AND im.stock_type = 1";
-    }
+        $brandId = $request['brand'] ?? null;
 
-    // Total records (no filter)
-    $totalSql = "SELECT COUNT(*) as total FROM item_master";
-    $totalQuery = $db->readQuery($totalSql);
-    $totalRow = mysqli_fetch_assoc($totalQuery);
-    $totalData = $totalRow['total'];
+        if (!empty($brandId)) {
+            $brandId = (int) $brandId;
+            $where .= " AND im.brand = {$brandId}";
+        }
 
-    // Filtered records with JOIN and aggregation
-    $filteredSql = "
+        // Status filter
+        if (!empty($status)) {
+            if ($status === 'active' || $status === '1' || $status === 1) {
+                $where .= " AND im.is_active = 1";
+            } elseif ($status === 'inactive' || $status === '0' || $status === 0) {
+                $where .= " AND im.is_active = 0";
+            }
+        }
+
+        // Stock only filter
+        if ($stockOnly) {
+            $where .= " AND im.stock_type = 1";
+        }
+
+        // Total records (no filter)
+        $totalSql = "SELECT COUNT(*) as total FROM item_master";
+        $totalQuery = $db->readQuery($totalSql);
+        $totalRow = mysqli_fetch_assoc($totalQuery);
+        $totalData = $totalRow['total'];
+
+        // Filtered records with JOIN and aggregation
+        $filteredSql = "
         SELECT 
             im.*, 
             IFNULL(SUM(sm.quantity), 0) as total_qty 
@@ -250,53 +268,53 @@ public function fetchForDataTable($request)
         GROUP BY im.id
     ";
 
-    $filteredQuery = $db->readQuery($filteredSql);
-    $filteredData = mysqli_num_rows($filteredQuery);
+        $filteredQuery = $db->readQuery($filteredSql);
+        $filteredData = mysqli_num_rows($filteredQuery);
 
-    // Paginated query
-    $sql = "$filteredSql LIMIT $start, $length";
-    $dataQuery = $db->readQuery($sql);
+        // Paginated query
+        $sql = "$filteredSql LIMIT $start, $length";
+        $dataQuery = $db->readQuery($sql);
 
-    $data = [];
-    $key = 1;
-    while ($row = mysqli_fetch_assoc($dataQuery)) {
-        $CATEGORY = new CategoryMaster($row['category']);
-        $BRAND = new Brand($row['brand']);
+        $data = [];
+        $key = 1;
+        while ($row = mysqli_fetch_assoc($dataQuery)) {
+            $CATEGORY = new CategoryMaster($row['category']);
+            $BRAND = new Brand($row['brand']);
 
-        $nestedData = [
-            "key" => $key,
-            "id" => $row['id'],
-            "code" => $row['code'],
-            "name" => $row['name'],
-            "pattern" => $row['pattern'],
-            "size" => $row['size'],
-            "group" => $row['group'],
-            "re_order_level" => $row['re_order_level'],
-            "re_order_qty" => $row['re_order_qty'],
-            "brand_id" => $row['brand'],
-            "brand" => $BRAND->name,
-            "category_id" => $row['category'],
-            "category" => $CATEGORY->name,
-            "stock_type" => $row['stock_type'],
-            "note" => $row['note'],
-            "status" => $row['is_active'],
-            "qty" => $row['total_qty'],
-            "status_label" => $row['is_active'] == 1
-                ? '<span class="badge bg-soft-success font-size-12">Active</span>'
-                : '<span class="badge bg-soft-danger font-size-12">Inactive</span>'
+            $nestedData = [
+                "key" => $key,
+                "id" => $row['id'],
+                "code" => $row['code'],
+                "name" => $row['name'],
+                "pattern" => $row['pattern'],
+                "size" => $row['size'],
+                "group" => $row['group'],
+                "re_order_level" => $row['re_order_level'],
+                "re_order_qty" => $row['re_order_qty'],
+                "brand_id" => $row['brand'],
+                "brand" => $BRAND->name,
+                "category_id" => $row['category'],
+                "category" => $CATEGORY->name,
+                "stock_type" => $row['stock_type'],
+                "note" => $row['note'],
+                "status" => $row['is_active'],
+                "qty" => $row['total_qty'],
+                "status_label" => $row['is_active'] == 1
+                    ? '<span class="badge bg-soft-success font-size-12">Active</span>'
+                    : '<span class="badge bg-soft-danger font-size-12">Inactive</span>'
+            ];
+
+            $data[] = $nestedData;
+            $key++;
+        }
+
+        return [
+            "draw" => intval($request['draw']),
+            "recordsTotal" => intval($totalData),
+            "recordsFiltered" => intval($filteredData),
+            "data" => $data
         ];
-
-        $data[] = $nestedData;
-        $key++;
     }
-
-    return [
-        "draw" => intval($request['draw']),
-        "recordsTotal" => intval($totalData),
-        "recordsFiltered" => intval($filteredData),
-        "data" => $data
-    ];
-}
 
 
 

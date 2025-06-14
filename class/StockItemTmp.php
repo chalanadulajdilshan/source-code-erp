@@ -115,6 +115,42 @@ class StockItemTmp
         return $array_res;
     }
 
+    public function updateStockItemTmpPrice($id, $field, $value)
+    {
+        $allowedFields = ['cost', 'cash_price', 'credit_price', 'cash_dis', 'credit_dis'];
+
+        if (!in_array($field, $allowedFields)) {
+            return ['error' => 'Invalid field'];
+        }
+
+        if (!is_numeric($value)) {
+            return ['error' => 'Value must be numeric'];
+        }
+
+        $value = floatval($value);
+
+        if (in_array($field, ['cash_dis', 'credit_dis']) && ($value < 0 || $value > 100)) {
+            return ['error' => 'Discount must be between 0 and 100'];
+        }
+
+        $db = new Database();
+        $value = mysqli_real_escape_string($db->DB_CON, $value);
+        $id = (int) $id;
+
+        $query = "UPDATE `stock_item_tmp` SET `$field` = '$value' WHERE `id` = $id";
+
+        $result = $db->readQuery($query);
+
+        if ($result) {
+            return ['success' => true];
+        } else {
+            return ['error' => 'Database update failed'];
+        }
+    }
+
+
+
+
 }
 
 ?>
