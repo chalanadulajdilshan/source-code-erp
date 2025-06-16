@@ -19,15 +19,14 @@ $CUSTOMER_MASTER = new CustomerMaster($SALES_INVOICE->customer_id);
     <meta charset="utf-8" />
     <title>Invoice Details   | <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="<?php echo $COMPANY_PROFILE_DETAILS->name ?>" name="author" />
+    <!-- include main CSS -->
+    <?php include 'main-css.php' ?>
+    
     <!-- Unicons CDN -->
     <link href="https://unicons.iconscout.com/release/v4.0.8/css/line.css" rel="stylesheet">
 
-    <!-- Bootstrap CSS -->
-    <link href="assets/css/bootstrap.min.css" rel="stylesheet" />
-    <!-- Icons -->
-    <link href="assets/css/icons.min.css" rel="stylesheet" />
-    <!-- App CSS -->
-    <link href="assets/css/app.min.css" rel="stylesheet" />
+    
 
     <style>
         @media print {
