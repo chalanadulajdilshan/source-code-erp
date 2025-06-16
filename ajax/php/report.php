@@ -3,7 +3,7 @@ include_once '../../class/include.php';
 header('Content-Type: application/json');
 
 //price control laord
-if (isset($_POST['action']) && $_POST['action'] == 'load_filtered') {
+if (isset($_POST['action']) && $_POST['action'] == 'loard_price_Control') {
 
 
     $category_id = $_POST['category_id'] ?? 0;
@@ -46,6 +46,30 @@ if (isset($_POST['action']) && $_POST['action'] === 'load_profit_report') {
     exit;
 }
 
+if (isset($_POST['action']) && $_POST['action'] === 'update_stock_tmp_price') {
+
+    $id = (int) $_POST['id'];
+    $field = $_POST['field'];
+    $value = $_POST['value'];
+
+    $STOCK_ITEM_TMP = new StockItemTmp(NULL);
+
+    $response = $STOCK_ITEM_TMP->updateStockItemTmpPrice($id, $field, $value);
+    //audit log
+    $AUDIT_LOG = new AuditLog(NUll);
+    $AUDIT_LOG->ref_id = $_POST['id'];
+    $AUDIT_LOG->ref_code = '#ITEM/PRICE/UPDATE';
+    $AUDIT_LOG->action = 'UPDATE';
+    $AUDIT_LOG->description = 'UPDATE ITEM NO PRICES ';
+    $AUDIT_LOG->user_id = $_SESSION['id'];
+    $AUDIT_LOG->created_at = date("Y-m-d H:i:s");
+    $AUDIT_LOG->create();
+    
+    echo json_encode($response);
+    exit;
+}
 
 
 
+
+?>

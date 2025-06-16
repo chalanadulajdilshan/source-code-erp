@@ -1,71 +1,174 @@
 jQuery(document).ready(function () {
 
 
-    //windows loard price control
-    // loadPriceControlItems();
+    //profit report
+    $('#view_price_report').on('click', function (e) {
+        e.preventDefault();
 
-    // $('#brand_id, #category_id, #group_id,#department_id').on('change', function () {
-    //     loadPriceControlItems();
-    // });
+        loadPriceControlItems();
+    });
+    //loard Price Control
+    $('#brand_id, #category_id, #group_id,#department_id').on('change', function () {
+        loadPriceControlItems();
+    });
 
-    // $('#item_code').on('keyup', function () {
-    //     loadPriceControlItems();
-    // });
+    //loard price item vise 
+    $('#item_code').on('keyup', function () {
+        loadPriceControlItems();
+    });
 
-    // function loadPriceControlItems() {
-    //     let brand_id = $('#brand_id').val();
-    //     let category_id = $('#category_id').val();
-    //     let group_id = $('#group_id').val();
-    //     let department_id = $('#department_id').val();
-    //     let item_code = $('#item_code').val().trim();
 
-    //     $.ajax({
-    //         url: 'ajax/php/report.php',
-    //         type: 'POST',
-    //         dataType: 'json',
-    //         data: {
-    //             action: 'load_filtered',
-    //             brand_id: brand_id,
-    //             category_id: category_id,
-    //             group_id: group_id,
-    //             department_id: department_id,
-    //             item_code: item_code
-    //         },
-    //         success: function (data) {
-    //             let tbody = '';
-    //             if (data.length > 0) {
-    //                 $.each(data, function (index, item) {
-    //                     index++
-    //                     tbody += `<tr>
-    //                         <td>${index}</td>
-    //                         <td>${item.code} - ${item.name}</td>
-    //                         <td>${item.note}</td>
-    //                        <td> ${item.departments
-    //                             .filter(dep => parseFloat(dep.quantity) > 0)
-    //                             .map(dep => `${dep.department_name} - <span style="color:red;">${dep.quantity}</span>`)
-    //                             .join('<br>')}
-    //                         </td>
 
-    //                         <td>${parseFloat(item.cost).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
 
-    //                         <td>${parseFloat(item.list_price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-    //                         <td>${parseFloat(item.cash_price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-    //                         <td>${parseFloat(item.credit_price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-    //                         <td>${item.cash_discount}</td>
-    //                         <td>${item.credit_discount}</td>
-    //                     </tr>`;
-    //                 });
-    //             } else {
-    //                 tbody = `<tr><td colspan="9" class="text-center text-muted">No items found</td></tr>`;
-    //             }
-    //             $('#priceControl tbody').html(tbody);
-    //         },
-    //         error: function (xhr, status, error) {
-    //             console.error('Error loading items:', error);
-    //             $('#priceControl tbody').html(`<tr><td colspan="9" class="text-danger text-center">Error loading data</td></tr>`);
-    //         }
-    //     });
-    // }
+    function loadPriceControlItems() {
+        let brand_id = $('#brand_id').val();
+        let category_id = $('#category_id').val();
+        let group_id = $('#group_id').val();
+        let department_id = $('#department_id').val();
+        let item_code = $('#item_code').val().trim();
+
+        $.ajax({
+            url: 'ajax/php/report.php',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                action: 'loard_price_Control',
+                brand_id: brand_id,
+                category_id: category_id,
+                group_id: group_id,
+                department_id: department_id,
+                item_code: item_code
+            },
+            success: function (data) {
+                let tbody = '';
+                if (data.length > 0) {
+                    $.each(data, function (index, item) {
+                        index++;
+                        tbody += `<tr class="table-primary">
+                        <td>${index}</td>
+                        <td>${item.code} - ${item.name}</td> 
+                        <td>${item.note}</td>
+                        <td>${item.total_available_qty}</td>
+                        <td>${item.group}</td>
+                        <td>${item.brand}</td>
+                        <td>${item.category}</td>
+                        <td>
+                            ${item.is_active == 1
+                                ? '<span class="badge bg-soft-success font-size-12">Active</span>'
+                                : '<span class="badge bg-soft-danger font-size-12">InActive</span>'}
+                        </td>
+                    </tr>`;
+
+                        if (Array.isArray(item.stock_tmp) && item.stock_tmp.length > 0) {
+                            $.each(item.stock_tmp, function (i, row) {
+                                tbody += `<tr class="table-light" style="color: red;">
+                                <td colspan="2">
+                                    <strong>ARN:</strong> ${row.arn_no} 
+                                    <span style="display: inline-block; color: green; font-weight: 500;">
+                                        <div>Department: <span style="color: black;">${row.department}</span></div>
+                                        <div>Available Qty: ${row.qty}</div>
+                                    </span>
+                                </td>
+
+                                <td>
+                                <span style="color: green; font-weight:500" >Cost: </span> 
+                                    <input type="number" step="0.01" class="form-control form-control-sm cost-input" data-id="${row.id}" value="${parseFloat(row.cost).toFixed(2)}" />
+                                </td>
+                                <td>
+                                <span style="color: green; font-weight:500" >Cash Price: </span> 
+                                    <input type="number" step="0.01" class="form-control form-control-sm cash-price-input" data-id="${row.id}" value="${parseFloat(row.cash_price).toFixed(2)}" />
+                                </td>
+                                <td>
+                                <span style="color: green; font-weight:500" >Credit Price: </span> 
+                                    <input type="number" step="0.01" class="form-control form-control-sm credit-price-input" data-id="${row.id}" value="${parseFloat(row.credit_price).toFixed(2)}" />
+                                </td>
+                                <td>
+                                <span style="color: green; font-weight:500" >Cash Dis %: </span> 
+                                    <input type="number" step="1" min="0" max="100" class="form-control form-control-sm cash-discount-input" data-id="${row.id}" value="${row.cash_dis}" /> 
+                                </td>
+                                <td>
+                                <span style="color: green; font-weight:500" >Credit Dis %: </span> 
+                                    <input type="number" step="1" min="0" max="100" class="form-control form-control-sm credit-discount-input" data-id="${row.id}" value="${row.credit_dis}" /> 
+                                </td>
+                                <td>${row.created_at}</td>
+                            </tr>`;
+                            });
+                        }
+                    });
+                } else {
+                    tbody = `<tr><td colspan="10" class="text-center text-muted">No items found</td></tr>`;
+                }
+                $('#priceControl tbody').html(tbody);
+            },
+            error: function (xhr, status, error) {
+                console.error('Error loading items:', error);
+                $('#priceControl tbody').html(`<tr><td colspan="9" class="text-danger text-center">Error loading data</td></tr>`);
+            }
+        });
+    }
+
+    // Event delegation for dynamically created inputs
+    $('#priceControl tbody').on('change', '.cost-input, .cash-price-input, .credit-price-input, .cash-discount-input, .credit-discount-input', function () {
+        let input = $(this);
+        let id = input.data('id'); // stock_tmp record ID
+        let field = '';
+
+        if (input.hasClass('cost-input')) field = 'cost';
+        else if (input.hasClass('cash-price-input')) field = 'cash_price';
+        else if (input.hasClass('credit-price-input')) field = 'credit_price';
+        else if (input.hasClass('cash-discount-input')) field = 'cash_dis';
+        else if (input.hasClass('credit-discount-input')) field = 'credit_dis';
+
+        let value = input.val();
+
+        // Basic validation: non-empty and numeric
+        if (value === '' || isNaN(value)) {
+            alert('Please enter a valid number');
+            return;
+        }
+
+        // Preloader start (optional if you use preloader plugin)
+        $(".someBlock").preloader();
+
+        $.ajax({
+            url: 'ajax/php/report.php',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                action: 'update_stock_tmp_price',
+                id: id,
+                field: field,
+                value: value
+            },
+            success: function (response) {
+
+                // Remove preloader
+                $(".someBlock").preloader("remove");
+
+                if (response.success) {
+                    swal({
+                        title: "Success!",
+                        text: "Price Updated are successfully.!",
+                        type: "success",
+                        timer: 2000,
+                        showConfirmButton: false,
+                    });
+                } else if (response.error) {
+                    swal({
+                        title: "Error!",
+                        text: "Price update error.",
+                        type: "error",
+                        timer: 2000,
+                        showConfirmButton: false,
+                    });
+                }
+            },
+            error: function () {
+                alert('Error while updating data.');
+            }
+        });
+    });
+
 
     //profit report
     $('#view_profit_report').on('click', function (e) {

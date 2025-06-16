@@ -87,7 +87,6 @@ if (isset($data['create'])) {
             $ARN_ITEM->vat_value = $item['vat_value'] ?? 0;
             $ARN_ITEM->margin_percent = $item['margin_percent'] ?? 0;
             $ARN_ITEM->created_at = date("Y-m-d H:i:s");
-            $ARN_ITEM->create();
 
             $DOCUMENT_TRACKING = new DocumentTracking(null);
             $DOCUMENT_TRACKING->incrementDocumentId('arn');
@@ -101,6 +100,18 @@ if (isset($data['create'])) {
                 $itemMaster->cash_price = $item['cash_price'];
                 $itemMaster->credit_price = $item['credit_price'];
                 $itemMaster->update();
+
+
+                $STOCK_ITEM_TMP = new StockItemTmp();
+                $STOCK_ITEM_TMP->arn_id = $arn_id;
+                $STOCK_ITEM_TMP->item_id = $item['item_id'];
+                $STOCK_ITEM_TMP->qty = $item['rec_qty'];
+                $STOCK_ITEM_TMP->cost = $item['actual_cost'];
+                $STOCK_ITEM_TMP->cash_price = $item['cash_price'];
+                $STOCK_ITEM_TMP->credit_price = $item['credit_price'];
+                $STOCK_ITEM_TMP->status = 1;
+                $STOCK_ITEM_TMP->create();
+
             }
 
             // 4. Update Stock Master quantity per department (add received_qty)

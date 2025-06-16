@@ -1,88 +1,227 @@
 jQuery(document).ready(function () {
 
+    //windows loard
+    loadCustomer();
+    //get first row cash sales customer
+    function loadCustomer() {
 
-    // DataTable config
-    var table = $('#datatable').DataTable({
-        processing: true,
-        serverSide: true,
-        ajax: {
-            url: "ajax/php/item-master.php",
-            type: "POST",
-            data: function (d) {
-                d.filter = true;
-                d.status = 1;
-                d.stock_only = 1;
+        $.ajax({
+            url: 'ajax/php/customer-master.php',
+            method: 'POST',
+            data: { action: 'get_first_customer' }, // you can customize this key/value
+            dataType: 'json',
+            success: function (data) {
+                if (!data.error) {
+                    $('#customer_id').val(data.customer_id);
+                    $('#customer_code').val(data.customer_code);
+                    $('#customer_name').val(data.customer_name);
+                    $('#customer_address').val(data.customer_address);
+                    $('#customer_mobile').val(data.mobile_number); // adjust key if needed
+                } else {
+                    console.warn('No customer found');
+                }
             },
-            dataSrc: function (json) {
-
-                return json.data;
-            },
-            error: function (xhr) {
-                console.error("Server Error Response:", xhr.responseText);
+            error: function () {
+                console.error('AJAX request failed.');
             }
-        },
-        columns: [
-            { data: "id", title: "#ID" },
-            { data: "code", title: "Code" },
-            { data: "name", title: "Name" },
-            { data: "brand", title: "Brand" },
-            { data: "cost", title: "Cost" },
-            { data: "cash_price", title: "Cash" },
-            { data: "credit_price", title: "Credit" },
-            { data: "cash_discount", title: "Cash %" },
-            { data: "credit_discount", title: "Credit %" },
-            
-        ],
-        order: [[0, 'desc']],
-        pageLength: 100
+        });
+    }
+
+    // ----------------------ITEM MASTER SECTION START ----------------------//
+    //item master loard with pricess 
+    $('#view_price_report').on('click', function (e) {
+        e.preventDefault();
+        loadItems();
+    });
+
+    //loard item master
+    $('#item_brand_id, #item_category_id, #item_group_id,#item_department_id').on('change', function () {
+        loadItems();
+    });
+
+    //loard item master
+    $('#item_item_code').on('keyup', function () {
+        loadItems();
+    });
+
+    //loard item master
+    $('#item_master').on('shown.bs.modal', function () {
+        loadItems();
     });
 
 
-    // On row click, load selected item into input fields
-    $('#datatable tbody').on('click', 'tr', function () {
-        var data = table.row(this).data();
-        if (!data) return;
+    let fullItemList = []; // Global variable
+    let itemsPerPage = 1;
 
-        const salesType = $('#sales_type').val();
-        const paymentType = $('#payment_type').val();
+    function loadItems(page = 1) {
+        let brand_id = $('#item_brand_id').val();
+        let category_id = $('#item_category_id').val();
+        let group_id = $('#item_group_id').val();
+        let department_id = $('#item_department_id').val();
+        let item_code = $('#item_item_code').val().trim();
 
-        if (salesType == 1) {  // Whole Sales
-            $('#itemPrice').val(data.cash_price.replace(/,/g, ''));
-        } else if (salesType == 2) {  // Retail Sales
-            $('#itemPrice').val(data.credit_price.replace(/,/g, ''));
+        $.ajax({
+            url: 'ajax/php/report.php',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                action: 'loard_price_Control',
+                brand_id,
+                category_id,
+                group_id,
+                department_id,
+                item_code
+            },
+            success: function (data) {
+                fullItemList = data || [];
+                renderPaginatedItems(page);
+            },
+            error: function () {
+                $('#itemMaster tbody').html(`<tr><td colspan="8" class="text-danger text-center">Error loading data</td></tr>`);
+                $('#itemPagination').empty();
+            }
+        });
+    }
+
+
+    function renderPaginatedItems(page = 1) {
+        let start = (page - 1) * itemsPerPage;
+        let end = start + itemsPerPage;
+        let slicedItems = fullItemList.slice(start, end);
+        let tbody = '';
+
+        if (slicedItems.length > 0) {
+            $.each(slicedItems, function (index, item) {
+                let rowIndex = start + index + 1;
+                tbody += `<tr class="table-primary">
+                <td>${rowIndex}</td>
+                <td>${item.code} - ${item.name}</td> 
+                <td>${item.note}</td>
+                <td>${item.total_available_qty}</td>
+                <td>${item.group}</td>
+                <td>${item.brand}</td>
+                <td>${item.category}</td>
+                <td>
+                    ${item.is_active == 1
+                        ? '<span class="badge bg-soft-success font-size-12">Active</span>'
+                        : '<span class="badge bg-soft-danger font-size-12">InActive</span>'}
+                </td>
+            </tr>`;
+
+                if (Array.isArray(item.stock_tmp) && item.stock_tmp.length > 0) {
+                    $.each(item.stock_tmp, function (i, row) {
+                        tbody += `<tr class="table-light text-danger small">
+                        <td colspan="2"><strong>ARN:</strong> ${row.arn_no}<br><span style="color: green;">Department:</span> ${row.department}</td>
+                        <td><strong>Qty:</strong> ${row.qty}</td>
+                        <td><strong>Cost:</strong> ${parseFloat(row.cost).toFixed(2)}</td>
+                        <td><strong>Cash Price:</strong> ${parseFloat(row.cash_price).toFixed(2)}</td>
+                        <td><strong>Credit Price:</strong> ${parseFloat(row.credit_price).toFixed(2)}</td>
+                        <td><strong>Cash Dis:</strong> ${row.cash_dis}%</td>
+                        <td><strong>Credit Dis:</strong> ${row.credit_dis}%</td>
+                    </tr>`;
+                    });
+                }
+            });
+        } else {
+            tbody = `<tr><td colspan="8" class="text-center text-muted">No items found</td></tr>`;
         }
 
+        $('#itemMaster tbody').html(tbody);
+
+        // Update pagination UI
+        renderPaginationControls(page);
+    }
+
+    function renderPaginationControls(currentPage) {
+        let totalPages = Math.ceil(fullItemList.length / itemsPerPage);
+        let pagination = '';
+
+        if (totalPages <= 1) {
+            $('#itemPagination').html('');
+            return;
+        }
+
+        pagination += `<li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                     <a class="page-link" href="#" data-page="${currentPage - 1}">Prev</a>
+                   </li>`;
+
+        for (let i = 1; i <= totalPages; i++) {
+            pagination += `<li class="page-item ${i === currentPage ? 'active' : ''}">
+                         <a class="page-link" href="#" data-page="${i}">${i}</a>
+                       </li>`;
+        }
+
+        pagination += `<li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                     <a class="page-link" href="#" data-page="${currentPage + 1}">Next</a>
+                   </li>`;
+
+        $('#itemPagination').html(pagination);
+    }
+
+    $(document).on('click', '#itemPagination .page-link', function (e) {
+        e.preventDefault();
+        let page = parseInt($(this).data('page'));
+        if (!isNaN(page)) {
+            renderPaginatedItems(page);
+        }
+    });
+
+
+    //clicka and append values
+    $(document).on('click', '#itemMaster tbody tr.table-light', function () {
+        // Get the main item row
+        let mainRow = $(this).prevAll('tr.table-primary').first();
+
+        // Extract item code and name
+        let itemText = mainRow.find('td').eq(1).text().trim();
+        let parts = itemText.split(' - ');
+        let itemCode = parts[0] || '';
+        let itemName = parts[1] || '';
+        let qtyText = mainRow.find('td').eq(3).text().trim();
+
+        // Extract cash and credit price from this ARN row
+        let cashPriceText = $(this).find('td').eq(3).text().trim();
+        let creditPriceText = $(this).find('td').eq(4).text().trim();
+
+        let cashPriceMatch = cashPriceText.match(/[\d,.]+/);
+        let creditPriceMatch = creditPriceText.match(/[\d,.]+/);
+
+        let cashPrice = cashPriceMatch ? cashPriceMatch[0] : '';
+        let creditPrice = creditPriceMatch ? creditPriceMatch[0] : '';
+
+        // Read selected payment type
+        let paymentType = $('#payment_type').val();
+
+        let priceToSet = '';
 
         if (paymentType == 1) {
-            $('#itemDiscount').val(data.cash_discount);
+            priceToSet = cashPrice;
         } else if (paymentType == 2) {
-            $('#itemDiscount').val(data.credit_discount);
+            priceToSet = creditPrice;
         } else {
-            $('#itemDiscount').val(0);
+            priceToSet = '';
         }
 
-        $('#item_id').val(data.id);
-        $('#itemCode').val(data.code);
-        $('#itemName').val(data.name);
-        $('#itemQty').val(1);
-        $('#available_qty').val(data.id);
-
-        calculatePayment();
-
-        setTimeout(() => $('#itemQty').focus(), 200);
-
-        $('#item_master').modal('hide');
-    });
+        // Set inputs
+        $('#itemCode').val(itemCode);
+        $('#itemName').val(itemName);
+        $('#itemPrice').val(priceToSet);
+        $('#stock_level').val(qtyText);
 
 
-    $('#item_master').on('hidden.bs.modal', function () {
-        if (focusAfterModal) {
-            $('#itemQty').focus();
-            focusAfterModal = false;
+        // Clear qty, discount, payment
+        $('#itemQty').val('');
+        $('#itemDiscount').val('');
+        $('#itemPayment').val('');
+        $('#payment_type').prop('disabled', true);
+        // Close modal (Bootstrap 5)
+        let itemMasterModal = bootstrap.Modal.getInstance(document.getElementById('item_master'));
+        if (itemMasterModal) {
+            itemMasterModal.hide();
         }
     });
 
-
+    // ----------------------ITEM MASTER SECTION END ----------------------//
 
     // Reset input fields
     $("#new").click(function (e) {
@@ -90,6 +229,20 @@ jQuery(document).ready(function () {
         location.reload();
     });
 
+
+    $('#vat_type').on('change', function () {
+        let value = $(this).val();
+
+        if (value == '2') {
+            $('.cus_width').css('width', '158px').removeClass('hidden');
+            $('.th_vat').removeClass('hidden');
+            $('.vat_total').removeClass('hidden');
+        } else {
+            $('.cus_width').css('width', '');
+            $('.th_vat').addClass('hidden');
+            $('.vat_total').addClass('hidden');
+        }
+    });
 
     // Add item to quatation table
     function addItem() {
@@ -99,16 +252,54 @@ jQuery(document).ready(function () {
         const qty = parseFloat($('#itemQty').val()) || 0;
         const discount = parseFloat($('#itemDiscount').val()) || 0;
         const payment = parseFloat($('#itemPayment').val()) || 0;
+        const vat = parseFloat($('#vat').val()) || 0;
+        const vatType = $('#vat_type').val(); // 2 = VAT applicable
 
         if (!code || !name || price <= 0 || qty <= 0) {
             alert("Please fill valid item details.");
             return;
         }
 
-        const total = (price * qty) - ((price * qty) * (discount / 100));
+        let isDuplicate = false;
+        $('#quotationItemsBody tr').each(function () {
+            const existingCode = $(this).find('td:eq(0)').text().trim();
+            if (existingCode === code) {
+                isDuplicate = true;
+                return false; // Break loop
+            }
+        });
 
-        // Remove no data message if exists
+        if (isDuplicate) {
+           swal({
+                title: "Duplicate Item!",
+                text: `Item "${code}" is already added.`,
+                type: 'warning',
+                timer: 2500,
+                showConfirmButton: false
+            });
+            return;
+        }
+
+        let subtotal = price * qty;
+        let discountAmount = subtotal * (discount / 100);
+        let total = subtotal - discountAmount;
+        let vatAmount = 0;
+
+        if (vatType == '2') {
+            vatAmount = total * (vat / 100);
+            total += vatAmount;
+        }
+
+        // Remove 'No Data' row if exists
         $('#noItemRow').remove();
+
+        // Build VAT column only if applicable
+        let vatColumn = '';
+        if (vatType == '2') {
+            vatColumn = `<td>${vatAmount.toFixed(2)}</td>`;
+
+
+        }
 
         const row = `
         <tr>
@@ -118,6 +309,7 @@ jQuery(document).ready(function () {
             <td>${qty}</td>
             <td>${discount}%</td>
             <td>${payment.toFixed(2)}</td>
+            ${vatColumn}
             <td>${total.toFixed(2)}</td>
             <td><button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">Remove</button></td>
         </tr>
@@ -126,6 +318,7 @@ jQuery(document).ready(function () {
 
         // Clear input fields
         $('#itemCode, #itemName, #itemPrice, #itemQty, #itemDiscount, #itemPayment').val('');
+        $('#vat_amount').val('');
 
         updateFinalTotal();
     }
@@ -140,25 +333,39 @@ jQuery(document).ready(function () {
     function updateFinalTotal() {
         let subTotal = 0;
         let discountTotal = 0;
+        let vatTotal = 0;
+
+        const vatType = $('#vat_type').val();
+        const vatRate = parseFloat($('#vat').val()) || 0;
 
         $('#quotationItemsBody tr').each(function () {
             const price = parseFloat($(this).find('td:eq(2)').text()) || 0;
             const qty = parseFloat($(this).find('td:eq(3)').text()) || 0;
             const discount = parseFloat($(this).find('td:eq(4)').text()) || 0;
-            const rowTotal = parseFloat($(this).find('td:eq(6)').text()) || 0;
 
-            subTotal += price * qty;
-            discountTotal += (price * qty * discount / 100);
+            const rowSubtotal = price * qty;
+            const rowDiscount = rowSubtotal * (discount / 100);
+            const rowTotal = rowSubtotal - rowDiscount;
+
+            subTotal += rowSubtotal;
+            discountTotal += rowDiscount;
+
+            if (vatType == '2') {
+                const rowVAT = rowTotal * (vatRate / 100);
+                vatTotal += rowVAT;
+
+            }
         });
 
-
-        const grandTotal = (subTotal - discountTotal);
+        const grandTotal = (subTotal - discountTotal + vatTotal);
 
         // Update display fields
         $('#finalTotal').val(subTotal.toFixed(2));        // Sub Total
-        $('#disTotal').val(discountTotal.toFixed(2));     // Discount Total 
+        $('#disTotal').val(discountTotal.toFixed(2));     // Discount Total
+        $('#vatTotal').val(vatTotal.toFixed(2));          // Total VAT (add input in form if not present)
         $('#grandTotal').val(grandTotal.toFixed(2));      // Grand Total
     }
+
 
 
     // Bind button click
@@ -177,13 +384,25 @@ jQuery(document).ready(function () {
         const price = parseFloat($('#itemPrice').val()) || 0;
         const qty = parseFloat($('#itemQty').val()) || 0;
         const discount = parseFloat($('#itemDiscount').val()) || 0;
+        const vat = parseFloat($('#vat').val()) || 0;
+        const vatType = $('#vat_type').val();
 
         const subtotal = price * qty;
         const discountedAmount = subtotal * (discount / 100);
-        const total = subtotal - discountedAmount;
+        let total = subtotal - discountedAmount;
+
+        // Reset VAT amount field
+        $('#vat_amount').val('0.00');
+
+        if (vatType == '2') {
+            const vatAmount = total * (vat / 100);
+            total += vatAmount;
+            $('#vat_amount').val(vatAmount.toFixed(2));
+        }
 
         $('#itemPayment').val(total.toFixed(2));
     }
+
 
     // Call payment calculation on input change
     $('#itemPrice, #itemQty, #itemDiscount').on('input', calculatePayment);

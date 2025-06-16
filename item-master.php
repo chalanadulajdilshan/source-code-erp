@@ -204,14 +204,14 @@ $item_id = 'ITM/0' . $lastId + 1;
 
                                         <div class="row">
                                             <!-- Cost -->
-                                            <div class="col-md-3">
+                                            <!-- <div class="col-md-3">
                                                 <div class="mb-3">
                                                     <label class="form-label" for="cost">Item Cost <span
                                                             class="text-danger">*</span></label>
                                                     <input id="cost" name="cost" type="text" class="form-control"
                                                         placeholder="Enter item cost">
                                                 </div>
-                                            </div>
+                                            </div> -->
 
                                             <!-- Reorder Level -->
                                             <div class="col-md-3">
@@ -250,44 +250,44 @@ $item_id = 'ITM/0' . $lastId + 1;
                                             </div>
 
                                             <!-- Wholesale Price -->
-                                            <div class="col-md-3">
+                                            <!-- <div class="col-md-3">
                                                 <div class="mb-3">
                                                     <label class="form-label" for="cash_price">Cash Price
                                                         <span class="text-danger">*</span></label>
                                                     <input id="cash_price" name="cash_price" type="text"
                                                         class="form-control" placeholder="Enter Cash Price">
                                                 </div>
-                                            </div>
+                                            </div> -->
 
                                             <!-- Retail Price -->
-                                            <div class="col-md-3">
+                                            <!-- <div class="col-md-3">
                                                 <div class="mb-3">
                                                     <label class="form-label" for="credit_price">Credit Price <span
                                                             class="text-danger">*</span></label>
                                                     <input id="credit_price" name="credit_price" type="text"
                                                         class="form-control" placeholder="Enter Credit price">
                                                 </div>
-                                            </div>
+                                            </div> -->
 
                                             <!-- Cash Discount -->
-                                            <div class="col-md-3">
+                                            <!-- <div class="col-md-3">
                                                 <div class="mb-3">
                                                     <label class="form-label" for="cash_discount">Cash Discount
                                                         (%)</label>
                                                     <input id="cash_discount" name="cash_discount" type="text"
                                                         class="form-control" placeholder="Enter cash discount">
                                                 </div>
-                                            </div>
+                                            </div> -->
 
                                             <!-- Credit Discount -->
-                                            <div class="col-md-2">
+                                            <!-- <div class="col-md-2">
                                                 <div class="mb-3">
                                                     <label class="form-label" for="credit_discount">Credit Discount
                                                         (%)</label>
                                                     <input id="credit_discount" name="credit_discount" type="text"
                                                         class="form-control" placeholder="Enter credit discount">
                                                 </div>
-                                            </div>
+                                            </div> -->
                                             <div class="col-md-1 d-flex justify-content-center align-items-center">
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="checkbox" id="is_active"
@@ -340,11 +340,8 @@ $item_id = 'ITM/0' . $lastId + 1;
                                         <th>Code</th>
                                         <th>Name</th>
                                         <th>Brand</th>
-                                        <th>Cost</th>
-                                        <th>Cash Price</th>
-                                        <th>Credit Price</th>
-                                        <th>Cash %</th>
-                                        <th>Credit %</th>
+                                        <th>Category</th>
+                                        <th>Quantity</th>
                                         <th>Status</th>
                                     </tr>
 

@@ -18,13 +18,8 @@ if (isset($_POST['create'])) {
     $ITEM->group = $_POST['group'];
     $ITEM->category = $_POST['category'];
 
-    $ITEM->cost = str_replace(',', '', $_POST['cost']);
     $ITEM->re_order_level = $_POST['re_order_level'];
     $ITEM->re_order_qty = $_POST['re_order_qty'];
-    $ITEM->cash_price = str_replace(',', '', $_POST['cash_price']);
-    $ITEM->credit_price = str_replace(',', '', $_POST['credit_price']);
-    $ITEM->cash_discount = $_POST['cash_discount'];
-    $ITEM->credit_discount = $_POST['credit_discount'];
     $ITEM->stock_type = $_POST['stock_type'];
     $ITEM->note = $_POST['note'];
     $ITEM->is_active = isset($_POST['is_active']) ? 1 : 0; //  
@@ -71,13 +66,8 @@ if (isset($_POST['update'])) {
     $ITEM->pattern = $_POST['pattern'];
     $ITEM->group = $_POST['group'];
     $ITEM->category = $_POST['category'];
-    $ITEM->cost = str_replace(',', '', $_POST['cost']);
     $ITEM->re_order_level = $_POST['re_order_level'];
     $ITEM->re_order_qty = $_POST['re_order_qty'];
-    $ITEM->cash_price = str_replace(',', '', $_POST['cash_price']);
-    $ITEM->credit_price = str_replace(',', '', $_POST['credit_price']);
-    $ITEM->cash_discount = $_POST['cash_discount'];
-    $ITEM->credit_discount = $_POST['credit_discount'];
     $ITEM->stock_type = $_POST['stock_type'];
     $ITEM->note = $_POST['note'];
     $ITEM->is_active = isset($_POST['is_active']) ? 1 : 0;

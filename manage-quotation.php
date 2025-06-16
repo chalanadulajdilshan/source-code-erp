@@ -212,6 +212,8 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
                                                 <label for="department_id" class="form-label">Department</label>
                                                 <div class="input-group mb-3">
                                                     <select id="department_id" name="department_id" class="form-select">
+                                                        <option value=""> -- Select Department --
+                                                        </option>
                                                         <?php
                                                         $DEPARTMENT_MASTER = new DepartmentMaster(NUll);
                                                         foreach ($DEPARTMENT_MASTER->getActiveDepartment() as $departments) {
@@ -275,6 +277,7 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
                                                 <div class="input-group mb-3">
                                                     <select id="marketing_executive_id" name="marketing_executive_id"
                                                         class="form-select">
+
                                                         <?php
                                                         $MARKETING_EXECUTIVE = new MarketingExecutive(NULL);
                                                         foreach ($MARKETING_EXECUTIVE->getActiveExecutives() as $marketing_executive) {
@@ -301,7 +304,8 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
                                             <input type="hidden" id="availableQty">
                                             <input type="hidden" id="id">
                                             <input type="hidden" value="<?php echo $company_id ?>">
-                                            <input type="hidden" name="vat" id="vat" value="18">
+                                            <input type="hidden" name="vat" id="vat"
+                                                value="<?php echo $DOCUMENT_TRACKING->vat_percentage ?>">
 
                                             <hr class="my-4">
 
@@ -336,15 +340,20 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
                                                     <input type="number" id="itemQty" class="form-control"
                                                         placeholder="Qty" oninput="calculatePayment()">
                                                 </div>
-                                                <div class="col-md-2">
+                                                <div class="col-md-2 cus_width">
                                                     <label class="form-label">Discount (%)</label>
                                                     <input type="number" id="itemDiscount" class="form-control"
                                                         placeholder="Discount" oninput="calculatePayment()">
                                                 </div>
-                                                <div class="col-md-2">
-                                                    <label class="form-label">Amount</label>
-                                                    <input type="number" id="itemPayment" class="form-control"
-                                                        placeholder="Amount" readonly>
+                                                <div class="col-md-2 cus_width hidden cus_width_hidden">
+                                                    <label class="form-label">Vat Amount</label>
+                                                    <input type="text" id="vat_amount" class="form-control"
+                                                        placeholder="Vat Amount" readonly>
+                                                </div>
+                                                <div class="col-md-2 cus_width">
+                                                    <label class="form-label">Total Amount</label>
+                                                    <input type="text" id="itemPayment" class="form-control"
+                                                        placeholder="Total Amount" readonly>
                                                 </div>
                                                 <div class="col-md-1">
                                                     <button type="button" class="btn btn-success w-100"
@@ -355,7 +364,7 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
 
                                             <!-- Table -->
                                             <div class="table-responsive mt-4">
-                                                <table class="table table-bordered" id="invoiceTable">
+                                                <table class="table table-bordered">
                                                     <thead class="table-light">
                                                         <tr>
                                                             <th>Code</th>
@@ -364,6 +373,7 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
                                                             <th>Qty</th>
                                                             <th>Discount</th>
                                                             <th>Amount</th>
+                                                            <th class="th_vat hidden">Vat Amount</th>
                                                             <th>Total</th>
                                                             <th>Action</th>
                                                         </tr>
@@ -388,7 +398,7 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
                                                             </div>
                                                             <div class="col-7">
                                                                 <input type="text" class="form-control" value="0.00"
-                                                                    disabled>
+                                                                    id="stock_level" disabled>
                                                             </div>
                                                         </div>
 
@@ -400,8 +410,7 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
                                                             <div class="col-7">
                                                                 <select class="form-control" id="credit_period"
                                                                     name="credit_period">
-                                                                    <option value="0"> -- Select Credit Period --
-                                                                    </option>
+
                                                                     <?php
                                                                     $CREDIT_PERIOD = new CreditPeriod(NULL);
                                                                     foreach ($CREDIT_PERIOD->getCreditPeriodByStatus(1) as $Credit_period) {
@@ -421,7 +430,7 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
                                                             <div class="col-7">
                                                                 <input type="text" id="validity" name="validity"
                                                                     class="form-control  "
-                                                                    placeholder="Enter Validate Days " />
+                                                                    placeholder="Enter Validate Days " value="7" />
                                                             </div>
                                                         </div>
 
@@ -452,6 +461,17 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
                                                             </div>
                                                             <div class="col-5">
                                                                 <input type="text" class="form-control" id="disTotal"
+                                                                    value="0.00" disabled>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row mb-2 hidden vat_total">
+                                                            <div class="col-7">
+                                                                <input type="text" class="form-control  "
+                                                                    value="Vat Total:" disabled>
+                                                            </div>
+                                                            <div class="col-5">
+                                                                <input type="text" class="form-control" id="vatTotal"
                                                                     value="0.00" disabled>
                                                             </div>
                                                         </div>
@@ -562,7 +582,7 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
     <script src="assets/libs/jquery/jquery.min.js"></script>
     <!-- /////////////////////////// -->
     <script src="ajax/js/quotation.js"></script>
- 
+
 
     <!-- include main js  -->
     <?php include 'main-js.php' ?>
@@ -572,6 +592,9 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
     <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
     <script>
         $('#quotation_table').DataTable();
+        $('#customerTable').DataTable();
+
+
         $(function () {
             // Initialize the datepicker
             $(".date-picker").datepicker({

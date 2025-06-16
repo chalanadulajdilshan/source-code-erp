@@ -28,11 +28,11 @@ jQuery(document).ready(function () {
             { data: "name", title: "Name" },
             { data: "brand", title: "Brand" },
             { data: "cost", title: "Cost" },
-            { data: "cash_price", title: "Wholesale" },
-            { data: "credit_price", title: "Retail" },
-            { data: "cash_discount", title: "Cash Dis %" },
-            { data: "credit_discount", title: "Credit Dis %" },
-            { data: "status_label", title: "Status" }
+            { data: "cash_price", title: "Cash" },
+            { data: "credit_price", title: "Credit" },
+            { data: "cash_discount", title: "Cash %" },
+            { data: "credit_discount", title: "Credit %" },
+
         ],
         order: [[0, 'desc']],
         pageLength: 100
@@ -82,58 +82,54 @@ jQuery(document).ready(function () {
         $('#category').prop('selectedIndex', 0); // Optional, if using dropdowns
         $("#create").show();
     });
-    
+
     function calculatePayment() {
+
         const recQty = parseFloat($('#rec_quantity').val()) || 0;
         const comCost = parseFloat($('#cost').val()) || 0;
+        const actual_cost = parseFloat($('.actual_cost').val()) || 0;
+
+
 
         const dis1 = parseFloat($('#dis_1').val()) || 0;
         const dis2 = parseFloat($('#dis_2').val()) || 0;
         const dis3 = parseFloat($('#dis_3').val()) || 0;
 
-        const listPrice = parseFloat($('#list_price').val()) || 0;
-
-        // Step 1–3: Apply successive discounts
+        // Calculate discounts
         let disAmount1 = comCost * (dis1 / 100);
         let disAmount2 = (comCost - disAmount1) * (dis2 / 100);
         let disAmount3 = (comCost - disAmount1 - disAmount2) * (dis3 / 100);
-
         let finalCost = comCost - disAmount1 - disAmount2 - disAmount3;
 
-        // Step 4: Total
-        let unitTotal = finalCost * recQty;
+        let unitTotal = actual_cost * recQty;
 
-        // Step 5: Tax on total
-        let tax = unitTotal * 0.15;
+        // let tax = unitTotal * 0.15;
 
-        // Step 6: Margin
-        let margin = (finalCost > 0) ? ((listPrice - finalCost) / finalCost) * 100 : 0;
-
-        // Output
         $('#actual_cost').val(finalCost.toFixed(2));
         $('#unit_total').val(unitTotal.toFixed(2));
-        $('#tax').val(tax.toFixed(2));
-        $('#margin').val(margin.toFixed(2));
+        // $('#tax').val(tax.toFixed(2));
     }
+
+    // Bind function to relevant input fields
+    $('#arn-item-table').on('input', '#rec_quantity, .actual_cost', calculatePayment);
+
 
 
     $('#addItemBtn').on('click', function () {
         const code = $('#itemCode').val();
-        let orderQty = parseFloat($('#order_qty').val()) || 0;
         const recQty = parseFloat($('#rec_quantity').val()) || 0;
         const cost = parseFloat($('#cost').val()) || 0;
         const dis1 = parseFloat($('#dis_1').val()) || 0;
         const dis2 = parseFloat($('#dis_2').val()) || 0;
         const dis3 = parseFloat($('#dis_3').val()) || 0;
-        const actualCost = parseFloat($('#actual_cost').val()) || 0;
+        const actualCost = parseFloat($('.actual_cost').val()) || 0;
         const unitTotal = parseFloat($('#unit_total').val()) || 0;
         const listPrice = parseFloat($('#list_price').val()) || 0;
         const cashPrice = parseFloat($('#cash_price').val()) || 0;
         const creditPrice = parseFloat($('#credit_price').val()) || 0;
         const tax = parseFloat($('#tax').val()) || 0;
 
-
-        // Validations
+        // ─────── Validations ───────
         if (!code) {
             return swal({ title: "Error!", text: "Please select an Item Code", type: "error", timer: 2000, showConfirmButton: false });
         }
@@ -153,17 +149,19 @@ jQuery(document).ready(function () {
             return swal({ title: "Error!", text: "Please enter Credit Price", type: "error", timer: 2000, showConfirmButton: false });
         }
 
-        if (!orderQty || orderQty === 0) {
-            orderQty = recQty;
-        }
 
+
+        // ─────── Remove placeholder row ───────
         $('#noDataRow').remove();
 
-        // Add to table
-        const newRow = ` 
+        // ─────── Generate a unique row ID (for later removal if needed) ───────
+        const itemId = `item_${Date.now()}`;
+
+        // ─────── Add new row ───────
+        const newRow = `
         <tr data-itemid="${itemId}">
             <td>${code}</td>
-            <td>${orderQty}</td>
+            
             <td>${recQty}</td>
             <td>${cost.toFixed(2)}</td>
             <td>${dis1}</td>
@@ -179,25 +177,27 @@ jQuery(document).ready(function () {
     `;
         $('#itemTableBody').append(newRow);
 
-        // Update Totals
+        // ─────── Update Totals ───────
         const currentARN = parseFloat($('#total_arn').val()) || 0;
         $('#total_arn').val((currentARN + unitTotal).toFixed(2));
 
         const currentVAT = parseFloat($('#total_vat').val()) || 0;
-        $('#total_vat').val((currentVAT + tax * recQty).toFixed(2));
+        $('#total_vat').val((currentVAT + (tax * recQty)).toFixed(2));
 
         const currentDiscount = parseFloat($('#total_discount').val()) || 0;
         const discountValue = (cost - actualCost) * recQty;
         $('#total_discount').val((currentDiscount + discountValue).toFixed(2));
 
-        // Clear inputs if needed
+        // ─────── Clear Input Fields ───────
         $('#rec_quantity').val('');
         $('#cost').val('');
         $('#dis_1, #dis_2, #dis_3').val('');
         $('#actual_cost').val('');
         $('#unit_total').val('');
         $('#list_price, #cash_price, #credit_price').val('');
+        updateSummaryValues();
     });
+
 
 
 
@@ -274,6 +274,7 @@ jQuery(document).ready(function () {
                                     <input type="hidden" name="items[${index}][item_id]" value="${item.item_id}">
                                 </td>
                                 <td><input type="number" name="items[${index}][order_qty]" class="form-control form-control-sm" readonly value="${qty}"></td>
+
                                 <td><input type="number" name="items[${index}][rec_qty]" class="form-control form-control-sm" value="${item.rec_qty || 0}"></td>
                                 <td><input type="number" step="0.01" name="items[${index}][com_cost]" class="form-control form-control-sm" value="${item.com_cost || 0}"></td>
                                 <td><input type="number" step="0.01" name="items[${index}][dis1]" class="form-control form-control-sm me-1" value="${item.dis1 || 0}" placeholder="D1"></td>
@@ -291,7 +292,7 @@ jQuery(document).ready(function () {
                         });
 
                         $('#arn-item-table').hide();
-                        $('#itemTable').css('margin-top', '0');
+                        $('#itemTable').removeClass('mt-5');
                     } else {
                         $('#itemTableBody').append(`
                         <tr id="noDataRow">

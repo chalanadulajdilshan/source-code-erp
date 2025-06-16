@@ -25,7 +25,7 @@ jQuery(document).ready(function () {
             }
         },
         columns: [
-            { data: "id", title: "#ID" },
+            { data: "key", title: "#ID" },
             { data: "code", title: "Code" },
             { data: "name", title: "Name" },
             { data: "brand", title: "Brand" },

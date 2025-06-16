@@ -70,7 +70,7 @@ class VatType
     // Retrieve all VAT types
     public function all()
     {
-        $query = "SELECT * FROM `vat_types` ORDER BY `name` ASC";
+        $query = "SELECT * FROM `vat_types` ORDER BY `id` ASC";
         $db = new Database();
         $result = $db->readQuery($query);
         $array_res = array();
