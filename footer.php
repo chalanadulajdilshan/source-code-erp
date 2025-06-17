@@ -19,7 +19,8 @@
 <?php include 'customer-master-model.php' ?>
 <?php include 'supplier-master-model.php' ?>
 <?php include 'all-customers-model.php' ?>
-<?php include 'item-master-model.php' ?>
+<?php include 'main-item-master-model.php' ?>
+<?php include 'item-master-model.php' ?> 
 <?php include 'payment-model.php' ?>
 <?php include 'invoice-model.php' ?> 
 

@@ -111,7 +111,7 @@ $item_id = 'ITM/0' . $lastId + 1;
                                                         value="<?php echo $item_id ?>" readonly>
                                                     <?php if ($PERMISSIONS['search_page']): ?>
                                                         <button class="btn btn-info" type="button" data-bs-toggle="modal"
-                                                            data-bs-target="#item_master">
+                                                            data-bs-target="#main_item_master">
                                                             <i class="uil uil-search me-1"></i>
                                                         </button>
                                                     <?php endif; ?>
@@ -198,20 +198,21 @@ $item_id = 'ITM/0' . $lastId + 1;
                                                     </select>
                                                 </div>
                                             </div>
+                                            <!-- List Price -->
+                                            <div class="col-md-3">
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="list_price"> List Price <span
+                                                            class="text-danger">*</span></label>
+                                                    <input id="list_price" name="list_price" type="text" class="form-control"
+                                                        placeholder="Enter item  List Price">
+                                                </div>
+                                            </div>
                                         </div>
 
                                         <hr class="my-4">
 
                                         <div class="row">
-                                            <!-- Cost -->
-                                            <!-- <div class="col-md-3">
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="cost">Item Cost <span
-                                                            class="text-danger">*</span></label>
-                                                    <input id="cost" name="cost" type="text" class="form-control"
-                                                        placeholder="Enter item cost">
-                                                </div>
-                                            </div> -->
+
 
                                             <!-- Reorder Level -->
                                             <div class="col-md-3">
@@ -249,45 +250,7 @@ $item_id = 'ITM/0' . $lastId + 1;
                                                 </div>
                                             </div>
 
-                                            <!-- Wholesale Price -->
-                                            <!-- <div class="col-md-3">
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="cash_price">Cash Price
-                                                        <span class="text-danger">*</span></label>
-                                                    <input id="cash_price" name="cash_price" type="text"
-                                                        class="form-control" placeholder="Enter Cash Price">
-                                                </div>
-                                            </div> -->
-
-                                            <!-- Retail Price -->
-                                            <!-- <div class="col-md-3">
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="credit_price">Credit Price <span
-                                                            class="text-danger">*</span></label>
-                                                    <input id="credit_price" name="credit_price" type="text"
-                                                        class="form-control" placeholder="Enter Credit price">
-                                                </div>
-                                            </div> -->
-
-                                            <!-- Cash Discount -->
-                                            <!-- <div class="col-md-3">
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="cash_discount">Cash Discount
-                                                        (%)</label>
-                                                    <input id="cash_discount" name="cash_discount" type="text"
-                                                        class="form-control" placeholder="Enter cash discount">
-                                                </div>
-                                            </div> -->
-
-                                            <!-- Credit Discount -->
-                                            <!-- <div class="col-md-2">
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="credit_discount">Credit Discount
-                                                        (%)</label>
-                                                    <input id="credit_discount" name="credit_discount" type="text"
-                                                        class="form-control" placeholder="Enter credit discount">
-                                                </div>
-                                            </div> -->
+                                             
                                             <div class="col-md-1 d-flex justify-content-center align-items-center">
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="checkbox" id="is_active"
@@ -315,44 +278,9 @@ $item_id = 'ITM/0' . $lastId + 1;
                     </div>
                 </div> <!-- container-fluid -->
             </div>
+            <?php include 'footer.php' ?>
 
         </div>
-    </div>
-
-    <div id="item_master" class="modal fade  " tabindex="-1" role="dialog" aria-labelledby="brandModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="brandModalLabel">Manage Item</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-12">
-
-                            <table id="datatable" class="table table-bordered dt-responsive nowrap"
-                                style="width: 100%;">
-                                <thead>
-                                    <tr>
-                                        <th>#ID</th>
-                                        <th>Code</th>
-                                        <th>Name</th>
-                                        <th>Brand</th>
-                                        <th>Category</th>
-                                        <th>Quantity</th>
-                                        <th>Status</th>
-                                    </tr>
-
-                                </thead>
-                            </table>
-
-                        </div> <!-- end col -->
-                    </div> <!-- end row -->
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
     </div>
 
 
@@ -363,6 +291,7 @@ $item_id = 'ITM/0' . $lastId + 1;
     <script src="assets/libs/jquery/jquery.min.js"></script>
     <!-- /////////////////////////// -->
     <script src="ajax/js/item-master.js"></script>
+    <script src="ajax/js/common.js"></script>
 
     <!-- include main js  -->
     <?php include 'main-js.php' ?>

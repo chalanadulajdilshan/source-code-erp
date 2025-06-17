@@ -10,7 +10,7 @@
     <div class="modal-dialog modal-xl ">
         <div class="modal-content  ">
             <div class="modal-header">
-                <h5 class="modal-title" id="brandModalLabel">Show all items in item master file</h5>
+                <h5 class="modal-title" id="brandModalLabel">All Items Show the Table</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 

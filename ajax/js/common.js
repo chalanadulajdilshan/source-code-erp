@@ -26,6 +26,96 @@ jQuery(document).ready(function () {
         });
     });
 
+
+    //------------------ MAIN ITEM MASTER ITEM LOARD---------------//
+    var table = $('#datatable').DataTable({
+
+        processing: true,
+        serverSide: true,
+
+        ajax: {
+            url: "ajax/php/item-master.php",
+            type: "POST",
+            data: function (d) {
+                d.filter = true;
+                d.status = 0;
+                d.stock_only = 0;
+            },
+            dataSrc: function (json) {
+
+                return json.data;
+            },
+            error: function (xhr) {
+                console.error("Server Error Response:", xhr.responseText);
+            }
+        },
+        columns: [
+
+            { data: "key", title: "#ID" },
+            { data: "code", title: "Code" },
+            { data: "name", title: "Name" },
+            { data: "brand", title: "Brand" },
+            { data: "category", title: "Category" },
+            { data: "list_price", title: "List Price" },
+            { data: "qty", title: "Quantity" },
+            { data: "status_label", title: "Status" }
+        ],
+        order: [[0, 'desc']],
+        pageLength: 100
+    });
+
+
+
+    // On row click, load selected item into input fields
+    $('#datatable tbody').on('click', 'tr', function () {
+        var data = table.row(this).data();
+        if (!data) return;
+ 
+        const paymentType = $('#payment_type').val();
+
+
+        if (paymentType == 1) {
+            $('#itemDiscount').val(data.cash_discount);
+        } else if (paymentType == 2) {
+            $('#itemDiscount').val(data.credit_discount);
+        } else {
+            $('#itemDiscount').val(0);
+        }
+
+        // Fill all form fields
+        $('#item_id').val(data.id);
+        $('#code').val(data.code);
+        $('#name').val(data.name);
+        $('#brand').val(data.brand_id);
+        $('#size').val(data.size);
+        $('#pattern').val(data.pattern);
+        $('#category').val(data.category_id);
+         $('#list_price').val(data.list_price);
+        $('#group').val(data.group);
+        $('#re_order_level').val(data.re_order_level);
+        $('#re_order_qty').val(data.re_order_qty);
+        $('#stock_type').val(data.stock_type);
+
+        $('#note').val(data.note);
+
+        // Checkbox
+        $('#is_active').prop('checked', data.status == 1); // assuming 1 = active
+
+        // Optional: trigger change for dropdowns if you have dependent selects
+        $('#brand, #group, #category, #stock_type').trigger('change');
+        $('#create').hide();
+        $('#update').show();
+        // Close modal
+        $('#main_item_master').modal('hide');
+    });
+
+    $('#main_item_master').on('hidden.bs.modal', function () {
+        if (focusAfterModal) {
+            $('#itemQty').focus();
+            focusAfterModal = false;
+        }
+    });
+
     //get district name
     $('#province').change(function () {
 
@@ -446,7 +536,7 @@ jQuery(document).ready(function () {
         });
     });
 
-    
+
 
 
 });

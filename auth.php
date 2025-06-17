@@ -15,7 +15,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
 $skipPages = ['common.php', 'help.php'];
 
-$USER_PERMISSION->checkAccess($page_id);
+
+if (!in_array($current_page, $skipPages)) {
+    $page_id = $_GET['page_id'] ?? null;
+    $USER_PERMISSION->checkAccess($page_id);
+}
+
 
 // Get company details
 $US = new User($_SESSION['id']);

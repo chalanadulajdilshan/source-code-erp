@@ -3,6 +3,7 @@ jQuery(document).ready(function () {
     $('#brand').on('change', function () {
         table.ajax.reload();
     });
+
     // DataTable config
     var table = $('#datatable').DataTable({
         processing: true,
@@ -25,15 +26,13 @@ jQuery(document).ready(function () {
             }
         },
         columns: [
-            { data: "key", title: "#ID" },
+             { data: "key", title: "#ID" },
             { data: "code", title: "Code" },
             { data: "name", title: "Name" },
             { data: "brand", title: "Brand" },
-            { data: "cost", title: "Cost" },
-            { data: "cash_price", title: "Cash" },
-            { data: "credit_price", title: "Credit" },
-            { data: "cash_discount", title: "Cash %" },
-            { data: "credit_discount", title: "Credit %" },
+            { data: "category", title: "Category" },
+            { data: "qty", title: "Quantity" },
+            { data: "status_label", title: "Status" }
 
         ],
         order: [[0, 'desc']],
@@ -55,7 +54,7 @@ jQuery(document).ready(function () {
 
         setTimeout(() => $('#qty').focus(), 200);
 
-        $('#item_master').modal('hide');
+        $('#main_item_master').modal('hide');
     });
 
 
