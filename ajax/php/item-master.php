@@ -17,7 +17,7 @@ if (isset($_POST['create'])) {
     $ITEM->pattern = $_POST['pattern'];
     $ITEM->group = $_POST['group'];
     $ITEM->category = $_POST['category'];
-
+    $ITEM->list_price = $_POST['list_price'];
     $ITEM->re_order_level = $_POST['re_order_level'];
     $ITEM->re_order_qty = $_POST['re_order_qty'];
     $ITEM->stock_type = $_POST['stock_type'];
@@ -70,6 +70,7 @@ if (isset($_POST['update'])) {
     $ITEM->re_order_qty = $_POST['re_order_qty'];
     $ITEM->stock_type = $_POST['stock_type'];
     $ITEM->note = $_POST['note'];
+    $ITEM->list_price = $_POST['list_price'];
     $ITEM->is_active = isset($_POST['is_active']) ? 1 : 0;
 
     // Attempt to update the item

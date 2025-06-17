@@ -382,7 +382,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
                                                         <input id="itemCode" name="itemCode" type="text"
                                                             class="form-control" readonly>
                                                         <button class="btn btn-info" type="button"
-                                                            data-bs-toggle="modal" data-bs-target="#item_master">
+                                                            data-bs-toggle="modal" data-bs-target="#main_item_master">
                                                             <i class="uil uil-search me-1"></i>
                                                         </button>
                                                     </div>
@@ -564,8 +564,9 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
                     </div>
                 </div>
             </div>
-            <?php include 'footer.php' ?>
         </div>
+        <?php include 'footer.php' ?>
+
     </div>
 
 
@@ -723,6 +724,8 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
         </div><!-- /.modal-dialog -->
     </div>
 
+
+
     <!-- Right bar overlay-->
     <div class="rightbar-overlay"></div>
 
@@ -730,8 +733,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- add js files -->
     <script src="ajax/js/arn-master.js"></script>
-    <script src="ajax/js/common.js"></script>
-
+ 
     <script src="assets/libs/sweetalert/sweetalert-dev.js"></script>
     <script src="assets/js/jquery.preloader.min.js"></script>
     <script src="assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>

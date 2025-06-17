@@ -302,7 +302,7 @@ $po_id = $COMPANY_PROFILE_DETAILS->company_code . '/PO/00/0' . $lastId + 1;
                                                         <input id="itemCode" type="text" class="form-control"
                                                             placeholder="Item Code" readonly>
                                                         <button class="btn btn-info" type="button"
-                                                            data-bs-toggle="modal" data-bs-target="#item_master">
+                                                            data-bs-toggle="modal" data-bs-target="#main_item_master">
                                                             <i class="uil uil-search me-1"></i>
                                                         </button>
                                                     </div>
@@ -336,7 +336,7 @@ $po_id = $COMPANY_PROFILE_DETAILS->company_code . '/PO/00/0' . $lastId + 1;
 
                                         <!-- Table -->
                                         <div class="table-responsive mt-4">
-                                            <table class="table table-bordered" id="invoiceTable">
+                                            <table class="table table-bordered"  >
                                                 <thead class="table-light">
                                                     <tr>
                                                         <th>Code and Name </th>
@@ -403,9 +403,9 @@ $po_id = $COMPANY_PROFILE_DETAILS->company_code . '/PO/00/0' . $lastId + 1;
         <!-- end main content-->
 
     </div>
-    <!-- END layout-wrapper -->
+    
 
-    <!-- model open here -->
+    <!-- Purchase Model Open-->
     <div class="modal fade bs-example-modal-xl" id="po_number_modal" tabindex="-1" role="dialog"
         aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
 
@@ -497,8 +497,7 @@ $po_id = $COMPANY_PROFILE_DETAILS->company_code . '/PO/00/0' . $lastId + 1;
     <!-- JAVASCRIPT -->
     <script src="assets/libs/jquery/jquery.min.js"></script>
     <script src="ajax/js/purchase-order.js"></script>
-    <script src="ajax/js/common.js"></script>
-
+ 
     <!-- /////////////////////////// -->
 
     <script src="assets/libs/sweetalert/sweetalert-dev.js"></script>

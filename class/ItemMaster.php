@@ -13,7 +13,7 @@ class ItemMaster
     public $category;
     public $re_order_level;
     public $re_order_qty;
-
+    public $list_price;
     public $stock_type;
     public $note;
     public $is_active;
@@ -34,6 +34,7 @@ class ItemMaster
                 $this->pattern = $result['pattern'];
                 $this->group = $result['group'];
                 $this->category = $result['category'];
+                $this->list_price = $result['list_price'];
                 $this->re_order_level = $result['re_order_level'];
                 $this->re_order_qty = $result['re_order_qty'];
                 $this->stock_type = $result['stock_type'];
@@ -46,11 +47,11 @@ class ItemMaster
     public function create()
     {
         $query = "INSERT INTO `item_master` (
-    `code`, `name`, `brand`, `size`, `pattern`, `group`, `category`,
+    `code`, `name`, `brand`, `size`, `pattern`, `group`, `category`,`list_price`,
      `re_order_level`, `re_order_qty`, `stock_type`, `note`, `is_active`
 ) VALUES (
     '$this->code', '$this->name', '$this->brand', '$this->size', '$this->pattern', '$this->group',
-    '$this->category', '$this->re_order_level', '$this->re_order_qty',
+    '$this->category', '$this->list_price','$this->re_order_level', '$this->re_order_qty',
      '$this->stock_type', '$this->note', '$this->is_active'
 )";
 
@@ -76,6 +77,7 @@ class ItemMaster
             `pattern` = '$this->pattern', 
             `group` = '$this->group', 
             `category` = '$this->category', 
+            `list_price` = '$this->list_price', 
             `re_order_level` = '$this->re_order_level', 
             `re_order_qty` = '$this->re_order_qty', 
             `stock_type` = '$this->stock_type', 
@@ -191,7 +193,7 @@ class ItemMaster
                 // Department
                 $DEPARTMENT_MASTER = new DepartmentMaster($stockRow['department_id']);
                 $departmentName = $DEPARTMENT_MASTER ? $DEPARTMENT_MASTER->name : null;
-                $row['stock_tmp'][$key]['department'] = $departmentName; 
+                $row['stock_tmp'][$key]['department'] = $departmentName;
             }
 
             $items[] = $row;
@@ -295,6 +297,7 @@ class ItemMaster
                 "brand" => $BRAND->name,
                 "category_id" => $row['category'],
                 "category" => $CATEGORY->name,
+                "list_price" => $row['list_price'],
                 "stock_type" => $row['stock_type'],
                 "note" => $row['note'],
                 "status" => $row['is_active'],

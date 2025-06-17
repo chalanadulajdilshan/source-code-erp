@@ -1,6 +1,6 @@
 jQuery(document).ready(function () {
 
-    // DataTable config
+    // Item Table check
     var table = $('#datatable').DataTable({
 
         processing: true,
@@ -11,8 +11,8 @@ jQuery(document).ready(function () {
             type: "POST",
             data: function (d) {
                 d.filter = true;
-                d.status = 1;
-                d.stock_only = 1;
+                d.status = 0;
+                d.stock_only = 0;
             },
             dataSrc: function (json) {
 
@@ -23,16 +23,14 @@ jQuery(document).ready(function () {
             }
         },
         columns: [
+
             { data: "key", title: "#ID" },
             { data: "code", title: "Code" },
             { data: "name", title: "Name" },
             { data: "brand", title: "Brand" },
-            { data: "cost", title: "Cost" },
-            { data: "cash_price", title: "Cash" },
-            { data: "credit_price", title: "Credit" },
-            { data: "cash_discount", title: "Cash %" },
-            { data: "credit_discount", title: "Credit %" },
-
+            { data: "category", title: "Category" },
+            { data: "qty", title: "Quantity" },
+            { data: "status_label", title: "Status" }
         ],
         order: [[0, 'desc']],
         pageLength: 100
@@ -72,7 +70,15 @@ jQuery(document).ready(function () {
 
         setTimeout(() => $('#itemQty').focus(), 200);
 
-        $('#item_master').modal('hide');
+        $('#main_item_master').modal('hide');
+    });
+
+    // Bind Enter key to add item
+    $('#rec_quantity, #cash_price, #credit_price, .actual_cost').on('keydown', function (e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            $('#addItemBtn').trigger('click');
+        }
     });
 
     // Reset input fields
@@ -112,7 +118,6 @@ jQuery(document).ready(function () {
 
     // Bind function to relevant input fields
     $('#arn-item-table').on('input', '#rec_quantity, .actual_cost', calculatePayment);
-
 
 
     $('#addItemBtn').on('click', function () {
@@ -197,8 +202,6 @@ jQuery(document).ready(function () {
         $('#list_price, #cash_price, #credit_price').val('');
         updateSummaryValues();
     });
-
-
 
 
     $(document).on('click', '.select-purchase-order', function () {
@@ -497,75 +500,6 @@ jQuery(document).ready(function () {
     });
 
 
-    //delete purchasse order item
-    $(document).on('click', '.delete-purchase-order-item', function (e) {
-        e.preventDefault();
-
-        const button = $(this);
-        const itemId = button.data('item-id');
-
-        if (!itemId) {
-            swal({
-                title: "Error!",
-                text: "Item ID not found.",
-                type: 'error',
-                timer: 2500,
-                showConfirmButton: false
-            });
-            return;
-        }
-
-        swal({
-            title: "Are you sure?",
-            text: "Do you want to delete this item?",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#d33",
-            cancelButtonColor: "#6c757d",
-            confirmButtonText: "Yes, delete it!",
-            cancelButtonText: "Cancel",
-            closeOnConfirm: false
-        }, function (isConfirm) {
-            if (isConfirm) {
-                $('.someBlock').preloader();
-
-                $.ajax({
-                    url: "ajax/php/purchase-order.php",
-                    type: "POST",
-                    data: {
-                        item_id: itemId,
-                        action: 'delete_items',
-                    },
-                    dataType: 'JSON',
-                    success: function (response) {
-                        $('.someBlock').preloader('remove');
-
-                        if (response.status === 'success') {
-                            swal({
-                                title: "Deleted!",
-                                text: "Item has been removed.",
-                                type: "success",
-                                timer: 2000,
-                                showConfirmButton: false
-                            });
-
-                            // Remove row from UI
-                            button.closest('tr').remove();
-                            updateSummaryValues();
-                        } else {
-                            swal({
-                                title: "Error!",
-                                text: "Could not delete item.",
-                                type: "error",
-                                timer: 2500,
-                                showConfirmButton: false
-                            });
-                        }
-                    }
-                });
-            }
-        });
-    });
 
 
 });
