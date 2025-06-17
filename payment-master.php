@@ -8,33 +8,11 @@ include 'auth.php';
 <head>
 
     <meta charset="utf-8" />
-    <title>Horizontal Layout | Minible - Admin & Dashboard Template</title>
+    <title>Payment Master | <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta content="#" name="description" />
-    <meta content="Themesbrand" name="author" />
-    <!-- App favicon -->
-    <link rel="shortcut icon" href="assets/images/favicon.ico">
-
-    <!-- Bootstrap Css -->
-    <link href="assets/css/bootstrap.min.css" id="bootstrap-style" rel="stylesheet" type="text/css" />
-    <!-- Icons Css -->
-    <link href="assets/css/icons.min.css" rel="stylesheet" type="text/css" />
-    <!-- App Css-->
-    <link href="assets/css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
-
-    <link href="assets/libs/sweetalert/sweetalert.css" rel="stylesheet" type="text/css" />
-
-    <link href="assets/css/preloader.css" rel="stylesheet" type="text/css" />
-    <!-- Responsive datatable examples -->
-    <!-- DataTables -->
-    <link href="assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
-    <link href="assets/libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css" rel="stylesheet"
-        type="text/css" />
-    <link href="assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet"
-        type="text/css" />
-
-
+    <meta content="<?php echo $COMPANY_PROFILE_DETAILS->name ?>" name="author" />
+    <!-- include main CSS -->
+    <?php include 'main-css.php' ?>
 
 </head>
 
@@ -56,15 +34,24 @@ include 'auth.php';
                             <a href="#" class="btn btn-success" id="new">
                                 <i class="uil uil-plus me-1"></i> New
                             </a>
+
+                            <?php if ($PERMISSIONS['add_page']): ?>
                             <a href="#" class="btn btn-primary" id="create">
                                 <i class="uil uil-save me-1"></i> Save
                             </a>
+                            <?php endif; ?>
+
+                            <?php if ($PERMISSIONS['edit_page']): ?>
                             <a href="#" class="btn btn-warning" id="update">
                                 <i class="uil uil-edit me-1"></i> Update
                             </a>
+                            <?php endif; ?>
+
+                            <?php if ($PERMISSIONS['delete_page']): ?>
                             <a href="#" class="btn btn-danger delete-payment-type">
                                 <i class="uil uil-trash-alt me-1"></i> Delete
                             </a>
+                            <?php endif; ?>
 
                         </div>
 
@@ -227,41 +214,8 @@ include 'auth.php';
     <script src="ajax/js/payment-type-master.js"></script>
 
 
-    <script src="assets/libs/sweetalert/sweetalert-dev.js"></script>
-    <script src="assets/js/jquery.preloader.min.js"></script>
-
-    <script src="assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/libs/metismenu/metisMenu.min.js"></script>
-    <script src="assets/libs/simplebar/simplebar.min.js"></script>
-    <script src="assets/libs/node-waves/waves.min.js"></script>
-    <script src="assets/libs/waypoints/lib/jquery.waypoints.min.js"></script>
-    <script src="assets/libs/jquery.counterup/jquery.counterup.min.js"></script>
-
-    <!-- Required datatable js -->
-    <script src="assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
-    <script src="assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
-    <!-- Buttons examples -->
-    <script src="assets/libs/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
-    <script src="assets/libs/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js"></script>
-    <script src="assets/libs/jszip/jszip.min.js"></script>
-    <script src="assets/libs/pdfmake/build/pdfmake.min.js"></script>
-    <script src="assets/libs/pdfmake/build/vfs_fonts.js"></script>
-    <script src="assets/libs/datatables.net-buttons/js/buttons.html5.min.js"></script>
-    <script src="assets/libs/datatables.net-buttons/js/buttons.print.min.js"></script>
-    <script src="assets/libs/datatables.net-buttons/js/buttons.colVis.min.js"></script>
-
-    <!-- Responsive examples -->
-    <script src="assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
-    <script src="assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
-
-    <!-- Datatable init js -->
-    <script src="assets/js/pages/datatables.init.js"></script>
-    <!-- apexcharts -->
-
-    <script src="assets/js/pages/dashboard.init.js"></script>
-
-    <!-- App js -->
-    <script src="assets/js/app.js"></script>
+    <!-- include main js  -->
+    <?php include 'main-js.php' ?>
 
 </body>
 
