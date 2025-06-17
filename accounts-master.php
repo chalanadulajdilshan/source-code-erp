@@ -22,9 +22,7 @@ include 'auth.php';
 
 <body data-layout="horizontal" data-topbar="colored" class="someBlock">
 
-    </head>
-
-    <body data-layout="horizontal" data-topbar="colored">
+   
 
         <!-- Begin page -->
         <div id="layout-wrapper">

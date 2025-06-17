@@ -16,8 +16,7 @@ $design_id = 'DM/00/' . $lastId + 1;
     <meta charset="utf-8" />
     <title>Design Master | <?php echo $COMPANY_PROFILE_DETAILS->name ?></title> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    meta content="<?php echo $COMPANY_PROFILE_DETAILS->name ?>" name="author" />
-    <!-- include main CSS -->
+     <!-- include main CSS -->
     <?php include 'main-css.php' ?>
 
 </head>

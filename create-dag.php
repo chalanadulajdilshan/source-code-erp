@@ -1,12 +1,13 @@
 <!doctype html>
 <?php
 include 'class/include.php';
+include 'auth.php';
 
-$CREATE_DAG = new CreateDag(NULL);
+$DAG = new Dag(NULL);
 
 // Get the last inserted package id
-$lastId = $CREATE_DAG->getLastID();
-$dag_id = 'CD-00' . $lastId + 1;
+$lastId = $DAG->getLastID();
+$dag_id = 'CD/00/' . $lastId + 1;
 
 ?>
 <html lang="en">
@@ -44,27 +45,27 @@ $dag_id = 'CD-00' . $lastId + 1;
                             </a>
 
                             <?php if ($PERMISSIONS['add_page']): ?>
-                            <a href="#" class="btn btn-primary" id="create">
-                                <i class="uil uil-save me-1"></i> Save
-                            </a>
+                                <a href="#" class="btn btn-primary" id="create">
+                                    <i class="uil uil-save me-1"></i> Save
+                                </a>
                             <?php endif; ?>
 
                             <?php if ($PERMISSIONS['print_page']): ?>
-                            <a href="#" class="btn btn-info" id="print">
-                                <i class="uil uil-print me-1"></i> Print
-                            </a>
+                                <a href="#" class="btn btn-info" id="print">
+                                    <i class="uil uil-print me-1"></i> Print
+                                </a>
                             <?php endif; ?>
 
                             <?php if ($PERMISSIONS['edit_page']): ?>
-                            <a href="#" class="btn btn-warning" id="update">
-                                <i class="uil uil-edit me-1"></i> Update
-                            </a>
+                                <a href="#" class="btn btn-warning" id="update">
+                                    <i class="uil uil-edit me-1"></i> Update
+                                </a>
                             <?php endif; ?>
 
                             <?php if ($PERMISSIONS['delete_page']): ?>
-                            <a href="#" class="btn btn-danger delete-dag">
-                                <i class="uil uil-trash-alt me-1"></i> Delete
-                            </a>
+                                <a href="#" class="btn btn-danger delete-dag">
+                                    <i class="uil uil-trash-alt me-1"></i> Delete
+                                </a>
                             <?php endif; ?>
 
                         </div>
@@ -72,7 +73,7 @@ $dag_id = 'CD-00' . $lastId + 1;
                         <div class="col-md-4 text-md-end text-start mt-3 mt-md-0">
                             <ol class="breadcrumb m-0 justify-content-md-end">
                                 <li class="breadcrumb-item"><a href="javascript: void(0);">Dashboard</a></li>
-                                <li class="breadcrumb-item active">CREATE DAG</li>
+                                <li class="breadcrumb-item active">Creat Dag</li>
                             </ol>
                         </div>
                     </div>
@@ -94,8 +95,9 @@ $dag_id = 'CD-00' . $lastId + 1;
                                             </div>
                                         </div>
                                         <div class="flex-grow-1 overflow-hidden">
-                                            <h5 class="font-size-16 mb-1">CREATE DAG</h5>
-                                            <p class="text-muted text-truncate mb-0">Fill all information below</p>
+                                            <h5 class="font-size-16 mb-1"> Creat Dag</h5>
+                                            <p class="text-muted text-truncate mb-0">Fill all information below Creat
+                                                Dag</p>
                                         </div>
                                         <div class="flex-shrink-0">
                                             <i class="mdi mdi-chevron-up accor-down-icon font-size-24"></i>
@@ -110,49 +112,40 @@ $dag_id = 'CD-00' . $lastId + 1;
                                         <div class="row">
 
                                             <div class="col-md-2">
-                                                    <label class="form-label" for="code">Invoice No </label>
-                                                    <div class="input-group mb-3">
-                                                        <input id="code" name="code" type="text" value="<?php echo $dag_id; ?>"
-                                                            placeholder="Ref No" class="form-control" readonly>
-                                                        <button class="btn btn-info" type="button"
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target="#dagModel">
-                                                            <i class="uil uil-search me-1"></i>
-                                                        </button>
-                                                    </div>
+                                                <label class="form-label" for="ref_no">Ref No </label>
+                                                <div class="input-group mb-3">
+                                                    <input id="ref_no" name="ref_no" type="text"
+                                                        value="<?php echo $dag_id; ?>" placeholder="Ref No"
+                                                        class="form-control" readonly>
+                                                    <button class="btn btn-info" type="button" data-bs-toggle="modal"
+                                                        data-bs-target="#dagModel">
+                                                        <i class="uil uil-search me-1"></i>
+                                                    </button>
+                                                </div>
                                             </div>
 
                                             <div class="col-md-3">
-                                                    <label for="department_id" class="form-label">Department <span
-                                                            class="text-danger"></span></label>
-                                                    <select id="department_id" name="department_id" class="form-select"
-                                                        required>
-                                                        <option value=""> --Select Department --</option>
-                                                        <?php
-                                                        $DEPARTMENT_MASTER = new DepartmentMaster(NULL);
-                                                        foreach ($DEPARTMENT_MASTER->getActiveDepartment() as $department_master) {
-                                                            ?>
-                                                            <option value="<?php echo $department_master['id']; ?>">
-                                                                <?php echo $department_master['name']; ?>
-                                                            </option>
-                                                        <?php } ?>
-                                                    </select>
+                                                <label for="department_id" class="form-label">Department <span
+                                                        class="text-danger"></span></label>
+                                                <select id="department_id" name="department_id" class="form-select"
+                                                    required>
+
+                                                    <?php
+                                                    $DEPARTMENT_MASTER = new DepartmentMaster(NULL);
+                                                    foreach ($DEPARTMENT_MASTER->getActiveDepartment() as $department_master) {
+                                                        ?>
+                                                        <option value="<?php echo $department_master['id']; ?>">
+                                                            <?php echo $department_master['name']; ?>
+                                                        </option>
+                                                    <?php } ?>
+                                                </select>
                                             </div>
 
-                                            <div class="col-md-2">
-                                                    <label for="name" class="form-label">Date</label>
-                                                    <div class="input-group" id="datepicker2">
-
-                                                        <input type="text" class="form-control date-picker" id="date"
-                                                            name="date"> <span class="input-group-text"><i
-                                                                class="mdi mdi-calendar"></i></span>
-                                                    </div>
-                                            </div>
 
                                             <div class="col-md-2">
                                                 <label for="customerCode" class="form-label">Customer Code</label>
                                                 <div class="input-group mb-3">
-                                                    <input id="customer_id" name="customer_id" type="text"
+                                                    <input id="customer_code" name="customer_code" type="text"
                                                         class="form-control" readonly>
                                                     <button class="btn btn-info" type="button" data-bs-toggle="modal"
                                                         data-bs-target="#customerModal">
@@ -161,122 +154,226 @@ $dag_id = 'CD-00' . $lastId + 1;
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-3">
+                                            <!-- hidden send to customer id to table -->
+                                            <input type="hidden" id="customer_id">
+                                            <!-- hidden send to customer id to table -->
+
+                                            <div class="col-md-5">
                                                 <label for="customerName" class="form-label">Customer Name</label>
                                                 <div class="input-group mb-3">
                                                     <input id="customer_name" name="customer_name" type="text"
                                                         class="form-control" placeholder="Enter Customer Name" readonly>
                                                 </div>
                                             </div>
-
                                             <div class="col-md-2">
-                                                    <label for="Casing_Cost" class="form-label">Casing Cost</label>
-                                                    <div class="input-group mb-3">
-                                                        <input id="casing_cost" name="casing_cost" type="text"
-                                                            placeholder="Casing Cost" class="form-control">
-                                                    </div>
+                                                <label for="name" class="form-label">Dag Received Date</label>
+                                                <div class="input-group" id="received_date">
 
+                                                    <input type="text" class="form-control date-picker"
+                                                        id="received_date" name="received_date"> <span
+                                                        class="input-group-text"><i class="mdi mdi-calendar"></i></span>
+                                                </div>
                                             </div>
 
                                             <div class="col-md-2">
-                                                    <label for="Type" class="form-label">Type</label>
-                                                    <div class="input-group mb-3">
-                                                        <select name="type" id="type" class="text_purchase3 col-sm-9 form-control"> 
-                                                            <option value="">-- Select Type --</option>
+                                                <label for="name" class="form-label">Dag Delivery Date</label>
+                                                <div class="input-group" id="delivery_date">
+
+                                                    <input type="text" class="form-control date-picker"
+                                                        id="delivery_date" name="delivery_date"> <span
+                                                        class="input-group-text"><i class="mdi mdi-calendar"></i></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label for="name" class="form-label">Customer Request Date</label>
+                                                <div class="input-group" id="customer_request_date">
+
+                                                    <input type="text" class="form-control date-picker"
+                                                        id="customer_request_date" name="customer_request_date"> <span
+                                                        class="input-group-text"><i class="mdi mdi-calendar"></i></span>
+                                                </div>
+                                            </div>
+
+                                            <hr class="mt-4">
+                                            <div class="col-md-3">
+                                                <label for="Type" class="form-label">Assaign Company</label>
+                                                <div class="input-group mb-3">
+                                                    <select name="dag_company_id " id="dag_company_id "
+                                                        class="text_purchase3 col-sm-9 form-control">
+                                                        <option value="">-- Select Company --</option>
+                                                        <?php
+                                                        $DAG_COMPANY = new DagCompany(null);
+                                                        foreach ($DAG_COMPANY->getByStatusCompany(1) as $dag_company) {
+
+                                                            ?>
                                                             <option value="CANVAS">CANVAS</option>
-                                                            <option value="RADIAL">RADIAL</option>
-                                                        </select>
-                                                    </div>
-                                            </div>                                         
-
+                                                        <?php } ?>
+                                                    </select>
+                                                </div>
+                                            </div>
                                             <div class="col-md-2">
-                                                    <label for="Size" class="form-label">Size</label>
-                                                    <div class="input-group mb-3">
-                                                        <select id="size" name="size" class="form-select">
-                                                            <option value="">-- Select Size --</option>
-                                                            <?php
-                                                            $ITEM_MASTER = new ItemMaster(NULL);
-                                                            foreach ($ITEM_MASTER->all() as $item_master) {
-                                                                ?>
-                                                                <option value="<?php echo $item_master['id']; ?>">
-                                                                    <?php echo $item_master['size']; ?>
-                                                                </option>
-                                                            <?php } ?>
-                                                        </select>
-                                                    </div>
+                                                <label for="name" class="form-label">Company Issued Date</label>
+                                                <div class="input-group" id="company_issued_date">
+
+                                                    <input type="text" class="form-control date-picker"
+                                                        id="company_issued_date" name="company_issued_date"> <span
+                                                        class="input-group-text"><i class="mdi mdi-calendar"></i></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label for="name" class="form-label">Company Delivery Date</label>
+                                                <div class="input-group" id="company_delivery_date">
+
+                                                    <input type="text" class="form-control date-picker"
+                                                        id="company_delivery_date" name="company_delivery_date"> <span
+                                                        class="input-group-text"><i class="mdi mdi-calendar"></i></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label for="receipt_no" class="form-label">Receipt No</label>
+                                                <div class="input-group mb-3">
+                                                    <input id="receipt_no" name="receipt_no" type="text"
+                                                        placeholder="Receipt No" class="form-control">
+                                                </div>
+
                                             </div>
 
-                                            <div class="col-md-2">
-                                                    <label for="Make" class="form-label">Make</label>
-                                                    <div class="input-group mb-3">
-                                                        <select name="make" id="make" class="text_purchase3 col-sm-9 form-control"> 
-                                                            <option value="">-- Select Make --</option>
-                                                            <option value="Arpico">Arpico</option>
-                                                            <option value="ceat">Ceat</option>
-                                                        </select>
-                                                    </div>
-                                            </div>
 
-                                            <div class="col-md-2">
-                                                    <label for="Belt_Design" class="form-label">Belt Design</label>
-                                                    <div class="input-group mb-3">
-                                                        <select id="belt_design" name="belt_design" class="form-select">
+                                            <hr class="my-4">
+
+                                            <h5 class="mb-3">Add Dag Items</h5>
+
+
+                                            <div class="row align-items-end">
+                                                <div class="col-md-2">
+                                                    <label class="form-label">Vehicle No</label>
+                                                    <input type="text" id="vehicleNo" class="form-control"
+                                                        placeholder="Vehicle No">
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <label for="beltDesign" class="form-label">Belt Design</label>
+                                                    <div class="input-group">
+                                                        <select id="beltDesign" name="belt_design" class="form-select">
                                                             <option value="">-- Select Belt Design --</option>
                                                             <?php
                                                             $BELT_MASTER = new BeltMaster(NULL);
                                                             foreach ($BELT_MASTER->getActiveBelt() as $belt_master) {
                                                                 ?>
-                                                                <option value="<?php echo $belt_master['id']; ?>">
-                                                                    <?php echo $belt_master['name']; ?>
+                                                                <option value="<?= $belt_master['id']; ?>">
+                                                                    <?= $belt_master['name']; ?>
                                                                 </option>
                                                             <?php } ?>
                                                         </select>
                                                     </div>
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <label class="form-label">Casing Cost</label>
+                                                    <input type="number" id="casingCost" class="form-control"
+                                                        placeholder="Cost" oninput="calculateDagItemTotal()">
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <label class="form-label">Barcode</label>
+                                                    <input type="text" id="barcode" class="form-control"
+                                                        placeholder="Barcode">
+                                                </div>
+
+                                                <div class="col-md-1">
+                                                    <label class="form-label">Qty</label>
+                                                    <input type="number" id="quantity" class="form-control"
+                                                        placeholder="Qty" oninput="calculateDagItemTotal()">
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <label class="form-label">Total Amount</label>
+                                                    <input type="text" id="totalAmount" class="form-control"
+                                                        placeholder="Total Amount" readonly>
+                                                </div>
+
+                                                <div class="col-md-1">
+                                                    <button type="button" class="btn btn-success w-100"
+                                                        id="addDagItemBtn">Add</button>
+                                                </div>
                                             </div>
 
-                                            <div class="col-md-2">
-                                                    <label for="Job_No" class="form-label">Job No</label>
-                                                    <div class="input-group mb-3">
-                                                        <input id="job_no" name="job_no" type="text"
-                                                            placeholder="Job No" class="form-control">
+                                            <!-- Table -->
+                                            <div class="table-responsive mt-4">
+                                                <table class="table table-bordered">
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th>Vehicle No</th>
+                                                            <th>Belt Design</th>
+                                                            <th>Casing Cost</th>
+                                                            <th>Barcode</th>
+                                                            <th>Qty</th>
+                                                            <th>Total</th>
+                                                            <th>Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="dagItemsBody">
+                                                        <tr id="noDagItemRow">
+                                                            <td colspan="7" class="text-center text-muted">No items
+                                                                added</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+
+                                            <hr>
+
+                                            <div class="col-md-5 mt-3">
+                                                <label for="remark" class="form-label">Remarks</label>
+                                                <textarea id="remark" name="remark" class="form-control" rows="4"
+                                                    placeholder="Enter any remarks or notes..."></textarea>
+                                            </div>
+                                            <div class="col-md-3"></div>
+
+                                            <div class="col-md-4">
+                                                <div class="  p-2 border rounded bg-light" style="max-width: 600px;">
+                                                    <div class="row mb-2">
+                                                        <div class="col-7">
+                                                            <input type="text" class="form-control  " value="Sub Total"
+                                                                disabled>
+                                                        </div>
+                                                        <div class="col-5">
+                                                            <input type="text" class="form-control" id="finalTotal"
+                                                                value="0.00" disabled>
+                                                        </div>
                                                     </div>
 
-                                            </div>
-
-                                            <div class="col-md-2">
-                                                    <label for="Serial_No" class="form-label">Serial No</label>
-                                                    <div class="input-group mb-3">
-                                                        <input id="serial_no" name="serial_no" type="text"
-                                                            placeholder="Serial No" class="form-control">
+                                                    <div class="row mb-2">
+                                                        <div class="col-7">
+                                                            <input type="text" class="form-control  "
+                                                                value="Discount %:" disabled>
+                                                        </div>
+                                                        <div class="col-5">
+                                                            <input type="text" class="form-control" id="discount"
+                                                                value="0">
+                                                        </div>
                                                     </div>
 
-                                            </div>
 
-                                            <div class="col-md-2">
-                                                    <label for="Warranty" class="form-label">Warranty</label>
-                                                    <div class="input-group mb-3">
-                                                        <select id="warranty" name="warranty" class="form-select">
-                                                            <option value="">-- Select Belt Warranty --</option>
-                                                            <option value="1">1 Year</option>
-                                                            <option value="2">2 Year</option>
-                                                            <option value="3">3 Year</option>
-                                                            <option value="4">4 Year</option>
-                                                            <option value="5">5 Year</option>
-                                                        </select>
+
+                                                    <div class="row mb-2">
+                                                        <div class="col-7">
+                                                            <input type="text" class="form-control   fw-bold"
+                                                                value="Grand Total:" disabled>
+                                                        </div>
+                                                        <div class="col-5">
+                                                            <input type="text" class="form-control  fw-bold"
+                                                                id="grandTotal" value="0.00" disabled>
+                                                        </div>
                                                     </div>
+                                                </div>
                                             </div>
 
-                                            <div class="col-12 mt-3">
-                                                    <label for="remark" class="form-label">Remarks</label>
-                                                    <textarea id="remark" name="remark" class="form-control" rows="4"
-                                                        placeholder="Enter any remarks or notes..."></textarea>
-                                            </div>
-                                            
 
-                                            
                                         </div>
                                         <input type="hidden" id="id" name="id" value="0">
-                                        
+
                                     </form>
 
                                 </div>
@@ -284,59 +381,59 @@ $dag_id = 'CD-00' . $lastId + 1;
                         </div>
                     </div>
                 </div> <!-- container-fluid -->
-            </div>  
+            </div>
             <?php include 'footer.php' ?>
 
-        </div> 
+        </div>
     </div>
-    
-  
-<!-- model open here -->
-<div class="modal fade bs-example-modal-xl" id="dagModel" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="myExtraLargeModalLabel">Manage Dag</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-12">
-  
-
-                        <table id="datatable" class="table table-bordered dt-responsive nowrap"
-                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Invoice No</th>
-                                    <th>Department </th>
-                                    <th>Customer Name</th>
-                                    <th>Casing Cost</th>
-                                    <th>Type</th>
-                                    <th>Size</th>
-                                    <th>Make</th>
-                                    <th>Belt Design</th>
-                                    <th>Job No</th>
-                                    <th>Serial No</th>
-                                    <th>Warranty</th>
-                                </tr>
-                            </thead>
 
 
-                            <tbody>
-                                <?php
-                                $DAG = new CreateDag(null);
-                                foreach ($DAG->all() as $key => $dag) {
-                                    $key++;
-                                    $DEPARTMENT_MASTER = new DepartmentMaster($dag['department_id']);
-                                    $ITEM_MASTER = new ItemMaster($dag['size']);
-                                    $BELT_MASTER = new BeltMaster($dag['belt_design']);
-                                    $CUSTOMER = new CustomerMaster($dag['customer_id']);
-                                    ?>
-                                    <tr class="select-dag" data-id="<?php echo $dag['id']; ?>"
+    <!-- model open here -->
+    <div class="modal fade bs-example-modal-xl" id="dagModel" tabindex="-1" role="dialog"
+        aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myExtraLargeModalLabel">Manage Dag</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+
+
+                            <table id="datatable" class="table table-bordered dt-responsive nowrap"
+                                style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Invoice No</th>
+                                        <th>Department </th>
+                                        <th>Customer Name</th>
+                                        <th>Casing Cost</th>
+                                        <th>Type</th>
+                                        <th>Size</th>
+                                        <th>Make</th>
+                                        <th>Belt Design</th>
+                                        <th>Job No</th>
+                                        <th>Serial No</th>
+                                        <th>Warranty</th>
+                                    </tr>
+                                </thead>
+
+
+                                <tbody>
+                                    <?php
+                                    $DAG = new DAG(null);
+                                    foreach ($DAG->all() as $key => $dag) {
+                                        $key++;
+                                        $DEPARTMENT_MASTER = new DepartmentMaster($dag['department_id']);
+                                        $ITEM_MASTER = new ItemMaster($dag['size']);
+                                        $BELT_MASTER = new BeltMaster($dag['belt_design']);
+                                        $CUSTOMER = new CustomerMaster($dag['customer_id']);
+                                        ?>
+                                        <tr class="select-dag" data-id="<?php echo $dag['id']; ?>"
                                             data-code="<?php echo htmlspecialchars($dag['code']); ?>"
                                             data-department_id="<?php echo htmlspecialchars($dag['department_id']); ?>"
                                             data-date="<?php echo htmlspecialchars($dag['date']); ?>"
@@ -350,10 +447,9 @@ $dag_id = 'CD-00' . $lastId + 1;
                                             data-job_no="<?php echo htmlspecialchars($dag['job_no']); ?>"
                                             data-serial_no="<?php echo htmlspecialchars($dag['serial_no']); ?>"
                                             data-warranty="<?php echo htmlspecialchars($dag['warranty']); ?>"
-                                            data-remark="<?php echo htmlspecialchars($dag['remark']); ?>"
-                                    >
+                                            data-remark="<?php echo htmlspecialchars($dag['remark']); ?>">
 
-                                    <td><?php echo $key; ?></td>
+                                            <td><?php echo $key; ?></td>
                                             <td><?php echo htmlspecialchars($dag['code']); ?></td>
                                             <td><?php echo htmlspecialchars($DEPARTMENT_MASTER->name); ?></td>
                                             <td><?php echo htmlspecialchars($CUSTOMER->name); ?></td>
@@ -365,51 +461,49 @@ $dag_id = 'CD-00' . $lastId + 1;
                                             <td><?php echo htmlspecialchars($dag['job_no']); ?></td>
                                             <td><?php echo htmlspecialchars($dag['serial_no']); ?></td>
                                             <td><?php echo htmlspecialchars($dag['warranty']); ?></td>
-                                    </tr>
+                                        </tr>
 
-                                <?php } ?>
-                            </tbody>
-                        </table>
-                    </div> <!-- end col -->
-                </div> <!-- end row -->
-            </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div>
-<!-- model close here -->
+                                    <?php } ?>
+                                </tbody>
+                            </table>
+                        </div> <!-- end col -->
+                    </div> <!-- end row -->
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+    <!-- model close here -->
 
     <!-- Right bar overlay-->
-        <div class="rightbar-overlay"></div>
+    <div class="rightbar-overlay"></div>
 
-        <!-- JAVASCRIPT -->
-        <script src="assets/libs/jquery/jquery.min.js"></script>
-        <!-- /////////////////////////// -->
-        <script src="ajax/js/create-dag.js"></script>
-        <script src="ajax/js/common.js"></script>
- 
-
-        <!-- include main js  -->
-        <?php include 'main-js.php' ?>
-
-        <!-- App js -->
-        <script src="assets/js/app.js"></script>
-        <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+    <!-- JAVASCRIPT -->
+    <script src="assets/libs/jquery/jquery.min.js"></script>
+    <!-- /////////////////////////// -->
+    <script src="ajax/js/create-dag.js"></script>
+    <script src="ajax/js/common.js"></script>
 
 
-        
-        <script>
-            $('#quotation_table').DataTable();
-            $(function () {
-                // Initialize the datepicker
-                $(".date-picker").datepicker({
-                    dateFormat: 'yy-mm-dd' // or 'dd-mm-yy' as per your format
-                });
+    <!-- include main js  -->
+    <?php include 'main-js.php' ?>
 
-                // Set today's date as default value
-                var today = $.datepicker.formatDate('yy-mm-dd', new Date());
-                $(".date-picker").val(today);
+    <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+
+
+
+    <script>
+        $('#quotation_table').DataTable();
+        $(function () {
+            // Initialize the datepicker
+            $(".date-picker").datepicker({
+                dateFormat: 'yy-mm-dd' // or 'dd-mm-yy' as per your format
             });
-        </script>
+
+            // Set today's date as default value
+            var today = $.datepicker.formatDate('yy-mm-dd', new Date());
+            $(".date-picker").val(today);
+        });
+    </script>
 
 </body>
 
