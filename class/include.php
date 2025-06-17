@@ -62,7 +62,7 @@ include_once(dirname(__FILE__) . '/AuditLog.php');
 include_once(dirname(__FILE__) . '/PurchaseReturn.php');
 include_once(dirname(__FILE__) . '/CreateDag.php');
 include_once(dirname(__FILE__) . '/StockItemTmp.php');
-
+include_once(dirname(__FILE__) . '/DagCompany.php');
 
 
 

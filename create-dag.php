@@ -1,6 +1,7 @@
 <!doctype html>
 <?php
 include 'class/include.php';
+include 'auth.php';
 
 $CREATE_DAG = new CreateDag(NULL);
 
