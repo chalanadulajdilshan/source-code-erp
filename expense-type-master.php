@@ -109,7 +109,7 @@ $expenses_id = 'EX/00/' . $lastId + 1;
                                                 placeholder="Ref No" class="form-control" readonly>
                                                 
                                                     <button class="btn btn-info" type="button"  data-bs-toggle="modal"
-                                                    data-bs-target=".bs-example-modal-xl">
+                                                    data-bs-target="#expense_type">
                                                         <i class="uil uil-search me-1"></i> Find
                                                     </button>
                                                 </div>
@@ -154,7 +154,7 @@ $expenses_id = 'EX/00/' . $lastId + 1;
     </div>
     <!-- END layout-wrapper -->
 
-    <div class="modal fade bs-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="categoryModalLabel" aria-hidden="true">
+    <div class="modal fade bs-example-modal-xl" id="expense_type" tabindex="-1" role="dialog" aria-labelledby="categoryModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
 

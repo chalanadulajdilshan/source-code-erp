@@ -102,7 +102,7 @@ include 'auth.php';
                                                     <input id="name" name="name" type="text" class="form-control"
                                                         placeholder="Enter Payment Type Name">
                                                     <button class="btn btn-info" type="button" data-bs-toggle="modal"
-                                                        data-bs-target=".bs-example-modal-xl">
+                                                        data-bs-target="#payment_masterModel">
                                                         <i class="uil uil-search me-1"></i>  
                                                     </button>
                                                 </div>
@@ -142,7 +142,7 @@ include 'auth.php';
 
     
 <!-- model open here -->
-<div class="modal fade bs-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel"
+<div class="modal fade bs-example-modal-xl" id="payment_masterModel" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
