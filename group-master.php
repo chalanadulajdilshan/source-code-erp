@@ -106,7 +106,7 @@ $group_id = 'GR/00/' . $lastId + 1;
                                                     <input id="code" name="code" type="text" class="form-control"
                                                         readonly value="<?php echo $group_id ?>">
                                                     <button class="btn btn-info" type="button" data-bs-toggle="modal"
-                                                        data-bs-target=".bs-example-modal-xl">
+                                                        data-bs-target="#group_master">
                                                         <i class="uil uil-search me-1"></i> Find Group
                                                     </button>
                                                 </div>
@@ -155,7 +155,7 @@ $group_id = 'GR/00/' . $lastId + 1;
 
 
 
-    <div class="modal fade bs-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="groupModalLabel"
+    <div class="modal fade bs-example-modal-xl" id="group_master" tabindex="-1" role="dialog" aria-labelledby="groupModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
@@ -168,8 +168,8 @@ $group_id = 'GR/00/' . $lastId + 1;
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-12">
-
-                            <table id="datatable" class="table table-bordered dt-responsive nowrap"
+                       
+                            <table id="group_master_table" class="table table-bordered dt-responsive nowrap"
                                 style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                 <thead>
                                     <tr>
