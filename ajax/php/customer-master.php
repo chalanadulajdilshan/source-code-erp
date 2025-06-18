@@ -33,7 +33,7 @@ if (isset($_POST['create'])) {
 
     //audit log
     $AUDIT_LOG = new AuditLog(NUll);
-    $AUDIT_LOG->ref_id = $re;
+    $AUDIT_LOG->ref_id = $_POST['customer_id'];
     $AUDIT_LOG->ref_code = $_POST['code'];
     $AUDIT_LOG->action = 'CREATE';
     $AUDIT_LOG->description = 'CREATE CUSTOMER NO #' . $_POST['code'];

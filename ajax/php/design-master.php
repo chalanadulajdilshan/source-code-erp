@@ -60,7 +60,7 @@ if (isset($_POST['update'])) {
 }
 
 if (isset($_POST['delete']) && isset($_POST['id'])) {
-    $$DESIGN_MASTER = new DesignMaster($_POST['id']);
+    $DESIGN_MASTER = new DesignMaster($_POST['id']);
     $result = $DESIGN_MASTER->delete(); // Make sure this method exists
 
     if ($result) {
