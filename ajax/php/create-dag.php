@@ -6,88 +6,107 @@ header('Content-Type: application/json; charset=UTF8');
 // Create a new Dag
 if (isset($_POST['create'])) {
 
-    $DAG = new CreateDag(NULL); // Create a new Dag
+    $DAG = new DAG(NULL);
 
-    // Set the Dag details
-    $DAG->code = $_POST['code'];
+    // Set DAG master fields
+    $DAG->ref_no = $_POST['ref_no'];
     $DAG->department_id = $_POST['department_id'];
-    $DAG->date = $_POST['date'];
     $DAG->customer_id = $_POST['customer_id'];
-    $DAG->casing_cost = $_POST['casing_cost'];
-    $DAG->type = $_POST['type'];
-    $DAG->size = $_POST['size'];
-    $DAG->make = $_POST['make'];
-    $DAG->belt_design = $_POST['belt_design'];
-    $DAG->job_no = $_POST['job_no'];
-    $DAG->serial_no = $_POST['serial_no'];
-    $DAG->warranty = $_POST['warranty'];
+    $DAG->received_date = $_POST['received_date'];
+    $DAG->customer_request_date = $_POST['customer_request_date'];
+    $DAG->dag_company_id = $_POST['dag_company_id'];
+    $DAG->delivery_date = $_POST['delivery_date'];
+    $DAG->company_issued_date = $_POST['company_issued_date'];
+    $DAG->company_delivery_date = $_POST['company_delivery_date'];
     $DAG->remark = $_POST['remark'];
+    $DAG->receipt_no = $_POST['receipt_no'];
 
-    // Attempt to create the Dag
-    $res = $DAG->create();
+    $dag_id = $DAG->create();
 
-    if ($res) {
-        $result = [
-            "status" => 'success'
-        ];
-        echo json_encode($result);
+    if ($dag_id) {
+        // Insert DAG items
+        if (isset($_POST['dag_items'])) {
+            $items = json_decode($_POST['dag_items'], true);
+
+            foreach ($items as $item) {
+                $DAG_ITEM = new DagItem(NULL);
+                $DAG_ITEM->dag_id = $dag_id;
+                $DAG_ITEM->vehicle_no = $item['vehicle_no'];
+                $DAG_ITEM->belt_id = $item['belt_id']; // JS uses 'belt_id'
+                $DAG_ITEM->barcode = $item['barcode'];
+                $DAG_ITEM->casing_cost = $item['casing_cost'];
+                $DAG_ITEM->qty = $item['qty'];
+                $DAG_ITEM->total_amount = $item['total_amount'];
+                $DAG_ITEM->create();
+            }
+        }
+
+        echo json_encode(["status" => "success"]);
         exit();
     } else {
-        $result = [
-            "status" => 'error'
-        ];
-        echo json_encode($result);
+        echo json_encode(["status" => "error"]);
         exit();
     }
 }
+
 
 // Update Dag details
 if (isset($_POST['update'])) {
+    $DAG = new DAG($_POST['dag_id']); // use correct key 'dag_id' from JS
 
-    $DAG = new CreateDag($_POST['id']); // Retrieve Dag by ID
-
-    // Update Dag details
-    $DAG->code = $_POST['code'];
+    // Update DAG master fields
+    $DAG->ref_no = $_POST['ref_no'];
     $DAG->department_id = $_POST['department_id'];
-    $DAG->date = $_POST['date'];
     $DAG->customer_id = $_POST['customer_id'];
-    $DAG->casing_cost = $_POST['casing_cost'];
-    $DAG->type = $_POST['type'];
-    $DAG->size = $_POST['size'];
-    $DAG->make = $_POST['make'];
-    $DAG->belt_design = $_POST['belt_design'];
-    $DAG->job_no = $_POST['job_no'];
-    $DAG->serial_no = $_POST['serial_no'];
-    $DAG->warranty = $_POST['warranty'];
+    $DAG->received_date = $_POST['received_date'];
+    $DAG->customer_request_date = $_POST['customer_request_date'];
+    $DAG->dag_company_id = $_POST['dag_company_id'];
+    $DAG->delivery_date = $_POST['delivery_date'];
+    $DAG->company_issued_date = $_POST['company_issued_date'];
+    $DAG->company_delivery_date = $_POST['company_delivery_date'];
     $DAG->remark = $_POST['remark'];
+    $DAG->receipt_no = $_POST['receipt_no'];
 
-    // Attempt to update the Dag
-    $result = $DAG->update();
+    if ($DAG->update()) {
+        // Delete all old DAG items
+        $DAG_ITEM = new DagItem(null);
+        $DAG_ITEM->deleteDagItemByItemId($DAG->id);
 
-    if ($result) {
-        $result = [
-            "status" => 'success'
-        ];
-        echo json_encode($result);
-        exit();
+        // Add new DAG items
+        if (isset($_POST['dag_items'])) {
+            $items = json_decode($_POST['dag_items'], true);
+            foreach ($items as $item) {
+                $DAG_ITEM = new DagItem(null);
+                $DAG_ITEM->dag_id = $DAG->id;
+                $DAG_ITEM->vehicle_no = $item['vehicle_no'];
+                $DAG_ITEM->belt_id = $item['belt_id'];
+                $DAG_ITEM->barcode = $item['barcode'];
+                $DAG_ITEM->casing_cost = $item['casing_cost'];
+                $DAG_ITEM->qty = $item['qty'];
+                $DAG_ITEM->total_amount = $item['total_amount'];
+                $DAG_ITEM->create();
+            }
+        }
+
+        echo json_encode(["status" => "success"]);
     } else {
-        $result = [
-            "status" => 'error'
-        ];
-        echo json_encode($result);
-        exit();
+        echo json_encode(["status" => "error", "message" => "Update failed"]);
     }
+    exit();
 }
 
-if (isset($_POST['delete']) && isset($_POST['id'])) {
-    $dag = new CreateDag($_POST['id']);
-    $result = $dag->delete(); // Make sure this method exists
 
-    if ($result) {
-        echo json_encode(['status' => 'success']);
-    } else {
-        echo json_encode(['status' => 'error']);
-    }
+
+if (isset($_POST['dag_id'])) {
+    $dag_id = $_POST['dag_id'];
+
+    $DAG_ITEM = new DagItem(null);
+    $items = $DAG_ITEM->getByValuesDagId($dag_id);
+
+    echo json_encode([
+        "status" => "success",
+        "data" => $items
+    ]);
+    exit();
 }
-
 ?>
