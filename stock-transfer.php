@@ -39,15 +39,15 @@ $DEPARTMENT_MASTER = new DepartmentMaster($US->department_id)
                             </a>
 
                             <?php if ($PERMISSIONS['add_page']): ?>
-                            <a href="#" class="btn btn-primary" id="create">
-                                <i class="uil uil-save me-1"></i> Save
-                            </a>
+                                <a href="#" class="btn btn-primary" id="create">
+                                    <i class="uil uil-save me-1"></i> Save
+                                </a>
                             <?php endif; ?>
 
                             <?php if ($PERMISSIONS['print_page']): ?>
-                            <a href="#" class="btn btn-primary" id="print">
-                                <i class="uil uil-print  me-1"></i> Print
-                            </a>
+                                <a href="#" class="btn btn-primary" id="print">
+                                    <i class="uil uil-print  me-1"></i> Print
+                                </a>
                             <?php endif; ?>
 
                             <a href="#" class="btn btn-warning" id="search">
@@ -55,9 +55,9 @@ $DEPARTMENT_MASTER = new DepartmentMaster($US->department_id)
                             </a>
 
                             <?php if ($PERMISSIONS['delete_page']): ?>
-                            <a href="#" class="btn btn-danger delete-category">
-                                <i class="uil uil-trash-alt me-1"></i> Delete
-                            </a>
+                                <a href="#" class="btn btn-danger delete-category">
+                                    <i class="uil uil-trash-alt me-1"></i> Delete
+                                </a>
                             <?php endif; ?>
 
                         </div>
@@ -160,7 +160,7 @@ $DEPARTMENT_MASTER = new DepartmentMaster($US->department_id)
                                                         placeholder="Item Code" class="form-control" readonly>
 
                                                     <button class="btn btn-info" type="button" data-bs-toggle="modal"
-                                                        data-bs-target="#item_master">
+                                                        data-bs-target="#main_item_master">
                                                         <i class="uil uil-search me-1"></i>
                                                     </button>
 

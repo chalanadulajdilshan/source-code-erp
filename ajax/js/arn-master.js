@@ -29,7 +29,9 @@ jQuery(document).ready(function () {
             { data: "name", title: "Name" },
             { data: "brand", title: "Brand" },
             { data: "category", title: "Category" },
+            { data: "list_price", title: "List Price" },
             { data: "qty", title: "Quantity" },
+            { data: "discount", title: "Discount %" },
             { data: "status_label", title: "Status" }
         ],
         order: [[0, 'desc']],
@@ -37,44 +39,96 @@ jQuery(document).ready(function () {
     });
 
 
-    // On row click, load selected item into input fields
     $('#datatable tbody').on('click', 'tr', function () {
-        var data = table.row(this).data();
+        const data = table.row(this).data();
         if (!data) return;
 
-        const salesType = $('#sales_type').val();
-        const paymentType = $('#payment_type').val();
+        // const salesType = $('#sales_type').val();
+        // const paymentType = $('#payment_type').val();
 
-        if (salesType == 1) {  // Whole Sales
-            $('#itemPrice').val(data.cash_price.replace(/,/g, ''));
-        } else if (salesType == 2) {  // Retail Sales
-            $('#itemPrice').val(data.credit_price.replace(/,/g, ''));
-        }
+        // if (salesType == 1) {
+        //     $('#itemPrice').val(data.cash_price.replace(/,/g, ''));
+        // } else if (salesType == 2) {
+        //     $('#itemPrice').val(data.credit_price.replace(/,/g, ''));
+        // }
 
-
-        if (paymentType == 1) {
-            $('#itemDiscount').val(data.cash_discount);
-        } else if (paymentType == 2) {
-            $('#itemDiscount').val(data.credit_discount);
-        } else {
-            $('#itemDiscount').val(0);
-        }
+        // if (paymentType == 1) {
+        //     $('#itemDiscount').val(data.cash_discount);
+        // } else if (paymentType == 2) {
+        //     $('#itemDiscount').val(data.credit_discount);
+        // } else {
+        //     $('#itemDiscount').val(0);
+        // }
 
         $('#item_id').val(data.id);
         $('#itemCode').val(data.code);
         $('#itemName').val(data.name);
         $('#itemQty').val(1);
-        $('#available_qty').val(data.id);
+        $('#available_qty').val(data.qty);
+        $('#list_price').val(data.list_price);
+        $('#dis_2').val(data.discount);
 
-        calculatePayment();
+        // Match brand name to brand ID and set it
+        $('#brand option').each(function () {
+            if ($(this).text().trim() === data.brand.trim()) {
+                $('#brand').val($(this).val());
+                return false;
+            }
+        });
+
+        // Get the selected brand ID after setting it
+        const brandId = $('#brand').val();
+
+        if (brandId) {
+            $.ajax({
+                url: 'ajax/php/arn-master.php',
+                type: 'POST',
+                data: { action: 'get_brand_discount', brand_id: brandId },
+                dataType: 'json',
+                success: function (res) {
+                    const discount = res.discount || 0;
+                    $('#dis_1').val(discount);
+                    calculatePayment();
+                },
+                error: function () {
+                    console.error('Failed to load brand discount');
+                    $('#dis_1').val(0);
+                    calculatePayment();
+                }
+            });
+        } else {
+            $('#dis_1').val(0);
+            calculatePayment();
+        }
 
         setTimeout(() => $('#itemQty').focus(), 200);
-
         $('#main_item_master').modal('hide');
     });
 
+    $('#brand').on('change', function () {
+        const brandId = $(this).val();
+
+        if (!brandId) return;
+
+        $.ajax({
+            url: 'ajax/php/arn-master.php',
+            type: 'POST',
+            data: { brand_id: brandId },
+            dataType: 'json',
+            success: function (res) {
+                const discount = res.discount || 0;
+                $('#dis_1').val(discount);
+                calculatePayment();
+            },
+            error: function () {
+                console.error('Failed to load brand discount');
+            }
+        });
+    });
+
+
     // Bind Enter key to add item
-    $('#rec_quantity, #cash_price, #credit_price, .actual_cost').on('keydown', function (e) {
+    $('#rec_quantity,   #credit_price, #actual_cost,#cost,#dis_1,#dis_2,#dis_3,#dis_4,#dis_5').on('keydown', function (e) {
         if (e.key === "Enter") {
             e.preventDefault();
             $('#addItemBtn').trigger('click');
@@ -93,23 +147,23 @@ jQuery(document).ready(function () {
 
         const recQty = parseFloat($('#rec_quantity').val()) || 0;
         const comCost = parseFloat($('#cost').val()) || 0;
-        const actual_cost = parseFloat($('.actual_cost').val()) || 0;
-
-
 
         const dis1 = parseFloat($('#dis_1').val()) || 0;
         const dis2 = parseFloat($('#dis_2').val()) || 0;
         const dis3 = parseFloat($('#dis_3').val()) || 0;
+        const dis4 = parseFloat($('#dis_4').val()) || 0;
+        const dis5 = parseFloat($('#dis_5').val()) || 0;
 
         // Calculate discounts
         let disAmount1 = comCost * (dis1 / 100);
         let disAmount2 = (comCost - disAmount1) * (dis2 / 100);
         let disAmount3 = (comCost - disAmount1 - disAmount2) * (dis3 / 100);
-        let finalCost = comCost - disAmount1 - disAmount2 - disAmount3;
+        let disAmount4 = (comCost - disAmount1 - disAmount2 - disAmount3) * (dis4 / 100);
+        let disAmount5 = (comCost - disAmount1 - disAmount2 - disAmount3 - disAmount4) * (dis5 / 100);
+        let finalCost = comCost - disAmount1 - disAmount2 - disAmount3 - disAmount4 - disAmount5;
 
-        let unitTotal = actual_cost * recQty;
+        let unitTotal = finalCost * recQty;
 
-        // let tax = unitTotal * 0.15;
 
         $('#actual_cost').val(finalCost.toFixed(2));
         $('#unit_total').val(unitTotal.toFixed(2));
@@ -117,91 +171,106 @@ jQuery(document).ready(function () {
     }
 
     // Bind function to relevant input fields
-    $('#arn-item-table').on('input', '#rec_quantity, .actual_cost', calculatePayment);
+    $('#arn-item-table').on('input', '#cost,#rec_quantity, #actual_cost,#dis_3,#dis_4,#dis_5', calculatePayment);
 
 
     $('#addItemBtn').on('click', function () {
+        const item_id = $('#item_id').val();
         const code = $('#itemCode').val();
         const recQty = parseFloat($('#rec_quantity').val()) || 0;
+        const brand = parseFloat($('#brand').val()) || 0;
         const cost = parseFloat($('#cost').val()) || 0;
-        const dis1 = parseFloat($('#dis_1').val()) || 0;
-        const dis2 = parseFloat($('#dis_2').val()) || 0;
-        const dis3 = parseFloat($('#dis_3').val()) || 0;
-        const actualCost = parseFloat($('.actual_cost').val()) || 0;
+        const dis1 = parseFloat($('#dis_1').val()) || 0; // Brand Discount
+        const dis2 = parseFloat($('#dis_2').val()) || 0; // Item Discount
+        const dis3 = parseFloat($('#dis_3').val()) || 0; // Dis 3
+        const dis4 = parseFloat($('#dis_4').val()) || 0;
+        const dis5 = parseFloat($('#dis_5').val()) || 0;
+
+        const actualCost = parseFloat($('#actual_cost').val()) || 0;
         const unitTotal = parseFloat($('#unit_total').val()) || 0;
         const listPrice = parseFloat($('#list_price').val()) || 0;
-        const cashPrice = parseFloat($('#cash_price').val()) || 0;
-        const creditPrice = parseFloat($('#credit_price').val()) || 0;
-        const tax = parseFloat($('#tax').val()) || 0;
+
 
         // ─────── Validations ───────
         if (!code) {
-            return swal({ title: "Error!", text: "Please select an Item Code", type: "error", timer: 2000, showConfirmButton: false });
+            swal({ title: "Error!", text: "Please select an Item Code", type: "error", timer: 2000, showConfirmButton: false });
+            return;
         }
+
+        if (!brand) {
+            swal({ title: "Error!", text: "Please select a Brand.!", type: "error", timer: 2000, showConfirmButton: false });
+            return;
+        }
+
         if (!recQty || recQty <= 0) {
-            return swal({ title: "Error!", text: "Please enter a valid Received Quantity", type: "error", timer: 2000, showConfirmButton: false });
+            swal({ title: "Error!", text: "Please enter a valid Received Quantity", type: "error", timer: 2000, showConfirmButton: false });
+            return;
         }
+
         if (!cost || cost <= 0) {
-            return swal({ title: "Error!", text: "Please enter Commercial Cost", type: "error", timer: 2000, showConfirmButton: false });
+            swal({ title: "Error!", text: "Please enter Commercial Cost", type: "error", timer: 2000, showConfirmButton: false });
+            return;
         }
+
         if (!listPrice || listPrice <= 0) {
-            return swal({ title: "Error!", text: "Please enter List Price", type: "error", timer: 2000, showConfirmButton: false });
-        }
-        if (!cashPrice || cashPrice <= 0) {
-            return swal({ title: "Error!", text: "Please enter Cash Price", type: "error", timer: 2000, showConfirmButton: false });
-        }
-        if (!creditPrice || creditPrice <= 0) {
-            return swal({ title: "Error!", text: "Please enter Credit Price", type: "error", timer: 2000, showConfirmButton: false });
+            swal({ title: "Error!", text: "Please enter List Price", type: "error", timer: 2000, showConfirmButton: false });
+            return;
         }
 
+        if (actualCost > listPrice) {
+            swal({ title: "Error!", text: "Actual Cost cannot exceed List Price", type: "error", timer: 2000, showConfirmButton: false });
+            return;
+        }
 
-
-        // ─────── Remove placeholder row ───────
         $('#noDataRow').remove();
 
-        // ─────── Generate a unique row ID (for later removal if needed) ───────
-        const itemId = `item_${Date.now()}`;
 
-        // ─────── Add new row ───────
+
         const newRow = `
-        <tr data-itemid="${itemId}">
+        <tr data-itemid="${item_id}">
             <td>${code}</td>
-            
-            <td>${recQty}</td>
-            <td>${cost.toFixed(2)}</td>
-            <td>${dis1}</td>
-            <td>${dis2}</td>
-            <td>${dis3}</td>
-            <td>${actualCost.toFixed(2)}</td>
-            <td>${unitTotal.toFixed(2)}</td>
-            <td>${listPrice.toFixed(2)}</td>
-            <td>${cashPrice.toFixed(2)}</td>
-            <td>${creditPrice.toFixed(2)}</td>
+            <td><input type="number" name="items[][order_qty]" class="form-control form-control-sm" readonly></td>
+            <td><input type="number" name="items[][rec_qty]" class="form-control form-control-sm" value="${recQty}" readonly></td>
+            <td><input type="number" name="items[][com_cost]" class="form-control form-control-sm" value="${cost.toFixed(2)}" readonly></td>
+            <td><input type="number" name="items[][dis1]" class="form-control form-control-sm" value="${dis1}" readonly></td>
+            <td><input type="number" name="items[][dis2]" class="form-control form-control-sm" value="${dis2}" readonly></td>
+            <td><input type="number" name="items[][dis3]" class="form-control form-control-sm" value="${dis3}" readonly></td>
+            <td><input type="number" name="items[][dis4]" class="form-control form-control-sm" value="${dis4}" readonly></td>
+            <td><input type="number" name="items[][dis5]" class="form-control form-control-sm" value="${dis5}" readonly></td>
+            <td><input type="number" name="items[][actual_cost]" class="form-control form-control-sm" value="${actualCost.toFixed(2)}" readonly></td>
+            <td><input type="number" name="items[][unit_total]" class="form-control form-control-sm" value="${unitTotal.toFixed(2)}" readonly></td>
+            <td><input type="number" name="items[][list_price]" class="form-control form-control-sm" value="${listPrice.toFixed(2)}" readonly></td>
             <td><button class="btn btn-danger btn-sm deleteRowBtn">Delete</button></td>
         </tr>
-    `;
+        `;
+
+
         $('#itemTableBody').append(newRow);
 
-        // ─────── Update Totals ───────
+        // Update totals
+        // Update totals manually
         const currentARN = parseFloat($('#total_arn').val()) || 0;
         $('#total_arn').val((currentARN + unitTotal).toFixed(2));
-
-        const currentVAT = parseFloat($('#total_vat').val()) || 0;
-        $('#total_vat').val((currentVAT + (tax * recQty)).toFixed(2));
 
         const currentDiscount = parseFloat($('#total_discount').val()) || 0;
         const discountValue = (cost - actualCost) * recQty;
         $('#total_discount').val((currentDiscount + discountValue).toFixed(2));
 
-        // ─────── Clear Input Fields ───────
+        const currentReceivedQty = parseFloat($('#total_received_qty').val()) || 0;
+        $('#total_received_qty').val((currentReceivedQty + recQty).toFixed(2));
+
+
+        // Clear input fields
+        $('#itemCode').val('');
         $('#rec_quantity').val('');
         $('#cost').val('');
-        $('#dis_1, #dis_2, #dis_3').val('');
+        $('#dis_1, #dis_2, #dis_3, #dis_4, #dis_5').val('');
         $('#actual_cost').val('');
         $('#unit_total').val('');
-        $('#list_price, #cash_price, #credit_price').val('');
+        $('#list_price').val('');
         updateSummaryValues();
     });
+
 
 
     $(document).on('click', '.select-purchase-order', function () {
@@ -286,8 +355,6 @@ jQuery(document).ready(function () {
                                 <td><input type="number" step="0.01" name="items[${index}][actual_cost]" class="form-control form-control-sm" value="${item.actual_cost || 0}"></td>
                                 <td><input type="number" step="0.01" name="items[${index}][unit_total]" class="form-control form-control-sm" value="${unitTotal.toFixed(2)}" readonly></td>
                                 <td><input type="number" step="0.01" name="items[${index}][list_price]" class="form-control form-control-sm" value="${item.list_price || 0}"></td>
-                                <td><input type="number" step="0.01" name="items[${index}][cash_price]" class="form-control form-control-sm" value="${item.cash_price || 0}"></td>
-                                <td><input type="number" step="0.01" name="items[${index}][credit_price]" class="form-control form-control-sm" value="${item.credit_price || 0}"></td>
                                 <td><button type="button" class="btn btn-sm btn-danger delete-purchase-order-item" data-item-id="${item.id}"><i class="bi bi-trash"></i></button></td>
                             </tr>
                         `;
@@ -378,65 +445,78 @@ jQuery(document).ready(function () {
         const supplier = $('#supplier_id').val();
 
         if (!arnNo || arnNo.length === 0) {
-            swal({
+            return swal({
                 title: "Error!",
                 text: "Please enter an ARN Number",
                 type: "error",
                 timer: 2000,
                 showConfirmButton: false,
             });
-
-            return;
         }
-        if (!supplier || supplier.length === 0) {
 
-            swal({
+        if (!supplier || supplier.length === 0) {
+            return swal({
                 title: "Error!",
                 text: "Please select a Supplier",
                 type: "error",
                 timer: 2000,
                 showConfirmButton: false,
             });
-
-            return;
         }
 
         let items = [];
+        let hasInvalidItem = false;
+
         $('#itemTableBody tr').each(function () {
-            // Skip "No data" row if present
             if ($(this).attr('id') === 'noDataRow') return;
+
             const $row = $(this);
-            const cols = $(this).find('td');
-            const itemId = $row.data('item-id');
+            const cols = $row.find('td');
+            const itemId = $row.attr('data-itemid');
+
+
+            const actualCost = parseFloat($(cols[7]).find('input').val()) || 0;
+            const listPrice = parseFloat($(cols[9]).find('input').val()) || 0;
+
+            // Validation: actualCost should not exceed listPrice
+            if (actualCost > listPrice) {
+                hasInvalidItem = true;
+                return swal({
+                    title: "Error!",
+                    text: `Actual cost cannot exceed List Price for item: ${$(cols[0]).text().trim()}`,
+                    type: "error",
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+            }
 
             items.push({
                 item_id: itemId,
                 code: $(cols[0]).text().trim(),
-                order_qty: parseFloat($(cols[1]).find('input').val()) || 0,
-                rec_qty: parseFloat($(cols[2]).find('input').val()) || 0,
-                cost: parseFloat($(cols[3]).find('input').val()) || 0,
-                dis1: parseFloat($(cols[4]).find('input').val()) || 0,
-                dis2: parseFloat($(cols[5]).find('input').val()) || 0,
-                dis3: parseFloat($(cols[6]).find('input').val()) || 0,
-                actual_cost: parseFloat($(cols[7]).find('input').val()) || 0,
-                unit_total: parseFloat($(cols[8]).find('input').val()) || 0,
-                list_price: parseFloat($(cols[9]).find('input').val()) || 0,
-                cash_price: parseFloat($(cols[10]).find('input').val()) || 0,
-                credit_price: parseFloat($(cols[11]).find('input').val()) || 0
+                order_qty: parseFloat($(cols[1]).find("input").val()) || 0,
+                rec_qty: parseFloat($(cols[2]).find("input").val()) || 0,
+                cost: parseFloat($(cols[3]).find("input").val()) || 0,
+                dis1: parseFloat($(cols[4]).find("input").val()) || 0,
+                dis2: parseFloat($(cols[5]).find("input").val()) || 0,
+                dis3: parseFloat($(cols[6]).find("input").val()) || 0,
+                dis4: parseFloat($(cols[7]).find("input").val()) || 0,
+                dis5: parseFloat($(cols[8]).find("input").val()) || 0,
+                actual_cost: parseFloat($(cols[9]).find("input").val()) || 0,
+                unit_total: parseFloat($(cols[10]).find("input").val()) || 0,
+                list_price: parseFloat($(cols[11]).find("input").val()) || 0,
             });
-
         });
 
+        if (hasInvalidItem) return;
+
         if (items.length === 0) {
-            return
-            swal({
+            return swal({
                 title: "Error!",
                 text: "No items to submit",
                 type: "error",
                 timer: 2000,
-                showConfirmButton: false,
+                showConfirmButton: false
             });
-
         }
 
         const payload = {
@@ -444,13 +524,23 @@ jQuery(document).ready(function () {
             arn_no: arnNo,
             supplier: supplier,
             arn_date: $('#entry_date').val(),
-            lc_no: $('#ci_no').val(),
+            ci_no: $('#ci_no').val(),
+            lc_no: $('#lc_tt_no').val(),
             bl_no: $('#bl_no').val(),
+            brand: $('#brand').val(),
+            category: $('#category').val(),
+            order_by: $('#order_by').val(),
+            credit_note_amount: $('#credit_note_amount').val(),
+            delivery_date: $('#delivery_date').val(),
+            purchase_type: $('#purchase_type').val(),
+            country: $('#country').val(),
+            arn_status: $('#arn_status').val(),
+            delivery_date: $('#delivery_date').val(),
+
             pi_no: $('#pi_no').val(),
             department_id: $('#department_id').val(),
             purchase_order_id: $('#purchase_order_id').val(),
             purchase_date: $('#order_date').val(),
-
             invoice_date: $('#invoice_date').val(),
             entry_date: $('#entry_date').val(),
             total_arn: parseFloat($('#total_arn').val()) || 0,
@@ -475,7 +565,6 @@ jQuery(document).ready(function () {
                         timer: 2000,
                         showConfirmButton: false,
                     });
-
                     setTimeout(() => location.reload(), 2000);
                 } else {
                     swal({
@@ -498,6 +587,193 @@ jQuery(document).ready(function () {
             }
         });
     });
+
+
+    $(document).on('click', '.select-arn-order', function () {
+        const row = $(this);
+
+        // Get data attributes from selected row
+        const arnData = {
+            id: row.data('id'),
+            arn_no: row.data('arn_no'),
+            po_no: row.data('po_number'),
+            order_date: row.data('order_date'),
+            supplier_id: row.data('supplier_id'),
+            supplier_code: row.data('supplier_code'),
+            supplier_name: row.data('supplier_name'),
+            supplier_address: row.data('supplier_address'),
+            pi_no: row.data('pi_no'),
+            lc_tt_no: row.data('lc_tt_no'),
+            brand: row.data('brand'),
+            bl_no: row.data('bl_no'),
+            ci_no: row.data('ci_no'),
+            country: row.data('country'),
+            department: row.data('department'),
+            grand_total: row.data('grand_total'),
+            total_discount: row.data('total_discount'),
+            total_received_qty: row.data('total_received_qty'),
+            total_order_qty: row.data('total_order_qty'),
+            status: row.data('status'),
+            remarks: row.data('remarks'),
+            is_cancelled: row.data('is_cancelled')
+        };
+
+        // Fill form fields (update selectors based on your actual form field IDs or classes)
+        $('#arn_id').val(arnData.id);
+        $('#arn_no').val(arnData.arn_no);
+        $('#po_date').val(arnData.order_date);
+        $('#supplier_id').val(arnData.supplier_id);
+        $('#supplier_code').val(arnData.supplier_code);
+        $('#supplier_name').val(arnData.supplier_name);
+        $('#supplier_address').val(arnData.supplier_address);
+        $('#pi_no').val(arnData.pi_no);
+        $('#lc_tt_no').val(arnData.lc_tt_no);
+        $('#brand').val(arnData.brand);
+        $('#bl_no').val(arnData.bl_no);
+        $('#ci_no').val(arnData.ci_no);
+        $('#country').val(arnData.country);
+        $('#department_id').val(arnData.department);
+        $('#total_arn').val(parseFloat(arnData.grand_total).toFixed(2));
+        $('#remarks').val(arnData.remarks);
+        $('#arn_status').val(arnData.status);
+        $('#total_discount').val(arnData.total_discount);
+        $('#total_received_qty').val(arnData.total_received_qty);
+        $('#total_order_qty').val(arnData.total_order_qty);
+        // Close modal
+        $('#arn_modal').modal('hide');
+
+        // Optional: load items via AJAX if needed
+        loadArnItems(arnData.id);
+        if (arnData.is_cancelled === 1 || arnData.is_cancelled === '1') {
+            $('.cancel-arn-btn').prop('disabled', true).text('Already Cancelled');
+        } else {
+            $('.cancel-arn-btn').prop('disabled', false).text('Cancel ARN');
+        }
+    });
+
+    function loadArnItems(arnId) {
+        $.ajax({
+            url: "ajax/php/arn-master.php",
+            method: 'POST',
+            data: { arn_id: arnId },
+            dataType: 'json',
+            success: function (items) {
+                const tbody = $('#itemTableBody');
+                tbody.empty();
+
+                if (items.length === 0) {
+                    tbody.append('<tr id="noDataRow"><td colspan="13" class="text-center">No data available</td></tr>');
+                    return;
+                }
+
+                items.forEach(item => {
+                    const row = `
+                        <tr data-itemid="${item.item_code}">
+                           <td>${item.item_code}  </td>
+                            <td><input type="number" name="items[][order_qty]" class="form-control form-control-sm" value="${item.order_qty}" readonly></td>
+                            <td><input type="number" name="items[][rec_qty]" class="form-control form-control-sm" value="${item.received_qty}" readonly></td>
+                            <td><input type="number" name="items[][com_cost]" class="form-control form-control-sm" value="${item.commercial_cost}" readonly></td>
+                            <td><input type="number" name="items[][dis1]" class="form-control form-control-sm" value="${item.discount_1}" readonly></td>
+                            <td><input type="number" name="items[][dis2]" class="form-control form-control-sm" value="${item.discount_2}" readonly></td>
+                            <td><input type="number" name="items[][dis3]" class="form-control form-control-sm" value="${item.discount_3}" readonly></td>
+                            <td><input type="number" name="items[][dis4]" class="form-control form-control-sm" value="${item.discount_4 || 0}" readonly></td>
+                            <td><input type="number" name="items[][dis5]" class="form-control form-control-sm" value="${item.discount_5 || 0}" readonly></td>
+                            <td><input type="number" name="items[][actual_cost]" class="form-control form-control-sm" value="${item.final_cost}" readonly></td>
+                            <td><input type="number" name="items[][unit_total]" class="form-control form-control-sm" value="${item.unit_total}" readonly></td>
+                            <td><input type="number" name="items[][list_price]" class="form-control form-control-sm" value="${item.list_price}" readonly></td>
+                            <td> </td>
+                        </tr>
+                    `;
+                    tbody.append(row);
+                });
+            },
+            error: function (err) {
+                console.error("Failed to fetch ARN items:", err);
+            }
+        });
+    }
+
+    $(document).on("click", ".cancel-arn-btn", function (e) {
+        e.preventDefault();
+
+        var arnId = $("#arn_id").val();
+        var arnNo = $("#arn_no").val();
+
+        if (!arnId || !arnNo) {
+            swal({
+                title: "Error!",
+                text: "Please select a valid ARN first.",
+                type: "error",
+                timer: 2000,
+                showConfirmButton: false,
+            });
+            return;
+        }
+
+        swal(
+            {
+                title: "Are you sure?",
+                text: "Do you want to cancel ARN No: '" + arnNo + "'?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#6c757d",
+                confirmButtonText: "Yes, cancel it!",
+                cancelButtonText: "No",
+                closeOnConfirm: false,
+            },
+            function (isConfirm) {
+                if (isConfirm) {
+                    $(".someBlock").preloader();
+
+                    $.ajax({
+                        url: "ajax/php/arn-master.php",
+                        type: "POST",
+                        data: {
+                            arn_id_cancel: arnId,
+                        },
+                        dataType: "json",
+                        success: function (response) {
+                            $(".someBlock").preloader("remove");
+
+                            if (response.status === "success") {
+                                swal({
+                                    title: "Cancelled!",
+                                    text: "ARN has been cancelled successfully.",
+                                    type: "success",
+                                    timer: 2000,
+                                    showConfirmButton: false,
+                                });
+
+                                setTimeout(() => {
+                                    window.location.reload();
+                                }, 2000);
+                            } else {
+                                swal({
+                                    title: "Error!",
+                                    text: response.message || "Something went wrong.",
+                                    type: "error",
+                                    timer: 2000,
+                                    showConfirmButton: false,
+                                });
+                            }
+                        },
+                        error: function () {
+                            $(".someBlock").preloader("remove");
+                            swal({
+                                title: "Error!",
+                                text: "Request failed. Please try again.",
+                                type: "error",
+                                timer: 2000,
+                                showConfirmButton: false,
+                            });
+                        },
+                    });
+                }
+            }
+        );
+    });
+
 
 
 

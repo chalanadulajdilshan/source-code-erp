@@ -26,11 +26,10 @@ jQuery(document).ready(function () {
             { data: "code", title: "Code" },
             { data: "name", title: "Name" },
             { data: "brand", title: "Brand" },
-            { data: "cost", title: "Cost" },
-            { data: "cash_price", title: "Wholesale" },
-            { data: "credit_price", title: "Retail" },
-            { data: "cash_discount", title: "Cash Dis %" },
-            { data: "credit_discount", title: "Credit Dis %" },
+            { data: "category", title: "Category" },
+            { data: "list_price", title: "List Price" },
+            { data: "qty", title: "Quantity" },
+            { data: "discount", title: "Discount %" },
             { data: "status_label", title: "Status" }
         ],
         order: [[0, 'desc']],
@@ -43,23 +42,7 @@ jQuery(document).ready(function () {
         var data = table.row(this).data();
         if (!data) return;
 
-        const salesType = $('#sales_type').val();
-        const paymentType = $('#payment_type').val();
 
-        if (salesType == 1) {  // Whole Sales
-            $('#itemPrice').val(data.cash_price.replace(/,/g, ''));
-        } else if (salesType == 2) {  // Retail Sales
-            $('#itemPrice').val(data.credit_price.replace(/,/g, ''));
-        }
-
-
-        if (paymentType == 1) {
-            $('#itemDiscount').val(data.cash_discount);
-        } else if (paymentType == 2) {
-            $('#itemDiscount').val(data.credit_discount);
-        } else {
-            $('#itemDiscount').val(0);
-        }
 
         $('#item_id').val(data.id);
         $('#itemCode').val(data.code);
@@ -69,7 +52,7 @@ jQuery(document).ready(function () {
 
         const departmentId = $('#department_id').val();
         const itemId = data.id;
- 
+
 
         $.ajax({
             url: 'ajax/php/stock-transfer.php',
@@ -109,10 +92,10 @@ jQuery(document).ready(function () {
 
         setTimeout(() => $('#itemQty').focus(), 200);
 
-        $('#item_master').modal('hide');
+        $('#main_item_master').modal('hide');
     });
 
-    $('#item_master').on('hidden.bs.modal', function () {
+    $('#main_item_master').on('hidden.bs.modal', function () {
         if (focusAfterModal) {
             $('#itemQty').focus();
             focusAfterModal = false;
@@ -227,17 +210,17 @@ jQuery(document).ready(function () {
     });
 
     //remove all added items department change
-$('#to_department_id').on('change', function () {
-    const table = $('#show_table');
-    table.html(`
+    $('#to_department_id').on('change', function () {
+        const table = $('#show_table');
+        table.html(`
         <tr id="noItemRow">
             <td colspan="8" class="text-center text-muted">No items added</td>
         </tr>
     `);
 
-    // Clear inputs
-    $('#item_id, #itemCode, #itemName, #itemQty, #available_qty').val('');
-});
+        // Clear inputs
+        $('#item_id, #itemCode, #itemName, #itemQty, #available_qty').val('');
+    });
 
     $('#create').on('click', function () {
         const fromDept = $('#department_id').val();

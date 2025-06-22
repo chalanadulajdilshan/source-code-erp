@@ -24,11 +24,10 @@ jQuery(document).ready(function ($) {
             { data: "code", title: "Code" },
             { data: "name", title: "Name" },
             { data: "brand", title: "Brand" },
-            { data: "cost", title: "Cost" },
-            { data: "cash_price", title: "Wholesale" },
-            { data: "credit_price", title: "Retail" },
-            { data: "cash_discount", title: "Cash Dis %" },
-            { data: "credit_discount", title: "Credit Dis %" },
+            { data: "category", title: "Category" },
+            { data: "list_price", title: "List Price" },
+            { data: "qty", title: "Quantity" },
+            { data: "discount", title: "Discount %" },
             { data: "status_label", title: "Status" }
         ],
         order: [[0, 'desc']],
@@ -69,7 +68,7 @@ jQuery(document).ready(function ($) {
         initializeStockInfoListener();
         setTimeout(() => $('#itemQty').focus(), 200);
 
-        $('#item_master').modal('hide');
+        $('#main_item_master').modal('hide');
     });
 
     // Show/hide transactions table on checkbox toggle
@@ -276,15 +275,17 @@ jQuery(document).ready(function ($) {
                         runningBalance += parseFloat(tx.qty_in) - parseFloat(tx.qty_out);
 
                         rows += `
-                        <tr>
-                           <td>${index + 1}</td>
-                            <td>${tx.date}</td>
-                            <td>${tx.type_name}  </td>
-                            <td> ${tx.type_direction}</td>
-                            <td>${tx.qty_in}</td>
-                            <td>${tx.qty_out}</td>
-                            <td>${runningBalance}</td>
-                        </tr>
+                       <tr>
+    <td style="text-align: left;">${index + 1}</td>
+    <td style="text-align: left;">${tx.created_at}</td>
+    <td style="text-align: left;">${tx.type_name}</td>
+    <td style="text-align: left;">${tx.remark}</td>
+    <td style="text-align: left;">${tx.type_direction}</td>
+    <td style="text-align: left;">${tx.qty_in}</td>
+    <td style="text-align: left;">${tx.qty_out}</td>
+    <td style="text-align: left;">${runningBalance}</td>
+</tr>
+
                     `;
                     });
 

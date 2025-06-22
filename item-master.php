@@ -52,7 +52,7 @@ $item_id = 'ITM/0' . $lastId + 1;
                                 </a>
                             <?php endif; ?>
                             <?php if ($PERMISSIONS['edit_page']): ?>
-                                <a href="#" class="btn btn-warning" id="update">
+                                <a href="#" class="btn btn-warning" id="update" hidden>
                                     <i class="uil uil-edit me-1"></i> Update
                                 </a>
                             <?php endif; ?>
@@ -199,12 +199,20 @@ $item_id = 'ITM/0' . $lastId + 1;
                                                 </div>
                                             </div>
                                             <!-- List Price -->
-                                            <div class="col-md-3">
+                                            <div class="col-md-2">
                                                 <div class="mb-3">
                                                     <label class="form-label" for="list_price"> List Price <span
                                                             class="text-danger">*</span></label>
-                                                    <input id="list_price" name="list_price" type="text" class="form-control"
-                                                        placeholder="Enter item  List Price">
+                                                    <input id="list_price" name="list_price" type="text"
+                                                        class="form-control" placeholder="Enter item  List Price">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="discount"> Item Discount <span
+                                                            class="text-danger">*</span></label>
+                                                    <input id="discount" name="discount" type="text"
+                                                        class="form-control" placeholder="Dis %">
                                                 </div>
                                             </div>
                                         </div>
@@ -250,7 +258,7 @@ $item_id = 'ITM/0' . $lastId + 1;
                                                 </div>
                                             </div>
 
-                                             
+
                                             <div class="col-md-1 d-flex justify-content-center align-items-center">
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="checkbox" id="is_active"
@@ -291,11 +299,10 @@ $item_id = 'ITM/0' . $lastId + 1;
     <script src="assets/libs/jquery/jquery.min.js"></script>
     <!-- /////////////////////////// -->
     <script src="ajax/js/item-master.js"></script>
-    <script src="ajax/js/common.js"></script>
+
 
     <!-- include main js  -->
     <?php include 'main-js.php' ?>
-
 
 </body>
 

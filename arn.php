@@ -15,37 +15,15 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
 <head>
 
     <meta charset="utf-8" />
-    <title>ARN | <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
+    <title>Arn Master | <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="#" name="description" />
-    <meta content="Themesbrand" name="author" />
-    <!-- App favicon -->
-    <link rel="shortcut icon" href="assets/images/favicon.ico">
-
-    <!-- Bootstrap Css -->
-    <link href="assets/css/bootstrap.min.css" id="bootstrap-style" rel="stylesheet" type="text/css" />
-    <!-- Icons Css -->
-    <link href="assets/css/icons.min.css" rel="stylesheet" type="text/css" />
-    <!-- App Css-->
-    <link href="assets/css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
-    <link href="assets/libs/sweetalert/sweetalert.css" rel="stylesheet" type="text/css" />
-
-    <link href="assets/css/preloader.css" rel="stylesheet" type="text/css" />
-    <!-- Responsive datatable examples -->
-    <!-- DataTables -->
-    <link href="assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
-    <link href="assets/libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css" rel="stylesheet"
-        type="text/css" />
-    <link href="assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet"
-        type="text/css" />
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <?php include 'main-css.php' ?>
 
 
     <style>
         .col-lg-1 {
-            width: 6.8% !important;
+            width: 7.5% !important;
         }
     </style>
 
@@ -75,15 +53,10 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
                             <a href="#" class="btn btn-primary" id="create_arn">
                                 <i class="uil uil-save me-1"></i> Save
                             </a>
-                            <a href="#" class="btn btn-warning" id="search">
-                                <i class="uil uil-search me-1"></i> Search
+                            <a href="#" class="btn btn-danger cancel-arn-btn">
+                                <i class="uil uil-trash-alt me-1"></i> Cancel ARN
                             </a>
-                            <a href="#" class="btn btn-info" id="print">
-                                <i class="uil uil-plus me-1"></i> Print
-                            </a>
-                            <a href="#" class="btn btn-danger delete-category">
-                                <i class="uil uil-trash-alt me-1"></i> Delete
-                            </a>
+
 
                         </div>
 
@@ -95,7 +68,9 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
                         </div>
                     </div>
                     <!--- Hidden Values -->
+                    <input type="hidden" id="arn_id">
                     <input type="hidden" id="item_id">
+
                     <input type="hidden" id="availableQty">
                     <input type="hidden" id="purchase_order_id">
                     <input type="hidden" id="supplier_id">
@@ -137,7 +112,8 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
                                                     <input id="arn_no" name="arn_no" type="text" class="form-control"
                                                         value="<?php echo $arn_id ?>" readonly>
 
-                                                    <button class="btn btn-info" type="button" id="open-item-modal">
+                                                    <button class="btn btn-info" type="button" data-bs-toggle="modal"
+                                                        data-bs-target="#arn_modal">
                                                         <i class="uil uil-search me-1"></i>
                                                     </button>
                                                 </div>
@@ -232,6 +208,21 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
                                             </div>
 
                                             <div class="col-md-2">
+                                                <label for="Category" class="form-label">Category</label>
+                                                <div class="input-group mb-3">
+                                                    <select id="category" name="category" class="form-select">
+                                                        <option value="">-- All Category --</option>
+                                                        <?php
+                                                        $CATEGORY = new CategoryMaster(NULL);
+                                                        foreach ($CATEGORY->getActiveCategory() as $category) {
+                                                            echo "<option value='{$category['id']}'>{$category['name']}</option>";
+                                                        }
+                                                        ?>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-2">
                                                 <label for="Brand" class="form-label">Brand</label>
                                                 <div class="input-group mb-3">
                                                     <select id="brand" name="brand" class="form-select">
@@ -310,14 +301,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-2">
-                                                <label for="Container_Size" class="form-label">Container
-                                                    Size</label>
-                                                <div class="input-group mb-3">
-                                                    <input id="container_size" name="container_size" type="text"
-                                                        placeholder="Container Size" class="form-control">
-                                                </div>
-                                            </div>
+
 
                                             <div class="col-md-2">
                                                 <label class="form-label" for="Invoice_date">Invoice Date</label>
@@ -328,7 +312,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
                                             <div class="col-md-2">
                                                 <label for="Country" class="form-label">Country</label>
                                                 <div class="input-group mb-3">
-                                                    <select id="country_id" name="country_id" class="form-select">
+                                                    <select id="country" name="country" class="form-select">
                                                         <?php
                                                         $COUNTRY = new Country(NULL);
                                                         foreach ($COUNTRY->activeCountry() as $country) {
@@ -340,7 +324,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-2">
+                                            <div class="col-md-2 hidden">
                                                 <label for="VAT" class="form-label">Vat Type</label>
                                                 <div class="input-group mb-3">
                                                     <select id="vat_id" name="vat_id" class="form-select">
@@ -356,11 +340,22 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
                                                 </div>
                                             </div>
                                             <div class="col-md-2">
-                                                <label class="form-label">Pending Debit Note Amount</label>
-                                                <input type="number" id="Qty" class="form-control"
-                                                    placeholder="Quantity">
+                                                <label class="form-label">Pending Credit Note Amount</label>
+                                                <input type="number" id="credit_note_amount" name="credit_note_amount"
+                                                    class="form-control" placeholder="Amount">
                                             </div>
-                                            <div class="col-12  ">
+
+                                            <div class="col-md-2">
+                                                <label for="name" class="form-label">Delivery Date</label>
+                                                <div class="input-group">
+
+                                                    <input type="text" class="form-control date-picker"
+                                                        id="delivery_date" name="delivery_date"> <span
+                                                        class="input-group-text"><i class="mdi mdi-calendar"></i></span>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-12 mt-3 ">
                                                 <label for="remark" class="form-label">Remarks</label>
                                                 <textarea id="remark" name="remark" class="form-control" rows="4"
                                                     placeholder="Enter any remarks or notes..."></textarea>
@@ -403,30 +398,40 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
                                                 </div>
 
                                                 <div class="col-6 col-sm-4 col-md-2 col-lg-1">
-                                                    <label class="form-label">Dis 1</label>
+                                                    <label class="form-label"> Brand Dis %</label>
                                                     <input type="number" id="dis_1" class="form-control form-control-sm"
-                                                        oninput="calculatePayment()">
+                                                        oninput="calculatePayment()" readonly>
                                                 </div>
 
                                                 <div class="col-6 col-sm-4 col-md-2 col-lg-1">
-                                                    <label class="form-label">Dis 2</label>
+                                                    <label class="form-label">Item Dis %</label>
                                                     <input type="number" id="dis_2" class="form-control form-control-sm"
-                                                        oninput="calculatePayment()">
+                                                        oninput="calculatePayment()" readonly>
                                                 </div>
 
                                                 <!-- ────────── Second Line of Fields ────────── -->
                                                 <div class="col-6 col-sm-4 col-md-2 col-lg-1">
-                                                    <label class="form-label">Dis 3</label>
+                                                    <label class="form-label">Dis 3 %</label>
                                                     <input type="number" id="dis_3" class="form-control form-control-sm"
                                                         oninput="calculatePayment()">
                                                 </div>
-
+                                                <div class="col-6 col-sm-4 col-md-2 col-lg-1">
+                                                    <label class="form-label">Dis 4 %</label>
+                                                    <input type="number" id="dis_4" class="form-control form-control-sm"
+                                                        oninput="calculatePayment()">
+                                                </div>
+                                                <div class="col-6 col-sm-4 col-md-2 col-lg-1">
+                                                    <label class="form-label">Dis 5 %</label>
+                                                    <input type="number" id="dis_5" class="form-control form-control-sm"
+                                                        oninput="calculatePayment()">
+                                                </div>
                                                 <div class="col-6 col-sm-4 col-md-2 col-lg-1">
                                                     <label class="form-label">Actual Cost</label>
-                                                    <input type="text" class="form-control form-control-sm actual_cost">
+                                                    <input type="text" id="actual_cost"
+                                                        class="form-control form-control-sm ">
                                                 </div>
 
-                                                <div class="col-6 col-sm-4 col-md-2 col-lg-1">
+                                                <div class="col-6 col-sm-4 col-md-2 col-lg-1" hidden>
                                                     <label class="form-label">Tax</label>
                                                     <input type="text" id="tax" class="form-control form-control-sm"
                                                         oninput="calculatePayment()" readonly>
@@ -436,17 +441,16 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
                                                     <label class="form-label">List Price</label>
                                                     <input type="text" id="list_price"
                                                         class="form-control form-control-sm"
-                                                        oninput="calculatePayment()">
+                                                        oninput="calculatePayment()" readonly>
                                                 </div>
 
-                                                <div class="col-6 col-sm-4 col-md-2 col-lg-1">
+                                                <div class="col-6 col-sm-4 col-md-2 col-lg-1" hidden>
                                                     <label class="form-label">Cash Price</label>
-                                                    <input type="text" id="cash_price"
-                                                        class="form-control form-control-sm"
+                                                    <input type="text" class="form-control form-control-sm"
                                                         oninput="calculatePayment()">
                                                 </div>
 
-                                                <div class="col-6 col-sm-4 col-md-2 col-lg-1">
+                                                <div class="col-6 col-sm-4 col-md-2 col-lg-1" hidden>
                                                     <label class="form-label">Credit Price</label>
                                                     <input type="text" id="credit_price"
                                                         class="form-control form-control-sm"
@@ -475,14 +479,14 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
                                                         <th>Ord Qty</th>
                                                         <th>Rec Qty</th>
                                                         <th>Com Cost</th>
-                                                        <th>Dis 1%</th>
-                                                        <th>Dis 2%</th>
+                                                        <th>Brand Dis%</th>
+                                                        <th>Item Dis%</th>
                                                         <th>Dis 3%</th>
+                                                        <th>Dis 4%</th>
+                                                        <th>Dis 5%</th>
                                                         <th>Actual Cost</th>
                                                         <th>Unit Total</th>
                                                         <th>List Price</th>
-                                                        <th>Cash Price</th>
-                                                        <th>Credit Price</th>
                                                         <th>Action</th>
                                                     </tr>
                                                 </thead>
@@ -511,7 +515,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
                                                         </div>
                                                     </div>
 
-                                                    <div class="row mb-2">
+                                                    <div class="row mb-2 hidden">
                                                         <div class="col-7">
                                                             <input type="text" class="form-control text_purchase3"
                                                                 value="Total VAT Value" disabled>
@@ -654,19 +658,19 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="myExtraLargeModalLabel">Manage Purchase Orders</h5>
+                    <h5 class="modal-title" id="myExtraLargeModalLabel">Manage ARN Orders</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                     </button>
                 </div>
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-12">
-                            <table id="purchase_table" class="table table-bordered dt-responsive nowrap"
+                            <table id="arn_table" class="table table-bordered dt-responsive nowrap"
                                 style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                 <thead>
                                     <tr>
                                         <th>#id</th>
-                                        <th>PO No</th>
+                                        <th>ARN No</th>
                                         <th>Order Date</th>
                                         <th>Supplier Code and Name</th>
                                         <th>PI No</th>
@@ -678,43 +682,58 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
 
                                 <tbody>
                                     <?php
-                                    $PURCHASE_ORDER = new PurchaseOrder(null);
-                                    foreach ($PURCHASE_ORDER->getAllByStatus(0) as $key => $purchase_order) {
-                                        $CUSTOMER_MASTER = new CustomerMaster($purchase_order['supplier_id']);
-                                        $DEPARTMENT_MASTER = new DepartmentMaster($purchase_order['department']);
+                                    $ARN_MASTER = new ArnMaster(null);
+                                    foreach ($ARN_MASTER->all(0) as $key => $arn_master) {
+                                        $CUSTOMER_MASTER = new CustomerMaster($arn_master['supplier_id']);
+                                        $DEPARTMENT_MASTER = new DepartmentMaster($arn_master['department']);
                                         $key++;
+
+                                        $is_cancelled = isset($arn_master['is_cancelled']) && $arn_master['is_cancelled'] == 1;
+                                        $rowClass = $is_cancelled ? 'table-danger' : '';
                                         ?>
-                                        <tr class="select-purchase-order" data-id="<?= $purchase_order['id']; ?>"
-                                            data-po_number="<?= htmlspecialchars($purchase_order['po_number']); ?>"
-                                            data-order_date="<?= htmlspecialchars($purchase_order['order_date']); ?>"
-                                            data-supplier_id="<?= htmlspecialchars($purchase_order['supplier_id']); ?>"
+
+                                        <tr class="select-arn-order <?= $rowClass ?>" data-id="<?= $arn_master['id']; ?>"
+                                            data-is_cancelled="<?= $is_cancelled ? '1' : '0'; ?>"
+                                            data-arn_no="<?= htmlspecialchars($arn_master['arn_no']); ?>"
+                                            data-po_number="<?= htmlspecialchars($arn_master['po_no']); ?>"
+                                            data-order_date="<?= htmlspecialchars($arn_master['po_date']); ?>"
+                                            data-supplier_id="<?= htmlspecialchars($arn_master['supplier_id']); ?>"
                                             data-supplier_code="<?= htmlspecialchars($CUSTOMER_MASTER->code); ?>"
                                             data-supplier_name="<?= htmlspecialchars($CUSTOMER_MASTER->name); ?>"
                                             data-supplier_address="<?= htmlspecialchars($CUSTOMER_MASTER->address); ?>"
-                                            data-pi_no="<?= htmlspecialchars($purchase_order['pi_no']); ?>"
-                                            data-address="<?= htmlspecialchars($purchase_order['address']); ?>"
-                                            data-lc_tt_no="<?= htmlspecialchars($purchase_order['lc_tt_no']); ?>"
-                                            data-brand="<?= htmlspecialchars($purchase_order['brand']); ?>"
-                                            data-bl_no="<?= htmlspecialchars($purchase_order['bl_no']); ?>"
-                                            data-ci_no="<?= htmlspecialchars($purchase_order['ci_no']); ?>"
-                                            data-country="<?= htmlspecialchars($purchase_order['country']); ?>"
-                                            data-department="<?= htmlspecialchars($purchase_order['department']); ?>"
-                                            data-grand_total="<?= htmlspecialchars($purchase_order['grand_total']); ?>"
-                                            data-status="<?= htmlspecialchars($purchase_order['status']); ?>"
-                                            data-remarks="<?= htmlspecialchars($purchase_order['remarks']); ?>">
+                                            data-pi_no="<?= htmlspecialchars($arn_master['pi_no']); ?>"
+                                            data-lc_tt_no="<?= htmlspecialchars($arn_master['lc_tt_no']); ?>"
+                                            data-brand="<?= htmlspecialchars($arn_master['brand']); ?>"
+                                            data-bl_no="<?= htmlspecialchars($arn_master['bl_no']); ?>"
+                                            data-ci_no="<?= htmlspecialchars($arn_master['ci_no']); ?>"
+                                            data-country="<?= htmlspecialchars($arn_master['country']); ?>"
+                                            data-department="<?= htmlspecialchars($arn_master['department']); ?>"
+                                            data-grand_total="<?= htmlspecialchars($arn_master['total_arn_value']); ?>"
+                                            data-status="<?= htmlspecialchars($arn_master['arn_status']); ?>"
+                                            data-total_discount="<?= htmlspecialchars($arn_master['total_discount']); ?>"
+                                            data-total_received_qty="<?= htmlspecialchars($arn_master['total_received_qty']); ?>"
+                                            data-total_order_qty="<?= htmlspecialchars($arn_master['total_order_qty']); ?>"
+                                            data-remarks="<?= htmlspecialchars($arn_master['remark']); ?>">
+
+
                                             <td><?= $key; ?></td>
-                                            <td><?= htmlspecialchars($purchase_order['po_number']); ?></td>
-                                            <td><?= htmlspecialchars($purchase_order['order_date']); ?></td>
+                                            <td>
+                                                <?= htmlspecialchars($arn_master['arn_no']); ?>
+                                                <?php if ($is_cancelled): ?>
+                                                    <span class="badge bg-danger ms-2">Cancelled</span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td><?= htmlspecialchars($arn_master['po_date']); ?></td>
                                             <td><?= htmlspecialchars($CUSTOMER_MASTER->code . ' - ' . $CUSTOMER_MASTER->name); ?>
                                             </td>
-                                            <td><?= htmlspecialchars($purchase_order['pi_no']); ?></td>
-                                            <td><?= htmlspecialchars($purchase_order['lc_tt_no']); ?></td>
+                                            <td><?= htmlspecialchars($arn_master['pi_no']); ?></td>
+                                            <td><?= htmlspecialchars($arn_master['lc_tt_no']); ?></td>
                                             <td><?= htmlspecialchars($DEPARTMENT_MASTER->name); ?></td>
-
-                                            <td><?= htmlspecialchars($purchase_order['grand_total']); ?></td>
+                                            <td><?= htmlspecialchars($arn_master['total_arn_value']); ?></td>
                                         </tr>
                                     <?php } ?>
                                 </tbody>
+
 
                             </table>
                         </div> <!-- end col -->
@@ -733,50 +752,14 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- add js files -->
     <script src="ajax/js/arn-master.js"></script>
- 
-    <script src="assets/libs/sweetalert/sweetalert-dev.js"></script>
-    <script src="assets/js/jquery.preloader.min.js"></script>
-    <script src="assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="ajax/js/common.js"></script>
+    <!-- include main js  -->
+    <?php include 'main-js.php' ?>
 
-    <!-- Required datatable js -->
-    <script src="assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
-    <script src="assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
-    <!-- Buttons examples -->
-    <script src="assets/libs/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
-    <script src="assets/libs/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js"></script>
-    <script src="assets/libs/jszip/jszip.min.js"></script>
-    <script src="assets/libs/pdfmake/build/pdfmake.min.js"></script>
-    <script src="assets/libs/pdfmake/build/vfs_fonts.js"></script>
-    <script src="assets/libs/datatables.net-buttons/js/buttons.html5.min.js"></script>
-    <script src="assets/libs/datatables.net-buttons/js/buttons.print.min.js"></script>
-    <script src="assets/libs/datatables.net-buttons/js/buttons.colVis.min.js"></script>
 
-    <!-- Responsive examples -->
-    <script src="assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
-    <script src="assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
-
-    <!-- Datatable init js -->
-    <script src="assets/js/pages/datatables.init.js"></script>
-    <!-- apexcharts -->
-
-    <script src="assets/js/pages/dashboard.init.js"></script>
-    <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
     <script>
-        $(function () {
-            $('#purchase_table').DataTable();
-            // Initialize the datepicker
-            $(".date-picker").datepicker({
-                dateFormat: 'yy-mm-dd' // or 'dd-mm-yy' as per your format
-            });
-
-            // Set today's date as default value
-            var today = $.datepicker.formatDate('yy-mm-dd', new Date());
-            $(".date-picker").val(today);
-        });
+        $('#arn_table').DataTable();    
     </script>
-
-    <!-- App js -->
-    <script src="assets/js/app.js"></script>
 
 </body>
 

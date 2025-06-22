@@ -140,7 +140,7 @@ class StockTransaction
         $date_from_escaped = $date_from;
         $date_to_escaped = $date_to;
 
- $query = "
+        $query = "
     SELECT 
         st.id,
         st.item_id,
@@ -159,7 +159,7 @@ class StockTransaction
     AND st.date BETWEEN '{$date_from_escaped} 00:00:00' AND '{$date_to_escaped} 23:59:59'
     ORDER BY st.created_at ASC
 ";
- 
+
         $result = $db->readQuery($query);
 
         $transactions = [];
