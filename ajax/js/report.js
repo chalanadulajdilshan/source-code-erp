@@ -49,7 +49,9 @@ jQuery(document).ready(function () {
                         <td>${item.code} - ${item.name}</td> 
                         <td>${item.note}</td>
                         <td>${item.total_available_qty}</td>
-                        <td>${item.group}</td>
+                  <td><strong class="text-danger">${Number(item.list_price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 24 })}</strong></td>
+
+
                         <td>${item.brand}</td>
                         <td>${item.category}</td>
                         <td>
@@ -59,41 +61,81 @@ jQuery(document).ready(function () {
                         </td>
                     </tr>`;
 
+                        // if (Array.isArray(item.stock_tmp) && item.stock_tmp.length > 0) {
+                        //     $.each(item.stock_tmp, function (i, row) {
+                        //         tbody += `<tr class="table-light" style="color: red;">
+                        //         <td colspan="2">
+                        //             <strong>ARN:</strong> ${row.arn_no} 
+                        //             <span style="display: inline-block; color: green; font-weight: 500;">
+                        //                 <div>Department: <span style="color: black;">${row.department}</span></div>
+                        //                 <div>Available Qty: ${row.qty}</div>
+                        //             </span>
+                        //         </td>
+
+                        //         <td>
+                        //         <span style="color: green; font-weight:500" >Cost: </span> 
+                        //             <input type="number" step="0.01" class="form-control form-control-sm cost-input" data-id="${row.id}" value="${parseFloat(row.cost).toFixed(2)}" />
+                        //         </td>
+                        //         <td>
+                        //         <span style="color: green; font-weight:500" >Cash Price: </span> 
+                        //             <input type="number" step="0.01" class="form-control form-control-sm cash-price-input" data-id="${row.id}" value="${parseFloat(row.cash_price).toFixed(2)}" />
+                        //         </td>
+                        //         <td>
+                        //         <span style="color: green; font-weight:500" >Credit Price: </span> 
+                        //             <input type="number" step="0.01" class="form-control form-control-sm credit-price-input" data-id="${row.id}" value="${parseFloat(row.credit_price).toFixed(2)}" />
+                        //         </td>
+                        //         <td>
+                        //         <span style="color: green; font-weight:500" >Cash Dis %: </span> 
+                        //             <input type="number" step="1" min="0" max="100" class="form-control form-control-sm cash-discount-input" data-id="${row.id}" value="${row.cash_dis}" /> 
+                        //         </td>
+                        //         <td>
+                        //         <span style="color: green; font-weight:500" >Credit Dis %: </span> 
+                        //             <input type="number" step="1" min="0" max="100" class="form-control form-control-sm credit-discount-input" data-id="${row.id}" value="${row.credit_dis}" /> 
+                        //         </td>
+                        //         <td>${row.created_at}</td>
+                        //     </tr>`;
+                        //     });
+                        // }
+
+
                         if (Array.isArray(item.stock_tmp) && item.stock_tmp.length > 0) {
                             $.each(item.stock_tmp, function (i, row) {
-                                tbody += `<tr class="table-light" style="color: red;">
-                                <td colspan="2">
-                                    <strong>ARN:</strong> ${row.arn_no} 
-                                    <span style="display: inline-block; color: green; font-weight: 500;">
-                                        <div>Department: <span style="color: black;">${row.department}</span></div>
-                                        <div>Available Qty: ${row.qty}</div>
-                                    </span>
-                                </td>
+                                tbody += `
+                                <tr class="table-info">
+                                    <td colspan="2">
+                                        <div><strong>ARN:</strong> ${row.arn_no}</div>
+                                         
+                                    </td>
+                        
+                                    <td>
+                                        <div><strong>Department:</strong></div>
+                                        <div>${row.department}</div>
+                                    </td>
+                        
+                                    <td colspan="2">
+                                        <div><strong>Available Qty:</strong> ${row.qty}</div>
+                                    </td>
+                        
+                                    <td>
+                                    <div class="d-flex align-items-center gap-2">
+    <label for="cost-${row.id}" class="form-label text-danger mb-0" style="white-space: nowrap;">
+        <strong>  Item Cost:</strong>
+    </label>
+    <input type="text" id="cost-${row.id}" step="0.01" 
+           class="form-control form-control-sm  cost-input text-end" 
+           data-id="${row.id}" value="${parseFloat(row.cost).toFixed(2)}" 
+             />
+</div>
 
-                                <td>
-                                <span style="color: green; font-weight:500" >Cost: </span> 
-                                    <input type="number" step="0.01" class="form-control form-control-sm cost-input" data-id="${row.id}" value="${parseFloat(row.cost).toFixed(2)}" />
-                                </td>
-                                <td>
-                                <span style="color: green; font-weight:500" >Cash Price: </span> 
-                                    <input type="number" step="0.01" class="form-control form-control-sm cash-price-input" data-id="${row.id}" value="${parseFloat(row.cash_price).toFixed(2)}" />
-                                </td>
-                                <td>
-                                <span style="color: green; font-weight:500" >Credit Price: </span> 
-                                    <input type="number" step="0.01" class="form-control form-control-sm credit-price-input" data-id="${row.id}" value="${parseFloat(row.credit_price).toFixed(2)}" />
-                                </td>
-                                <td>
-                                <span style="color: green; font-weight:500" >Cash Dis %: </span> 
-                                    <input type="number" step="1" min="0" max="100" class="form-control form-control-sm cash-discount-input" data-id="${row.id}" value="${row.cash_dis}" /> 
-                                </td>
-                                <td>
-                                <span style="color: green; font-weight:500" >Credit Dis %: </span> 
-                                    <input type="number" step="1" min="0" max="100" class="form-control form-control-sm credit-discount-input" data-id="${row.id}" value="${row.credit_dis}" /> 
-                                </td>
-                                <td>${row.created_at}</td>
-                            </tr>`;
+                                    </td>
+                        
+                                    <td colspan="2">${row.created_at} </td>
+                                </tr>`;
                             });
                         }
+
+
+
                     });
                 } else {
                     tbody = `<tr><td colspan="10" class="text-center text-muted">No items found</td></tr>`;

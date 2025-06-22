@@ -22,6 +22,7 @@ if (isset($_POST['create'])) {
     $ITEM->re_order_qty = $_POST['re_order_qty'];
     $ITEM->stock_type = $_POST['stock_type'];
     $ITEM->note = $_POST['note'];
+    $ITEM->discount = $_POST['discount'];
     $ITEM->is_active = isset($_POST['is_active']) ? 1 : 0; //  
 
     // Attempt to create the item
@@ -37,6 +38,10 @@ if (isset($_POST['create'])) {
     $AUDIT_LOG->user_id = $_SESSION['id'];
     $AUDIT_LOG->created_at = date("Y-m-d H:i:s");
     $AUDIT_LOG->create();
+
+    $DOCUMENT_TRACKING = new DocumentTracking(null);
+    $DOCUMENT_TRACKING->incrementDocumentId('item');
+
 
     if ($res) {
         $result = [
@@ -71,6 +76,7 @@ if (isset($_POST['update'])) {
     $ITEM->stock_type = $_POST['stock_type'];
     $ITEM->note = $_POST['note'];
     $ITEM->list_price = $_POST['list_price'];
+    $ITEM->discount = $_POST['discount'];
     $ITEM->is_active = isset($_POST['is_active']) ? 1 : 0;
 
     // Attempt to update the item

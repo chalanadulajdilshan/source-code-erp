@@ -7,6 +7,8 @@ class StockItemTmp
     public $item_id;
     public $qty;
     public $cost;
+    public $department_id;
+    public $list_price;
     public $cash_price;
     public $credit_price;
     public $created_at;
@@ -30,10 +32,10 @@ class StockItemTmp
     public function create()
     {
         $query = "INSERT INTO `stock_item_tmp` (
-            `arn_id`, `item_id`, `qty`, `cost`, `cash_price`, `credit_price`, `created_at`
+            `arn_id`, `item_id`, `qty`, `cost`, `list_price`, `department_id`, `created_at`
         ) VALUES (
             '{$this->arn_id}', '{$this->item_id}', '{$this->qty}', '{$this->cost}',
-            '{$this->cash_price}', '{$this->credit_price}', NOW()
+            '{$this->list_price}', '{$this->department_id}', NOW()
         )";
 
         $db = new Database();
@@ -53,8 +55,8 @@ class StockItemTmp
             `item_id` = '{$this->item_id}',
             `qty` = '{$this->qty}',
             `cost` = '{$this->cost}',
-            `cash_price` = '{$this->cash_price}',
-            `credit_price` = '{$this->credit_price}'
+            `department_id` = '{$this->department_id}',
+            `list_price` = '{$this->list_price}'
         WHERE `id` = '{$this->id}'";
 
         $db = new Database();

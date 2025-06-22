@@ -45,21 +45,21 @@ $employee_id = 'EM00' . $lastId + 1;
                             </a>
 
                             <?php if ($PERMISSIONS['add_page']): ?>
-                            <a href="#" class="btn btn-primary" id="create">
-                                <i class="uil uil-save me-1"></i> Save
-                            </a>
+                                <a href="#" class="btn btn-primary" id="create">
+                                    <i class="uil uil-save me-1"></i> Save
+                                </a>
                             <?php endif; ?>
 
                             <?php if ($PERMISSIONS['edit_page']): ?>
-                            <a href="#" class="btn btn-warning" id="update">
-                                <i class="uil uil-edit me-1"></i> Update
-                            </a>
+                                <a href="#" class="btn btn-warning" id="update">
+                                    <i class="uil uil-edit me-1"></i> Update
+                                </a>
                             <?php endif; ?>
 
                             <?php if ($PERMISSIONS['delete_page']): ?>
-                            <a href="#" class="btn btn-danger delete-employee-master">
-                                <i class="uil uil-trash-alt me-1"></i> Delete
-                            </a>
+                                <a href="#" class="btn btn-danger delete-employee-master">
+                                    <i class="uil uil-trash-alt me-1"></i> Delete
+                                </a>
                             <?php endif; ?>
 
                         </div>
@@ -103,27 +103,27 @@ $employee_id = 'EM00' . $lastId + 1;
 
                                     <form id="form-data" autocomplete="off">
                                         <div class="row">
- 
-                                        <h2 class="font-size-16 mb-1">PERSONAL INFORMATION</h2>
+
+                                            <h2 class="font-size-16 mb-1">PERSONAL INFORMATION</h2>
 
                                             <div class="col-md-2">
-                                                    <label class="form-label" for="code">Ref No </label>
-                                                    <div class="input-group mb-3">
-                                                        <input id="code" name="code" type="text" value="<?php echo $employee_id; ?>"
-                                                            placeholder="Ref No" class="form-control" readonly>
-                                                        <button class="btn btn-info" type="button"
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target="#employeeModel">
-                                                            <i class="uil uil-search me-1"></i> Find
-                                                        </button>
-                                                    </div>
+                                                <label class="form-label" for="code">Ref No </label>
+                                                <div class="input-group mb-3">
+                                                    <input id="code" name="code" type="text"
+                                                        value="<?php echo $employee_id; ?>" placeholder="Ref No"
+                                                        class="form-control" readonly>
+                                                    <button class="btn btn-info" type="button" data-bs-toggle="modal"
+                                                        data-bs-target="#employeeModel">
+                                                        <i class="uil uil-search me-1"></i> Find
+                                                    </button>
+                                                </div>
                                             </div>
 
                                             <div class="col-md-2">
                                                 <label for="name" class="form-label">Name</label>
                                                 <div class="input-group mb-3">
-                                                    <input id="name" name="name" type="text"
-                                                    placeholder="Employee Name" class="form-control">
+                                                    <input id="name" name="name" type="text" placeholder="Employee Name"
+                                                        class="form-control">
                                                 </div>
                                             </div>
 
@@ -131,32 +131,31 @@ $employee_id = 'EM00' . $lastId + 1;
                                                 <label for="full_name" class="form-label">Full Name</label>
                                                 <div class="input-group mb-3">
                                                     <input id="full_name" name="full_name" type="text"
-                                                    placeholder="Employee Name" class="form-control">
+                                                        placeholder="Employee Name" class="form-control">
                                                 </div>
                                             </div>
 
                                             <div class="col-md-2">
-                                                    <label for="gender" class="form-label">Gender <span
-                                                            class="text-danger">*</span></label>
-                                                    <select id="gender" name="gender" class="form-select">
-                                                        <option value="" selected> -- Select Gender -- </option>
-                                                        <option value="male">Male</option>
-                                                        <option value="female">Female</option>
-                                                        <option value="other">Other</option>
-                                                    </select>
+                                                <label for="gender" class="form-label">Gender <span
+                                                        class="text-danger">*</span></label>
+                                                <select id="gender" name="gender" class="form-select">
+                                                    <option value="" selected> -- Select Gender -- </option>
+                                                    <option value="male">Male</option>
+                                                    <option value="female">Female</option>
+                                                    <option value="other">Other</option>
+                                                </select>
                                             </div>
 
                                             <div class="col-md-2">
-                                                    <label class="form-label" for="birthday">Birth Day</label>
-                                                    <input id="birthday" name="birthday" type="date"
-                                                        class="form-control">
+                                                <label class="form-label" for="birthday">Birth Day</label>
+                                                <input id="birthday" name="birthday" type="date" class="form-control">
                                             </div>
 
                                             <div class="col-md-2">
                                                 <label for="nic_no" class="form-label">NIC No</label>
                                                 <div class="input-group mb-3">
-                                                    <input id="nic_no" name="nic_no" type="text"
-                                                    placeholder="NIC No" class="form-control">
+                                                    <input id="nic_no" name="nic_no" type="text" placeholder="NIC No"
+                                                        class="form-control">
                                                 </div>
                                             </div>
 
@@ -164,7 +163,7 @@ $employee_id = 'EM00' . $lastId + 1;
                                                 <label for="mobile_1" class="form-label">Mobile No 1</label>
                                                 <div class="input-group mb-3">
                                                     <input id="mobile_1" name="mobile_1" type="text"
-                                                    placeholder="Mobile No 1" class="form-control">
+                                                        placeholder="Mobile No 1" class="form-control">
                                                 </div>
                                             </div>
 
@@ -172,21 +171,22 @@ $employee_id = 'EM00' . $lastId + 1;
                                                 <label for="mobile_2" class="form-label">Mobile No 2</label>
                                                 <div class="input-group mb-3">
                                                     <input id="mobile_2" name="mobile_2" type="text"
-                                                    placeholder="Mobile No 2" class="form-control">
+                                                        placeholder="Mobile No 2" class="form-control">
                                                 </div>
                                             </div>
 
                                             <div class="col-md-2">
-                                                    <label for="email" class="form-label">Email <span
-                                                            class="text-danger">*</span></label>
-                                                    <input id="email" name="email" type="email" class="form-control"
-                                                        placeholder="Email">
+                                                <label for="email" class="form-label">Email <span
+                                                        class="text-danger">*</span></label>
+                                                <input id="email" name="email" type="email" class="form-control"
+                                                    placeholder="Email">
                                             </div>
 
                                             <h2 class="font-size-16 mb-1">EMPLOYEE INFORMATION</h2>
 
                                             <div class="col-md-2">
-                                                <label for="epf_available" class="form-label">EPF Available <span class="text-danger">*</span></label>
+                                                <label for="epf_available" class="form-label">EPF Available <span
+                                                        class="text-danger">*</span></label>
                                                 <select id="epf_available" name="epf_available" class="form-select">
                                                     <option value="" selected>-- Select EPF Available --</option>
                                                     <option value="available">Available</option>
@@ -197,7 +197,8 @@ $employee_id = 'EM00' . $lastId + 1;
                                             <div class="col-md-2">
                                                 <label for="epf_no" class="form-label">EPF No</label>
                                                 <div class="input-group mb-3">
-                                                    <input id="epf_no" name="epf_no" type="text" placeholder="EPF No" class="form-control" disabled>
+                                                    <input id="epf_no" name="epf_no" type="text" placeholder="EPF No"
+                                                        class="form-control" disabled>
                                                 </div>
                                             </div>
 
@@ -205,31 +206,31 @@ $employee_id = 'EM00' . $lastId + 1;
                                                 <label for="finger_print_no" class="form-label">Finger Print No</label>
                                                 <div class="input-group mb-3">
                                                     <input id="finger_print_no" name="finger_print_no" type="text"
-                                                    placeholder="Finger Print No" class="form-control">
+                                                        placeholder="Finger Print No" class="form-control">
                                                 </div>
                                             </div>
 
                                             <div class="col-md-2">
-                                                    <label for="department_id" class="form-label">Department <span
-                                                            class="text-danger">*</span></label>
-                                                    <select id="department_id" name="department_id" class="form-select"
-                                                        required>
-                                                        <option value=""> --Select Department --</option>
-                                                        <?php
-                                                        $DEPARTMENT_MASTER = new DepartmentMaster(NULL);
-                                                        foreach ($DEPARTMENT_MASTER->getActiveDepartment() as $department_master) {
-                                                            ?>
-                                                            <option value="<?php echo $department_master['id']; ?>">
-                                                                <?php echo $department_master['name']; ?>
-                                                            </option>
-                                                        <?php } ?>
-                                                    </select>
-                                                </div>
+                                                <label for="department_id" class="form-label">Department <span
+                                                        class="text-danger">*</span></label>
+                                                <select id="department_id" name="department_id" class="form-select"
+                                                    required>
+                                                    <option value=""> --Select Department --</option>
+                                                    <?php
+                                                    $DEPARTMENT_MASTER = new DepartmentMaster(NULL);
+                                                    foreach ($DEPARTMENT_MASTER->getActiveDepartment() as $department_master) {
+                                                        ?>
+                                                        <option value="<?php echo $department_master['id']; ?>">
+                                                            <?php echo $department_master['name']; ?>
+                                                        </option>
+                                                    <?php } ?>
+                                                </select>
+                                            </div>
 
-                                            
+
                                         </div>
                                         <input type="hidden" id="id" name="id" value="0">
-                                        
+
                                     </form>
 
                                 </div>
@@ -237,54 +238,54 @@ $employee_id = 'EM00' . $lastId + 1;
                         </div>
                     </div>
                 </div> <!-- container-fluid -->
-            </div>  
+            </div>
             <?php include 'footer.php' ?>
 
-        </div> 
+        </div>
     </div>
-    
-  
-<!-- model open here -->
-<div class="modal fade bs-example-modal-xl" id="employeeModel" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="myExtraLargeModalLabel">Manage Employee</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-12">
-  
-
-                        <table id="datatable" class="table table-bordered dt-responsive nowrap"
-                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Ref No</th>
-                                    <th>Name</th>
-                                    <th>Birth Day</th>
-                                    <th>NIC No</th>
-                                    <th>Mobile No 1</th>
-                                    <th>EPF Available</th>
-                                    <th>EPF No</th>
-                                    <th>Finger Print No</th>
-                                    <th>Department</th>
-                                </tr>
-                            </thead>
 
 
-                            <tbody>
-                                <?php
-                                $EMPLOYEE = new EmployeeMaster(null);
-                                foreach ($EMPLOYEE->all() as $key => $employee) {
-                                    $key++;
-                                    $DEPARTMENT_MASTER = new DepartmentMaster($employee['department_id']);
-                                    ?>
-                                    <tr class="select-employee" data-id="<?php echo $employee['id']; ?>"
+    <!-- model open here -->
+    <div class="modal fade bs-example-modal-xl" id="employeeModel" tabindex="-1" role="dialog"
+        aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myExtraLargeModalLabel">Manage Employee</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+
+
+                            <table id="employee_table" class="table table-bordered dt-responsive nowrap"
+                                style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Ref No</th>
+                                        <th>Name</th>
+                                        <th>Birth Day</th>
+                                        <th>NIC No</th>
+                                        <th>Mobile No 1</th>
+                                        <th>EPF Available</th>
+                                        <th>EPF No</th>
+                                        <th>Finger Print No</th>
+                                        <th>Department</th>
+                                    </tr>
+                                </thead>
+
+
+                                <tbody>
+                                    <?php
+                                    $EMPLOYEE = new EmployeeMaster(null);
+                                    foreach ($EMPLOYEE->all() as $key => $employee) {
+                                        $key++;
+                                        $DEPARTMENT_MASTER = new DepartmentMaster($employee['department_id']);
+                                        ?>
+                                        <tr class="select-employee" data-id="<?php echo $employee['id']; ?>"
                                             data-code="<?php echo htmlspecialchars($employee['code']); ?>"
                                             data-name="<?php echo htmlspecialchars($employee['name']); ?>"
                                             data-full_name="<?php echo htmlspecialchars($employee['full_name']); ?>"
@@ -297,10 +298,9 @@ $employee_id = 'EM00' . $lastId + 1;
                                             data-epf_available="<?php echo htmlspecialchars($employee['epf_available']); ?>"
                                             data-epf_no="<?php echo htmlspecialchars($employee['epf_no']); ?>"
                                             data-finger_print_no="<?php echo htmlspecialchars($employee['finger_print_no']); ?>"
-                                            data-department_id="<?php echo htmlspecialchars($employee['department_id']); ?>"
-                                    >
+                                            data-department_id="<?php echo htmlspecialchars($employee['department_id']); ?>">
 
-                                    <td><?php echo $key; ?></td>
+                                            <td><?php echo $key; ?></td>
                                             <td><?php echo htmlspecialchars($employee['code']); ?></td>
                                             <td><?php echo htmlspecialchars($employee['name']); ?></td>
                                             <td><?php echo htmlspecialchars($employee['birthday']); ?></td>
@@ -316,18 +316,18 @@ $employee_id = 'EM00' . $lastId + 1;
                                             <td><?php echo htmlspecialchars($employee['epf_no']); ?></td>
                                             <td><?php echo htmlspecialchars($employee['finger_print_no']); ?></td>
                                             <td><?php echo htmlspecialchars($DEPARTMENT_MASTER->name); ?></td>
-                                    </tr>
+                                        </tr>
 
-                                <?php } ?>
-                            </tbody>
-                        </table>
-                    </div> <!-- end col -->
-                </div> <!-- end row -->
-            </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div>
-<!-- model close here -->
+                                    <?php } ?>
+                                </tbody>
+                            </table>
+                        </div> <!-- end col -->
+                    </div> <!-- end row -->
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+    <!-- model close here -->
 
     <!-- Right bar overlay-->
     <div class="rightbar-overlay"></div>
@@ -340,7 +340,9 @@ $employee_id = 'EM00' . $lastId + 1;
 
     <!-- include main js  -->
     <?php include 'main-js.php' ?>
-
+    <script>
+        $('#employee_table').DataTable();  
+    </script>
 </body>
 
 </html>

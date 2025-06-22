@@ -48,21 +48,21 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
                             </a>
 
                             <?php if ($PERMISSIONS['add_page']): ?>
-                            <a href="#" class="btn btn-primary" id="create">
-                                <i class="uil uil-save me-1"></i> Save
-                            </a>
+                                <a href="#" class="btn btn-primary" id="create">
+                                    <i class="uil uil-save me-1"></i> Save
+                                </a>
                             <?php endif; ?>
 
                             <?php if ($PERMISSIONS['edit_page']): ?>
-                            <a href="#" class="btn btn-warning" id="update">
-                                <i class="uil uil-edit me-1"></i> Update
-                            </a>
+                                <a href="#" class="btn btn-warning" id="update">
+                                    <i class="uil uil-edit me-1"></i> Update
+                                </a>
                             <?php endif; ?>
 
                             <?php if ($PERMISSIONS['delete_page']): ?>
-                            <a href="#" class="btn btn-danger delete-quotation  " style="display:none">
-                                <i class="uil uil-trash-alt me-1"></i> Delete
-                            </a>
+                                <a href="#" class="btn btn-danger delete-quotation  " style="display:none">
+                                    <i class="uil uil-trash-alt me-1"></i> Delete
+                                </a>
                             <?php endif; ?>
 
                         </div>
@@ -589,22 +589,10 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
 
     <!-- App js -->
     <script src="assets/js/app.js"></script>
-    <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+
     <script>
         $('#quotation_table').DataTable();
-        $('#customerTable').DataTable();
-
-
-        $(function () {
-            // Initialize the datepicker
-            $(".date-picker").datepicker({
-                dateFormat: 'yy-mm-dd' // or 'dd-mm-yy' as per your format
-            });
-
-            // Set today's date as default value
-            var today = $.datepicker.formatDate('yy-mm-dd', new Date());
-            $(".date-picker").val(today);
-        });
+        $('#customerTable').DataTable();    
     </script>
 
 </body>

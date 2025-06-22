@@ -210,7 +210,9 @@ $dag_id = 'CD/00/' . $lastId + 1;
                                                         foreach ($DAG_COMPANY->getByStatusCompany(1) as $dag_company) {
 
                                                             ?>
-                                                            <option value="CANVAS">CANVAS</option>
+                                                            <option value="<?php echo $dag_company['id'] ?>">
+                                                                <?php echo $dag_company['name'] ?>
+                                                            </option>
                                                         <?php } ?>
                                                     </select>
                                                 </div>

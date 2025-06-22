@@ -134,7 +134,7 @@ class StockMaster
         $query = "SELECT `quantity` FROM `stock_master` 
                   WHERE `department_id` = " . (int) $department_id . " 
                   AND `item_id` = " . (int) $item_id . " 
-                  AND `is_active` = 1 LIMIT 1";
+                LIMIT 1";
 
 
         $db = new Database();
@@ -267,8 +267,7 @@ class StockMaster
         // Get existing stock record
         $query = "SELECT * FROM `stock_master`
               WHERE `item_id` = '" . (int) $item_id . "'
-              AND `department_id` = '" . (int) $department_id . "'
-              AND `is_active` = 1
+              AND `department_id` = '" . (int) $department_id . "' 
               LIMIT 1";
 
 

@@ -33,7 +33,7 @@ include './auth.php';
                     <div class="row mb-4">
                         <div class="col-md-8 d-flex align-items-center flex-wrap gap-2">
 
-                            <?php if ($PERMISSIONS['print_page']): ?>
+                            <!-- <?php if ($PERMISSIONS['print_page']): ?>
                                 <a href="#" class="btn btn-primary" id="create">
                                     <i class="uil uil-save me-1"></i> Print Bin Card
                                 </a>
@@ -48,7 +48,7 @@ include './auth.php';
                             <?php if ($PERMISSIONS['print_page']): ?>
                                 <a href="#" class="btn btn-primary" id="create">
                                     <i class="uil uil-save me-1"></i> Print Po. Card
-                                </a>
+                                </a> -->
                             <?php endif; ?>
 
 
@@ -99,7 +99,7 @@ include './auth.php';
                                                 class="form-control" readonly>
 
                                             <button class="btn btn-info" type="button" data-bs-toggle="modal"
-                                                data-bs-target="#item_master">
+                                                data-bs-target="#main_item_master">
                                                 <i class="uil uil-search me-1"></i>
                                             </button>
 
@@ -194,7 +194,7 @@ include './auth.php';
 
                 </div>
                 <!-- Monthly Consumption -->
-                <div class="card p-3 mb-4">
+                <div class="card p-3 mb-4 hidden">
                     <h5>Monthly Consumption</h5>
                     <div class="row">
                         <div class="col-md-12">
@@ -245,6 +245,7 @@ include './auth.php';
                                     <th>Id</th>
                                     <th>Date</th>
                                     <th>Adj Type</th>
+                                    <th>Remark</th>
                                     <th>Direction</th>
                                     <th>Stk In</th>
                                     <th>Stk Out</th>

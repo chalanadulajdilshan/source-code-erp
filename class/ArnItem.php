@@ -21,7 +21,7 @@ class ArnItem
     public $margin_percent;
     public $created_at;
     public $updated_at;
-
+    public $is_cancelled;
     public function __construct($id = NULL)
     {
         if ($id) {
@@ -48,6 +48,7 @@ class ArnItem
                 $this->margin_percent = $row['margin_percent'];
                 $this->created_at = $row['created_at'];
                 $this->updated_at = $row['updated_at'];
+                $this->is_cancelled = $row['is_cancelled'];
             }
         }
     }
@@ -58,14 +59,13 @@ class ArnItem
         $query = "INSERT INTO `arn_items` (
             `arn_id`, `item_code`, `order_qty`, `received_qty`, `commercial_cost`,
             `discount_1`, `discount_2`, `discount_3`, `final_cost`, `unit_total`,
-            `list_price`, `cash_price`, `credit_price`, `vat_percent`, `vat_value`,
-            `margin_percent`, `created_at`
+            `list_price`,   `created_at`
         ) VALUES (
             '{$this->arn_id}', '{$this->item_code}', '{$this->order_qty}', '{$this->received_qty}', '{$this->commercial_cost}',
             '{$this->discount_1}', '{$this->discount_2}', '{$this->discount_3}', '{$this->final_cost}', '{$this->unit_total}',
-            '{$this->list_price}', '{$this->cash_price}', '{$this->credit_price}', '{$this->vat_percent}', '{$this->vat_value}',
-            '{$this->margin_percent}', NOW()
+            '{$this->list_price}',    NOW()
         )";
+
 
         $result = $db->readQuery($query);
         if ($result) {

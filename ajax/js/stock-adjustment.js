@@ -21,15 +21,15 @@ jQuery(document).ready(function () {
             }
         },
         columns: [
+
             { data: "key", title: "#ID" },
             { data: "code", title: "Code" },
             { data: "name", title: "Name" },
             { data: "brand", title: "Brand" },
-            { data: "cost", title: "Cost" },
-            { data: "cash_price", title: "Wholesale" },
-            { data: "credit_price", title: "Retail" },
-            { data: "cash_discount", title: "Cash Dis %" },
-            { data: "credit_discount", title: "Credit Dis %" },
+            { data: "category", title: "Category" },
+            { data: "list_price", title: "List Price" },
+            { data: "qty", title: "Quantity" },
+            { data: "discount", title: "Discount %" },
             { data: "status_label", title: "Status" }
         ],
         order: [[0, 'desc']],
@@ -42,23 +42,6 @@ jQuery(document).ready(function () {
         var data = table.row(this).data();
         if (!data) return;
 
-        const salesType = $('#sales_type').val();
-        const paymentType = $('#payment_type').val();
-
-        if (salesType == 1) {  // Whole Sales
-            $('#itemPrice').val(data.cash_price.replace(/,/g, ''));
-        } else if (salesType == 2) {  // Retail Sales
-            $('#itemPrice').val(data.credit_price.replace(/,/g, ''));
-        }
-
-
-        if (paymentType == 1) {
-            $('#itemDiscount').val(data.cash_discount);
-        } else if (paymentType == 2) {
-            $('#itemDiscount').val(data.credit_discount);
-        } else {
-            $('#itemDiscount').val(0);
-        }
 
         $('#item_id').val(data.id);
         $('#itemCode').val(data.code);
@@ -107,35 +90,35 @@ jQuery(document).ready(function () {
 
         setTimeout(() => $('#itemQty').focus(), 200);
 
-        $('#item_master').modal('hide');
+        $('#main_item_master').modal('hide');
     });
 
-    $('#item_master').on('hidden.bs.modal', function () {
+    $('#main_item_master').on('hidden.bs.modal', function () {
         if (focusAfterModal) {
             $('#itemQty').focus();
             focusAfterModal = false;
         }
     });
 
-//remove all added items department change
-$('#department_id').on('change', function () {
-    const table = $('#show_table');
-    table.html(`
+    //remove all added items department change
+    $('#department_id').on('change', function () {
+        const table = $('#show_table');
+        table.html(`
         <tr id="noItemRow">
             <td colspan="8" class="text-center text-muted">No items added</td>
         </tr>
     `);
 
-    // Clear inputs
-    $('#item_id, #itemCode, #itemName, #itemQty, #available_qty').val('');
-});
+        // Clear inputs
+        $('#item_id, #itemCode, #itemName, #itemQty, #available_qty').val('');
+    });
 
 
     document.querySelector('#add_item').addEventListener('click', function () {
         const item_id = document.getElementById('item_id').value.trim();
         const itemCode = document.getElementById('itemCode').value.trim();
         const itemName = document.getElementById('itemName').value.trim();
-        const itemQty = document.getElementById('itemQty').value.trim(); 
+        const itemQty = document.getElementById('itemQty').value.trim();
 
         if (!itemCode || !itemName || !itemQty || parseInt(itemQty) <= 0) {
             swal({
@@ -202,7 +185,6 @@ $('#department_id').on('change', function () {
         document.getElementById('itemCode').value = '';
         document.getElementById('itemName').value = '';
         document.getElementById('itemQty').value = '';
-        document.getElementById('available_qty').value = '0';
         document.getElementById('itemCode').focus();
 
     });
@@ -213,16 +195,16 @@ $('#department_id').on('change', function () {
             document.getElementById('add_item').click(); // Trigger the same logic
         }
     });
- 
-   
 
-   
+
+
+
     $('#create').on('click', function () {
-     
+
         const departmentId = $('#department_id').val();
         const adjustmentType = $('input[name="adjustment_type"]:checked').val();
         const specialInstructions = $('#special_instructions').val();
- 
+
         const hasItems = $('#itemTable tbody tr:not(#noItemRow)').length > 0;
 
         if (!departmentId || !adjustmentType || !hasItems) {
@@ -235,7 +217,16 @@ $('#department_id').on('change', function () {
             });
             return;
         }
-
+        if (!specialInstructions) {
+            swal({
+                title: "Error!",
+                text: "Please enter special instructions.",
+                type: 'error',
+                timer: 2500,
+                showConfirmButton: false
+            });
+            return;
+        }
         const formData = new FormData();
         formData.append('action', 'create_stock_adjustment');
         formData.append('department_id', departmentId);

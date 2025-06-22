@@ -16,6 +16,7 @@ class ItemMaster
     public $list_price;
     public $stock_type;
     public $note;
+    public $discount;
     public $is_active;
 
     public function __construct($id = null)
@@ -39,6 +40,7 @@ class ItemMaster
                 $this->re_order_qty = $result['re_order_qty'];
                 $this->stock_type = $result['stock_type'];
                 $this->note = $result['note'];
+                $this->discount = $result['discount'];
                 $this->is_active = $result['is_active'];
             }
         }
@@ -47,12 +49,12 @@ class ItemMaster
     public function create()
     {
         $query = "INSERT INTO `item_master` (
-    `code`, `name`, `brand`, `size`, `pattern`, `group`, `category`,`list_price`,
-     `re_order_level`, `re_order_qty`, `stock_type`, `note`, `is_active`
+    `code`, `name`, `brand`, `size`, `pattern`, `group`, `category`, 
+     `re_order_level`, `re_order_qty`, `stock_type`, `note`,`list_price`,`discount`, `is_active`
 ) VALUES (
     '$this->code', '$this->name', '$this->brand', '$this->size', '$this->pattern', '$this->group',
-    '$this->category', '$this->list_price','$this->re_order_level', '$this->re_order_qty',
-     '$this->stock_type', '$this->note', '$this->is_active'
+    '$this->category',  '$this->re_order_level', '$this->re_order_qty',
+     '$this->stock_type', '$this->note', '$this->list_price', '$this->discount', '$this->is_active'
 )";
 
 
@@ -81,7 +83,8 @@ class ItemMaster
             `re_order_level` = '$this->re_order_level', 
             `re_order_qty` = '$this->re_order_qty', 
             `stock_type` = '$this->stock_type', 
-            `note` = '$this->note', 
+            `note` = '$this->note',
+             `discount` = '$this->discount', 
             `is_active` = '$this->is_active'
             WHERE `id` = '$this->id'";
 
@@ -189,6 +192,14 @@ class ItemMaster
                 // ARN
                 $arnData = new ArnMaster($stockRow['arn_id']);
                 $row['stock_tmp'][$key]['arn_no'] = $arnData ? $arnData->arn_no : null;
+
+                if (!$arnData || $arnData->is_cancelled == 1) {
+                    unset($row['stock_tmp'][$key]);
+                    continue;
+                }
+                usort($row['stock_tmp'], function ($a, $b) {
+                    return strtotime($a['created_at']) - strtotime($b['created_at']);
+                });
 
                 // Department
                 $DEPARTMENT_MASTER = new DepartmentMaster($stockRow['department_id']);
@@ -298,6 +309,7 @@ class ItemMaster
                 "category_id" => $row['category'],
                 "category" => $CATEGORY->name,
                 "list_price" => $row['list_price'],
+                "discount" => $row['discount'],
                 "stock_type" => $row['stock_type'],
                 "note" => $row['note'],
                 "status" => $row['is_active'],
