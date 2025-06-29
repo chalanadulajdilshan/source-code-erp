@@ -41,8 +41,21 @@ if (isset($_POST['create'])) {
             }
         }
 
-        echo json_encode(["status" => "success"]);
-        exit();
+        if ($dag_id) {
+            echo json_encode([
+                'status' => 'success',
+                'id' => $dag_id // Return the newly created ID
+            ]);
+        } else {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Failed to create DAG.'
+            ]);
+        }
+        exit;
+
+
+
     } else {
         echo json_encode(["status" => "error"]);
         exit();

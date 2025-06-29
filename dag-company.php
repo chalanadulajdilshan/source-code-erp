@@ -15,7 +15,7 @@ $company_id = 'DC00' . $lastId + 1;
 <head>
 
     <meta charset="utf-8" />
-    <title>DAG Company | <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
+    <title>Dag Company | <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="<?php echo $COMPANY_PROFILE_DETAILS->name ?>" name="author" />
@@ -62,6 +62,8 @@ $company_id = 'DC00' . $lastId + 1;
                                     <i class="uil uil-trash-alt me-1"></i> Delete
                                 </a>
                             <?php endif; ?>
+
+
 
                         </div>
 
@@ -214,7 +216,7 @@ $company_id = 'DC00' . $lastId + 1;
                                         <th>Phone Number</th>
                                         <th>Email</th>
                                         <th>Is Active</th>
-                                        <th>Remark</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
 
@@ -249,7 +251,15 @@ $company_id = 'DC00' . $lastId + 1;
                                                     <span class="badge bg-soft-danger font-size-12">Inactive</span>
                                                 <?php endif; ?>
                                             </td>
-                                            <td><?php echo htmlspecialchars($dag['remark']); ?></td>
+                                            <td>
+                                                <a
+                                                    href="dag-view-company-vise.php?page_id=53&id= <?php echo $dag['id']; ?>">
+
+                                                    <div class="badge bg-pill bg-soft-success font-size-14"><i
+                                                            class="fas fa-eye p-1"></i></div>
+                                                </a>
+
+                                            </td>
                                         </tr>
 
                                     <?php } ?>

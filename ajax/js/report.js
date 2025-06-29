@@ -49,7 +49,7 @@ jQuery(document).ready(function () {
                         <td>${item.code} - ${item.name}</td> 
                         <td>${item.note}</td>
                         <td>${item.total_available_qty}</td>
-                  <td><strong class="text-danger">${Number(item.list_price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 24 })}</strong></td>
+                        <td><strong class="text-danger">${Number(item.list_price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 24 })}</strong></td>
 
 
                         <td>${item.brand}</td>

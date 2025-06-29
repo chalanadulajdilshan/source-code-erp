@@ -123,5 +123,22 @@ class Dag
         $result = mysqli_fetch_array($db->readQuery($query));
         return $result ? $result['id'] : null;
     }
+
+
+    public function getByCompany($companyId)
+    {
+        $query = "SELECT * FROM `dag` WHERE `dag_company_id` = {$companyId} ORDER BY `received_date` DESC";
+        $db = new Database();
+        $result = $db->readQuery($query);
+
+        $array_res = array();
+        while ($row = mysqli_fetch_array($result)) {
+            array_push($array_res, $row);
+        }
+
+        return $array_res;
+    }
+
+
 }
 ?>

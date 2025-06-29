@@ -270,7 +270,7 @@ jQuery(document).ready(function () {
         });
 
         if (isDuplicate) {
-           swal({
+            swal({
                 title: "Duplicate Item!",
                 text: `Item "${code}" is already added.`,
                 type: 'warning',

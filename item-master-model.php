@@ -120,8 +120,8 @@
                                         <th>All Qty</th>
                                         <th>Group</th>
                                         <th>Brand</th>
+                                        <th>List Price</th>
                                         <th>Category</th>
-                                        <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>

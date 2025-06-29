@@ -1,835 +1,1084 @@
+.
 <?php
 
+session_start();
 
-if ($_GET["Command"] == "proces") {
+////////////////////////////////////////////// Database Connector /////////////////////////////////////////////////////////////
+require_once("config.inc.php");
+require_once("DBConnector.php");
+$db = new DBConnector();
 
-    include('connection.php');
+////////////////////////////////////////////// Write XML ////////////////////////////////////////////////////////////////////
+header('Content-Type: text/xml');
 
-    $ResponseXML = "";
-    $ResponseXML .= "<salesdetails>";
+$MSHFlexGrid1 = array(array());
+$MSHFlexGrid1_count = 0;
+$gridchk = array(array());
+
+
+if ($_GET["Command"] == "view") {
+    //if ($_SESSION['company']=="THT"){
+    //  calrepo2014();
+    //} else    if ($_SESSION['company']=="BEN"){
+    calrepo();
+    //} 
+}
+
+function calrepo()
+{
+
+    require_once("config.inc.php");
+    require_once("DBConnector.php");
+    $db = new DBConnector();
+
+    $rs = "delete from monsales where user_id='" . $_SESSION["CURRENT_USER"] . "'";
+    $result = $db->RunQuery($rs);
 
     $year = substr($_GET["DTPicker1"], 0, 4);
     $month = substr($_GET["DTPicker1"], 5, 2);
 
-    $sql_rs = "select * from vatrate where  sdate <='" . trim($_GET["DTPicker1"]) . "' order by sdate desc";
-    //    $sql_rs = "select * from vatrate where month(sdate)<='" . trim($month) . "' and  year(sdate)<='" . trim($year) . "' order by sdate desc";
-    $result_rs = $db->RunQuery($sql_rs);
-    if ($row_rs = mysql_fetch_array($result_rs)) {
-        $txtvat_new = $row_rs['vatrate'];
-        $txtvat = $row_rs['vatrate'];
-        $txt_vat = $row_rs['vatrate'];
-    }
-    if ($_GET['monthwise'] == "nch") {
-        $sql_rssslma .= "select * from s_salma where Accname != 'NON STOCK' and  month(sdate1)='" . intval(date("m", strtotime($_GET["DTPicker1"]))) . "' and  year(sdate1)='" . date("Y", strtotime($_GET["DTPicker1"])) . "' and C_CODE = '" . trim($_GET["txt_cuscode"]) . "'  and CANCELL='0'";
-    } else {
-        $sql_rssslma .= "select * from s_salma where Accname != 'NON STOCK' and  ((month(sdate1)='" . intval(date("m", strtotime($_GET["DTPicker1"]))) . "' and  year(sdate1)='" . date("Y", strtotime($_GET["DTPicker1"])) . "') or (month(sdate1)='" . intval(date("m", strtotime($_GET["DTPicker2"]))) . "' and  year(sdate1)='" . date("Y", strtotime($_GET["DTPicker2"])) . "')) and C_CODE = '" . trim($_GET["txt_cuscode"]) . "' and  CANCELL='0'";
-    }
+    $sql_tmp = "select * from monsales";
 
-
-
-    // ================prawee 25.06.08
-    $brand1 = $_GET["cmbtype"];
-    $sql_333 = "Select * from intper_goodyear where sdate <= '" . $_GET["DTPicker1"] . "'  and brand='" . $_GET["cmbtype"] . "' order by traget desc ";
-    $result_333 = mysql_query($sql_333, $dbinv);
-    if ($row_333 = mysql_fetch_array($result_333)) {
-        $brand1 = $row_333['brand'];
-        $brand2 = $row_333['brand1'];
-        $brand3 = $row_333['brand2'];
-        $brand4 = $row_333['brand3'];
-    }
-
-    if (($brand1 != NULL) && ($brand1 == NULL) && ($brand1 == NULL) && ($brand1 == NULL)) {
-        $sql_rssslma .= " and Brand = '" . $brand1 . "' ";
-    } else if (($brand1 != NULL) && ($brand1 != NULL) && ($brand1 == NULL) && ($brand1 == NULL)) {
-        $sql_rssslma .= " and (Brand = '" . $brand1 . "'  or Brand = '" . $brand2 . "' )";
-    } else if (($brand1 != NULL) && ($brand1 != NULL) && ($brand1 != NULL) && ($brand1 == NULL)) {
-        $sql_rssslma .= " and (Brand = '" . $brand1 . "'  or Brand = '" . $brand2 . "' or Brand = '" . $brand3 . "' )";
-    } else if (($brand1 != NULL) && ($brand1 != NULL) && ($brand1 != NULL) && ($brand1 != NULL)) {
-        $sql_rssslma .= " and (Brand = '" . $brand1 . "'  or Brand = '" . $brand2 . "' or Brand = '" . $brand3 . "' or Brand = '" . $brand4 . "' )";
-    }
-
-    // ===========prawee 25.06.08
-    // echo $sql_rssslma;
-//    two month 19.09.09
-
-    $TXTTOT = 0;
-    $totincen = 0;
-    $totout = 0;
-    $txttot_inc = "";
-    $ii = 1;
-
-    $result_rssslma = mysql_query($sql_rssslma, $dbinv);
-
-    $xx = $count_rssslma;
-
-    $result_rssslma = mysql_query($sql_rssslma, $dbinv);
-    while ($row_rssslma = mysql_fetch_array($result_rssslma)) {
-
-        $sql_rsbrand_mas = "select * from brand_mas where barnd_name = '" . trim($row_rssslma["Brand"]) . "'";
-
-        $sql_rsVENDOR = "select * from vendor where CODE = '" . $row_rssslma["C_CODE"] . "' ";
-
-        $result_rsVENDOR = mysql_query($sql_rsVENDOR, $dbinv);
-        $row_rsVENDOR = mysql_fetch_array($result_rsVENDOR);
-
-        if (($_GET["cmbtype"] == "GOODYEAR") or ($_GET["cmbtype"] == "MAXXIS MC TYRE")) {
-
-            if ((intval(date("m", strtotime($_GET["DTPicker1"]))) < 11) and (date("Y", strtotime($_GET["DTPicker1"])) <= 2010)) {
-
-                $result_rsbrand_mas = mysql_query($sql_rsbrand_mas, $dbinv);
-                if ($row_rsbrand_mas = mysql_fetch_array($result_rsbrand_mas)) {
-                    if ($row_rsbrand_mas["delinrate"] == 0) {
-
-
-                        $TypeGrid1[$ii][1] = $row_rssslma["REF_NO"];
-                        if ((is_null($row_rssslma["deli_date"]) == false) and ($row_rssslma["deli_date"] != "0000-00-00")) {
-                            $TypeGrid1[$ii][2] = $row_rssslma["deli_date"];
-                            $mdate = $row_rssslma["deli_date"];
-                        } else {
-                            $TypeGrid1[$ii][2] = $row_rssslma["sdate1"];
-                            $mdate = $row_rssslma["sdate1"];
-                        }
-                        $TypeGrid1[$ii][3] = $row_rssslma["GRAND_TOT"];
-                        $TypeGrid1[$ii][4] = $row_rssslma["TOTPAY"];
-                        $TypeGrid1[$ii][5] = $row_rssslma["Brand"];
-
-
-
-                        if ($row_rssslma["GRAND_TOT"] > $row_rssslma["TOTPAY"]) {
-                            $totout = $totout + ($row_rssslma["GRAND_TOT"] - $row_rssslma["TOTPAY"]);
-                        } else {
-                            $totout = $totout + 0;
-                        }
-
-                        $sql_rssttr = "select * from s_sttr where ST_INVONO = '" . trim($row_rssslma["REF_NO"]) . "'";
-
-                        $result_rssttr = mysql_query($sql_rssttr, $dbinv);
-
-                        while ($row_rssttr = mysql_fetch_array($result_rssttr)) {
-
-                            $TypeGrid1[$ii][0] = $row_rssttr["ID"];
-                            $TypeGrid1[$ii][6] = $row_rssttr["ST_REFNO"];
-                            $TypeGrid1[$ii][7] = $row_rssttr["ST_DATE"];
-
-                            if ((is_null($row_rssttr["st_chdate"]) == false) and ($row_rssttr["st_chdate"] != "0000-00-00")) {
-                                $TypeGrid1[$ii][7] = $row_rssttr["st_chdate"];
-
-                                $diff = abs(strtotime($row_rssttr["st_chdate"]) - strtotime($mdate));
-                                $days = dateDifference($row_rssttr["st_chdate"], $mdate, $differenceFormat = '%a');
-                                $days = floor($diff / (60 * 60 * 24));
-                                $TypeGrid1[$ii][9] = $days;
-                            } else {
-                                $TypeGrid1[$ii][7] = $row_rssttr["ST_DATE"];
-
-                                $diff = abs(strtotime($row_rssttr["ST_DATE"]) - strtotime($mdate));
-                                $days = dateDifference($row_rssttr["ST_DATE"], $mdate, $differenceFormat = '%a');
-                                $days = floor($diff / (60 * 60 * 24));
-                                $TypeGrid1[$ii][9] = $days;
-                            }
-                            if (is_null($row_rsVENDOR["incdays"]) == false) {
-                                $TypeGrid1[$ii][10] = $row_rsVENDOR["incdays"];
-                            }
-                            $TypeGrid1[$ii][8] = $row_rssttr["ST_PAID"];
-
-                            if ($row_rssttr["deliin_amo"] > 0) {
-                                if ((is_null($row_rssttr["deliin_days"]) == false) and ($row_rssttr["deliin_days"] != "0000-00-00")) {
-                                    $TypeGrid1[$ii][10] = $row_rssttr["deliin_days"];
-                                }
-                            }
-
-                            if ($TypeGrid1[$ii][9] <= $TypeGrid1[$ii][10]) {
-                                $TypeGrid1[$ii][12] = ($row_rssttr["ST_PAID"] / 100 * $_GET["txt_percentage"]) / ($txt_vat + 100) * 100;
-                            } else {
-                                $TypeGrid1[$ii][12] = 0;
-                            }
-                            if (is_null($row_rssttr["deliin_amo"]) == false) {
-                                $TypeGrid1[$ii][13] = $row_rssttr["deliin_amo"];
-                                $txttot_inc = $txttot_inc + $row_rssttr["deliin_amo"];
-                            }
-                            if ($row_rssttr["deliin_lock"] == "1") {
-                                $TypeGrid1[$ii][11] = "YES";
-                            } else {
-                                $TypeGrid1[$ii][11] = "NO";
-                            }
-                            $TypeGrid1[$ii][14] = "INV";
-                            if ($TypeGrid1[$ii][9] <= $TypeGrid1[$ii][10]) {
-                                $TXTTOT = $TXTTOT + $row_rssttr["ST_PAID"];
-                            } else {
-                                $TXTTOT = $TXTTOT + 0;
-                            }
-                            $totincen = $totincen + $TypeGrid1[$ii][12];
-
-                            $ii = $ii + 1;
-                        }
-
-                    }
-                }
+    $insert = "";
+    $i = 0;
+    if ($_GET['cmbtype'] == "TYRE") {
+        if ($_GET['tardealer'] == "ch") {
+            if ($_GET['monthwise'] == "nch") {
+                $sql_rsVENDOR = "select C_CODE,SAL_EX,Brand, CUS_NAME, incdays, sum(GRAND_TOT) as tot,sum(GRAND_TOT/(1+(gst/100))) as totsal1  from  view_salma_vendor_brand where year(sdate1) = '" . date("Y", strtotime($_GET["DTPicker1"])) . "' and month(sdate1) = '" . date("m", strtotime($_GET["DTPicker1"])) . "' and CANCELL = '0' and (Brand='CHENG SHING' OR Brand='ETERNOPRESA')   and delinrate = '2.5'  and insentarget>0    ";
 
             } else {
+                $sql_rsVENDOR = "select C_CODE,SAL_EX,Brand, CUS_NAME, incdays, sum(GRAND_TOT) as tot,sum(GRAND_TOT/(1+(gst/100))) as totsal1  from  view_salma_vendor_brand where ((year(sdate1) = '" . date("Y", strtotime($_GET["DTPicker1"])) . "' and month(sdate1) = '" . date("m", strtotime($_GET["DTPicker1"])) . "') or (year(sdate1) = '" . date("Y", strtotime($_GET["DTPicker2"])) . "' and month(sdate1) = '" . date("m", strtotime($_GET["DTPicker2"])) . "')) and CANCELL = '0' and (Brand='CHENG SHING' OR Brand='ETERNOPRESA')  and delinrate = '2.5'  and insentarget>0     ";
 
-                $result_rsbrand_mas = mysql_query($sql_rsbrand_mas, $dbinv);
-                if ($row_rsbrand_mas = mysql_fetch_array($result_rsbrand_mas)) {
-
-                    $TypeGrid1[$ii][1] = $row_rssslma["REF_NO"];
-                    if ((is_null($row_rssslma["deli_date"]) == false) and ($row_rssslma["deli_date"] != "0000-00-00")) {
-                        $TypeGrid1[$ii][2] = $row_rssslma["deli_date"];
-                        $mdate = $row_rssslma["deli_date"];
-                    } else {
-                        $TypeGrid1[$ii][2] = $row_rssslma["sdate1"];
-                        $mdate = $row_rssslma["sdate1"];
-                    }
-                    $TypeGrid1[$ii][3] = $row_rssslma["GRAND_TOT"];
-                    $TypeGrid1[$ii][4] = $row_rssslma["TOTPAY"];
-                    $TypeGrid1[$ii][5] = $row_rssslma["Brand"];
-
-
-                    if ($row_rssslma["GRAND_TOT"] > $row_rssslma["TOTPAY"]) {
-                        $totout = $totout + ($row_rssslma["GRAND_TOT"] - $row_rssslma["TOTPAY"]);
-                    } else {
-                        $totout = $totout + 0;
-                    }
-
-
-                    $sql_rssttr = "select * from s_sttr where ST_INVONO = '" . trim($row_rssslma["REF_NO"]) . "'";
-
-                    $result_rssttr = mysql_query($sql_rssttr, $dbinv);
-                    while ($row_rssttr = mysql_fetch_array($result_rssttr)) {
-
-
-                        $TypeGrid1[$ii][0] = $row_rssttr["ID"];
-
-                        $TypeGrid1[$ii][6] = $row_rssttr["ST_REFNO"];
-                        $TypeGrid1[$ii][7] = $row_rssttr["ST_DATE"];
-                        if ((is_null($row_rssttr["st_chdate"]) == false) and ($row_rssttr["st_chdate"] != "0000-00-00")) {
-                            $TypeGrid1[$ii][7] = $row_rssttr["st_chdate"];
-
-
-                            $diff = abs(strtotime($row_rssttr["st_chdate"]) - strtotime($mdate));
-                            $days = dateDifference($row_rssttr["st_chdate"], $mdate, $differenceFormat = '%a');
-                            $days = floor($diff / (60 * 60 * 24));
-                            $TypeGrid1[$ii][9] = $days;
-                        } else {
-                            $TypeGrid1[$ii][7] = $row_rssttr["ST_DATE"];
-
-                            $diff = abs(strtotime($row_rssttr["ST_DATE"]) - strtotime($mdate));
-                            $days = dateDifference($row_rssttr["ST_DATE"], $mdate, $differenceFormat = '%a');
-                            $days = floor($diff / (60 * 60 * 24));
-                            $TypeGrid1[$ii][9] = $days;
-                        }
-
-                        // pppp
-                        // $mdcou = $row_rsVENDOR["incdays"];
-
-
-                        // $sqldays = "select * from br_trn where brand ='" . $row_rsbrand_mas["class"] . "' and cus_code = '" . $_GET["txt_cuscode"] . "' and Rep='" . $row_rssslma["SAL_EX"] . "' order by days desc";
-                        // $result_days = mysql_query($sqldays, $dbinv);
-                        // if ($row_days = mysql_fetch_array($result_days)) {
-                        //     $mdcou = $row_days['days'];
-                        // }
-
-                        // $TypeGrid1[$ii][10] = $mdcou;
-
-                        if ($row_rssslma["cre_pe"] != "") {
-                            $TypeGrid1[$ii][10] = $row_rssslma["cre_pe"];
-                        } else {
-                            $TypeGrid1[$ii][10] = $row_rsVENDOR["incdays"];
-                        }
-
-                        //ppppppppppppppppppppp
-                        $TypeGrid1[$ii][8] = $row_rssttr["ST_PAID"];
-
-                        if ($row_rssttr["deliin_amo"] > 0) {
-                            if ((is_null($row_rssttr["deliin_days"]) == false) and ($row_rssttr["deliin_days"] != "0000-00-00")) {
-                                $TypeGrid1[$ii][10] = $row_rssttr["deliin_days"];
-                            }
-                        }
-                        if ($TypeGrid1[$ii][9] <= $TypeGrid1[$ii][10]) {
-                            $TypeGrid1[$ii][12] = ($row_rssttr["ST_PAID"] / 100 * $_GET["txt_percentage"]) / ($txt_vat + 100) * 100;
-                        } else {
-                            $TypeGrid1[$ii][12] = 0;
-                        }
-                        if (is_null($row_rssttr["deliin_amo"]) == false) {
-                            $TypeGrid1[$ii][13] = $row_rssttr["deliin_amo"];
-                            $txttot_inc = $txttot_inc + $row_rssttr["deliin_amo"];
-                        }
-                        if ($row_rssttr["deliin_lock"] == "1") {
-                            $TypeGrid1[$ii][11] = "YES";
-                        } else {
-                            $TypeGrid1[$ii][11] = "NO";
-                        }
-                        $sql_rstype = "Select * from view_inv_item where REF_NO = '" . $row_rssslma["REF_NO"] . "' order by id";
-                        $result_rstype = mysql_query($sql_rstype, $dbinv);
-                        $row_rstype = mysql_fetch_array($result_rstype);
-                        if (trim($row_rstype["type"]) == "TBR") {
-                            $TypeGrid1[$ii][14] = "INV - TBR";
-                        } else {
-                            if (trim($row_rstype["type"]) == "BIAS TYRES") {
-                                $TypeGrid1[$ii][14] = "INV - TBB";
-                            } else {
-                                $TypeGrid1[$ii][14] = "INV";
-                            }
-                        }
-
-                        $TypeGrid1[$ii][15] = $row_rssslma["GST"];
-                        $TypeGrid1[$ii][16] = $row_rssslma["sdate1"];
-                        if ($TypeGrid1[$ii][9] <= $TypeGrid1[$ii][10]) {
-                            $TXTTOT = $TXTTOT + $row_rssttr["ST_PAID"];
-                        } else {
-                            $TXTTOT = $TXTTOT + 0;
-                        }
-                        $totincen = $totincen + $TypeGrid1[$ii][12];
-
-                        $ii = $ii + 1;
-                    }
-                    //                        }
-//                    }pppppppppppppppppppppppppppppppppppp
-                }
             }
+
         } else {
-            if ((intval(date("m", strtotime($_GET["DTPicker1"]))) >= 1) and (date("Y", strtotime($_GET["DTPicker1"])) > 2010)) {
+            if ($_GET['monthwise'] == "nch") {
+                $sql_rsVENDOR = "select C_CODE, SAL_EX,Brand,CUS_NAME, incdays, sum(GRAND_TOT) as tot,sum(GRAND_TOT/(1+(gst/100))) as totsal1  from  view_salma_vendor_brand where year(sdate1) = '" . date("Y", strtotime($_GET["DTPicker1"])) . "' and month(sdate1) = '" . date("m", strtotime($_GET["DTPicker1"])) . "' and CANCELL = '0' and (Brand='CHENG SHING' OR Brand='ETERNOPRESA')   and delinrate = '2.5'   and insentarget=0    ";
+                // 
+            } else {
+                $sql_rsVENDOR = "select C_CODE, SAL_EX,Brand,CUS_NAME, incdays, sum(GRAND_TOT) as tot,sum(GRAND_TOT/(1+(gst/100))) as totsal1  from  view_salma_vendor_brand where ((year(sdate1) = '" . date("Y", strtotime($_GET["DTPicker1"])) . "' and month(sdate1) = '" . date("m", strtotime($_GET["DTPicker1"])) . "') or (year(sdate1) = '" . date("Y", strtotime($_GET["DTPicker2"])) . "' and month(sdate1) = '" . date("m", strtotime($_GET["DTPicker2"])) . "')) and CANCELL = '0' and (Brand='CHENG SHING' OR Brand='ETERNOPRESA')   and delinrate = '2.5'   and insentarget=0   ";
+            }
 
-                $result_rsbrand_mas = mysql_query($sql_rsbrand_mas, $dbinv);
-                if ($row_rsbrand_mas = mysql_fetch_array($result_rsbrand_mas)) {
+        }
+    } else {
+        if ($_GET['monthwise'] == "nch") {
+            $sql_rsVENDOR .= "select C_CODE, SAL_EX,CUS_NAME, incdays, sum(GRAND_TOT) as tot,sum(GRAND_TOT/(1+(gst/100))) as totsal1  from  view_salma_vendor_brand where year(sdate1) = '" . date("Y", strtotime($_GET["DTPicker1"])) . "' and month(sdate1) = '" . date("m", strtotime($_GET["DTPicker1"])) . "' and CANCELL = '0'   ";
+        } else {
+            $sql_rsVENDOR .= "select C_CODE, SAL_EX,CUS_NAME, incdays, sum(GRAND_TOT) as tot,sum(GRAND_TOT/(1+(gst/100))) as totsal1  from  view_salma_vendor_brand where ((year(sdate1) = '" . date("Y", strtotime($_GET["DTPicker1"])) . "' and month(sdate1) = '" . date("m", strtotime($_GET["DTPicker1"])) . "') or (year(sdate1) = '" . date("Y", strtotime($_GET["DTPicker2"])) . "' and month(sdate1) = '" . date("m", strtotime($_GET["DTPicker2"])) . "')) and CANCELL = '0'  ";
+        }
 
-                    if ($row_rsbrand_mas["delinrate"] == 3.5) {
-                        if ($row_rsbrand_mas["delinrate"] >= 0) {
+        // $sql_rsVENDOR .=" and brand = '" . $_GET['cmbtype'] . "' "; 
+        // ================prawee 25.06.08
+        $brand1 = $_GET["cmbtype"];
+        $sql_333 = "Select * from intper_goodyear where sdate <= '" . $_GET["DTPicker1"] . "'  and brand='" . $_GET["cmbtype"] . "' ORDER BY sdate DESC, traget DESC ";
+        $result_333 = $db->RunQuery($sql_333);
+        if ($row_333 = mysql_fetch_array($result_333)) {
+            $brand1 = $row_333['brand'];
+            $brand2 = $row_333['brand1'];
+            $brand3 = $row_333['brand2'];
+            $brand4 = $row_333['brand3'];
+        }
 
-                            $TypeGrid1[$ii][1] = $row_rssslma["REF_NO"];
-                            if ((is_null($row_rssslma["deli_date"]) == false) and ($row_rssslma["deli_date"] != "0000-00-00")) {
-                                $TypeGrid1[$ii][2] = $row_rssslma["deli_date"];
-                                $mdate = $row_rssslma["deli_date"];
+        if (($brand1 != NULL) && ($brand1 == NULL) && ($brand1 == NULL) && ($brand1 == NULL)) {
+            $sql_rsVENDOR .= " and brand = '" . $brand1 . "' ";
+        } else if (($brand1 != NULL) && ($brand1 != NULL) && ($brand1 == NULL) && ($brand1 == NULL)) {
+            $sql_rsVENDOR .= " and (brand = '" . $brand1 . "'  or brand = '" . $brand2 . "' )";
+        } else if (($brand1 != NULL) && ($brand1 != NULL) && ($brand1 != NULL) && ($brand1 == NULL)) {
+            $sql_rsVENDOR .= " and (brand = '" . $brand1 . "'  or brand = '" . $brand2 . "' or brand = '" . $brand3 . "' )";
+        } else if (($brand1 != NULL) && ($brand1 != NULL) && ($brand1 != NULL) && ($brand1 != NULL)) {
+            $sql_rsVENDOR .= " and (brand = '" . $brand1 . "'  or brand = '" . $brand2 . "' or brand = '" . $brand3 . "' or brand = '" . $brand4 . "' )";
+        }
+        // ====
+    }
+
+    $sql_rsVENDOR .= " and (C_CODE='A002' or C_CODE='M167' )";
+
+    $sql_rsVENDOR .= " group by C_CODE, incdays order by C_CODE";
+    // echo $sql_rsVENDOR;
+    $rep = trim($_GET["cmbrep"]);
+
+    $result_rsVENDOR = $db->RunQuery($sql_rsVENDOR);
+    while ($row_rsVENDOR = mysql_fetch_array($result_rsVENDOR)) {
+        if ($_GET['monthwise'] == "nch") {
+            $sql_inschk = "select * from ins_payment where cusCode='" . $row_rsVENDOR["C_CODE"] . "' and I_year='" . date("Y", strtotime($_GET["DTPicker1"])) . "' and I_month='" . intval(date("m", strtotime($_GET["DTPicker1"]))) . "' and Type = '" . $_GET['cmbtype'] . "'";
+        } else {
+            $sql_inschk = "select * from ins_payment where cusCode='" . $row_rsVENDOR["C_CODE"] . "' and ((I_year='" . date("Y", strtotime($_GET["DTPicker1"])) . "' and I_month='" . intval(date("m", strtotime($_GET["DTPicker1"]))) . "') or (I_year='" . date("Y", strtotime($_GET["DTPicker2"])) . "' and I_month='" . intval(date("m", strtotime($_GET["DTPicker2"]))) . "')) and Type = '" . $_GET['cmbtype'] . "'";
+        }
+
+        $result_inschk = $db->RunQuery($sql_inschk);
+        if ($row_inschk = mysql_fetch_array($result_inschk)) {
+
+        } else {
+
+            if ($_GET['cmbtype'] == "TYRE") {
+
+                $sql_rschper = "Select * from intper where sdate <= '" . $_GET["DTPicker1"] . "' and traget < " . $row_rsVENDOR["totsal1"] . " order by sdate desc,traget desc ";
+            } elseif (($_GET["cmbtype"] == "GOODYEAR") or ($_GET["cmbtype"] == "MAXXIS MC TYRE")) {
+
+                $sql_rschper = "Select * from intper_goodyear  where sdate <= '" . $_GET["DTPicker1"] . "' and brand='" . $_GET["cmbtype"] . "' and traget < " . $row_rsVENDOR["totsal1"] . " order by sdate desc,traget desc ";
+            } else {
+
+                //prawe new
+
+                $cal_per = 0;
+                $tot_grn1 = 0;
+                $tot_sale1 = 0;
+
+                $refDate = $_GET["DTPicker1"];
+                $Mon = date("m", strtotime($refDate));
+                $Yer = date("Y", strtotime($refDate));
+
+
+                $sql_rrRScbal .= "select sum(AMOUNT) as AMOUNT from c_bal where  month(sdate1)='" . date("m", strtotime($_GET["DTPicker1"])) . "' and  year(sdate1)='" . date("Y", strtotime($_GET["DTPicker1"])) . "' and CANCELL='0'and CUSCODE='" . $row_rsVENDOR["C_CODE"] . "' AND trn_type != 'ARN' and trn_type != 'REC' and trn_type != 'DGRN' and flag1 != '1' ";
+                //                echo $sql_rrRScbal;
+                if (($brand1 != NULL) && ($brand1 == NULL) && ($brand1 == NULL) && ($brand1 == NULL)) {
+                    $sql_rrRScbal .= " and brand = '" . $brand1 . "' ";
+                } else if (($brand1 != NULL) && ($brand1 != NULL) && ($brand1 == NULL) && ($brand1 == NULL)) {
+                    $sql_rrRScbal .= " and (brand = '" . $brand1 . "'  or brand = '" . $brand2 . "' )";
+                } else if (($brand1 != NULL) && ($brand1 != NULL) && ($brand1 != NULL) && ($brand1 == NULL)) {
+                    $sql_rrRScbal .= " and (brand = '" . $brand1 . "'  or brand = '" . $brand2 . "' or brand = '" . $brand3 . "' )";
+                } else if (($brand1 != NULL) && ($brand1 != NULL) && ($brand1 != NULL) && ($brand1 != NULL)) {
+                    $sql_rrRScbal .= " and (brand = '" . $brand1 . "'  or brand = '" . $brand2 . "' or brand = '" . $brand3 . "' or brand = '" . $brand4 . "' )";
+                }
+
+                $sql_rrRScbal .= " order by sdate1";
+                $result_re_RScbal = $db->RunQuery($sql_rrRScbal);
+                $re_RScbal = mysql_fetch_array($result_re_RScbal);
+
+                $tot_grn1 = $re_RScbal["AMOUNT"];
+
+                $sql_rrrssslma .= "select sum(GRAND_TOT) as grand_tot from s_salma where  month(sdate1)='" . date("m", strtotime($_GET["DTPicker1"])) . "' and  year(sdate1)='" . date("Y", strtotime($_GET["DTPicker1"])) . "' and c_CODE = '" . $row_rsVENDOR["C_CODE"] . "' and cancell='0'  ";
+
+                if (($brand1 != NULL) && ($brand1 == NULL) && ($brand1 == NULL) && ($brand1 == NULL)) {
+                    $sql_rrrssslma .= " and Brand = '" . $brand1 . "' ";
+                } else if (($brand1 != NULL) && ($brand1 != NULL) && ($brand1 == NULL) && ($brand1 == NULL)) {
+                    $sql_rrrssslma .= " and (Brand = '" . $brand1 . "'  or Brand = '" . $brand2 . "' )";
+                } else if (($brand1 != NULL) && ($brand1 != NULL) && ($brand1 != NULL) && ($brand1 == NULL)) {
+                    $sql_rrrssslma .= " and (Brand = '" . $brand1 . "'  or Brand = '" . $brand2 . "' or Brand = '" . $brand3 . "' )";
+                } else if (($brand1 != NULL) && ($brand1 != NULL) && ($brand1 != NULL) && ($brand1 != NULL)) {
+                    $sql_rrrssslma .= " and (Brand = '" . $brand1 . "'  or Brand = '" . $brand2 . "' or Brand = '" . $brand3 . "' or Brand = '" . $brand4 . "' )";
+                }
+
+                $result_re_rrsalma = $db->RunQuery($sql_rrrssslma);
+                $re_rrsalma = mysql_fetch_array($result_re_rrsalma);
+
+                $tot_sale1 = $re_rrsalma["grand_tot"];
+
+                //  pppppppppppppppppppp 19.08.23
+                if ($_GET["cmbtype"] == 'ZEETEX') {
+                    $mpaytot = 0;
+                    $sql_rssalma1 = "select * from view_salma_sttr where C_CODE='" . trim($row_rsVENDOR["C_CODE"]) . "' and month(sdate1)=" . date("m", strtotime($_GET["DTPicker1"])) . " and year(sdate1)=" . date("Y", strtotime($_GET["DTPicker1"])) . " and CANCELL = '0' and Brand = '" . $_GET['cmbtype'] . "'and deliin_amo <= '0' and deliin_lock = '0' order by st_days desc";
+
+                    $result_rssalma1 = $db->RunQuery($sql_rssalma1);
+                    while ($row_rssalma1 = mysql_fetch_array($result_rssalma1)) {
+                        $days1 = 0;
+                        $diff1 = 0;
+                        if ((!is_null($row_rssalma1['Deli_date'])) and $row_rssalma1['Deli_date'] != "0000-00-00") {
+                            $mdate = $row_rssalma1["Deli_date"];
+                        } else {
+                            $mdate = $row_rssalma1["sdate1"];
+                        }
+                        if ((is_null($row_rssalma1["st_chdate"]) == false) and (($row_rssalma1["st_chdate"]) != "0000-00-00")) {
+
+                            $diff1 = abs(strtotime($row_rssalma1["st_chdate"]) - strtotime($mdate));
+                            $days1 = dateDifference($row_rssalma1["st_chdate"], $mdate, $differenceFormat = '%a');
+                            $days1 = floor($diff1 / (60 * 60 * 24));
+                        } else {
+
+                            $diff1 = abs(strtotime($row_rssalma1["ST_DATE"]) - strtotime($mdate));
+                            $days1 = dateDifference($row_rssalma1["ST_DATE"], $mdate, $differenceFormat = '%a');
+                            $days1 = floor($diff / (60 * 60 * 24));
+                        }
+
+                        //                                            
+
+
+                        if ($row_rssalma1["cre_pe"] != "") {
+                            $mdcou1 = $row_rssalma1["cre_pe"];
+                        }
+
+                        if ($days1 <= $mdcou1) {
+
+                            $mpaytot = $mpaytot + ($row_rssalma1['ST_PAID'] / (1 + ($row_rssalma1['GST'] / 100)));
+                        }
+                    }
+                    $mpaytot = $mpaytot * 108 / 100;
+                }
+                //                pppppppppppppppppppp  19.08.23
+
+                $cal_per = ($mpaytot - $tot_grn1) / ($tot_sale1 - $tot_grn1);
+
+                $refDate = $_GET["DTPicker1"];
+                $Mon = date("m", strtotime($refDate));
+                $Yer = date("Y", strtotime($refDate));
+
+                $sql_inv .= "Select sum(Qty) as totQty from viewinv where  Cus_CODE = '" . trim($row_rsVENDOR["C_CODE"]) . "'  and month(sdate1) = '" . $Mon . "' and year(sdate1) = '" . $Yer . "' and cancel_m = '0' and stk_no <> 'A0350' and stk_no <> 'A0351' and stk_no <> 'A0352' and stk_no <> 'A0353' and stk_no <> 'A0354' and stk_no <> 'L0531' AND stk_no <> 'T3520' AND stk_no <> 'T3522' and stk_no <> 'A0356' and price <> 0 ";
+
+                if (($brand1 != NULL) && ($brand1 == NULL) && ($brand1 == NULL) && ($brand1 == NULL)) {
+                    $sql_inv .= " and brand = '" . $brand1 . "' ";
+                } else if (($brand1 != NULL) && ($brand1 != NULL) && ($brand1 == NULL) && ($brand1 == NULL)) {
+                    $sql_inv .= " and (brand = '" . $brand1 . "'  or brand = '" . $brand2 . "' )";
+                } else if (($brand1 != NULL) && ($brand1 != NULL) && ($brand1 != NULL) && ($brand1 == NULL)) {
+                    $sql_inv .= " and (brand = '" . $brand1 . "'  or brand = '" . $brand2 . "' or brand = '" . $brand3 . "' )";
+                } else if (($brand1 != NULL) && ($brand1 != NULL) && ($brand1 != NULL) && ($brand1 != NULL)) {
+                    $sql_inv .= " and (brand = '" . $brand1 . "'  or brand = '" . $brand2 . "' or brand = '" . $brand3 . "' or brand = '" . $brand4 . "' )";
+                }
+
+
+                $sql_grn .= " Select sum(Qty) as totQty from viewcrntrn where  C_CODE = '" . trim($row_rsVENDOR["C_CODE"]) . "'  and month(sdate1) = '" . $Mon . "' and year(sdate1) = '" . $Yer . "' and cancell = '0' and stk_no <> 'A0350' and stk_no <> 'A0351' and stk_no <> 'A0352' and stk_no <> 'A0353' and stk_no <> 'A0354' and stk_no <> 'L0531' AND stk_no <> 'T3520' AND stk_no <> 'T3522' and stk_no <> 'A0356' ";
+
+                if (($brand1 != NULL) && ($brand1 == NULL) && ($brand1 == NULL) && ($brand1 == NULL)) {
+                    $sql_grn .= " and brand = '" . $brand1 . "' ";
+                } else if (($brand1 != NULL) && ($brand1 != NULL) && ($brand1 == NULL) && ($brand1 == NULL)) {
+                    $sql_grn .= " and (brand = '" . $brand1 . "'  or brand = '" . $brand2 . "' )";
+                } else if (($brand1 != NULL) && ($brand1 != NULL) && ($brand1 != NULL) && ($brand1 == NULL)) {
+                    $sql_grn .= " and (brand = '" . $brand1 . "'  or brand = '" . $brand2 . "' or brand = '" . $brand3 . "' )";
+                } else if (($brand1 != NULL) && ($brand1 != NULL) && ($brand1 != NULL) && ($brand1 != NULL)) {
+                    $sql_grn .= " and (brand = '" . $brand1 . "'  or brand = '" . $brand2 . "' or brand = '" . $brand3 . "' or brand = '" . $brand4 . "' )";
+                }
+
+
+
+                $invqty = 0;
+                $rtnqty = 0;
+                $netqty = 0;
+                $res_inv = $db->RunQuery($sql_inv);
+                if ($row_inv = mysql_fetch_array($res_inv)) {
+                    if (!is_null($row_inv['totQty'])) {
+                        $invqty = $row_inv['totQty'];
+                    }
+                }
+                $res_grn = $db->RunQuery($sql_grn);
+                if ($row_grn = mysql_fetch_array($res_grn)) {
+                    if (!is_null($row_grn['totQty'])) {
+                        $rtnqty = $row_grn['totQty'];
+                    }
+                }
+
+                $netqty = $invqty - $rtnqty;
+                if ($_GET["cmbtype"] == 'ZEETEX') {
+                    $netqty = number_format($netqty * $cal_per, 0, ".", ",");
+                }
+                $month = date("Y-m-t", strtotime($refDate));
+
+
+
+
+                $sql_rschper = "Select * from intper_1 where (sdate)<='" . trim($month) . "' and m_type = '" . trim($_GET["cmbtype"]) . "' and qty_tgt <= '" . $netqty . "' order by sdate desc,qty_tgt desc ";
+                //                echo $netqty.'/';
+            }
+
+
+
+            $result_rschper = $db->RunQuery($sql_rschper);
+            if ($row_rschper = mysql_fetch_array($result_rschper)) {
+                if ($_GET["cmbrep"] == "All") {
+                    if ($_GET['cmbtype'] == "TYRE") {
+                        if ($_GET['monthwise'] == "nch") {
+                            $sql_rssalma = "select * from view_salma_sttr where C_CODE='" . trim($row_rsVENDOR["C_CODE"]) . "' and month(sdate1)=" . date("m", strtotime($_GET["DTPicker1"])) . " and year(sdate1)=" . date("Y", strtotime($_GET["DTPicker1"])) . " and CANCELL = '0' and (Brand='CHENG SHING' OR Brand='ETERNOPRESA') and deliin_amo <= '0' and deliin_lock = '0' order by st_days desc";
+                        } else {
+                            $sql_rssalma = "select * from view_salma_sttr where C_CODE='" . trim($row_rsVENDOR["C_CODE"]) . "' and ((year(sdate1) = '" . date("Y", strtotime($_GET["DTPicker1"])) . "' and month(sdate1) = '" . date("m", strtotime($_GET["DTPicker1"])) . "') or (year(sdate1) = '" . date("Y", strtotime($_GET["DTPicker2"])) . "' and month(sdate1) = '" . date("m", strtotime($_GET["DTPicker2"])) . "') ) and CANCELL = '0' and (Brand='CHENG SHING' OR Brand='ETERNOPRESA') and deliin_amo <= '0' and deliin_lock = '0' order by st_days desc";
+                        }
+
+                    } else {
+                        if ($_GET['monthwise'] == "nch") {
+                            $sql_rssalma .= "select * from view_salma_sttr where C_CODE='" . trim($row_rsVENDOR["C_CODE"]) . "' and month(sdate1)=" . date("m", strtotime($_GET["DTPicker1"])) . " and year(sdate1)=" . date("Y", strtotime($_GET["DTPicker1"])) . " and CANCELL = '0' and deliin_amo <= '0' and deliin_lock = '0' ";
+                        } else {
+                            $sql_rssalma .= "select * from view_salma_sttr where C_CODE='" . trim($row_rsVENDOR["C_CODE"]) . "' and ((year(sdate1) = '" . date("Y", strtotime($_GET["DTPicker1"])) . "' and month(sdate1) = '" . date("m", strtotime($_GET["DTPicker1"])) . "') or (year(sdate1) = '" . date("Y", strtotime($_GET["DTPicker2"])) . "' and month(sdate1) = '" . date("m", strtotime($_GET["DTPicker2"])) . "') ) and CANCELL = '0' and deliin_amo <= '0' and deliin_lock = '0' ";
+                        }
+
+                        // ================prawee 25.06.08
+
+
+                        if (($brand1 != NULL) && ($brand1 == NULL) && ($brand1 == NULL) && ($brand1 == NULL)) {
+                            $sql_rssalma .= " and Brand = '" . $brand1 . "' ";
+                        } else if (($brand1 != NULL) && ($brand1 != NULL) && ($brand1 == NULL) && ($brand1 == NULL)) {
+                            $sql_rssalma .= " and (Brand = '" . $brand1 . "'  or Brand = '" . $brand2 . "' )";
+                        } else if (($brand1 != NULL) && ($brand1 != NULL) && ($brand1 != NULL) && ($brand1 == NULL)) {
+                            $sql_rssalma .= " and (Brand = '" . $brand1 . "'  or Brand = '" . $brand2 . "' or Brand = '" . $brand3 . "' )";
+                        } else if (($brand1 != NULL) && ($brand1 != NULL) && ($brand1 != NULL) && ($brand1 != NULL)) {
+                            $sql_rssalma .= " and (Brand = '" . $brand1 . "'  or Brand = '" . $brand2 . "' or Brand = '" . $brand3 . "' or Brand = '" . $brand4 . "' )";
+                        }
+
+                        $sql_rssalma .= "  order by st_days desc";
+                        // ====
+                    }
+
+
+                    if ($_GET['cmbtype'] == "TYRE") {
+                        if ($_GET['monthwise'] == "nch") {
+                            $sql_rs = "select    sum(GRAND_TOT) as totsal, sum(GRAND_TOT-TOTPAY) as  out1 ,Brand from s_salma where Accname != 'NON STOCK' and month(sdate1)=" . date("m", strtotime($_GET["DTPicker1"])) . " and year(sdate1)=" . date("Y", strtotime($_GET["DTPicker1"])) . "  and C_CODE='" . trim($row_rsVENDOR["C_CODE"]) . "' and CANCELL = '0' and Brand = 'CHENG SHING'";
+                        } else {
+                            $sql_rs = "select    sum(GRAND_TOT) as totsal, sum(GRAND_TOT-TOTPAY) as  out1 ,Brand from s_salma where Accname != 'NON STOCK' and ((year(sdate1) = '" . date("Y", strtotime($_GET["DTPicker1"])) . "' and month(sdate1) = '" . date("m", strtotime($_GET["DTPicker1"])) . "') or (year(sdate1) = '" . date("Y", strtotime($_GET["DTPicker2"])) . "' and month(sdate1) = '" . date("m", strtotime($_GET["DTPicker2"])) . "') )  and C_CODE='" . trim($row_rsVENDOR["C_CODE"]) . "' and CANCELL = '0' and Brand = 'CHENG SHING'";
+                        }
+
+                    } else {
+                        if ($_GET['monthwise'] == "nch") {
+                            $sql_rs .= "select    sum(GRAND_TOT) as totsal, sum(GRAND_TOT-TOTPAY) as  out1 ,Brand from s_salma where Accname != 'NON STOCK' and month(sdate1)=" . date("m", strtotime($_GET["DTPicker1"])) . " and year(sdate1)=" . date("Y", strtotime($_GET["DTPicker1"])) . "  and C_CODE='" . trim($row_rsVENDOR["C_CODE"]) . "' and CANCELL = '0'  ";
+                        } else {
+                            $sql_rs .= "select    sum(GRAND_TOT) as totsal, sum(GRAND_TOT-TOTPAY) as  out1 ,Brand from s_salma where Accname != 'NON STOCK' and ((year(sdate1) = '" . date("Y", strtotime($_GET["DTPicker1"])) . "' and month(sdate1) = '" . date("m", strtotime($_GET["DTPicker1"])) . "') or (year(sdate1) = '" . date("Y", strtotime($_GET["DTPicker2"])) . "' and month(sdate1) = '" . date("m", strtotime($_GET["DTPicker2"])) . "') )  and C_CODE='" . trim($row_rsVENDOR["C_CODE"]) . "' and CANCELL = '0'  ";
+                        }
+
+                        if (($brand1 != NULL) && ($brand1 == NULL) && ($brand1 == NULL) && ($brand1 == NULL)) {
+                            $sql_rs .= " and Brand = '" . $brand1 . "' ";
+                        } else if (($brand1 != NULL) && ($brand1 != NULL) && ($brand1 == NULL) && ($brand1 == NULL)) {
+                            $sql_rs .= " and (Brand = '" . $brand1 . "'  or Brand = '" . $brand2 . "' )";
+                        } else if (($brand1 != NULL) && ($brand1 != NULL) && ($brand1 != NULL) && ($brand1 == NULL)) {
+                            $sql_rs .= " and (Brand = '" . $brand1 . "'  or Brand = '" . $brand2 . "' or Brand = '" . $brand3 . "' )";
+                        } else if (($brand1 != NULL) && ($brand1 != NULL) && ($brand1 != NULL) && ($brand1 != NULL)) {
+                            $sql_rs .= " and (Brand = '" . $brand1 . "'  or Brand = '" . $brand2 . "' or Brand = '" . $brand3 . "' or Brand = '" . $brand4 . "' )";
+                        }
+
+
+                    }
+                    if ($_GET['cmbtype'] == "TYRE") {
+                        if ($_GET['monthwise'] == "nch") {
+                            $sql_rs_sal = "Select sum(GRAND_TOT/(1+(gst/100))) as totsal1,sum(GRAND_TOT) as totsal,sum(GRAND_TOT-TOTPAY) as out1 ,Brand from view_s_salma_brand_mas where month(sdate1)=" . date("m", strtotime($_GET["DTPicker1"])) . " and year(sdate1)=" . date("Y", strtotime($_GET["DTPicker1"])) . "  and C_CODE='" . trim($row_rsVENDOR["C_CODE"]) . "' and CANCELL = '0' and delinrate = '2.5' and (Brand='CHENG SHING' OR Brand='ETERNOPRESA') ";
+                        } else {
+                            $sql_rs_sal = "Select sum(GRAND_TOT/(1+(gst/100))) as totsal1,sum(GRAND_TOT) as totsal,sum(GRAND_TOT-TOTPAY) as out1 ,Brand from view_s_salma_brand_mas where ((year(sdate1) = '" . date("Y", strtotime($_GET["DTPicker1"])) . "' and month(sdate1) = '" . date("m", strtotime($_GET["DTPicker1"])) . "') or (year(sdate1) = '" . date("Y", strtotime($_GET["DTPicker2"])) . "' and month(sdate1) = '" . date("m", strtotime($_GET["DTPicker2"])) . "') )  and C_CODE='" . trim($row_rsVENDOR["C_CODE"]) . "' and CANCELL = '0' and delinrate = '2.5' and (Brand='CHENG SHING' OR Brand='ETERNOPRESA') ";
+                        }
+
+                    } else {
+                        if ($_GET['monthwise'] == "nch") {
+                            $sql_rs_sal .= "Select sum(GRAND_TOT/(1+(gst/100))) as totsal1,sum(GRAND_TOT) as totsal,sum(GRAND_TOT-TOTPAY) as out1,Brand from view_s_salma_brand_mas where month(sdate1)=" . date("m", strtotime($_GET["DTPicker1"])) . " and year(sdate1)=" . date("Y", strtotime($_GET["DTPicker1"])) . "  and C_CODE='" . trim($row_rsVENDOR["C_CODE"]) . "' and CANCELL = '0' ";
+                        } else {
+                            $sql_rs_sal .= "Select sum(GRAND_TOT/(1+(gst/100))) as totsal1,sum(GRAND_TOT) as totsal,sum(GRAND_TOT-TOTPAY) as out1,Brand from view_s_salma_brand_mas where ((year(sdate1) = '" . date("Y", strtotime($_GET["DTPicker1"])) . "' and month(sdate1) = '" . date("m", strtotime($_GET["DTPicker1"])) . "') or (year(sdate1) = '" . date("Y", strtotime($_GET["DTPicker2"])) . "' and month(sdate1) = '" . date("m", strtotime($_GET["DTPicker2"])) . "') )  and C_CODE='" . trim($row_rsVENDOR["C_CODE"]) . "' and CANCELL = '0'  ";
+                        }
+
+                        if (($brand1 != NULL) && ($brand1 == NULL) && ($brand1 == NULL) && ($brand1 == NULL)) {
+                            $sql_rs_sal .= " and Brand = '" . $brand1 . "' ";
+                        } else if (($brand1 != NULL) && ($brand1 != NULL) && ($brand1 == NULL) && ($brand1 == NULL)) {
+                            $sql_rs_sal .= " and (Brand = '" . $brand1 . "'  or Brand = '" . $brand2 . "' )";
+                        } else if (($brand1 != NULL) && ($brand1 != NULL) && ($brand1 != NULL) && ($brand1 == NULL)) {
+                            $sql_rs_sal .= " and (Brand = '" . $brand1 . "'  or Brand = '" . $brand2 . "' or Brand = '" . $brand3 . "' )";
+                        } else if (($brand1 != NULL) && ($brand1 != NULL) && ($brand1 != NULL) && ($brand1 != NULL)) {
+                            $sql_rs_sal .= " and (Brand = '" . $brand1 . "'  or Brand = '" . $brand2 . "' or Brand = '" . $brand3 . "' or Brand = '" . $brand4 . "' )";
+                        }
+                    }
+                    $salret = 0;
+                    if ($_GET['cmbtype'] == "TYRE") {
+
+                        if ($_GET['monthwise'] == "nch") {
+                            $sql_rs1 = "select * from c_bal where month(sdate1)=" . date("m", strtotime($_GET["DTPicker1"])) . " and year(sdate1)=" . date("Y", strtotime($_GET["DTPicker1"])) . "  and CUSCODE='" . trim($row_rsVENDOR["C_CODE"]) . "' and CANCELL = '0' and (brand='CHENG SHING' OR brand='ETERNOPRESA') AND trn_type != 'ARN' and trn_type != 'REC' and trn_type != 'DGRN' and flag1 != '1' ";
+                        } else {
+                            $sql_rs1 = "select * from c_bal where ((year(sdate1) = '" . date("Y", strtotime($_GET["DTPicker1"])) . "' and month(sdate1) = '" . date("m", strtotime($_GET["DTPicker1"])) . "') or (year(sdate1) = '" . date("Y", strtotime($_GET["DTPicker2"])) . "' and month(sdate1) = '" . date("m", strtotime($_GET["DTPicker2"])) . "') ) and CUSCODE='" . trim($row_rsVENDOR["C_CODE"]) . "' and CANCELL = '0' and (brand='CHENG SHING' OR brand='ETERNOPRESA') AND trn_type != 'ARN' and trn_type != 'REC' and trn_type != 'DGRN' and flag1 != '1' ";
+                        }
+
+                    } else {
+                        if ($_GET['monthwise'] == "nch") {
+                            $sql_rs1 .= "select * from c_bal where month(sdate1)=" . date("m", strtotime($_GET["DTPicker1"])) . " and year(sdate1)=" . date("Y", strtotime($_GET["DTPicker1"])) . "  and CUSCODE='" . trim($row_rsVENDOR["C_CODE"]) . "' and CANCELL = '0'  AND trn_type != 'ARN' and trn_type != 'REC' and trn_type != 'DGRN' and flag1 != '1' ";
+                        } else {
+                            $sql_rs1 .= "select * from c_bal where ((year(sdate1) = '" . date("Y", strtotime($_GET["DTPicker1"])) . "' and month(sdate1) = '" . date("m", strtotime($_GET["DTPicker1"])) . "') or (year(sdate1) = '" . date("Y", strtotime($_GET["DTPicker2"])) . "' and month(sdate1) = '" . date("m", strtotime($_GET["DTPicker2"])) . "') )  and CUSCODE='" . trim($row_rsVENDOR["C_CODE"]) . "' and CANCELL = '0'  AND trn_type != 'ARN' and trn_type != 'REC' and trn_type != 'DGRN' and flag1 != '1' ";
+                        }
+
+                        if (($brand1 != NULL) && ($brand1 == NULL) && ($brand1 == NULL) && ($brand1 == NULL)) {
+                            $sql_rs1 .= " and brand = '" . $brand1 . "' ";
+                        } else if (($brand1 != NULL) && ($brand1 != NULL) && ($brand1 == NULL) && ($brand1 == NULL)) {
+                            $sql_rs1 .= " and (brand = '" . $brand1 . "'  or brand = '" . $brand2 . "' )";
+                        } else if (($brand1 != NULL) && ($brand1 != NULL) && ($brand1 != NULL) && ($brand1 == NULL)) {
+                            $sql_rs1 .= " and (brand = '" . $brand1 . "'  or brand = '" . $brand2 . "' or brand = '" . $brand3 . "' )";
+                        } else if (($brand1 != NULL) && ($brand1 != NULL) && ($brand1 != NULL) && ($brand1 != NULL)) {
+                            $sql_rs1 .= " and (brand = '" . $brand1 . "'  or brand = '" . $brand2 . "' or brand = '" . $brand3 . "' or brand = '" . $brand4 . "' )";
+                        }
+
+                    }
+
+
+                    $result_rs1 = $db->RunQuery($sql_rs1);
+                    while ($row_rs1 = mysql_fetch_array($result_rs1)) {
+
+                        $sql_rsbrn_mas = "select * from brand_mas where barnd_name = '" . trim($row_rs1["brand"]) . "'";
+                        $result_rsbrn_mas = $db->RunQuery($sql_rsbrn_mas);
+                        if ($row_rsbrn_mas = mysql_fetch_array($result_rsbrn_mas)) {
+                            if ($_GET['cmbtype'] == "TYRE") {
+                                if ($row_rsbrn_mas["delinrate"] == 2.5) {
+                                    $salret = $salret + ($row_rs1["AMOUNT"] / (1 + ($row_rs1['vatrate'] / 100)));
+                                }
                             } else {
-                                $TypeGrid1[$ii][2] = $row_rssslma["sdate1"];
-                                $mdate = $row_rssslma["sdate1"];
+                                // if ($row_rsbrn_mas["barnd_name"] == $_GET['cmbtype']) {
+                                $salret = $salret + ($row_rs1["AMOUNT"] / (1 + ($row_rs1['vatrate'] / 100)));
+                                // }
                             }
-                            $TypeGrid1[$ii][3] = $row_rssslma["GRAND_TOT"];
-                            $TypeGrid1[$ii][4] = $row_rssslma["TOTPAY"];
-                            $TypeGrid1[$ii][5] = $row_rssslma["Brand"];
+                        }
+                    }
+
+                    $result_rs = $db->RunQuery($sql_rs_sal);
+                    $row_rs = mysql_fetch_array($result_rs);
+
+                    if (is_null($row_rs["totsal1"]) == false) {
 
 
-                            if ($row_rssslma["GRAND_TOT"] > $row_rssslma["TOTPAY"]) {
-                                $totout = $totout + ($row_rssslma["GRAND_TOT"] - $row_rssslma["TOTPAY"]);
-                            } else {
-                                $totout = $totout + 0;
-                            }
+                        $msal = $row_rs["totsal1"]; //(1+($txtvat_new/100));
+                        $mret = $salret; // (1+($txtvat_new/100));
+
+
+                        $mpay = 0;
+                        if ($row_rs["out1"] < 50) {
+                            $color = "";
+                            // echo $sql_rssalma;
+                            $result_rssalma = $db->RunQuery($sql_rssalma);
+                            while ($row_rssalma = mysql_fetch_array($result_rssalma)) {
+
+                                if (($color != "orange") and ($color != "red")) {
+
+                                    if ($row_rssalma['ST_FLAG'] == "CHK") {
+                                        $color = "orange";
+                                        $sql_sch = "Select * from s_cheq where CR_CHNO = '" . $row_rssalma['ST_CHNO'] . "'   and CR_C_CODE = '" . $row_rssalma['C_CODE'] . "'   and CR_CHEVAL = '" . str_replace(',', '', $row_rssalma['ST_PAID']) . "' and CR_BANK = '" . $row_rssalma['st_chbank'] . "' and CR_FLAG='0'      ";
+                                        $result_sch = $db->RunQuery($sql_sch);
+                                        if ($row_sch = mysql_fetch_array($result_sch)) {
+                                            $sql_salma = "select * from s_salma where REF_NO = '" . $row_rssalma["ST_INVONO"] . "'";
+                                            $result_salma = $db->RunQuery($sql_salma);
+                                            $row_salma = mysql_fetch_array($result_salma);
+
+
+                                            $sql_chsstr = "Select sum(ST_PAID) as ST_PAID,COUNT(*) as COUNT from ch_sttr where ST_INVONO = '" . $row_sch['CR_REFNO'] . "'    ";
+                                            $result_chsttr = $db->RunQuery($sql_chsstr);
+                                            if ($row_chsttr = mysql_fetch_array($result_chsttr)) {
+
+                                                if ($row_chsttr['COUNT'] > 1) {
+                                                    $color = 'yellow';
+                                                } else {
+                                                    if ($row_chsttr['ST_PAID'] >= $row_chsttr['CR_CHEVAL']) {
+                                                        $color = 'green';
+                                                    } else {
+                                                        $color = 'red';
+                                                    }
+                                                }
+
+
+                                            } else {
+                                                $color = 'red';
+                                            }
+                                        } else {
+                                            $sql_invch = "Select * from s_invcheq where cheque_no = '" . $row_rssalma['ST_CHNO'] . "' and refno='" . $row_rssalma['ST_REFNO'] . "' and   cus_code = '" . $row_rsVENDOR['C_CODE'] . "'   and che_date='" . $row_rssalma['st_chdate'] . "' and bank = '" . $row_rssalma['st_chbank'] . "' order by che_date desc    ";
+
+                                            $result_invch = $db->RunQuery($sql_invch);
+                                            if ($row_invch = mysql_fetch_array($result_invch)) {
+                                                if (($row_invch['realizedate'] != "0000-00-00") and ($row_invch['realizedate'] != "")) {
+                                                    $color = 'green';
+                                                }
+
+                                            }
+                                        }
+                                    } else {
+                                        $color = "green";
+                                    }
 
 
 
-                            $sql_rssttr = "select * from s_sttr where ST_INVONO = '" . trim($row_rssslma["REF_NO"]) . "'";
-                            $result_rssttr = mysql_query($sql_rssttr, $dbinv);
-                            while ($row_rssttr = mysql_fetch_array($result_rssttr)) {
+                                    $sql_rs_type = "Select * from view_inv_item where REF_NO = '" . $row_rssalma["ST_INVONO"] . "' order by id";
+                                    $result_rs_type = $db->RunQuery($sql_rs_type);
+                                    $row_rs_type = mysql_fetch_array($result_rs_type);
 
-                                $TypeGrid1[$ii][0] = $row_rssttr["ID"];
+                                    $sql_rsbrn_mas = "select * from brand_mas where barnd_name = '" . trim($row_rssalma["Brand"]) . "'";
+                                    $result_rsbrn_mas = $db->RunQuery($sql_rsbrn_mas);
 
-                                $TypeGrid1[$ii][6] = $row_rssttr["ST_REFNO"];
-                                $TypeGrid1[$ii][7] = $row_rssttr["ST_DATE"];
-                                if ((is_null($row_rssttr["st_chdate"]) == false) and ($row_rssttr["st_chdate"] != "0000-00-00")) {
-                                    $TypeGrid1[$ii][7] = $row_rssttr["st_chdate"];
+                                    if ($row_rsbrn_mas = mysql_fetch_array($result_rsbrn_mas)) {
+                                        if ($_GET['cmbtype'] == "TYRE") {
+                                            if ($row_rsbrn_mas["delinrate"] == 2.5) {
+                                                $yok = "ok";
+                                            } else {
+                                                $yok = "";
+                                            }
+                                        } else {
+                                            // if ($row_rsbrn_mas["barnd_name"] == $_GET['cmbtype']) {
+                                            $yok = "ok";
+                                            // } else {
+                                            //     $yok = "";
+                                            // }
+                                        }
 
-                                    $diff = (strtotime($row_rssttr["st_chdate"]) - strtotime($mdate));
+                                        if ($yok == "ok") {
 
-                                    $days = dateDifference($row_rssttr["st_chdate"], $mdate, $differenceFormat = '%a');
-                                    $days = floor($diff / (60 * 60 * 24));
+                                            //                                         if ((trim($row_rs_type["type"]) == "TBR") or ( trim($row_rs_type["type"]) == "BIAS TYRES")) {
+//                                             $mdcou = 90;
+//                                         } else {
+//                                             $mdcou = $row_rsVENDOR["incdays"];
+// //                                            if ($_GET['cmbtype'] != "TYRE") {
+//                                             $sql = "select * from br_trn where brand ='" . $row_rsbrn_mas["class"] . "' and cus_code = '" . $row_rsVENDOR["C_CODE"] . "' and Rep='" . $row_rsVENDOR["SAL_EX"] . "' order by days desc";
+// //                                          echo $sql;
+//                                             $result_days = $db->RunQuery($sql);
+//                                             if ($row_days = mysql_fetch_array($result_days)) {
+//                                                 $mdcou = $row_days['days'];
+//                                             }
+// //                                            }
+//                                         }
 
-                                    $TypeGrid1[$ii][9] = $days;
+                                            if ($row_rssalma["cre_pe"] != "") {
+                                                $mdcou = $row_rssalma["cre_pe"];
+                                            }
+
+
+                                            if ((!is_null($row_rssalma['Deli_date'])) and $row_rssalma['Deli_date'] != "0000-00-00") {
+                                                $mdate = $row_rssalma["Deli_date"];
+                                            } else {
+                                                $mdate = $row_rssalma["sdate1"];
+                                            }
+                                            $days = 0;
+                                            $diff = 0;
+                                            if ((is_null($row_rssalma["st_chdate"]) == false) and (($row_rssalma["st_chdate"]) != "0000-00-00")) {
+
+                                                $diff = abs(strtotime($row_rssalma["st_chdate"]) - strtotime($mdate));
+                                                $days = dateDifference($row_rssalma["st_chdate"], $mdate, $differenceFormat = '%a');
+                                                $days = floor($diff / (60 * 60 * 24));
+                                            } else {
+
+                                                $diff = abs(strtotime($row_rssalma["ST_DATE"]) - strtotime($mdate));
+                                                $days = dateDifference($row_rssalma["ST_DATE"], $mdate, $differenceFormat = '%a');
+                                                $days = floor($diff / (60 * 60 * 24));
+                                            }
+
+
+
+                                            if ($days <= $mdcou) {
+
+                                                $mpay = $mpay + ($row_rssalma['ST_PAID'] / (1 + ($row_rssalma['GST'] / 100)));
+                                            }
+                                        }
+                                    }
                                 } else {
-                                    $TypeGrid1[$ii][7] = $row_rssttr["ST_DATE"];
+                                    $mpay = 0;
+                                }
+                            }
 
-                                    $diff = (strtotime($row_rssttr["ST_DATE"]) - strtotime($mdate));
-                                    $days = dateDifference($row_rssttr["ST_DATE"], $mdate, $differenceFormat = '%a');
-                                    $days = floor($diff / (60 * 60 * 24));
 
-                                    $TypeGrid1[$ii][9] = $days;
+
+
+                            //echo $mpay.'/';
+                            if (is_null($salret) == false) {
+                                $msal = $msal - $mret;
+                                $mpay = $mpay - $mret;
+                            }
+
+                            if (trim($_GET["cmbtype"]) == "TYRE") {
+                                if ($_GET['tardealer'] == "ch") {
+                                    if ($_GET['tardealer1'] == "ch") {
+                                        $sql_ch = "Select * from vendor where CODE= '" . $row_rsVENDOR["C_CODE"] . "'  and insentarget >0 ";
+                                        $result_ch = $db->RunQuery($sql_ch);
+                                        if ($row_ch = mysql_fetch_array($result_ch)) {
+                                            if ($row_ch["insentarget"] < $mpay) {
+                                                $mpay = 0;
+                                            }
+                                        }
+                                        $sql_rsper = "Select * from intper where sdate <= '" . $_GET["DTPicker1"] . "' and traget < " . $mpay . " order by sdate desc, traget desc ";
+                                    } else {
+                                        $sql_rsper = "Select * from vendor where CODE= '" . $row_rsVENDOR["C_CODE"] . "'  and insentarget >0 ";
+                                    }
+                                } else {
+                                    $sql_rsper = "Select * from intper where sdate <= '" . $_GET["DTPicker1"] . "' and traget < " . $mpay . " order by sdate desc, traget desc ";
+                                }
+                            } elseif (($_GET["cmbtype"] == "GOODYEAR") or ($_GET["cmbtype"] == "MAXXIS MC TYRE")) {
+                                $sql_rsper = "Select * from intper_goodyear where sdate <= '" . $_GET["DTPicker1"] . "' and brand='" . $_GET["cmbtype"] . "' and traget < " . $mpay . " order by sdate desc, traget desc ";
+                            } else {
+                                $month = date("Y-m-t", strtotime($refDate));
+                                $sql_rsper = "Select * from intper_1 where (sdate)<='" . trim($month) . "' and m_type = '" . trim($_GET["cmbtype"]) . "' and qty_tgt <= '" . $netqty . "' order by sdate desc,qty_tgt desc ";
+                            }
+
+                            $result_rsper = $db->RunQuery($sql_rsper);
+                            if ($row_rsper = mysql_fetch_array($result_rsper)) {
+
+                                $target_a = 0;
+                                $newinsentarget = 0;
+                                if (trim($_GET["cmbtype"]) == "TYRE") {
+                                    if ($_GET['tardealer'] == "ch") {
+                                        $newinsentarget = $row_rsper["insentarget"];
+
+                                        if ($_GET['tardealer1'] == "ch") {
+                                            $month3 = $mpay * (($row_rsper["per"] / 100));
+                                        } else {
+                                            if ($mpay >= 1575000.00) {
+                                                $txt_percentage = 6.00;
+                                                $month3 = $mpay * (($txt_percentage / 100));
+                                            } elseif ($mpay >= $newinsentarget) {
+                                                $txt_percentage = 5.00;
+                                                $month3 = $mpay * (($txt_percentage / 100));
+                                            } else {
+                                                $txt_percentage = 0.00;
+                                                $month3 = $mpay * (($txt_percentage / 100));
+                                            }
+                                        }
+                                    } else {
+                                        $month3 = $mpay * (($row_rsper["per"] / 100));
+                                    }
+                                } else {
+                                    $month3 = $mpay * (($row_rsper["per"] / 100));
                                 }
 
-                                // $TypeGrid1[$ii][10] = 75;
-
-                                if ($row_rssslma["cre_pe"] != "") {
-                                    $TypeGrid1[$ii][10] = $row_rssslma["cre_pe"];
+                                if ($_GET['monthwise'] == "nch") {
+                                    $sql_rsincen = "select * from ins_payment where  I_month ='" . intval(date("m", strtotime($_GET["DTPicker1"]))) . "'  and I_year='" . date("Y", strtotime($_GET["DTPicker1"])) . "' and cusCode = '" . trim($row_rsVENDOR["C_CODE"]) . "' and Type = '" . $_GET['cmbtype'] . "' order by id ";
+                                } else {
+                                    $sql_rsincen = "select * from ins_payment where  ((I_year='" . date("Y", strtotime($_GET["DTPicker1"])) . "' and I_month='" . intval(date("m", strtotime($_GET["DTPicker1"]))) . "') or (I_year='" . date("Y", strtotime($_GET["DTPicker2"])) . "' and I_month='" . intval(date("m", strtotime($_GET["DTPicker2"]))) . "')) and cusCode = '" . trim($row_rsVENDOR["C_CODE"]) . "' and Type = '" . $_GET['cmbtype'] . "' order by id ";
                                 }
 
-                                $TypeGrid1[$ii][8] = $row_rssttr["ST_PAID"];
+                                $result_rsincen = $db->RunQuery($sql_rsincen);
+                                if ($row_rsincen = mysql_fetch_array($result_rsincen)) {
 
-                                if ($row_rssttr["deliin_amo"] > 0) {
-                                    if ((is_null($row_rssttr["deliin_days"]) == false) and ($row_rssttr["deliin_days"] != "0000-00-00")) {
-                                        $TypeGrid1[$ii][10] = $row_rssttr["deliin_days"];
+                                    $target_a = $row_rsincen["amount"];
+                                }
+
+
+                                if ($i != 0) {
+                                    $insert = $insert . ", ";
+                                }
+
+                                $sql = "select * from vendor where code = '" . trim($row_rsVENDOR["C_CODE"]) . "'";
+                                $result_rsincen = $db->RunQuery($sql);
+                                if ($row_rsincen = mysql_fetch_array($result_rsincen)) {
+
+                                    $cus_name = $row_rsincen["NAME"];
+                                }
+
+                                $insert = $insert . "('" . trim($row_rsVENDOR["C_CODE"]) . "', '" . $cus_name . "', '" . $msal . "', '" . $mret . "', '" . $month3 . "',  '" . $mpay . "', '" . $target_a . "', '" . $_SESSION["CURRENT_USER"] . "')";
+
+                                $i = 1;
+                            }
+                        }
+                    }
+                } else {
+                    $sql_rssalma = "select * from view_salma_sttr where C_CODE='" . trim($row_rsVENDOR["C_CODE"]) . "' and month(sdate1)=" . date("m", strtotime($_GET["DTPicker1"])) . " and year(sdate1)=" . date("Y", strtotime($_GET["DTPicker1"])) . " and SAL_EX = '" . $rep . "' and CANCELL = '0' and deliin_amo <= '0' and deliin_lock = '0' order by st_days desc";
+
+                    $sql_rs = "select    sum(GRAND_TOT) as totsal, sum(GRAND_TOT-TOTPAY) as  out1 from s_salma where Accname != 'NON STOCK' and month(sdate1)=" . date("m", strtotime($_GET["DTPicker1"])) . " and year(sdate1)=" . date("Y", strtotime($_GET["DTPicker1"])) . "  and C_CODE='" . trim($row_rsVENDOR["C_CODE"]) . "' and SAL_EX = '" . $rep . "' and CANCELL = '0' ";
+
+                    $salret = 0;
+
+                    $sql_rs1 = "select * from c_bal where month(sdate1)=" . date("m", strtotime($_GET["DTPicker1"])) . " and year(sdate1)=" . date("Y", strtotime($_GET["DTPicker1"])) . "  and CUSCODE='" . trim($row_rsVENDOR["C_CODE"]) . "' and CANCELL = '0' AND SAL_EX = '" . $rep . "' and trn_type <> 'ARN' and trn_type != 'REC' and trn_type != 'DGRN' and flag1 != '1' ";
+                    $result_rs1 = $db->RunQuery($sql_rs1);
+                    while ($row_rs1 = mysql_fetch_array($result_rs1)) {
+                        //pppppp probl
+                        $sql_rsbrn_mas = "select * from brand_mas where barnd_name = '" . trim($row_rs1["brand"]) . "'";
+                        $result_rsbrn_mas = $db->RunQuery($sql_rsbrn_mas);
+                        if ($row_rsbrn_mas = mysql_fetch_array($result_rsbrn_mas)) {
+                            if ($row_rsbrn_mas["delinrate"] == 2.5) {
+                                $salret = $salret + $row_rs1["AMOUNT"];
+                            }
+                        }
+                    }
+
+                    if (is_null($row_rs["totsal"]) == false) {
+
+                        $msal = $row_rs["totsal"] / (1 + ($txtvat_new / 100));
+                        $mret = $salret / (1 + ($txtvat_new / 100));
+
+
+                        // ===
+                        $mpay = 0;
+
+                        $color = "";
+                        if ($row_rs["out1"] < 50) {
+
+                            $result_rssalma = $db->RunQuery($sql_rssalma);
+                            while ($row_rssalma = mysql_fetch_array($result_rssalma)) {
+
+                                // prawe 23.01.24
+
+                                if (($color != "orange") and ($color != "red")) {
+                                    if ($row_rssalma['ST_FLAG'] == "CHK") {
+                                        $color = "orange";
+                                        $sql_sch = "Select * from s_cheq where CR_CHNO = '" . $row_rssalma['ST_CHNO'] . "'   and CR_C_CODE = '" . $row_rssalma['C_CODE'] . "'   and CR_CHEVAL = '" . str_replace(',', '', $row_rssalma['ST_PAID']) . "' and CR_BANK = '" . $row_rssalma['st_chbank'] . "' and CR_FLAG='0'      ";
+                                        $result_sch = $db->RunQuery($sql_sch);
+                                        if ($row_sch = mysql_fetch_array($result_sch)) {
+                                            $color = 'red';
+                                        } else {
+                                            $sql_invch = "Select * from s_invcheq where cheque_no = '" . $row_rssalma['ST_CHNO'] . "' and refno='" . $row_rssalma['ST_REFNO'] . "' and   cus_code = '" . $row_rsVENDOR['C_CODE'] . "'   and che_date='" . $row_rssalma['st_chdate'] . "' and bank = '" . $row_rssalma['st_chbank'] . "' order by che_date desc    ";
+
+                                            $result_invch = $db->RunQuery($sql_invch);
+                                            if ($row_invch = mysql_fetch_array($result_invch)) {
+                                                if (($row_invch['realizedate'] != "0000-00-00") and ($row_invch['realizedate'] != "")) {
+                                                    $color = 'green';
+                                                }
+
+                                            }
+                                        }
+                                    } else {
+                                        $color = "green";
+                                    }
+
+
+
+                                    $sql_rs_type = "Select * from view_inv_item where REF_NO = '" . $row_rssalma["REF_NO"] . "' order by id";
+                                    $sql_rsbrn_mas = "select * from brand_mas where barnd_name = '" . trim($row_rssalma["Brand"]) . "'";
+
+                                    $result_rsbrn_mas = $db->RunQuery($sql_rsbrn_mas);
+                                    if ($row_rsbrn_mas = mysql_fetch_array($result_rsbrn_mas)) {
+
+                                        if ($row_rsbrn_mas["delinrate"] == 2.5) {
+                                            if ((is_null($row_rssalma["Deli_date"]) == false) and ($row_rssalma["Deli_date"] != "0000-00-00")) {
+                                                if ((is_null($row_rssalma["st_chdate"]) == false) and ($row_rssalma["st_chdate"] != "0000-00-00")) {
+                                                    $date1 = $row_rssalma["st_chdate"];
+                                                    $date2 = $row_rssalma["Deli_date"];
+                                                    $diff = abs(strtotime($date2) - strtotime($date1));
+                                                    $mdate = round($diff / (60 * 60 * 24));
+                                                } else {
+                                                    $date1 = $row_rssalma["ST_DATE"];
+                                                    $date2 = $row_rssalma["Deli_date"];
+                                                    $diff = abs(strtotime($date2) - strtotime($date1));
+                                                    $mdate = round($diff / (60 * 60 * 24));
+                                                }
+
+                                                if ((trim($row_rs_type["type"]) == "TBR") or (trim($row_rs_type["type"]) == "BIAS TYRES")) {
+                                                    if (90 >= $mdate) {
+                                                        $mpay = $mpay + $row_rssalma["ST_PAID"];
+                                                    }
+                                                } else {
+                                                    if ($row_rsVENDOR["incdays"] >= $mdate) {
+                                                        $mpay = $mpay + $row_rssalma["ST_PAID"];
+                                                    }
+                                                }
+                                            }
+                                        } else {
+                                            if ((is_null($row_rssalma["st_chdate"]) == false) and ($row_rssalma["st_chdate"] != "0000-00-00")) {
+                                                $date1 = $row_rssalma["st_chdate"];
+                                                $date2 = $row_rssalma["sdate1"];
+                                                $diff = abs(strtotime($date2) - strtotime($date1));
+                                                $mdate = floor($diff / (60 * 60 * 24));
+                                            } else {
+                                                $date1 = $row_rssalma["ST_DATE"];
+                                                $date2 = $row_rssalma["sdate1"];
+                                                $diff = abs(strtotime($date2) - strtotime($date1));
+                                                $mdate = floor($diff / (60 * 60 * 24));
+                                            }
+
+                                            if ((trim($row_rs_type["type"]) == "TBR") or (trim($row_rs_type["type"]) == "BIAS TYRES")) {
+                                                if (90 >= $mdate) {
+                                                    $mpay = $mpay + $row_rssalma["ST_PAID"];
+                                                }
+                                            } else {
+                                                if ($row_rsVENDOR["incdays"] >= $mdate) {
+                                                    $mpay = $mpay + $row_rssalma["ST_PAID"];
+                                                }
+                                            }
+                                        }
+
+                                    }
+
+
+
+                                } else {
+                                    $mpay = 0;
+                                }
+                            }
+
+                            $mpay = $mpay / (1 + ($txtvat_new / 100));
+
+
+                            if (is_null($salret) == false) {
+                                $msal = $msal - $mret;
+                                $mpay = $mpay - $mret;
+                            }
+
+                            if (date("Y", strtotime($_GET["DTPicker1"])) > 2012) {
+
+                                $sql_rsper = "Select * from intper where sdate <= '" . $_GET["DTPicker1"] . "' and traget < " . $mpay . " order by sdate desc,traget desc ";
+                            } else {
+                                if (date("Y", strtotime($_GET["DTPicker1"])) < 2010) {
+                                    $sql_rsper = "Select * from intper where incen_year = 2009 and traget < " . $mpay . " order by traget desc ";
+                                } else {
+                                    if ((date("m", strtotime($_GET["DTPicker1"])) > 3) or (date("Y", strtotime($_GET["DTPicker1"])) >= 2010)) {
+                                        $sql_rsper = "Select * from intper where incen_year = 20101 and traget < " . $mpay . " order by traget desc ";
+                                    } else {
+                                        $sql_rsper = "Select * from intper where incen_year = 2010 and traget < " . $mpay . " order by traget desc ";
                                     }
                                 }
-                                if ($TypeGrid1[$ii][9] <= $TypeGrid1[$ii][10]) {
-                                    $TypeGrid1[$ii][12] = ($row_rssttr["ST_PAID"] / 100 * $_GET["txt_percentage"]) / ($txt_vat + 100) * 100;
-                                } else {
-                                    $TypeGrid1[$ii][12] = 0;
-                                }
-                                if (is_null($row_rssttr["deliin_amo"]) == false) {
-                                    $TypeGrid1[$ii][13] = $row_rssttr["deliin_amo"];
-                                    $txttot_inc = $txttot_inc + $row_rssttr["deliin_amo"];
-                                }
-                                if ($row_rssttr["deliin_lock"] == "1") {
-                                    $TypeGrid1[$ii][11] = "YES";
-                                } else {
-                                    $TypeGrid1[$ii][11] = "NO";
-                                }
-                                $TypeGrid1[$ii][14] = "INV";
-                                $TypeGrid1[$ii][15] = $row_rssslma["GST"];
-                                $TypeGrid1[$ii][16] = $row_rssslma["sdate1"];
+                            }
 
-                                if ($TypeGrid1[$ii][9] <= $TypeGrid1[$ii][10]) {
-                                    $TXTTOT = $TXTTOT + $row_rssttr["ST_PAID"];
-                                } else {
-                                    $TXTTOT = $TXTTOT + 0;
-                                }
-                                $totincen = $totincen + $TypeGrid1[$ii][12];
+                            $result_rsper = $db->RunQuery($sql_rsper);
+                            if ($row_rsper = mysql_fetch_array($result_rsper)) {
 
-                                $ii = $ii + 1;
+                                $target_a = 0;
+                                $month3 = $mpay * (($row_rsper["per"] / 100));
+
+                                $sql_rsincen = "select * from ins_payment where  I_month ='" . intval(date("m", strtotime($_GET["DTPicker1"]))) . "'  and I_year='" . date("Y", strtotime($_GET["DTPicker1"])) . "' and cusCode = '" . trim($row_rsVENDOR["C_CODE"]) . "' and Type = '" . $_GET['cmbtype'] . "' order by id ";
+                                //echo $sql_rsincen;
+                                $result_rsincen = $db->RunQuery($sql_rsincen);
+                                if ($row_rsincen = mysql_fetch_array($result_rsincen)) {
+
+                                    $target_a = $row_rsincen["amount"];
+                                }
+
+                                if ($i != 0) {
+                                    $insert = $insert . ", ";
+                                }
+
+                                $insert = $insert . "('" . trim($row_rsVENDOR["C_CODE"]) . "', '" . $row_rsVENDOR["CUS_NAME"] . "', '" . $msal . "', '" . $mret . "', '" . $month3 . "',  '" . $mpay . "', '" . $target_a . "', '" . $_SESSION["CURRENT_USER"] . "')";
+
+                                $i = 1;
+
+
+                                //echo $sql_dealer;
                             }
                         }
+
+
                     }
                 }
             }
         }
     }
 
-    $txt_tot = $TXTTOT;
+    $sql_dealer = "insert into monsales(Cus_Code, cus_name, month1, month2, month3, limit1, target, user_id) values " . $insert;
+    //    echo $sql_dealer;
+    $result_dealer = $db->RunQuery($sql_dealer);
 
-    $txt_out = $totout;
+    if ($_GET["cmbrep"] == "All") {
 
-    $totgrn = 0;
-    $tgrnince = 0;
-    if ($_GET['monthwise'] == "nch") {
-        $sql_RScbal .= "select * from c_bal where  month(sdate1)='" . intval(date("m", strtotime($_GET["DTPicker1"]))) . "' and  year(sdate1)='" . date("Y", strtotime($_GET["DTPicker1"])) . "' and CANCELL='0'and CUSCODE='" . trim($_GET["txt_cuscode"]) . "' AND trn_type != 'ARN' and trn_type != 'REC' and trn_type != 'DGRN' and flag1 != '1' order by sdate1";
-    } else {
-        $sql_RScbal .= "select * from c_bal where  ((month(sdate1)='" . intval(date("m", strtotime($_GET["DTPicker1"]))) . "' and  year(sdate1)='" . date("Y", strtotime($_GET["DTPicker1"])) . "') or (month(sdate1)='" . intval(date("m", strtotime($_GET["DTPicker2"]))) . "' and  year(sdate1)='" . date("Y", strtotime($_GET["DTPicker2"])) . "') ) and CANCELL='0' and CUSCODE='" . trim($_GET["txt_cuscode"]) . "' AND trn_type != 'ARN' and trn_type != 'REC' and trn_type != 'DGRN' and flag1 != '1' order by sdate1";
-    }
+        $mRow = 1;
 
+        $sql_tmp1 = "select * from monsales where target = 0 and user_id='" . $_SESSION["CURRENT_USER"] . "'";
+        //echo $sql_tmp1;
+        $result_tmp1 = $db->RunQuery($sql_tmp1);
+        while ($row_tmp1 = mysql_fetch_array($result_tmp1)) {
 
-
-    // ================prawee 25.06.08
-    if ($brand1 != "") {
-        $sql_RScbal .= " and brand = '" . $brand1 . "'";
-    } else if ($brand2 != "") {
-        $sql_RScbal .= " and (brand = '" . $brand1 . "'  or brand = '" . $brand2 . "' )";
-    } else if ($brand3 != "") {
-        $sql_RScbal .= " and (brand = '" . $brand1 . "'  or brand = '" . $brand2 . "' or brand = '" . $brand3 . "' )";
-    } else if ($brand4 != "") {
-        $sql_RScbal .= " and (brand = '" . $brand1 . "'  or brand = '" . $brand2 . "' or brand = '" . $brand3 . "' or brand = '" . $brand4 . "' )";
-    }
-
-    // ===========prawee 25.06.08
-
-
-    //    two month 19.09.09
-
-    $result_RScbal = mysql_query($sql_RScbal, $dbinv);
-    while ($row_RScbal = mysql_fetch_array($result_RScbal)) {
-
-        $sql_rsbrand_mas = "select * from brand_mas where barnd_name = '" . trim($row_RScbal["brand"]) . "'";
-
-        if (($_GET["cmbtype"] == "GOODYEAR") or ($_GET["cmbtype"] == "MAXXIS MC TYRE")) {
-
-            if ((intval(date("m", strtotime($_GET["DTPicker1"]))) < 11) and (date("Y", strtotime($_GET["DTPicker1"])) <= 2010)) {
-                //                echo 'asdsa';
-                $result_rsbrand_mas = mysql_query($sql_rsbrand_mas, $dbinv);
-                if ($row_rsbrand_mas = mysql_fetch_array($result_rsbrand_mas)) {
-                    if ($row_rsbrand_mas["delinrate"] == 0) {
-                        //                        if ($row_rsbrand_mas["delinrate"] >= 0) {
-
-                        $TypeGrid1[$ii][1] = $row_RScbal["REFNO"];
-                        $TypeGrid1[$ii][2] = $row_RScbal["sdate1"];
-                        $TypeGrid1[$ii][3] = $row_RScbal["AMOUNT"];
-                        $TypeGrid1[$ii][5] = $row_RScbal["brand"];
-                        $TypeGrid1[$ii][12] = -1 * ($TypeGrid1[$ii][3] / 100 * $_GET["txt_percentage"]) / ($txt_vat + 100) * 100;
-                        $TypeGrid1[$ii][13] = -1 * ($TypeGrid1[$ii][3] / 100 * $_GET["txt_percentage"]) / ($txt_vat + 100) * 100;
-                        $TypeGrid1[$ii][14] = $row_RScbal["trn_type"];
-                        $totgrn = $totgrn + $row_RScbal["AMOUNT"];
-                        $tgrnince = $tgrnince + $TypeGrid1[$ii][12];
-                        $txttot_inc = $txttot_inc + $TypeGrid1[$ii][12];
-                        $ii = $ii + 1;
-                        //                        }
-                    }
-                }
-            } else {
-                //                echo 'asdsa';  praewwwwww
-                $result_rsbrand_mas = mysql_query($sql_rsbrand_mas, $dbinv);
-                if ($row_rsbrand_mas = mysql_fetch_array($result_rsbrand_mas)) {
-                    if ($row_rsbrand_mas["delinrate"] == 0) {
-                        if ($row_rsbrand_mas["delinrate"] == 0) {
-                            //                    if ($row_rsbrand_mas["delinrate"] == 2.5) {
-//                        if ($row_rsbrand_mas["delinrate"] >= 0) {
-
-                            $TypeGrid1[$ii][1] = $row_RScbal["REFNO"];
-                            $TypeGrid1[$ii][2] = $row_RScbal["sdate1"];
-                            $TypeGrid1[$ii][3] = $row_RScbal["AMOUNT"];
-                            $TypeGrid1[$ii][5] = $row_RScbal["brand"];
-                            $TypeGrid1[$ii][12] = -1 * ($TypeGrid1[$ii][3] / 100 * $_GET["txt_percentage"]) / ($row_RScbal["vatrate"] + 100) * 100;
-                            $TypeGrid1[$ii][13] = -1 * ($TypeGrid1[$ii][3] / 100 * $_GET["txt_percentage"]) / ($row_RScbal["vatrate"] + 100) * 100;
-                            $TypeGrid1[$ii][14] = $row_RScbal["trn_type"];
-                            $TypeGrid1[$ii][15] = $row_RScbal["vatrate"];
-                            $totgrn = $totgrn + $row_RScbal["AMOUNT"];
-                            $tgrnince = $tgrnince + $TypeGrid1[$ii][12];
-                            $txttot_inc = $txttot_inc + $TypeGrid1[$ii][12];
-                            $ii = $ii + 1;
-                        }
-                    }
-                }
+            if (is_null($row_tmp1["Cus_Code"]) == false) {
+                $Flexcus[$mRow][1] = trim($row_tmp1["Cus_Code"]);
             }
-        } else {
-            if ((intval(date("m", strtotime($_GET["DTPicker1"]))) >= 1) and (date("Y", strtotime($_GET["DTPicker1"])) >= 2010)) {
-                $result_rsbrand_mas = mysql_query($sql_rsbrand_mas, $dbinv);
-                if ($row_rsbrand_mas = mysql_fetch_array($result_rsbrand_mas)) {
-                    if ($row_rsbrand_mas["delinrate"] == 3.5) {
-                        if ($row_rsbrand_mas["delinrate"] >= 0) {
-
-                            $TypeGrid1[$ii][1] = $row_RScbal["REFNO"];
-                            $TypeGrid1[$ii][2] = $row_RScbal["sdate1"];
-                            $TypeGrid1[$ii][3] = $row_RScbal["AMOUNT"];
-                            $TypeGrid1[$ii][5] = $row_RScbal["brand"];
-                            $TypeGrid1[$ii][12] = -1 * ($TypeGrid1[$ii][3] / 100 * $_GET["txt_percentage"]) / ($row_RScbal["vatrate"] + 100) * 100;
-                            $TypeGrid1[$ii][13] = -1 * ($TypeGrid1[$ii][3] / 100 * $_GET["txt_percentage"]) / ($row_RScbal["vatrate"] + 100) * 100;
-                            $TypeGrid1[$ii][14] = $row_RScbal["trn_type"];
-                            $totgrn = $totgrn + $row_RScbal["AMOUNT"];
-                            $TypeGrid1[$ii][15] = $row_RScbal["vatrate"];
-                            $tgrnince = $tgrnince + $TypeGrid1[$ii][12];
-                            $txttot_inc = $txttot_inc + $TypeGrid1[$ii][12];
-                            $ii = $ii + 1;
-                        }
-                    }
-                }
+            if (is_null($row_tmp1["cus_name"]) == false) {
+                $Flexcus[$mRow][2] = trim($row_tmp1["cus_name"]);
             }
+            if (is_null($row_tmp1["limit1"]) == false) {
+                $Flexcus[$mRow][3] = number_format($row_tmp1["limit1"], 2, ".", ",");
+            }
+            if (is_null($row_tmp1["month3"]) == false) {
+                $Flexcus[$mRow][4] = number_format($row_tmp1["month3"], 2, ".", ",");
+            }
+            if (is_null($row_tmp1["month1"]) == false) {
+                $Flexcus[$mRow][7] = number_format($row_tmp1["month1"], 2, ".", ",");
+            }
+
+            $mRow = $mRow + 1;
         }
-    }
-
-
-    $txt_grn = $totgrn;
-
-
-    $txttotal = ($txt_tot - $txt_grn) / ($txt_vat + 100) * 100;
-
-
-    $txtremark = "";
-    $txtint = "";
-    $txtnetin = "";
-    $remark = "";
-
-    $xx = trim(intval(date("m", strtotime($_GET["DTPicker1"]))));
-
-
-    // ========================
-    if ($_GET['monthwise'] == "nch") {
-        $sql_rsincen = "select * from ins_payment where  I_month ='" . intval(date("m", strtotime($_GET["DTPicker1"]))) . "'  and I_year='" . date("Y", strtotime($_GET["DTPicker1"])) . "' and cusCode = '" . trim($_GET["txt_cuscode"]) . "'    and Type = '" . trim($_GET["cmbtype"]) . "' order by id desc ";
     } else {
-        $sql_rsincen = "select * from ins_payment where  ((I_year='" . date("Y", strtotime($_GET["DTPicker1"])) . "' and I_month='" . intval(date("m", strtotime($_GET["DTPicker1"]))) . "') or (I_year='" . date("Y", strtotime($_GET["DTPicker2"])) . "' and I_month='" . intval(date("m", strtotime($_GET["DTPicker2"]))) . "')) and cusCode = '" . trim($_GET["txt_cuscode"]) . "'    and Type = '" . trim($_GET["cmbtype"]) . "' order by id desc ";
-    }
-    //    two month 19.09.09
-// echo $sql_rsincen;
-    $result_rsincen = mysql_query($sql_rsincen, $dbinv);
-    if ($row_rsincen = mysql_fetch_array($result_rsincen)) {
 
-        if (is_null($row_rsincen["type"]) == false) {
-            if (trim($row_rsincen["type"]) == trim($_GET["cmbtype"])) {
+        $mrow1 = 1;
+        $sql_tmp1 = "select * from monsales where user_id='" . $_SESSION["CURRENT_USER"] . "'";
+        $result_tmp1 = $db->RunQuery($sql_tmp1);
+        while ($row_tmp1 = mysql_fetch_array($result_tmp1)) {
 
-                if (is_null($row_rsincen["remarks"]) == false) {
-                    $txtremark = $row_rsincen["remarks"];
-                }
-
-                if (is_null($row_rsincen["remarks"]) == false) {
-                    $remark = $row_rsincen["remarks"];
-                }
-                if (is_null($row_rsincen["remarks"]) == false) {
-                    $mremark = trim($row_rsincen["remarks"]);
-                }
-                if (is_null($row_rsincen["Interest"]) == false) {
-                    $txtint = $row_rsincen["Interest"];
-                }
-                if (is_null($row_rsincen["Percentage"]) == false) {
-                    $txt_percentage = $row_rsincen["Percentage"];
-                }
-                if (is_null($row_rsincen["amount"]) == false) {
-                    $txtnetin = $row_rsincen["amount"];
-                }
-                if (is_null($row_rsincen["chno"]) == false) {
-                    $txt_chno = $row_rsincen["chno"];
-                }
-                if (trim($row_rsincen["chno"]) == "X") {
-                    $chq_ignore = 1;
-                }
-            } else {
-                //rsincen.MoveNext
+            if (is_null($row_tmp1["Cus_Code"]) == false) {
+                $Flexcus[$mrow1][1] = trim($row_tmp1["Cus_Code"]);
             }
-        } else {
-            // =======================21.08.20
+            if (is_null($row_tmp1["cus_name"]) == false) {
+                $Flexcus[$mrow1][2] = trim($row_tmp1["cus_name"]);
+            }
+            if (is_null($row_tmp1["limit1"]) == false) {
+                $Flexcus[$mrow1][3] = number_format($row_tmp1["limit1"], 2, ".", ",");
+            }
+            if (is_null($row_tmp1["month3"]) == false) {
+                $Flexcus[$mrow1][4] = number_format($row_tmp1["month3"], 2, ".", ",");
+            }
+            if ($row_tmp1["target"] > 0) {
+                $Flexcus[$mrow1][5] = "Yes";
+            }
+
             if ($_GET['monthwise'] == "nch") {
-                $sql_rsincen1 = "select * from ins_payment where  I_month ='" . intval(date("m", strtotime($_GET["DTPicker1"]))) . "'  and I_year='" . date("Y", strtotime($_GET["DTPicker1"])) . "' and cusCode = '" . trim($_GET["txt_cuscode"]) . "'    and Type = '" . trim($_GET["cmbtype"]) . "' order by id desc ";
+                $sql_rsincen = "select * from ins_payment where  I_month ='" . intval(date("m", strtotime($_GET["DTPicker1"]))) . "'  and I_year='" . date("Y", strtotime($_GET["DTPicker1"])) . "' and cusCode = '" . trim($row_tmp1["Cus_Code"]) . "'order by id ";
             } else {
-                $sql_rsincen1 = "select * from ins_payment where  ((I_year='" . date("Y", strtotime($_GET["DTPicker1"])) . "' and I_month='" . intval(date("m", strtotime($_GET["DTPicker1"]))) . "') or (I_year='" . date("Y", strtotime($_GET["DTPicker2"])) . "' and I_month='" . intval(date("m", strtotime($_GET["DTPicker2"]))) . "')) and cusCode = '" . trim($_GET["txt_cuscode"]) . "'    and Type = '" . trim($_GET["cmbtype"]) . "' order by id desc ";
+                $sql_rsincen = "select * from ins_payment where  ((I_year='" . date("Y", strtotime($_GET["DTPicker1"])) . "' and I_month='" . intval(date("m", strtotime($_GET["DTPicker1"]))) . "') or (I_year='" . date("Y", strtotime($_GET["DTPicker2"])) . "' and I_month='" . intval(date("m", strtotime($_GET["DTPicker2"]))) . "')) and cusCode = '" . trim($row_tmp1["Cus_Code"]) . "'order by id ";
             }
 
-            $result_rsincen1 = mysql_query($sql_rsincen1, $dbinv);
-            $txtremarknew = "";
-            while ($row_rsincen1 = mysql_fetch_array($result_rsincen1)) {
-                if (is_null($row_rsincen1["remarks"]) == false) {
-                    $txtremarknew = $txtremarknew . '--' . $row_rsincen1["remarks"];
-                }
+            $result_rsincen = $db->RunQuery($sql_rsincen);
+            if ($row_rsincen = mysql_fetch_array($result_rsincen)) {
 
+                $Flexcus[$mrow1][6] = $row_rsincen["remarks"];
+            }
+            if (is_null($row_tmp1["month1"]) == false) {
+                $Flexcus[$mrow1][7] = number_format($row_tmp1["month1"], 2, ".", ",");
             }
 
-
-            // 21.08.20==============
-
-            if (is_null($row_rsincen["remarks"]) == false) {
-                $txtremark = $row_rsincen["remarks"];
-            }
-            $txtremark = $txtremarknew;
-            if (is_null($row_rsincen["remarks"]) == false) {
-                $remark = $row_rsincen["remarks"];
-            }
-            $remark = $txtremarknew;
-            if (is_null($row_rsincen["remarks"]) == false) {
-                $mremark = trim($row_rsincen["remarks"]);
-            }
-            if (is_null($row_rsincen["Interest"]) == false) {
-                $txtint = $row_rsincen["Interest"];
-            }
-            if (is_null($row_rsincen["Percentage"]) == false) {
-                $txt_percentage = $row_rsincen["Percentage"];
-            }
-            if (is_null($row_rsincen["amount"]) == false) {
-                $txtnetin = $row_rsincen["amount"];
-            }
-            if (is_null($row_rsincen["chno"]) == false) {
-                $txt_chno = $row_rsincen["chno"];
-            }
-            if (trim($row_rsincen["chno"]) == "X") {
-                $chq_ignore = 1;
-            }
+            $mrow1 = $mrow1 + 1;
         }
     }
-
-    //Call cmd_cal_Click////////////////////////////////////////////////////////
-    //Call Auto_cal///////////////////////////////////////
-
-    $txttot1 = 0;
-    $i = 1;
-    $TypeGrid1_count = $ii;
-    while ($i < $TypeGrid1_count) {
-        if (($TypeGrid1[$i][14] == "INV") or ($TypeGrid1[$i][14] == "INV - TBR") or ($TypeGrid1[$i][14] == "INV - TBB")) {
-            if ($TypeGrid1[$i][9] <= $TypeGrid1[$i][10]) {
-                $txttot1 = $txttot1 + $TypeGrid1[$i][8];
-            } else {
-                $txttot1 = $txttot1;
-            }
-        }
-        $i = $i + 1;
-    }
-    if (date("Y", strtotime($_GET["DTPicker1"])) > 2012) {
-        //echo $txttot1.'@'.$txt_grn.'@'.$txt_vat;
-        $sql_rsper = "Select * from intper_goodyear where sdate <= '" . $_GET["DTPicker1"] . "'  and traget < " . (($txttot1 - $txt_grn) / ($txt_vat + 100) * 100) . " and brand='" . $_GET["cmbtype"] . "' order by traget desc ";
-        //echo $sql_rsper; 
-        $result_rsper = mysql_query($sql_rsper, $dbinv);
-        if ($row_rsper = mysql_fetch_array($result_rsper)) {
-
-            $txt_percentage = $row_rsper["per"];
-            $ii = 1;
-            while ($ii < $TypeGrid1_count) {
-                if (($TypeGrid1[$ii][14] == "INV") or ($TypeGrid1[$ii][14] == "INV - TBR") or ($TypeGrid1[$ii][14] == "INV - TBB")) {
-                    if ($TypeGrid1[$ii][9] <= $TypeGrid1[$ii][10]) {
-                        $TypeGrid1[$ii][13] = ($TypeGrid1[$ii][8] / 100 * $txt_percentage) / ($txt_vat + 100) * 100;
-                    } else {
-                        $TypeGrid1[$ii][13] = 0;
-                    }
-                } else {
-                    $TypeGrid1[$ii][13] = -1 * ($TypeGrid1[$ii][3] / 100 * $txt_percentage) / ($txt_vat + 100) * 100;
-                }
-                $ii = $ii + 1;
-            }
-        }
-    } else {
-        if ((intval(date("m", strtotime($_GET["DTPicker1"]))) >= 3) and (date("Y", strtotime($_GET["DTPicker1"])) >= 2017)) {
-            $sql_rsper = "Select * from intper_goodyear where incen_year = 2017 and brand='" . $_GET["cmbtype"] . "' and traget < '" . ($txttot1 - $txt_grn) / ($txt_vat + 100) * 100 . "' order by traget desc ";
-        } else {
-            $sql_rsper = "Select * from intper_goodyear where incen_year = 20101 and brand='" . $_GET["cmbtype"] . "' and traget < '" . ($txttot1 - $txt_grn) / ($txt_vat + 100) * 100 . "' order by traget desc ";
-        }
-
-        $result_rsper = mysql_query($sql_rsper, $dbinv);
-        if ($row_rsper = mysql_fetch_array($result_rsper)) {
-
-            $txt_percentage = $row_rsper["per"];
-            $ii = 1;
-            while ($ii < $TypeGrid1_count) {
-                if (($TypeGrid1[$ii][14] == "INV") or ($TypeGrid1[$ii][14] == "INV - TBR") or ($TypeGrid1[$ii][14] == "INV - TBB")) {
-                    if ($TypeGrid1[$ii][9] <= $TypeGrid1[$ii][10]) {
-                        $TypeGrid1[$ii][13] = ($TypeGrid1[$ii][8] / 100 * $txt_percentage) / ($txt_vat + 100) * 100;
-                    } else {
-                        $TypeGrid1[$ii][13] = 0;
-                    }
-                } else {
-                    $TypeGrid1[$ii][13] = -1 * ($TypeGrid1[$ii][3] / 100 * $txt_percentage) / ($txt_vat + 100) * 100;
-                }
-                $ii = $ii + 1;
-            }
-        }
-    }
-    ////////////////////////////////////////////////
-    $txttot1 = 0;
-    $tinc = 0;
-    $ii = 1;
-    while ($ii < $TypeGrid1_count) {
-        if (($TypeGrid1[$ii][14] == "INV") or ($TypeGrid1[$ii][14] == "INV - TBR") or ($TypeGrid1[$ii][14] == "INV - TBB")) {
-            if ($TypeGrid1[$ii][9] <= $TypeGrid1[$ii][10]) {
-                $txttot1 = $txttot1 + $TypeGrid1[$ii][8];
-                $txttot1_w = $txttot1_w + ($TypeGrid1[$ii][8] / (1 + ($TypeGrid1[$ii][15] / 100)));
-            }
-        } else {
-
-            $txttot1_w = $txttot1_w - ($TypeGrid1[$ii][3] / (1 + ($TypeGrid1[$ii][15] / 100)));
-        }
-        if ($TypeGrid1[$ii][13] != "") {
-            $tinc = $tinc + $TypeGrid1[$ii][13];
-        }
-        $ii = $ii + 1;
-    }
-    $txt_tot = $txttot1;
-    $txttotal = $txttot1_w; //($txt_tot - $txt_grn) / ($txt_vat + 100) * 100;
-    $txttot_inc = $tinc;
-    $txtnetin = $txttot_inc - $txtint;
-    ////////////////////////////////////////////////////////
-    //Call GRIDSET
 
     $ResponseXML = "";
-    $ResponseXML .= "<salesdetails>";
 
+    if ($_GET["cmbrep"] == "All") {
 
-
-
-    $ResponseXML .= "<incen_table><![CDATA[<table width=\"735\" border=\"0\" class=\"form-matrix-table\">
-    <tr>
-    <td width=\"50\"  ><font color=\"#FFFFFF\">ID</font></td>
-    <td width=\"200\"  ><font color=\"#FFFFFF\">Inv No</font></td>
-    <td width=\"200\" ><font color=\"#FFFFFF\">Inv Date</font></td>
-    <td width=\"200\"  ><font color=\"#FFFFFF\">Amount</font></td>
-    <td width=\"200\" ><font color=\"#FFFFFF\">Paid</font></td>
-    <td width=\"200\" ><font color=\"#FFFFFF\"></font></td>
-    <td width=\"200\" ><font color=\"#FFFFFF\">Rec.No</font></td>
-    <td width=\"200\" ><font color=\"#FFFFFF\">Rec.Date</font></td>
-    <td width=\"200\" ><font color=\"#FFFFFF\">Rec.Amount</font></td>
-    <td width=\"200\" ><font color=\"#FFFFFF\">Days</font></td>
-    <td width=\"200\" ><font color=\"#FFFFFF\">Apply Days</font></td>
-    <td width=\"200\" ><font color=\"#FFFFFF\">Locked</font></td>
-    <td width=\"200\" ><font color=\"#FFFFFF\">Incentive</font></td>
-    <td width=\"200\" ><font color=\"#FFFFFF\"></font></td>
-    <td width=\"200\" ><font color=\"#FFFFFF\"></font></td>
-    <td width=\"200\" ><font color=\"#FFFFFF\">VAT</font></td>
+        $ResponseXML .= "<table><tr>
+    <td width=\"10\"  background=\"\" ><font color=\"#FFFFFF\"></font></td>
+    <td width=\"50\"  background=\"\" ><font color=\"#FFFFFF\">Code</font></td>
+    <td width=\"300\"  background=\"\"><font color=\"#FFFFFF\">Name</font></td>
+    <td width=\"100\"  background=\"\"><font color=\"#FFFFFF\">Incen Target</font></td>
+    <td width=\"100\"  background=\"\"><font color=\"#FFFFFF\">Net Sale</font></td>
+    <td width=\"100\"  background=\"\"><font color=\"#FFFFFF\">Effect Sale</font></td>
+    <td width=\"100\"  background=\"\"><font color=\"#FFFFFF\">Incentive</font></td>
+    <td width=\"100\"  background=\"\"><font color=\"#FFFFFF\">Yes/No</font></td>
+    <td width=\"100\"  background=\"\"><font color=\"#FFFFFF\">Sales Return After Sal.Month</font></td>
+    <td width=\"100\"  background=\"\"><font color=\"#FFFFFF\">Pending Return Check</font></td>
+    <td width=\"100\"  background=\"\"><font color=\"#FFFFFF\">Dealer Remark</font></td>
+    <td   background=\"\"><font color=\"#FFFFFF\">...</font></td>
     </tr>";
+    } else {
 
-    $i = 1;
-    while ($i < $TypeGrid1_count) {
-
-        $grid0 = "TypeGrid_" . $i . "_00";
-        $grid1 = "TypeGrid_" . $i . "_01";
-        $grid2 = "TypeGrid_" . $i . "_02";
-        $grid3 = "TypeGrid_" . $i . "_03";
-        $grid4 = "TypeGrid_" . $i . "_04";
-        $grid5 = "TypeGrid_" . $i . "_05";
-        $grid6 = "TypeGrid_" . $i . "_06";
-        $grid7 = "TypeGrid_" . $i . "_07";
-        $grid8 = "TypeGrid_" . $i . "_08";
-        $grid9 = "TypeGrid_" . $i . "_09";
-        $grid10 = "TypeGrid_" . $i . "_10";
-        $grid11 = "TypeGrid_" . $i . "_11";
-        $grid12 = "TypeGrid_" . $i . "_12";
-        $grid13 = "TypeGrid_" . $i . "_13";
-        $grid14 = "TypeGrid_" . $i . "_14";
-        $grid15 = "TypeGrid_" . $i . "_15";
-        $grid15 = "TypeGrid_" . $i . "_16";
-
-        $color = "";
-        $sql_TTR = "Select * from s_sttr where ID = '" . $TypeGrid1[$i][0] . "' and ST_FLAG='CHK' ";
+        $ResponseXML .= "<table><tr>
+    <td width=\"10\"  background=\"\" ><font color=\"#FFFFFF\"></font></td>
+    <td width=\"50\"  background=\"\" ><font color=\"#FFFFFF\">Code</font></td>
+    <td width=\"300\"  background=\"\"><font color=\"#FFFFFF\">Name</font></td>
+    <td width=\"100\"  background=\"\"><font color=\"#FFFFFF\">Net Sale</font></td>
+    <td width=\"100\"  background=\"\"><font color=\"#FFFFFF\">Effect Sale</font></td>
+    <td width=\"100\"  background=\"\"><font color=\"#FFFFFF\">Incentive</font></td>
+    <td width=\"100\"  background=\"\"><font color=\"#FFFFFF\">Paid</font></td>
+    <td width=\"100\"  background=\"\"><font color=\"#FFFFFF\">Chq Detail</font></td>
 
 
-        $result_TTR = mysql_query($sql_TTR, $dbinv);
-        if ($row_TTR = mysql_fetch_array($result_TTR)) {
+    </tr>";
+    }
 
-            $color = "orange";
-            $sql_sch = "Select * from s_cheq where CR_CHNO = '" . $row_TTR['ST_CHNO'] . "'   and CR_C_CODE = '" . $_GET['txt_cuscode'] . "'   and CR_CHEVAL = '" . str_replace(',', '', $TypeGrid1[$i][8]) . "' and CR_BANK = '" . $row_TTR['st_chbank'] . "' and CR_FLAG='0'      ";
 
-            $result_sch = mysql_query($sql_sch, $dbinv);
-            if ($row_sch = mysql_fetch_array($result_sch)) {
-                $color = 'red';
+    if ($_GET["cmbrep"] == "All") {
+
+        $i = 1;
+        $xx = 1;
+        while ($mRow > $i) {
+            $sql478 = "Select insentarget from vendor where CODE= '" . $Flexcus[$i][1] . "' ";
+            //             echo $sql478;
+            $result478 = $db->RunQuery($sql478);
+            $row478 = mysql_fetch_array($result478);
+
+            if (trim($_GET["cmbtype"]) == "TYRE") {
+                $insstar = $row478["insentarget"];
             } else {
-                $sql_invch = "Select * from s_invcheq where cus_code = '" . $_GET['txt_cuscode'] . "'  and cheque_no = '" . $row_TTR['ST_CHNO'] . "' and refno='" . $row_TTR['ST_REFNO'] . "' and   che_date='" . $row_TTR['st_chdate'] . "' and bank = '" . $row_TTR['st_chbank'] . "' order by che_date desc    ";
-
-                $result_invch = mysql_query($sql_invch, $dbinv);
-                if ($row_invch = mysql_fetch_array($result_invch)) {
-                    if (($row_invch['realizedate'] != "0000-00-00") and ($row_invch['realizedate'] != "")) {
-                        $color = 'green';
-                    }
-
-                }
+                $insstar = 0;
             }
+            $chk = "chk" . $i;
 
-        } else {
-            $color = "green";
+            if ($Flexcus[$i][4] > "0.00") {
+
+                $ResponseXML .= "<tr>                              
+            <td>" . $xx . "</td>
+            <td>" . $Flexcus[$i][1] . "</td>
+            <td>" . $Flexcus[$i][2] . "</td>
+            <td>" . $insstar . "</td>
+            <td>" . $Flexcus[$i][7] . "</td>
+            <td>" . $Flexcus[$i][3] . "</td>
+            <td>" . $Flexcus[$i][4] . "</td>
+            <td><input type=\"checkbox\" name=\"" . $chk . "\" id=\"" . $chk . "\" onClick=\"chk_ad('" . $chk . "', '" . $Flexcus[$i][1] . "');\"></td>";
+
+                $mret = 0;
+                if ($_GET['monthwise'] == "nch") {
+                    $sql = "SELECT sum(amount) as amount FROM view_cbal_bmas_crnma_salma WHERE cuscode = '" . $Flexcus[$i][1] . "' and month(sdate1) <>" . date("m", strtotime($_GET["DTPicker1"])) . " and month(sal_sdate)=" . date("m", strtotime($_GET["DTPicker1"])) . " and year(sal_sdate)=" . date("Y", strtotime($_GET["DTPicker1"])) . "  AND trn_type = 'GRN' AND CANCELL = '0'";
+                } else {
+                    $sql = "SELECT sum(amount) as amount FROM view_cbal_bmas_crnma_salma WHERE cuscode = '" . $Flexcus[$i][1] . "' and month(sdate1) <>" . date("m", strtotime($_GET["DTPicker1"])) . " and month(sal_sdate)=" . date("m", strtotime($_GET["DTPicker1"])) . " and year(sal_sdate)=" . date("Y", strtotime($_GET["DTPicker1"])) . "  AND trn_type = 'GRN' AND CANCELL = '0'";
+                }
+
+                if (trim($_GET["cmbtype"]) == "TYRE") {
+                    //                $sql .= " and delinrate = '2.5' and brand ='CHENG SHING'";
+                    $sql .= " and delinrate = '2.5'";
+                } else {
+                    // $sql .= " and brand = '" . trim($_GET["cmbtype"]) . "'";
+
+                    if (($brand1 != NULL) && ($brand1 == NULL) && ($brand1 == NULL) && ($brand1 == NULL)) {
+                        $sql .= " and brand = '" . $brand1 . "' ";
+                    } else if (($brand1 != NULL) && ($brand1 != NULL) && ($brand1 == NULL) && ($brand1 == NULL)) {
+                        $sql .= " and (brand = '" . $brand1 . "'  or brand = '" . $brand2 . "' )";
+                    } else if (($brand1 != NULL) && ($brand1 != NULL) && ($brand1 != NULL) && ($brand1 == NULL)) {
+                        $sql .= " and (brand = '" . $brand1 . "'  or brand = '" . $brand2 . "' or brand = '" . $brand3 . "' )";
+                    } else if (($brand1 != NULL) && ($brand1 != NULL) && ($brand1 != NULL) && ($brand1 != NULL)) {
+                        $sql .= " and (brand = '" . $brand1 . "'  or brand = '" . $brand2 . "' or brand = '" . $brand3 . "' or brand = '" . $brand4 . "' )";
+                    }
+                }
+                //echo $sql;
+                $result_rsincen = $db->RunQuery($sql);
+                if ($row_rsincen = mysql_fetch_array($result_rsincen)) {
+                    if (!is_null($row_rsincen['amount'])) {
+                        $mret = $row_rsincen['amount'];
+                    }
+                }
+
+
+
+                $ResponseXML .= "<td>" . $mret . "</td>";
+                $sql = "select * from dealer_incen_rmk where d_code = '" . $Flexcus[$i][1] . "'";
+                $result = $db->RunQuery($sql);
+                $row = mysql_fetch_array($result);
+                $mreturn = 0;
+                $sqlrtn = "Select sum(CR_CHEVAL - PAID) as Rtn from s_cheq where CR_C_CODE = '" . $Flexcus[$i][1] . "' and CR_FLAG = '0' and CR_CHEVAL - PAID > 1 ";
+
+                $resultrtn = $db->RunQuery($sqlrtn);
+                $rowrtn = mysql_fetch_array($resultrtn);
+
+                $mreturn = $rowrtn['Rtn'];
+                $ResponseXML .= "<td>" . $mreturn . "  </td>";
+                $ResponseXML .= "<td><input type='text' id = '" . $Flexcus[$i][1] . "' value='" . $row["rmk"] . "'></td>";
+                $ResponseXML .= "<td><a class='btn_purchase' onclick=\"updt('" . $Flexcus[$i][1] . "');\">..</a></td>";
+
+
+                $ResponseXML .= "</tr>";
+
+
+                $xx += 1;
+            }
+            // 
+            $i = $i + 1;
+
         }
+    } else {
 
+        $i = 1;
 
-        $ResponseXML .= " <tr bgcolor='" . $color . "'>
-        <td width=\"50\"  ><div id=\"" . $grid0 . "\">" . $TypeGrid1[$i][0] . "</div></td>
-        <td width=\"121\"  ><div id=\"" . $grid1 . "\">" . $TypeGrid1[$i][1] . "</div></td>
-        <td width=\"121\"  ><div id=\"" . $grid2 . "\">" . $TypeGrid1[$i][2] . "</div></td>
-        <td width=\"121\"  ><div id=\"" . $grid3 . "\">" . $TypeGrid1[$i][3] . "</div></td>
-        <td width=\"121\"  ><div id=\"" . $grid4 . "\">" . $TypeGrid1[$i][4] . "</div></td>
-        <td width=\"121\"  ><div id=\"" . $grid5 . "\">" . $TypeGrid1[$i][5] . "</div></td>
-        <td width=\"121\"  ><div id=\"" . $grid6 . "\">" . $TypeGrid1[$i][6] . "</div></td>
-        <td width=\"121\"  ><div id=\"" . $grid7 . "\">" . $TypeGrid1[$i][7] . "</div></td>
-        <td width=\"121\"  ><div id=\"" . $grid8 . "\">" . number_format($TypeGrid1[$i][8], 2, ".", ",") . "</div></td>
-        <td width=\"121\"  ><div id=\"" . $grid9 . "\">" . $TypeGrid1[$i][9] . "</div></td>
-        <td width=\"121\"  ><input type=\"text\"  class=\"text_purchase3\" name=\"" . $grid10 . "\" id=\"" . $grid10 . "\" size=\"15\"  value=\"" . $TypeGrid1[$i][10] . "\"  onblur=\"calc1_table('" . $i . "');\"   /></td>
-        <td width=\"121\"  ><div id=\"" . $grid11 . "\">" . $TypeGrid1[$i][11] . "</div></td>
-        <td width=\"121\" align=right ><div id=\"" . $grid12 . "\">" . number_format($TypeGrid1[$i][12], 2, ".", ",") . "</div></td>
-        <td width=\"121\" align=right ><div id=\"" . $grid13 . "\">" . number_format($TypeGrid1[$i][13], 2, ".", ",") . "</div></td>
-        <td width=\"121\"  ><div id=\"" . $grid14 . "\">" . $TypeGrid1[$i][14] . "</td>
-        <td width=\"121\"  ><div id=\"" . $grid15 . "\">" . $TypeGrid1[$i][15] . "</td>
-        <td width=\"121\"  ><div id=\"" . $grid16 . "\">" . $TypeGrid1[$i][16] . "</td></tr>";
+        while ($mrow1 > $i) {
 
-        $i = $i + 1;
+            // if($Flexcus[$i][4]>0){
+            $ResponseXML .= "<tr>                              
+            <td>" . $i . "</td>
+            <td>" . $Flexcus[$i][1] . "</td>
+            <td>" . $Flexcus[$i][2] . "</td>
+            <td>" . $Flexcus[$i][7] . "</td>
+            <td>" . $Flexcus[$i][3] . "</td>
+            <td>" . $Flexcus[$i][4] . "</td>
+            <td>" . $Flexcus[$i][5] . "</td>
+            <td>" . $Flexcus[$i][6] . "</td>
+            </tr>";
+            $i = $i + 1;
+
+            // }
+
+        }
     }
 
 
 
 
 
-
-
-    $ResponseXML .= " </table>]]></incen_table>";
-
-    $txtremark = str_replace("&nbsp;", " ", $txtremark);
-
-    $ResponseXML .= "<txtremark><![CDATA[" . $txtremark . "]]></txtremark>";
-    $ResponseXML .= "<txtint><![CDATA[" . $txtint . "]]></txtint>";
-    $ResponseXML .= "<txt_percentage><![CDATA[" . $txt_percentage . "]]></txt_percentage>";
-    $ResponseXML .= "<txtnetin><![CDATA[" . number_format($txtnetin, 2, ".", ",") . "]]></txtnetin>";
-    $ResponseXML .= "<txt_chno><![CDATA[" . $txt_chno . "]]></txt_chno>";
-    $ResponseXML .= "<chq_ignore><![CDATA[" . $chq_ignore . "]]></chq_ignore>";
-    $ResponseXML .= "<txttot_inc><![CDATA[" . number_format($txttot_inc, 2, ".", ",") . "]]></txttot_inc>";
-    $ResponseXML .= "<txt_tot><![CDATA[" . number_format($txt_tot, 2, ".", ",") . "]]></txt_tot>";
-    $ResponseXML .= "<txt_grn><![CDATA[" . number_format($txt_grn, 2, ".", ",") . "]]></txt_grn>";
-    $ResponseXML .= "<txttotal><![CDATA[" . number_format($txttotal, 2, ".", ",") . "]]></txttotal>";
-    $ResponseXML .= "<txt_out><![CDATA[" . number_format($txt_out, 2, ".", ",") . "]]></txt_out>";
-    $ResponseXML .= "<TypeGrid1_count><![CDATA[" . $TypeGrid1_count . "]]></TypeGrid1_count>";
-    $ResponseXML .= "<txt_vat><![CDATA[" . $txt_vat . "]]></txt_vat>";
-
-    $sql = "select * from dealer_incen_rmk where d_code = '" . $_GET["txt_cuscode"] . "'";
-    $result = mysql_query($sql, $dbinv);
-    $row = mysql_fetch_array($result);
-
-    $ResponseXML .= "<incenRemark><![CDATA[" . $row["rmk"] . "]]></incenRemark>";
-    $ResponseXML .= "</salesdetails>";
+    $ResponseXML .= "   </table>";
 
     echo $ResponseXML;
 
-    mysql_close($dbinv);
+    
 }
-///////////////////////
+
+if ($_GET['Command'] == "updt") {
+    $sql = "delete from dealer_incen_rmk where d_code = '" . $_GET["cuscode"] . "'";
+    require_once("config.inc.php");
+    require_once("DBConnector.php");
+    $db = new DBConnector();
+    $result = $db->RunQuery($sql);
+
+    $sql = "insert into dealer_incen_rmk (d_code,rmk) values ('" . $_GET['cuscode'] . "','" . $_GET['remark'] . "')";
+    $result = $db->RunQuery($sql);
+    echo "Saved";
+}
+
+if ($_GET["Command"] == "chk_ad") {
 
 
+    if ($_GET["chk_val"] == "true") {
+        $rs = "update monsales set print = '1' where Cus_Code = '" . $_GET["cuscode"] . "' and user_id='" . $_SESSION["CURRENT_USER"] . "'";
+        $result = $db->RunQuery($rs);
+        //$row = mysql_fetch_array($result)){
+    } else {
+        $rs = "update monsales set print = '0' where Cus_Code = '" . $_GET["cuscode"] . "' and user_id='" . $_SESSION["CURRENT_USER"] . "'";
+        $result = $db->RunQuery($rs);
+    }
+    //echo $rs;
+}
+
+function dateDifference($date_1, $date_2, $differenceFormat = '%a')
+{
+    $datetime1 = date_create($date_1);
+    $datetime2 = date_create($date_2);
+
+    $interval = date_diff($datetime1, $datetime2);
+
+    return $interval->format($differenceFormat);
+}
 
 ?>
