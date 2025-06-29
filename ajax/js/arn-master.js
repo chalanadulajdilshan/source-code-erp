@@ -272,7 +272,6 @@ jQuery(document).ready(function () {
     });
 
 
-
     $(document).on('click', '.select-purchase-order', function () {
         const id = $(this).data('id');
         const poNumber = $(this).data('po_number');

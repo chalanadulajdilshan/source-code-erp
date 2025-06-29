@@ -173,7 +173,7 @@ class ItemMaster
         $result = $db->readQuery($query);
 
         $items = [];
-        $STOCK_MASTER = new StockMaster(NULL);
+
         $STOCK_TMP = new StockItemTmp(NULL);
 
         while ($row = mysqli_fetch_assoc($result)) {
@@ -330,9 +330,6 @@ class ItemMaster
             "data" => $data
         ];
     }
-
-
-
 
     public function getIdbyItemCode($code)
     {

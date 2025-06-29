@@ -1,4 +1,6 @@
 jQuery(document).ready(function () {
+    //windows loder
+    loadCustomer();
 
     //number formate
     function formatPriceInput(inputField) {
@@ -25,8 +27,6 @@ jQuery(document).ready(function () {
             formatPriceInput(this);
         });
     });
-
-
 
     //get district name
     $('#province').change(function () {
@@ -127,10 +127,6 @@ jQuery(document).ready(function () {
         });
     }
 
-    //loard firrst customer cash customer
-
-    //windows loder
-    loadCustomer();
 
 
     //get first row cash sales customer

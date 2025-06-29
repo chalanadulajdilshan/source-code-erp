@@ -12,6 +12,12 @@
     z-index: 1050;
     /* Ensure the dropdown is above other elements */
 }
+.disabled-arn {
+    pointer-events: none;
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 
 #customerList .list-group-item {
     cursor: pointer;

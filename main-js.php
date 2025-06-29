@@ -28,4 +28,12 @@
         var today = $.datepicker.formatDate('yy-mm-dd', new Date());
         $(".date-picker").val(today);
     });
+    $(function () {
+
+        // Initialize the datepicker
+        $(".date-picker-date").datepicker({
+            dateFormat: 'yy-mm-dd' // or 'dd-mm-yy' as per your format
+        });
+
+    });
 </script>

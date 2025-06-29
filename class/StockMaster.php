@@ -320,8 +320,7 @@ class StockMaster
     {
         $query = "SELECT SUM(quantity) AS total_quantity
               FROM stock_master
-              WHERE item_id = " . (int) $item_id . " 
-                AND is_active = 1";
+              WHERE item_id = " . (int) $item_id . "  ";
 
         $db = new Database();
         $result = $db->readQuery($query);

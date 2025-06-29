@@ -14,6 +14,22 @@ include './auth.php';
     <meta content="<?php echo $COMPANY_PROFILE_DETAILS->name ?>" name="author" />
     <!-- include main CSS -->
     <?php include 'main-css.php' ?>
+    <style>
+        .disabled-arn {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        .active-arn {
+            cursor: pointer;
+            background-color: #dff0d8 !important;
+        }
+
+        .used-arn {
+            background-color: #f2f2f2 !important;
+            color: #aaa;
+        }
+    </style>
 
 </head>
 
@@ -37,15 +53,15 @@ include './auth.php';
                             </a>
 
                             <?php if ($PERMISSIONS['add_page']): ?>
-                            <a href="#" class="btn btn-primary" id="create">
-                                <i class="uil uil-save me-1"></i> Payment
-                            </a>
+                                <a href="#" class="btn btn-primary" id="create">
+                                    <i class="uil uil-save me-1"></i> Payment
+                                </a>
                             <?php endif; ?>
 
                             <?php if ($PERMISSIONS['edit_page']): ?>
-                            <a href="#" class="btn btn-warning" id="update">
-                                <i class="uil uil-edit me-1"></i> Update
-                            </a>
+                                <a href="#" class="btn btn-warning" id="update">
+                                    <i class="uil uil-edit me-1"></i> Update
+                                </a>
                             <?php endif; ?>
 
                             <a href="#" class="btn btn-info" id="print">
@@ -53,9 +69,9 @@ include './auth.php';
                             </a>
 
                             <?php if ($PERMISSIONS['delete_page']): ?>
-                            <a href="#" class="btn btn-danger delete-category" style="display: none;">
-                                <i class="uil uil-trash-alt me-1"></i> Delete
-                            </a>
+                                <a href="#" class="btn btn-danger delete-category" style="display: none;">
+                                    <i class="uil uil-trash-alt me-1"></i> Delete
+                                </a>
                             <?php endif; ?>
 
                         </div>
@@ -222,7 +238,7 @@ include './auth.php';
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-3">
+                                            <!-- <div class="col-md-3">
                                                 <label for="sales_type" class="form-label">Sales Type</label>
                                                 <div class="input-group mb-3">
                                                     <select id="sales_type" name="sales_type" class="form-select">
@@ -235,24 +251,9 @@ include './auth.php';
                                                         <?php } ?>
                                                     </select>
                                                 </div>
-                                            </div>
+                                            </div> -->
 
-                                            
-                                            <div class="col-md-3">
-                                                <label for="year" class="form-label">Select Item Year</label>
-                                                <div class="input-group mb-3">
-                                                    <select id="year" name="year" class="form-select">
-                                                        <option> -- Select Year -- </option>
-                                                        <?php
-                                                        $DEFAULT_DATA = new DefaultData();
-                                                        foreach ($DEFAULT_DATA->Years() as $year) {
-                                                            ?>
-                                                            <option value="<?php echo $year ?>">
-                                                                <?php echo $year ?></option>
-                                                        <?php } ?>
-                                                    </select>
-                                                </div>
-                                            </div>
+
 
                                             <!-- <div class=" ">
                                                 <div class="form-check form-check-inline">
@@ -281,304 +282,258 @@ include './auth.php';
 
 
                                             <hr class="my-4">
-
-                                            <ul class="nav nav-pills nav-justified bg-light left-width" role="tablist">
-                                                <li class="nav-item waves-effect waves-light">
-                                                    <a class="nav-link active" data-bs-toggle="tab"
-                                                        href="#navpills2-home" role="tab" aria-selected="true">
-                                                        <span class="d-block d-sm-none"><i
-                                                                class="fas fa-home"></i></span>
-                                                        <span class="d-none d-sm-block">Product</span>
-                                                    </a>
-                                                </li>
-                                                <li class="nav-item waves-effect waves-light">
-                                                    <a class="nav-link " data-bs-toggle="tab" href="#navpills2-profile"
-                                                        role="tab" aria-selected="false">
-                                                        <span class="d-block d-sm-none"><i
-                                                                class="far fa-user"></i></span>
-                                                        <span class="d-none d-sm-block">Dag</span>
-                                                    </a>
-                                                </li>
-                                            </ul>
-
-                                            <div class="tab-content p-3 text-muted">
-                                                <div class="tab-pane active" id="navpills2-home" role="tabpanel">
-                                                    <div class="row align-items-end">
-                                                        <div class="col-md-2">
-                                                            <label for="itemCode" class="form-label">Item
-                                                                Code</label>
-                                                            <div class="input-group">
-                                                                <input id="itemCode" type="text" class="form-control"
-                                                                    placeholder="Item Code" readonly>
-                                                                <button class="btn btn-info" type="button"
-                                                                    data-bs-toggle="modal"
-                                                                    data-bs-target="#item_master">
-                                                                    <i class="uil uil-search me-1"></i>
-                                                                </button>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="col-md-2">
-                                                            <label class="form-label">Name</label>
-                                                            <input type="text" id="itemName" class="form-control"
-                                                                placeholder="Name" readonly>
-                                                        </div>
-                                                        <div class="col-md-2">
-                                                            <label class="form-label">Price</label>
-                                                            <input type="number" id="itemPrice" class="form-control"
-                                                                placeholder="Price" oninput="calculatePayment()">
-                                                        </div>
-                                                        <div class="col-md-1">
-                                                            <label class="form-label">Qty</label>
-                                                            <input type="number" id="itemQty" class="form-control"
-                                                                placeholder="Qty" oninput="calculatePayment()">
-                                                        </div>
-                                                        <div class="col-md-2">
-                                                            <label class="form-label">Discount (%)</label>
-                                                            <input type="number" id="itemDiscount" class="form-control"
-                                                                placeholder="Discount" oninput="calculatePayment()">
-                                                        </div>
-                                                        <div class="col-md-2">
-                                                            <label class="form-label">Payment</label>
-                                                            <input type="number" id="itemPayment" class="form-control"
-                                                                placeholder="Payment" readonly>
-                                                        </div>
-                                                        <div class="col-md-1">
-                                                            <button type="button" class="btn btn-success w-100"
-                                                                id="addItemBtn">Add</button>
-                                                        </div>
+                                            <div class="row align-items-end">
+                                                <div class="col-md-2">
+                                                    <label for="itemCode" class="form-label">Item
+                                                        Code</label>
+                                                    <div class="input-group">
+                                                        <input id="itemCode" type="text" class="form-control"
+                                                            placeholder="Item Code" readonly>
+                                                        <button class="btn btn-info" type="button"
+                                                            data-bs-toggle="modal" data-bs-target="#item_master">
+                                                            <i class="uil uil-search me-1"></i>
+                                                        </button>
                                                     </div>
-
-
-
-                                                    <!-- Table -->
-                                                    <div class="table-responsive mt-4">
-                                                        <table class="table table-bordered" id="invoiceTable">
-                                                            <thead class="table-light">
-                                                                <tr>
-                                                                    <th>Code</th>
-                                                                    <th>Name</th>
-                                                                    <th>Price</th>
-                                                                    <th>Qty</th>
-                                                                    <th>Discount</th>
-                                                                    <th>Payment</th>
-                                                                    <th>Total</th>
-                                                                    <th>Action</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody id="invoiceItemsBody">
-                                                                <tr id="noItemRow">
-                                                                    <td colspan="8" class="text-center text-muted">
-                                                                        No items
-                                                                        added</td>
-                                                                </tr>
-                                                            </tbody>
-
-                                                        </table>
-
-                                                    </div>
-
-
                                                 </div>
-                                                <div class="tab-pane " id="navpills2-profile" role="tabpanel">
-                                                    <p class="mb-0">
-                                                        Food truck fixie locavore, accusamus mcsweeney's marfa nulla
-                                                        single-origin coffee squid. Exercitation +1 labore velit,
-                                                        blog
-                                                        sartorial PBR leggings next level wes anderson artisan four
-                                                        loko
-                                                        farm-to-table craft beer twee. Qui photo booth letterpress,
-                                                        commodo enim craft beer mlkshk aliquip jean shorts ullamco
-                                                        ad
-                                                        vinyl cillum PBR. Homo nostrud organic, assumenda labore
-                                                        aesthetic magna 8-bit.
-                                                    </p>
+
+                                                <div class="col-md-2">
+                                                    <label class="form-label">Name</label>
+                                                    <input type="text" id="itemName" class="form-control"
+                                                        placeholder="Name" readonly>
                                                 </div>
-                                                <hr>
-                                                <div class="row">
-                                                    <div class="col-md-5">
-                                                        <div class="  p-2 border rounded bg-light"
-                                                            style="max-width: 500px;">
-                                                            <div class="row mb-2">
-                                                                <div class="col-5">
-                                                                    <input type="text"
-                                                                        class="form-control text_purchase3"
-                                                                        value="Stock Level" disabled>
-                                                                </div>
-                                                                <div class="col-7">
-                                                                    <input type="text"
-                                                                        class="form-control text-danger fw-bold"
-                                                                        id="available_qty"   disabled>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="row mb-2">
-                                                                <div class="col-5">
-                                                                    <input type="text"
-                                                                        class="form-control text_purchase3"
-                                                                        value="Credit Period  " disabled>
-                                                                </div>
-                                                                <div class="col-7">
-                                                                    <select class="form-control select2">
-                                                                        <option> -- Select Credit Period --
-                                                                        </option>
-                                                                        <?php
-                                                                        $CREDIT_PERIOD = new CreditPeriod(NULL);
-                                                                        foreach ($CREDIT_PERIOD->getCreditPeriodByStatus(1) as $Credit_period) {
-                                                                            ?>
-                                                                            <option
-                                                                                value="<?php echo $Credit_period['id'] ?>">
-                                                                                <?php echo $Credit_period['days'] . ' ' . "Days" ?>
-                                                                            </option>
-                                                                        <?php } ?>
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row mb-2">
-                                                                <div class="col-5">
-                                                                    <input type="text"
-                                                                        class="form-control text_purchase3"
-                                                                        value="Invoice Remarks  " disabled>
-                                                                </div>
-                                                                <div class="col-7">
-                                                                    <select class="form-control">
-                                                                        <option> -- Select Remark -- </option>
-                                                                        <?php
-                                                                        $INVOICE_REMARK = new InvoiceRemark(null);
-                                                                        foreach ($INVOICE_REMARK->all() as $remark) {
-                                                                            ?>
-                                                                            <option value="<?php echo $remark['id'] ?>">
-                                                                                <?php echo $remark['remark'] ?>
-                                                                            </option>
-                                                                        <?php } ?>
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-
-                                                        </div>
-                                                    </div>
-
-
-                                                    <div class="col-md-3"></div>
-
-                                                    <div class="col-md-4">
-                                                        <div class="  p-2 border rounded bg-light"
-                                                            style="max-width: 600px;">
-                                                            <div class="row mb-2">
-                                                                <div class="col-7">
-                                                                    <input type="text"
-                                                                        class="form-control text_purchase3"
-                                                                        value="Sub Total" disabled>
-                                                                </div>
-                                                                <div class="col-5">
-                                                                    <input type="text" class="form-control"
-                                                                        id="subTotal" value="0.00" disabled>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="row mb-2">
-                                                                <div class="col-7">
-                                                                    <input type="text"
-                                                                        class="form-control text_purchase3"
-                                                                        value="Discount Total:" disabled>
-                                                                </div>
-                                                                <div class="col-5">
-                                                                    <input type="text" class="form-control"
-                                                                        id="disTotal" value="0.00" disabled>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="row mb-2">
-                                                                <div class="col-7">
-                                                                    <input type="text"
-                                                                        class="form-control text_purchase3"
-                                                                        value="Tax Total:" disabled>
-                                                                </div>
-                                                                <div class="col-5">
-                                                                    <input type="text" class="form-control" id="tax"
-                                                                        value="0.00" disabled>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row mb-2">
-                                                                <div class="col-7">
-                                                                    <input type="text"
-                                                                        class="form-control text_purchase3 fw-bold"
-                                                                        value="Grand Total:" disabled>
-                                                                </div>
-                                                                <div class="col-5">
-                                                                    <input type="text" class="form-control  fw-bold"
-                                                                        id="finalTotal" value="0.00" disabled>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
+                                                <div class="col-md-2">
+                                                    <label class="form-label">Price</label>
+                                                    <input type="number" id="itemPrice" class="form-control"
+                                                        placeholder="Price" oninput="calculatePayment()">
                                                 </div>
-                                                <hr>
-                                                <div class="row">
+                                                <div class="col-md-1">
+                                                    <label class="form-label">Qty</label>
+                                                    <input type="number" id="itemQty" class="form-control"
+                                                        placeholder="Qty" oninput="calculatePayment()">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <label class="form-label">Discount (%)</label>
+                                                    <input type="number" id="itemDiscount" class="form-control"
+                                                        placeholder="Discount" oninput="calculatePayment()">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <label class="form-label">Payment</label>
+                                                    <input type="number" id="itemPayment" class="form-control"
+                                                        placeholder="Payment" readonly>
+                                                </div>
+                                                <div class="col-md-1">
+                                                    <button type="button" class="btn btn-success w-100"
+                                                        id="addItemBtn">Add</button>
+                                                </div>
+                                            </div>
+
+
+
+                                            <!-- Table -->
+                                            <div class="table-responsive mt-4">
+                                                <table class="table table-bordered" id="invoiceTable">
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th>Code</th>
+                                                            <th>Name</th>
+                                                            <th>Price</th>
+                                                            <th>Qty</th>
+                                                            <th>Discount</th>
+                                                            <th>Payment</th>
+                                                            <th>Total</th>
+                                                            <th>Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="invoiceItemsBody">
+                                                        <tr id="noItemRow">
+                                                            <td colspan="8" class="text-center text-muted">
+                                                                No items
+                                                                added</td>
+                                                        </tr>
+                                                    </tbody>
+
+                                                </table>
+
+                                            </div>
+
+
+                                            <hr>
+                                            <div class="row">
+                                                <div class="col-md-5">
                                                     <div class="  p-2 border rounded bg-light"
                                                         style="max-width: 500px;">
                                                         <div class="row mb-2">
-                                                            <div class="col-7">
-                                                                <input type="text" class="form-control text_purchase3"
-                                                                    value="Outstanding Invoice Amount" disabled>
-                                                            </div>
                                                             <div class="col-5">
-                                                                <input type="text" class="form-control" value="0.00"
-                                                                    disabled>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="row mb-2">
-                                                            <div class="col-7">
                                                                 <input type="text" class="form-control text_purchase3"
-                                                                    value="Return Cheque Amount" disabled>
+                                                                    value="Stock Level" disabled>
                                                             </div>
-                                                            <div class="col-5">
-                                                                <input type="text" class="form-control" value="0.00"
-                                                                    disabled>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="row mb-2">
-                                                            <div class="col-7">
-                                                                <input type="text" class="form-control text_purchase3"
-                                                                    value="Pending Cheque Amount" disabled>
-                                                            </div>
-                                                            <div class="col-5">
-                                                                <input type="text" class="form-control" value="0.00"
-                                                                    disabled>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="row mb-2">
-                                                            <div class="col-7">
-                                                                <input type="text" class="form-control text_purchase3"
-                                                                    value="PSD Cheque Settlements" disabled>
-                                                            </div>
-                                                            <div class="col-5">
-                                                                <input type="text" class="form-control" value="0.00"
-                                                                    disabled>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="row border-top pt-2">
                                                             <div class="col-7">
                                                                 <input type="text"
-                                                                    class="form-control text_purchase3 fw-bold"
-                                                                    value="Total" disabled>
+                                                                    class="form-control text-danger fw-bold"
+                                                                    id="available_qty" disabled>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row mb-2">
+                                                            <div class="col-5">
+                                                                <input type="text" class="form-control text_purchase3"
+                                                                    value="Credit Period  " disabled>
+                                                            </div>
+                                                            <div class="col-7">
+                                                                <select class="form-control select2">
+                                                                    <option> -- Select Credit Period --
+                                                                    </option>
+                                                                    <?php
+                                                                    $CREDIT_PERIOD = new CreditPeriod(NULL);
+                                                                    foreach ($CREDIT_PERIOD->getCreditPeriodByStatus(1) as $Credit_period) {
+                                                                        ?>
+                                                                        <option value="<?php echo $Credit_period['id'] ?>">
+                                                                            <?php echo $Credit_period['days'] . ' ' . "Days" ?>
+                                                                        </option>
+                                                                    <?php } ?>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row mb-2">
+                                                            <div class="col-5">
+                                                                <input type="text" class="form-control text_purchase3"
+                                                                    value="Invoice Remarks  " disabled>
+                                                            </div>
+                                                            <div class="col-7">
+                                                                <select class="form-control">
+                                                                    <option> -- Select Remark -- </option>
+                                                                    <?php
+                                                                    $INVOICE_REMARK = new InvoiceRemark(null);
+                                                                    foreach ($INVOICE_REMARK->all() as $remark) {
+                                                                        ?>
+                                                                        <option value="<?php echo $remark['id'] ?>">
+                                                                            <?php echo $remark['remark'] ?>
+                                                                        </option>
+                                                                    <?php } ?>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="col-md-3"></div>
+
+                                                <div class="col-md-4">
+                                                    <div class="  p-2 border rounded bg-light"
+                                                        style="max-width: 600px;">
+                                                        <div class="row mb-2">
+                                                            <div class="col-7">
+                                                                <input type="text" class="form-control text_purchase3"
+                                                                    value="Sub Total" disabled>
                                                             </div>
                                                             <div class="col-5">
-                                                                <input type="text" class="form-control fw-bold"
+                                                                <input type="text" class="form-control" id="subTotal"
                                                                     value="0.00" disabled>
                                                             </div>
                                                         </div>
-                                                    </div>
 
+                                                        <div class="row mb-2">
+                                                            <div class="col-7">
+                                                                <input type="text" class="form-control text_purchase3"
+                                                                    value="Discount Total:" disabled>
+                                                            </div>
+                                                            <div class="col-5">
+                                                                <input type="text" class="form-control" id="disTotal"
+                                                                    value="0.00" disabled>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row mb-2">
+                                                            <div class="col-7">
+                                                                <input type="text" class="form-control text_purchase3"
+                                                                    value="Tax Total:" disabled>
+                                                            </div>
+                                                            <div class="col-5">
+                                                                <input type="text" class="form-control" id="tax"
+                                                                    value="0.00" disabled>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row mb-2">
+                                                            <div class="col-7">
+                                                                <input type="text"
+                                                                    class="form-control text_purchase3 fw-bold"
+                                                                    value="Grand Total:" disabled>
+                                                            </div>
+                                                            <div class="col-5">
+                                                                <input type="text" class="form-control  fw-bold"
+                                                                    id="finalTotal" value="0.00" disabled>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
 
                                             </div>
+                                            <hr>
+                                            <div class="row">
+                                                <div class="  p-2 border rounded bg-light" style="max-width: 500px;">
+                                                    <div class="row mb-2">
+                                                        <div class="col-7">
+                                                            <input type="text" class="form-control text_purchase3"
+                                                                value="Outstanding Invoice Amount" disabled>
+                                                        </div>
+                                                        <div class="col-5">
+                                                            <input type="text" class="form-control" value="0.00"
+                                                                disabled>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row mb-2">
+                                                        <div class="col-7">
+                                                            <input type="text" class="form-control text_purchase3"
+                                                                value="Return Cheque Amount" disabled>
+                                                        </div>
+                                                        <div class="col-5">
+                                                            <input type="text" class="form-control" value="0.00"
+                                                                disabled>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row mb-2">
+                                                        <div class="col-7">
+                                                            <input type="text" class="form-control text_purchase3"
+                                                                value="Pending Cheque Amount" disabled>
+                                                        </div>
+                                                        <div class="col-5">
+                                                            <input type="text" class="form-control" value="0.00"
+                                                                disabled>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row mb-2">
+                                                        <div class="col-7">
+                                                            <input type="text" class="form-control text_purchase3"
+                                                                value="PSD Cheque Settlements" disabled>
+                                                        </div>
+                                                        <div class="col-5">
+                                                            <input type="text" class="form-control" value="0.00"
+                                                                disabled>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row border-top pt-2">
+                                                        <div class="col-7">
+                                                            <input type="text"
+                                                                class="form-control text_purchase3 fw-bold"
+                                                                value="Total" disabled>
+                                                        </div>
+                                                        <div class="col-5">
+                                                            <input type="text" class="form-control fw-bold" value="0.00"
+                                                                disabled>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
                                         </div>
+
                                     </form>
                                 </div>
                             </div>
@@ -593,7 +548,6 @@ include './auth.php';
         <!-- end main content-->
 
     </div>
-    <!-- END layout-wrapper -->
 
 
 
@@ -604,7 +558,6 @@ include './auth.php';
     <script src="assets/libs/jquery/jquery.min.js"></script>
     <!-- /////////////////////////// -->
     <script src="ajax/js/sales-invoice.js"></script>
-    <script src="ajax/js/common.js"></script>
 
     <!-- include main js  -->
     <?php include 'main-js.php' ?>

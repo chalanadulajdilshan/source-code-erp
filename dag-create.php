@@ -55,13 +55,14 @@ $dag_id = 'CD/00/' . $lastId + 1;
                             <?php endif; ?>
 
                             <?php if ($PERMISSIONS['print_page']): ?>
-                                <a href="#" class="btn btn-info" id="print">
+                                <a href="#" class="btn btn-info" id="print" style="display: none;">
                                     <i class="uil uil-print me-1"></i> Print
                                 </a>
+
                             <?php endif; ?>
 
                             <?php if ($PERMISSIONS['edit_page']): ?>
-                                <a href="#" class="btn btn-warning" id="update">
+                                <a href="#" class="btn btn-warning" id="update" style="display: none;">
                                     <i class="uil uil-edit me-1"></i> Update
                                 </a>
                             <?php endif; ?>
@@ -173,18 +174,20 @@ $dag_id = 'CD/00/' . $lastId + 1;
                                                 <label for="name" class="form-label">Dag Received Date</label>
                                                 <div class="input-group">
 
-                                                    <input type="text" class="form-control date-picker"
-                                                        id="received_date" name="received_date"> <span
+                                                    <input type="text" class="form-control date-picker-date"
+                                                        id="received_date" name="received_date"
+                                                        placeholder="Select Recived Date"> <span
                                                         class="input-group-text"><i class="mdi mdi-calendar"></i></span>
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-2">
+                                            <div class="col-md-2 hidden">
                                                 <label for="name" class="form-label">Dag Delivery Date</label>
                                                 <div class="input-group">
 
-                                                    <input type="text" class="form-control date-picker"
-                                                        id="delivery_date" name="delivery_date"> <span
+                                                    <input type="text" class="form-control date-picker-date"
+                                                        id="delivery_date" name="delivery_date"
+                                                        placeholder="Select Delivery Date"> <span
                                                         class="input-group-text"><i class="mdi mdi-calendar"></i></span>
                                                 </div>
                                             </div>
@@ -192,15 +195,16 @@ $dag_id = 'CD/00/' . $lastId + 1;
                                                 <label for="name" class="form-label">Customer Request Date</label>
                                                 <div class="input-group">
 
-                                                    <input type="text" class="form-control date-picker"
-                                                        id="customer_request_date" name="customer_request_date"> <span
+                                                    <input type="text" class="form-control date-picker-date"
+                                                        id="customer_request_date" name="customer_request_date"
+                                                        placeholder="Select Request Date"> <span
                                                         class="input-group-text"><i class="mdi mdi-calendar"></i></span>
                                                 </div>
                                             </div>
 
                                             <hr class="mt-4">
                                             <div class="col-md-3">
-                                                <label for="Type" class="form-label">Assaign Company</label>
+                                                <label for="Type" class="form-label">Assaign Company required</label>
                                                 <div class="input-group mb-3">
                                                     <select name="dag_company_id" id="dag_company_id"
                                                         class="text_purchase3 col-sm-9 form-control">
@@ -217,12 +221,14 @@ $dag_id = 'CD/00/' . $lastId + 1;
                                                     </select>
                                                 </div>
                                             </div>
+
                                             <div class="col-md-2">
                                                 <label for="name" class="form-label">Company Issued Date</label>
                                                 <div class="input-group" id="company_issued_date">
 
-                                                    <input type="text" class="form-control date-picker"
-                                                        id="company_issued_date" name="company_issued_date"> <span
+                                                    <input type="text" class="form-control date-picker-date"
+                                                        id="company_issued_date" name="company_issued_date"
+                                                        placeholder="Select Issued Date"> <span
                                                         class="input-group-text"><i class="mdi mdi-calendar"></i></span>
                                                 </div>
                                             </div>
@@ -230,8 +236,9 @@ $dag_id = 'CD/00/' . $lastId + 1;
                                                 <label for="name" class="form-label">Company Delivery Date</label>
                                                 <div class="input-group" id="company_delivery_date">
 
-                                                    <input type="text" class="form-control date-picker"
-                                                        id="company_delivery_date" name="company_delivery_date"> <span
+                                                    <input type="text" class="form-control date-picker-date"
+                                                        id="company_delivery_date" name="company_delivery_date"
+                                                        placeholder="Select Delivery Date"> <span
                                                         class="input-group-text"><i class="mdi mdi-calendar"></i></span>
                                                 </div>
                                             </div>
@@ -243,6 +250,20 @@ $dag_id = 'CD/00/' . $lastId + 1;
                                                 </div>
 
                                             </div>
+                                            <div class="col-md-3">
+                                                <label for="dag_status" class="form-label">Dag Status</label>
+                                                <div class="input-group mb-3">
+                                                    <select name="dag_status" id="dag_status"
+                                                        class="text_purchase3 col-sm-9 form-control">
+                                                        <option value="pending">Pending Dag</option>
+                                                        <option value="assigned">Assign Company</option>
+                                                        <option value="received">Received Dag</option>
+                                                        <option value="rejected_company">Rejected in Company</option>
+                                                        <option value="rejected_store">Rejected in Store</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
 
 
                                             <hr class="my-4">
@@ -251,13 +272,13 @@ $dag_id = 'CD/00/' . $lastId + 1;
 
 
                                             <div class="row align-items-end">
-                                                <div class="col-md-2">
+                                                <div class="col-md-3">
                                                     <label class="form-label">Vehicle No</label>
                                                     <input type="text" id="vehicleNo" class="form-control"
                                                         placeholder="Vehicle No">
                                                 </div>
 
-                                                <div class="col-md-2">
+                                                <div class="col-md-3">
                                                     <label for="beltDesign" class="form-label">Belt Design</label>
                                                     <div class="input-group">
                                                         <select id="beltDesign" name="belt_design" class="form-select">
@@ -274,29 +295,24 @@ $dag_id = 'CD/00/' . $lastId + 1;
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-2">
+                                                <div class="col-md-2 hidden">
                                                     <label class="form-label">Casing Cost</label>
                                                     <input type="number" id="casingCost" class="form-control"
                                                         placeholder="Cost" oninput="calculateDagItemTotal()">
                                                 </div>
 
-                                                <div class="col-md-2">
+                                                <div class="col-md-3">
                                                     <label class="form-label">Barcode</label>
                                                     <input type="text" id="barcode" class="form-control"
                                                         placeholder="Barcode">
                                                 </div>
 
-                                                <div class="col-md-1">
+                                                <div class="col-md-2">
                                                     <label class="form-label">Qty</label>
                                                     <input type="number" id="quantity" class="form-control"
                                                         placeholder="Qty" oninput="calculateDagItemTotal()">
                                                 </div>
 
-                                                <div class="col-md-2">
-                                                    <label class="form-label">Total Amount</label>
-                                                    <input type="text" id="totalAmount" class="form-control"
-                                                        placeholder="Total Amount" readonly>
-                                                </div>
 
                                                 <div class="col-md-1">
                                                     <button type="button" class="btn btn-success w-100"
@@ -311,10 +327,8 @@ $dag_id = 'CD/00/' . $lastId + 1;
                                                         <tr>
                                                             <th>Vehicle No</th>
                                                             <th>Belt Design</th>
-                                                            <th>Casing Cost</th>
                                                             <th>Barcode</th>
                                                             <th>Qty</th>
-                                                            <th>Total</th>
                                                             <th>Action</th>
                                                         </tr>
                                                     </thead>
@@ -331,13 +345,14 @@ $dag_id = 'CD/00/' . $lastId + 1;
                                             <hr>
 
                                             <div class="col-md-5 mt-3">
-                                                <label for="remark" class="form-label">Remarks</label>
+                                                <label for="remark" class="form-label">Remarks validate to
+                                                    update</label>
                                                 <textarea id="remark" name="remark" class="form-control" rows="4"
                                                     placeholder="Enter any remarks or notes..."></textarea>
                                             </div>
                                             <div class="col-md-3"></div>
 
-                                            <div class="col-md-4">
+                                            <div class="col-md-4 hidden">
                                                 <div class="  p-2 border rounded bg-light" style="max-width: 600px;">
                                                     <div class="row mb-2">
                                                         <div class="col-7">
@@ -433,6 +448,7 @@ $dag_id = 'CD/00/' . $lastId + 1;
                                     data-ref_no="<?= htmlspecialchars($dag['ref_no']) ?>"
                                     data-department_id="<?= $dag['department_id'] ?>"
                                     data-customer_id="<?= $dag['customer_id'] ?>"
+                                    data-customer_code="<?= $CUSTOMER->code ?>" data-customer_name="<?= $CUSTOMER->name ?>"
                                     data-received_date="<?= $dag['received_date'] ?>"
                                     data-delivery_date="<?= $dag['delivery_date'] ?>"
                                     data-customer_request_date="<?= $dag['customer_request_date'] ?>"
@@ -482,19 +498,6 @@ $dag_id = 'CD/00/' . $lastId + 1;
 
 
 
-    <script>
-        $('#dagTable').DataTable();
-        $(function () {
-            // Initialize the datepicker
-            $(".date-picker").datepicker({
-                dateFormat: 'yy-mm-dd' // or 'dd-mm-yy' as per your format
-            });
-
-            // Set today's date as default value
-            var today = $.datepicker.formatDate('yy-mm-dd', new Date());
-            $(".date-picker").val(today);
-        });
-    </script>
 
 </body>
 
