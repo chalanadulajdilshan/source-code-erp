@@ -28,6 +28,8 @@
         var today = $.datepicker.formatDate('yy-mm-dd', new Date());
         $(".date-picker").val(today);
     });
+
+
     $(function () {
 
         // Initialize the datepicker
@@ -36,4 +38,10 @@
         });
 
     });
+
+
+    ///data table loard
+    $('#dagTable').DataTable();
+    $('#maindagTable').DataTable();
+
 </script>

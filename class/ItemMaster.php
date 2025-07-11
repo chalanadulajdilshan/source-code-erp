@@ -14,6 +14,7 @@ class ItemMaster
     public $re_order_level;
     public $re_order_qty;
     public $list_price;
+    public $invoice_price;
     public $stock_type;
     public $note;
     public $discount;
@@ -36,6 +37,7 @@ class ItemMaster
                 $this->group = $result['group'];
                 $this->category = $result['category'];
                 $this->list_price = $result['list_price'];
+                $this->invoice_price = $result['invoice_price'];
                 $this->re_order_level = $result['re_order_level'];
                 $this->re_order_qty = $result['re_order_qty'];
                 $this->stock_type = $result['stock_type'];
@@ -50,11 +52,11 @@ class ItemMaster
     {
         $query = "INSERT INTO `item_master` (
     `code`, `name`, `brand`, `size`, `pattern`, `group`, `category`, 
-     `re_order_level`, `re_order_qty`, `stock_type`, `note`,`list_price`,`discount`, `is_active`
+     `re_order_level`, `re_order_qty`, `stock_type`, `note`,`list_price`,`invoice_price`,`discount`, `is_active`
 ) VALUES (
     '$this->code', '$this->name', '$this->brand', '$this->size', '$this->pattern', '$this->group',
     '$this->category',  '$this->re_order_level', '$this->re_order_qty',
-     '$this->stock_type', '$this->note', '$this->list_price', '$this->discount', '$this->is_active'
+     '$this->stock_type', '$this->note', '$this->list_price', '$this->invoice_price', '$this->discount', '$this->is_active'
 )";
 
 
@@ -80,6 +82,7 @@ class ItemMaster
             `group` = '$this->group', 
             `category` = '$this->category', 
             `list_price` = '$this->list_price', 
+            `invoice_price` = '$this->invoice_price', 
             `re_order_level` = '$this->re_order_level', 
             `re_order_qty` = '$this->re_order_qty', 
             `stock_type` = '$this->stock_type', 
@@ -180,13 +183,14 @@ class ItemMaster
             $CATEGORY = new CategoryMaster($row['category']);
             $BRAND = new Brand($row['brand']);
             $GROUP_MASTER = new GroupMaster($row['group']);
+            $STOCK_MASTER = new StockMaster(NULL);
 
             $row['group'] = $GROUP_MASTER->name;
             $row['category'] = $CATEGORY->name;
             $row['brand'] = $BRAND->name;
 
             $row['stock_tmp'] = $STOCK_TMP->getByItemId($row['id']);
-            $row['total_available_qty'] = StockMaster::getTotalAvailableQuantity($row['id']);
+            $row['total_available_qty'] = $STOCK_MASTER->getTotalAvailableQuantity($row['id']);
 
             foreach ($row['stock_tmp'] as $key => $stockRow) {
                 // ARN
@@ -200,6 +204,10 @@ class ItemMaster
                 usort($row['stock_tmp'], function ($a, $b) {
                     return strtotime($a['created_at']) - strtotime($b['created_at']);
                 });
+
+                $row['stock_tmp'][$key]['final_cost'] = $stockRow['cost']; // Assuming 'cost' = final cost
+                $row['stock_tmp'][$key]['list_price'] = $stockRow['list_price'];
+                $row['stock_tmp'][$key]['invoice_price'] = $stockRow['invoice_price'];
 
                 // Department
                 $DEPARTMENT_MASTER = new DepartmentMaster($stockRow['department_id']);
@@ -278,8 +286,7 @@ class ItemMaster
         FROM item_master im
         LEFT JOIN stock_master sm ON im.id = sm.item_id 
         $where
-        GROUP BY im.id
-    ";
+        GROUP BY im.id ";
 
         $filteredQuery = $db->readQuery($filteredSql);
         $filteredData = mysqli_num_rows($filteredQuery);
@@ -309,6 +316,7 @@ class ItemMaster
                 "category_id" => $row['category'],
                 "category" => $CATEGORY->name,
                 "list_price" => $row['list_price'],
+                "invoice_price" => $row['invoice_price'],
                 "discount" => $row['discount'],
                 "stock_type" => $row['stock_type'],
                 "note" => $row['note'],

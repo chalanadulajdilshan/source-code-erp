@@ -9,8 +9,7 @@ class StockItemTmp
     public $cost;
     public $department_id;
     public $list_price;
-    public $cash_price;
-    public $credit_price;
+    public $invoice_price;
     public $created_at;
     public $status;
 
@@ -32,10 +31,10 @@ class StockItemTmp
     public function create()
     {
         $query = "INSERT INTO `stock_item_tmp` (
-            `arn_id`, `item_id`, `qty`, `cost`, `list_price`, `department_id`, `created_at`
+            `arn_id`, `item_id`, `qty`, `cost`, `list_price`,`invoice_price`, `department_id`, `created_at`
         ) VALUES (
             '{$this->arn_id}', '{$this->item_id}', '{$this->qty}', '{$this->cost}',
-            '{$this->list_price}', '{$this->department_id}', NOW()
+            '{$this->list_price}','{$this->invoice_price}', '{$this->department_id}', NOW()
         )";
 
         $db = new Database();
@@ -56,7 +55,8 @@ class StockItemTmp
             `qty` = '{$this->qty}',
             `cost` = '{$this->cost}',
             `department_id` = '{$this->department_id}',
-            `list_price` = '{$this->list_price}'
+            `list_price` = '{$this->list_price}',
+            `invoice_price` = '{$this->invoice_price}'
         WHERE `id` = '{$this->id}'";
 
         $db = new Database();
@@ -117,9 +117,25 @@ class StockItemTmp
         return $array_res;
     }
 
+    public function getByItemIdAndDepartment($id, $department_id)
+    {
+        $query = "SELECT * FROM `stock_item_tmp` WHERE `item_id` = '" . (int) $id . "' AND `department_id` = '" . (int) $department_id . "' ";
+        $db = new Database();
+        $result = $db->readQuery($query);
+
+        $array_res = array();
+        while ($row = mysqli_fetch_array($result)) {
+            $array_res[] = $row;
+        }
+
+        return $array_res;
+    }
+
+
+
     public function updateStockItemTmpPrice($id, $field, $value)
     {
-        $allowedFields = ['cost', 'cash_price', 'credit_price', 'cash_dis', 'credit_dis'];
+        $allowedFields = ['cost', 'invoice_price', 'list_price'];
 
         if (!in_array($field, $allowedFields)) {
             return ['error' => 'Invalid field'];

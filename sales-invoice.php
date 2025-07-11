@@ -53,7 +53,7 @@ include './auth.php';
                             </a>
 
                             <?php if ($PERMISSIONS['add_page']): ?>
-                                <a href="#" class="btn btn-primary" id="create">
+                                <a href="#" class="btn btn-primary" id="payment">
                                     <i class="uil uil-save me-1"></i> Payment
                                 </a>
                             <?php endif; ?>
@@ -238,51 +238,26 @@ include './auth.php';
                                                 </div>
                                             </div>
 
-                                            <!-- <div class="col-md-3">
-                                                <label for="sales_type" class="form-label">Sales Type</label>
+
+                                            <div class="col-md-3">
+                                                <label for="customerCode" class="form-label">Dag Ref No</label>
                                                 <div class="input-group mb-3">
-                                                    <select id="sales_type" name="sales_type" class="form-select">
-                                                        <?php
-                                                        $SALES_TYPE = new SalesType(NULL);
-                                                        foreach ($SALES_TYPE->all() as $sales_type) {
-                                                            ?>
-                                                            <option value="<?php echo $sales_type['id'] ?>">
-                                                                <?php echo $sales_type['name'] ?></option>
-                                                        <?php } ?>
-                                                    </select>
+                                                    <input id="ref_no" name="ref_no" type="text" class="form-control"
+                                                        placeholder="Select Dag Ref No" readonly>
+                                                    <button class="btn btn-info" type="button" data-bs-toggle="modal"
+                                                        data-bs-target="#dagModel">
+                                                        <i class="uil uil-search me-1"></i>
+                                                    </button>
                                                 </div>
-                                            </div> -->
+
+                                                <input type="hidden" id="dag_id" name="dag_id" />
+                                            </div>
 
 
-
-                                            <!-- <div class=" ">
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="checkbox"
-                                                        name="payment_type[]" id="cash" value="cash">
-                                                    <label class="form-check-label" for="cash">Print Invoice
-                                                        Amount</label>
-                                                </div>
-                                            </div> -->
-
-                                            <!-- <div class="col-md-2">
-                                                <label for="payment_type" class="form-label">Payment Type</label>
-                                                <div class="input-group mb-3">
-                                                    <select id="payment_type" name="payment_type" class="form-select">
-                                                        <?php
-                                                        $PAYMENT_TYPE = new PaymentType(NULL);
-                                                        foreach ($PAYMENT_TYPE->getActivePaymentType() as $payment_type) {
-                                                            ?>
-                                                            <option value="<?php echo $payment_type['id'] ?>">
-                                                                <?php echo $payment_type['name'] ?>
-                                                            </option>
-                                                        <?php } ?>
-                                                    </select>
-                                                </div>
-                                            </div> -->
 
 
                                             <hr class="my-4">
-                                            <div class="row align-items-end">
+                                            <div class="row align-items-end" id="addItemTable">
                                                 <div class="col-md-2">
                                                     <label for="itemCode" class="form-label">Item
                                                         Code</label>
@@ -328,6 +303,31 @@ include './auth.php';
                                             </div>
 
 
+
+                                            <!-- dag item Table -->
+                                            <div class="table-responsive ">
+
+                                                <table class="table table-bordered" id="dagTableHide"
+                                                    style="display:none">
+
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th>Vehicle No</th>
+                                                            <th>Belt Design</th>
+                                                            <th>Barcode</th>
+                                                            <th>Qty</th>
+                                                            <th>Price</th>
+                                                            <th>Total</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="dagItemsBodyInvoice">
+                                                        <tr id="noDagItemRow">
+                                                            <td colspan="6" class="text-center text-muted">No items
+                                                                added</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
 
                                             <!-- Table -->
                                             <div class="table-responsive mt-4">
@@ -420,7 +420,7 @@ include './auth.php';
 
                                                 <div class="col-md-3"></div>
 
-                                                <div class="col-md-4">
+                                                <div class="col-md-4 mb-4">
                                                     <div class="  p-2 border rounded bg-light"
                                                         style="max-width: 600px;">
                                                         <div class="row mb-2">
@@ -558,6 +558,7 @@ include './auth.php';
     <script src="assets/libs/jquery/jquery.min.js"></script>
     <!-- /////////////////////////// -->
     <script src="ajax/js/sales-invoice.js"></script>
+    <script src="ajax/js/create-dag.js"></script>
 
     <!-- include main js  -->
     <?php include 'main-js.php' ?>

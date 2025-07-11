@@ -18,6 +18,7 @@ if (isset($_POST['create'])) {
     $ITEM->group = $_POST['group'];
     $ITEM->category = $_POST['category'];
     $ITEM->list_price = $_POST['list_price'];
+    $ITEM->invoice_price = $_POST['invoice_price'];
     $ITEM->re_order_level = $_POST['re_order_level'];
     $ITEM->re_order_qty = $_POST['re_order_qty'];
     $ITEM->stock_type = $_POST['stock_type'];
@@ -76,6 +77,7 @@ if (isset($_POST['update'])) {
     $ITEM->stock_type = $_POST['stock_type'];
     $ITEM->note = $_POST['note'];
     $ITEM->list_price = $_POST['list_price'];
+    $ITEM->invoice_price = $_POST['invoice_price'];
     $ITEM->discount = $_POST['discount'];
     $ITEM->is_active = isset($_POST['is_active']) ? 1 : 0;
 

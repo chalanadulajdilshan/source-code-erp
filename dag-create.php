@@ -123,7 +123,7 @@ $dag_id = 'CD/00/' . $lastId + 1;
                                                         value="<?php echo $dag_id; ?>" placeholder="Ref No"
                                                         class="form-control" readonly>
                                                     <button class="btn btn-info" type="button" data-bs-toggle="modal"
-                                                        data-bs-target="#dagModel">
+                                                        data-bs-target="#mainDagModel">
                                                         <i class="uil uil-search me-1"></i>
                                                     </button>
                                                 </div>
@@ -234,7 +234,7 @@ $dag_id = 'CD/00/' . $lastId + 1;
                                             </div>
                                             <div class="col-md-2">
                                                 <label for="name" class="form-label">Company Delivery Date</label>
-                                                <div class="input-group" id="company_delivery_date">
+                                                <div class="input-group" id="delivery_date">
 
                                                     <input type="text" class="form-control date-picker-date"
                                                         id="company_delivery_date" name="company_delivery_date"
@@ -408,8 +408,7 @@ $dag_id = 'CD/00/' . $lastId + 1;
         </div>
     </div>
 
-    <!-- Modal -->
-    <div class="modal fade" id="dagModel" tabindex="-1" role="dialog" aria-labelledby="dagModalLabel"
+    <div class="modal fade" id="mainDagModel" tabindex="-1" role="dialog" aria-labelledby="dagModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
@@ -419,7 +418,7 @@ $dag_id = 'CD/00/' . $lastId + 1;
                 </div>
 
                 <div class="modal-body">
-                    <table id="dagTable" class="table table-bordered table-hover dt-responsive nowrap w-100">
+                    <table id="maindagTable" class="table table-bordered table-hover dt-responsive nowrap w-100">
                         <thead>
                             <tr>
                                 <th>#</th>
@@ -467,9 +466,51 @@ $dag_id = 'CD/00/' . $lastId + 1;
                                     <td><?= htmlspecialchars($dag['received_date']) ?></td>
                                     <td><?= htmlspecialchars($dag['delivery_date']) ?></td>
                                     <td><?= htmlspecialchars($dag['customer_request_date']) ?></td>
-                                    <td><?= htmlspecialchars($dag['status']) ?></td>
+
+
+                                    <?php
+                                    $status = htmlspecialchars($dag['status']);
+                                    $label = '';
+                                    $bgClass = '';
+
+                                    switch ($status) {
+                                        case 'pending':
+                                            $label = 'Pending';
+                                            $bgClass = 'bg-soft-warning'; // yellow
+                                            break;
+                                        case 'assigned':
+                                            $label = 'Assigned';
+                                            $bgClass = 'bg-soft-primary'; // blue
+                                            break;
+                                        case 'received':
+                                            $label = 'Received';
+                                            $bgClass = 'bg-soft-success'; // green
+                                            break;
+                                        case 'rejected_company':
+                                            $label = 'Rejected by Company';
+                                            $bgClass = 'bg-soft-danger'; // red
+                                            break;
+                                        case 'rejected_store':
+                                            $label = 'Rejected by Store';
+                                            $bgClass = 'bg-soft-danger'; // red
+                                            break;
+                                        default:
+                                            $label = ucfirst($status); // fallback
+                                            $bgClass = 'bg-soft-secondary'; // gray
+                                            break;
+                                    }
+                                    ?>
+
+
+                                    <td>
+                                        <span class="badge <?php echo $bgClass; ?> font-size-12">
+                                            <?php echo $label; ?>
+                                        </span>
 
                                     </td>
+
+
+
                                 </tr>
                             <?php } ?>
                         </tbody>
@@ -478,7 +519,6 @@ $dag_id = 'CD/00/' . $lastId + 1;
             </div>
         </div>
     </div>
-
 
 
     <!-- Right bar overlay-->
@@ -493,9 +533,6 @@ $dag_id = 'CD/00/' . $lastId + 1;
 
     <!-- include main js  -->
     <?php include 'main-js.php' ?>
-
-    <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
-
 
 
 

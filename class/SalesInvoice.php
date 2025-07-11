@@ -3,7 +3,10 @@
 class SalesInvoice
 {
     public $id;
+    public $ref_id;
     public $invoice_no;
+    public $invoice_type;
+
     public $invoice_date;
     public $company_id;
     public $customer_id;
@@ -29,6 +32,8 @@ class SalesInvoice
 
             if ($result) {
                 $this->id = $result['id'];
+                $this->ref_id = $result['ref_id'];
+                $this->invoice_type = $result['invoice_type'];
                 $this->invoice_no = $result['invoice_no'];
                 $this->invoice_date = $result['invoice_date'];
                 $this->company_id = $result['company_id'];
@@ -52,11 +57,11 @@ class SalesInvoice
     public function create()
     {
         $query = "INSERT INTO `sales_invoice` (
-            `invoice_no`, `invoice_date`, `company_id`, `customer_id`, `department_id`, 
+            `ref_id`,`invoice_type`,`invoice_no`, `invoice_date`, `company_id`, `customer_id`, `department_id`, 
             `sale_type`, `discount_type`,`final_cost`, `payment_type`, `sub_total`, `discount`, 
             `tax`, `grand_total`, `remark`
         ) VALUES (
-            '{$this->invoice_no}', '{$this->invoice_date}', '{$this->company_id}', '{$this->customer_id}', '{$this->department_id}', 
+            '{$this->ref_id}','{$this->invoice_type}', '{$this->invoice_no}', '{$this->invoice_date}', '{$this->company_id}', '{$this->customer_id}', '{$this->department_id}', 
             '{$this->sale_type}', '{$this->discount_type}', '{$this->final_cost}','{$this->payment_type}', '{$this->sub_total}', '{$this->discount}', 
             '{$this->tax}', '{$this->grand_total}', '{$this->remark}'
         )";
@@ -76,6 +81,7 @@ class SalesInvoice
     {
         $query = "UPDATE `sales_invoice` SET 
             `invoice_no` = '{$this->invoice_no}', 
+            `invoice_type` = '{$this->invoice_type}', 
             `invoice_date` = '{$this->invoice_date}', 
             `company_id` = '{$this->company_id}', 
             `customer_id` = '{$this->customer_id}', 

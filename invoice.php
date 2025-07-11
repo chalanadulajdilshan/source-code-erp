@@ -1,7 +1,7 @@
 <!doctype html>
 <?php
 include 'class/include.php';
- 
+
 if (!isset($_SESSION)) {
     session_start();
 }
@@ -17,16 +17,15 @@ $CUSTOMER_MASTER = new CustomerMaster($SALES_INVOICE->customer_id);
 
 <head>
     <meta charset="utf-8" />
-    <title>Invoice Details   | <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
+    <title>Invoice Details | <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta content="<?php echo $COMPANY_PROFILE_DETAILS->name ?>" name="author" />
     <!-- include main CSS -->
     <?php include 'main-css.php' ?>
-    
+
     <!-- Unicons CDN -->
     <link href="https://unicons.iconscout.com/release/v4.0.8/css/line.css" rel="stylesheet">
 
-    
+
 
     <style>
         @media print {
@@ -139,113 +138,232 @@ $CUSTOMER_MASTER = new CustomerMaster($SALES_INVOICE->customer_id);
 
 
 
-                <h5>Order Summary</h5>
-                <div class="table-responsive">
-                    <table class="table table-centered">
-                        <thead>
-                            <tr>
-                                <th>No.</th>
-                                <th>Item</th>
-                                <th>List Price</th>
-                                <th>Dis % </th>
-                                <th>Selling Price</th>
-                                <th>Quantity</th>
-                                <th class="text-end">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            $TEMP_SALES_ITEM = new TempSalesItem(null);
-                            $temp_items_list = $TEMP_SALES_ITEM->getItemsByInvoiceId($invoice_id);
+                <!-- Dag item Invoice Print -->
+                <?php if ($SALES_INVOICE->invoice_type === 'DAG') { ?>
 
-                            $subtotal = 0;
-                            $total_discount = 0;
+                    <!-- item invoice print -->
+                    <h5>Dag Invoice Summary</h5>
+                    <div class="table-responsive">
+                        <table class="table table-centered">
 
-                            foreach ($temp_items_list as $key => $temp_items) {
-                                $key++;
-                                $price = (float) $temp_items['price'];
-                                $quantity = (int) $temp_items['quantity'];
-                                $discount_percentage = isset($temp_items['discount']) ? (float) $temp_items['discount'] : 0;
-
-                                // Calculate selling price after discount (per item)
-                                $discount_per_item = $price * ($discount_percentage / 100);
-                                $selling_price = $price - $discount_per_item;
-
-                                // Line total = selling price × quantity
-                                $line_total = $price * $quantity;
-
-                                // Totals
-                                $subtotal += $price * $quantity;
-                                $total_discount += $discount_per_item * $quantity;
-                                ?>
-
+                            <thead>
                                 <tr>
-                                    <td>0<?php echo $key; ?></td>
-                                    <td><?php echo $temp_items['item_code'] . ' ' . $temp_items['item_name']; ?></td>
-                                    <td><?php echo number_format($price, 2); ?></td>
-                                    <td><?php echo $discount_percentage; ?>%</td>
-                                    <td><?php echo number_format($selling_price, 2); ?></td> <!-- Selling price per item -->
-                                    <td><?php echo $quantity; ?></td>
-                                    <td class="text-end"><?php echo number_format($line_total, 2); ?></td>
+                                    <th>No.</th>
+                                    <th>Item</th>
+                                    <th>List Price</th>
+                                    <th>Dis % </th>
+                                    <th>Selling Price</th>
+                                    <th>Quantity</th>
+                                    <th class="text-end">Total</th>
                                 </tr>
-                            <?php } ?>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $TEMP_SALES_ITEM = new TempSalesItem(null);
+                                $temp_items_list = $TEMP_SALES_ITEM->getItemsByInvoiceId($invoice_id);
 
-                            <!-- Totals section -->
-                            <tr>
-                                <td colspan="4" rowspan="3" style="vertical-align: top;">
-                                    <!-- Terms & Conditions on the left -->
-                                    <h6><strong>Terms & Conditions:</strong></h6>
-                                    <ul style="padding-left: 20px; margin-bottom: 0;">
-                                        <li>All goods once sold are non-refundable.</li>
-                                        <li>Warranty as per manufacturer policy.</li>
-                                        <li>Payment due within 15 days.</li>
-                                    </ul>
-                                </td>
+                                $subtotal = 0;
+                                $total_discount = 0;
 
+                                foreach ($temp_items_list as $key => $temp_items) {
+                                    $key++;
+                                    $price = (float) $temp_items['price'];
+                                    $quantity = (int) $temp_items['quantity'];
+                                    $discount_percentage = isset($temp_items['discount']) ? (float) $temp_items['discount'] : 0;
 
-                                <td colspan="2" class="text-end">Gross Amount:- </td>
-                                <td class="text-end"><?php echo number_format($subtotal, 2); ?></td>
-                            </tr>
-                            <tr>
-                                <td colspan="2" class="text-end">Discount:- </td>
-                                <td class="text-end">- <?php echo number_format($total_discount, 2); ?></td>
+                                    // Calculate selling price after discount (per item)
+                                    $discount_per_item = $price * ($discount_percentage / 100);
+                                    $selling_price = $price - $discount_per_item;
 
-                            </tr>
-                            <tr>
-                                <td colspan="2" class="text-end"><strong>Net Amount:- </strong></td>
-                                <td class="text-end">
-                                    <strong><?php echo number_format($subtotal - $total_discount, 2); ?></strong>
-                                </td>
-                            </tr>
+                                    // Line total = selling price × quantity
+                                    $line_total = $price * $quantity;
 
-                            <!-- Signature line -->
-                            <tr>
-                                <td colspan="7" style="padding-top: 50px;">
-                                    <table style="width: 100%;">
-                                        <tr>
-                                            <td style="text-align: center;">
-                                                _________________________<br>
-                                                <strong>Prepared By</strong>
-                                            </td>
-                                            <td style="text-align: center;">
-                                                _________________________<br>
-                                                <strong>Approved By</strong>
-                                            </td>
-                                            <td style="text-align: center;">
-                                                _________________________<br>
-                                                <strong>Received By</strong>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </td>
-                            </tr>
+                                    // Totals
+                                    $subtotal += $price * $quantity;
+                                    $total_discount += $discount_per_item * $quantity;
+                                    ?>
+
+                                    <tr>
+                                        <td>0<?php echo $key; ?></td>
+                                        <td><?php echo $temp_items['item_code'] . ' ' . $temp_items['item_name']; ?></td>
+                                        <td><?php echo number_format($price, 2); ?></td>
+                                        <td><?php echo $discount_percentage; ?>%</td>
+                                        <td><?php echo number_format($selling_price, 2); ?></td> <!-- Selling price per item -->
+                                        <td><?php echo $quantity; ?></td>
+                                        <td class="text-end"><?php echo number_format($line_total, 2); ?></td>
+                                    </tr>
+                                <?php } ?>
+
+                                <!-- Totals section -->
+                                <tr>
+                                    <td colspan="4" rowspan="3" style="vertical-align: top;">
+                                        <!-- Terms & Conditions on the left -->
+                                        <h6><strong>Terms & Conditions:</strong></h6>
+                                        <ul style="padding-left: 20px; margin-bottom: 0;">
+                                            <li>All goods once sold are non-refundable.</li>
+                                            <li>Warranty as per manufacturer policy.</li>
+                                            <li>Payment due within 15 days.</li>
+                                        </ul>
+                                    </td>
 
 
-                        </tbody>
+                                    <td colspan="2" class="text-end">Gross Amount:- </td>
+                                    <td class="text-end"><?php echo number_format($subtotal, 2); ?></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" class="text-end">Discount:- </td>
+                                    <td class="text-end">- <?php echo number_format($total_discount, 2); ?></td>
+
+                                </tr>
+                                <tr>
+                                    <td colspan="2" class="text-end"><strong>Net Amount:- </strong></td>
+                                    <td class="text-end">
+                                        <strong><?php echo number_format($subtotal - $total_discount, 2); ?></strong>
+                                    </td>
+                                </tr>
+
+                                <!-- Signature line -->
+                                <tr>
+                                    <td colspan="7" style="padding-top: 50px;">
+                                        <table style="width: 100%;">
+                                            <tr>
+                                                <td style="text-align: center;">
+                                                    _________________________<br>
+                                                    <strong>Prepared By</strong>
+                                                </td>
+                                                <td style="text-align: center;">
+                                                    _________________________<br>
+                                                    <strong>Approved By</strong>
+                                                </td>
+                                                <td style="text-align: center;">
+                                                    _________________________<br>
+                                                    <strong>Received By</strong>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
 
 
-                    </table>
-                </div>
+                            </tbody>
+
+
+                        </table>
+                    </div>
+                <?php } else { ?>
+
+                    <!-- Normal Item Invoice Print -->
+                    <h5>Order Summary</h5>
+                    <div class="table-responsive">
+                        <table class="table table-centered">
+
+                            <thead>
+                                <tr>
+                                    <th>No.</th>
+                                    <th>Vehicle No</th>
+                                    <th>Belt</th>
+                                    <th>Barcode</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th class="text-end">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $DAG_ITEM = new DagItem(NULL);
+
+                                $subtotal = 0;
+                                $total_discount = 0;
+
+                                foreach ($DAG_ITEM->getByDagId($SALES_INVOICE->ref_id) as $key => $dag_item) {
+                                    $key++;
+                                    $price = (float) $dag_item['casing_cost'];
+                                    $quantity = (int) $dag_item['qty'];
+                                    $discount_percentage = isset($SALES_INVOICE->discount) ? (float) $SALES_INVOICE->discount : 0;
+                                    $BELT_MASTER = new BeltMaster($dag_item['belt_id']);
+                                    // Calculate selling price after discount (per item)
+                                    $discount_per_item = $price * ($discount_percentage / 100);
+                                    $selling_price = $price - $discount_per_item;
+
+                                    // Line total = selling price × quantity
+                                    $line_total = $price * $quantity;
+
+                                    // Totals
+                                    $subtotal += $price * $quantity;
+                                    $total_discount += $discount_per_item * $quantity;
+                                    ?>
+
+                                    <tr>
+                                        <td>0<?php echo $key; ?></td>
+                                        <td><?php echo $dag_item['vehicle_no']; ?></td>
+                                        <td><?php echo $BELT_MASTER->name; ?></td>
+                                        <td><?php echo $dag_item['barcode']; ?>%</td>
+                                        <td><?php echo number_format($price, 2); ?></td> <!-- Selling price per item -->
+                                        <td><?php echo $quantity; ?></td>
+                                        <td class="text-end"><?php echo number_format($line_total, 2); ?></td>
+                                    </tr>
+                                <?php } ?>
+
+                                <!-- Totals section -->
+                                <tr>
+                                    <td colspan="4" rowspan="3" style="vertical-align: top;">
+                                        <!-- Terms & Conditions on the left -->
+                                        <h6><strong>Terms & Conditions:</strong></h6>
+                                        <ul style="padding-left: 20px; margin-bottom: 0;">
+                                            <li>All goods once sold are non-refundable.</li>
+                                            <li>Warranty as per manufacturer policy.</li>
+                                            <li>Payment due within 15 days.</li>
+                                        </ul>
+                                    </td>
+
+
+                                    <td colspan="2" class="text-end">Gross Amount:- </td>
+                                    <td class="text-end"><?php echo number_format($subtotal, 2); ?></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" class="text-end">Discount:- </td>
+                                    <td class="text-end">- <?php echo number_format($total_discount, 2); ?></td>
+
+                                </tr>
+                                <tr>
+                                    <td colspan="2" class="text-end"><strong>Net Amount:- </strong></td>
+                                    <td class="text-end">
+                                        <strong><?php echo number_format($subtotal - $total_discount, 2); ?></strong>
+                                    </td>
+                                </tr>
+
+                                <!-- Signature line -->
+                                <tr>
+                                    <td colspan="7" style="padding-top: 50px;">
+                                        <table style="width: 100%;">
+                                            <tr>
+                                                <td style="text-align: center;">
+                                                    _________________________<br>
+                                                    <strong>Prepared By</strong>
+                                                </td>
+                                                <td style="text-align: center;">
+                                                    _________________________<br>
+                                                    <strong>Approved By</strong>
+                                                </td>
+                                                <td style="text-align: center;">
+                                                    _________________________<br>
+                                                    <strong>Received By</strong>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+
+
+                            </tbody>
+
+
+                        </table>
+                    </div>
+                    <?php
+
+                }
+                ?>
 
             </div>
         </div>

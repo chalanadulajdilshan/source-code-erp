@@ -15,7 +15,7 @@ $companyName = $DAG_COMPANY->name;
 
 // Fetch DAGs by company
 $DAG = new DAG(null);
-$dagList = $DAG->getByCompany($companyId); // Implement this method in your DAG class
+$dagList = $DAG->getByCompany($companyId);
 ?>
 <!doctype html>
 <html lang="en">
@@ -23,7 +23,7 @@ $dagList = $DAG->getByCompany($companyId); // Implement this method in your DAG 
 <head>
 
     <meta charset="utf-8" />
-    <title>Create DAG | <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
+    <title>Create Dag | <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="<?php echo $COMPANY_PROFILE_DETAILS->name ?>" name="author" />
     <!-- include main CSS -->
@@ -81,7 +81,8 @@ $dagList = $DAG->getByCompany($companyId); // Implement this method in your DAG 
                                             </div>
                                         </div>
                                         <div class="flex-grow-1 overflow-hidden">
-                                            <h5 class="font-size-16 mb-1"> Creat Dag</h5>
+                                            <h5 class="font-size-16 mb-1"> View Dag in - " <?php echo $companyName ?> "
+                                            </h5>
                                             <p class="text-muted text-truncate mb-0">Fill all information below Creat
                                                 Dag</p>
                                         </div>
@@ -127,32 +128,26 @@ $dagList = $DAG->getByCompany($companyId); // Implement this method in your DAG 
                                                     <td>
                                                         <?php
                                                         $status = $dag['status'];
-                                                        switch ($status) {
-                                                            case 'pending':
-                                                                echo '<span class="badge bg-warning text-dark">Pending</span>';
-                                                                break;
-                                                            case 'assigned':
-                                                                echo '<span class="badge bg-primary">Assigned</span>';
-                                                                break;
-                                                            case 'received':
-                                                                echo '<span class="badge bg-info text-dark">Received</span>';
-                                                                break;
-                                                            case 'rejected_company':
-                                                                echo '<span class="badge bg-danger">Rejected by Company</span>';
-                                                                break;
-                                                            case 'rejected_store':
-                                                                echo '<span class="badge bg-dark">Rejected by Store</span>';
-                                                                break;
-                                                            case 'completed':
-                                                                echo '<span class="badge bg-success">Completed</span>';
-                                                                break;
-                                                            case 'cancelled':
-                                                                echo '<span class="badge bg-secondary">Cancelled</span>';
-                                                                break;
-                                                            default:
-                                                                echo '<span class="badge bg-light text-dark">Unknown</span>';
+
+                                                        if ($status == 'pending') {
+                                                            echo '<span class="badge bg-soft-warning font-size-12">Pending</span>';
+                                                        } elseif ($status == 'assigned') {
+                                                            echo '<span class="badge bg-soft-primary font-size-12">Assigned</span>';
+                                                        } elseif ($status == 'received') {
+                                                            echo '<span class="badge bg-soft-info font-size-12">Received</span>';
+                                                        } elseif ($status == 'rejected_company') {
+                                                            echo '<span class="badge bg-soft-danger font-size-12">Rejected by Company</span>';
+                                                        } elseif ($status == 'rejected_store') {
+                                                            echo '<span class="badge bg-soft-dark font-size-12">Rejected by Store</span>';
+                                                        } elseif ($status == 'completed') {
+                                                            echo '<span class="badge bg-soft-success font-size-12">Completed</span>';
+                                                        } elseif ($status == 'cancelled') {
+                                                            echo '<span class="badge bg-soft-secondary font-size-12">Cancelled</span>';
+                                                        } else {
+                                                            echo '<span class="badge bg-soft-light font-size-12">Unknown</span>';
                                                         }
                                                         ?>
+
                                                     </td>
                                                 </tr>
                                             <?php endforeach; ?>

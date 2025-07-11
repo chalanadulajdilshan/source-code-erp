@@ -57,6 +57,7 @@ class DagItem
                   `vehicle_no` = '{$this->vehicle_no}',
                   `belt_id` = '{$this->belt_id}',
                   `barcode` = '{$this->barcode}',
+                   `casing_cost` = '{$this->casing_cost}',
                   `qty` = '{$this->qty}',
                   `total_amount` = '{$this->total_amount}'
                   WHERE `id` = '{$this->id}'";

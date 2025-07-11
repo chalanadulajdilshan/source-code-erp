@@ -2,7 +2,6 @@
 
 include '../../class/include.php';
 header('Content-Type: application/json; charset=UTF8');
-session_start();
 
 
 if (isset($_POST['action']) && $_POST['action'] == 'check_invoice_id') {
@@ -30,7 +29,7 @@ if (isset($_POST['create'])) {
     $totalSubTotal = 0;
     $totalDiscount = 0;
     $final_cost = 0;
-    
+
     // Calculate subtotal and discount
     foreach ($items as $item) {
         $price = floatval($item['price']);
@@ -39,7 +38,7 @@ if (isset($_POST['create'])) {
 
         $ITEM_MASTER = new ItemMaster($item['item_id']);
 
-        $cost = $ITEM_MASTER->cost;
+        $cost = $item['cost'];
         $final_cost_item = $cost * $item['qty'];
         $final_cost += $final_cost_item;
 
@@ -77,6 +76,7 @@ if (isset($_POST['create'])) {
     $SALES_INVOICE->remark = !empty($_POST['remark']) ? $_POST['remark'] : null;
 
     $invoiceResult = $SALES_INVOICE->create();
+
     $DOCUMENT_TRACKING = new DocumentTracking(null);
 
     if ($paymentType == 'cash') {
@@ -87,6 +87,7 @@ if (isset($_POST['create'])) {
 
         $DOCUMENT_TRACKING->incrementDocumentId('invoice');
     }
+
     if ($invoiceResult) {
         $invoiceId = $invoiceResult;
 
@@ -100,7 +101,6 @@ if (isset($_POST['create'])) {
             $SALES_ITEM->invoice_id = $invoiceId;
             $SALES_ITEM->item_code = $item['item_id'];
             $SALES_ITEM->item_name = $item['name'];
-            $SALES_ITEM->cost = $ITEM_MASTER->cost;
             $SALES_ITEM->price = $item['price'];
             $SALES_ITEM->quantity = $item['qty'];
             $SALES_ITEM->discount = $item_discount;
