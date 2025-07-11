@@ -17,11 +17,13 @@ class Dag
     public $receipt_no;
     public $status;
 
+    public $is_print;
+
     // Constructor: Fetch by ID
     public function __construct($id = null)
     {
         if ($id) {
-            $query = "SELECT `id`, `ref_no`,`customer_id`, `department_id`, `received_date`, `delivery_date`, `customer_request_date`, `dag_company_id`, `company_issued_date`, `company_delivery_date`, `remark`, `receipt_no`, `status` FROM `dag` WHERE `id` = " . (int) $id;
+            $query = "SELECT  * FROM `dag` WHERE `id` = " . (int) $id;
             $db = new Database();
             $result = mysqli_fetch_array($db->readQuery($query));
 
@@ -40,6 +42,8 @@ class Dag
                 $this->remark = $result['remark'];
                 $this->receipt_no = $result['receipt_no'];
                 $this->status = $result['status'];
+                $this->is_print = $result['is_print'];
+
             }
         }
     }
@@ -86,6 +90,7 @@ class Dag
             `company_delivery_date` = '{$this->company_delivery_date}',
             `remark` = '{$this->remark}',
             `receipt_no` = '{$this->receipt_no}',
+            `is_print` = '{$this->is_print}', 
             `status` = '{$this->status}'
             WHERE `id` = '{$this->id}'";
 
@@ -115,6 +120,21 @@ class Dag
         return $array_res;
     }
 
+    //get by print status
+    public function printStatus($status)
+    {
+        $query = "SELECT * FROM `dag` WHERE `is_print` =$status ORDER BY `id` DESC";
+        $db = new Database();
+        $result = $db->readQuery($query);
+
+        $array_res = array();
+        while ($row = mysqli_fetch_array($result)) {
+            array_push($array_res, $row);
+        }
+
+        return $array_res;
+    }
+
     // Get last inserted ID
     public function getLastID()
     {
@@ -128,6 +148,7 @@ class Dag
     public function getByCompany($companyId)
     {
         $query = "SELECT * FROM `dag` WHERE `dag_company_id` = {$companyId} ORDER BY `received_date` DESC";
+
         $db = new Database();
         $result = $db->readQuery($query);
 

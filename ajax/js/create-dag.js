@@ -1,27 +1,62 @@
 jQuery(document).ready(function () {
-  function calculateDagItemTotal() {
-    const cost = parseFloat($("#casingCost").val()) || 0;
-    const qty = parseFloat($("#quantity").val()) || 0;
-    const total = cost * qty;
-    $("#totalAmount").val(total.toFixed(2));
-  }
 
-  function updateSubTotal() {
-    let total = 0;
-    $("#dagItemsBody").find("input[name='total[]']").each(function () {
-      total += parseFloat($(this).val()) || 0;
+  function loadDagItemsToTable(items) {
+    $("#dagItemsBodyInvoice").empty();
+
+    if (!items.length) {
+      $("#dagItemsBodyInvoice").append(`
+      <tr id="noDagItemRow">
+        <td colspan="6" class="text-center text-muted">No items found</td>
+      </tr>`);
+      return;
+    }
+
+    items.forEach((item) => {
+      const price = parseFloat(item.price) || 0;
+      const qty = parseFloat(item.qty) || 0;
+      const total = price * qty;
+
+      const row = $(`
+    <tr class="dag-item-row clickable-row">
+      <td>
+        ${item.vehicle_no}
+        <input type="hidden" class="vehicle_no" value="${item.vehicle_no}">
+      </td>
+      <td>
+        ${item.belt_title}
+        <input type="hidden" class="belt_id" value="${item.belt_id}">
+      </td>
+      <td>
+        ${item.barcode}
+        <input type="hidden" class="barcode" value="${item.barcode}">
+      </td>
+      <td>
+        ${qty}
+        <input type="hidden" class="qty" value="${qty}">
+      </td>
+      <td>
+        <input type="number" class="form-control form-control-sm price" value="${price}" readonly>
+      </td>
+      <td>
+        <input type="text" class="form-control form-control-sm total_amount" value="${total.toFixed(2)}" readonly>
+      </td>
+    </tr>
+    `);
+
+      // On row click → populate input fields
+      row.on("click", function () {
+        $("#vehicleNo").val(item.vehicle_no);
+        $("#beltDesign").val(item.belt_id).trigger("change");
+        $("#barcode").val(item.barcode);
+        $("#quantity").val(qty);
+        $("#casingCost").val(price);
+        $("#vehicleNo").focus();
+      });
+
+      $("#dagItemsBodyInvoice").append(row);
     });
-    $("#finalTotal").val(total.toFixed(2));
-    calculateGrandTotal();
   }
 
-  function calculateGrandTotal() {
-    const subTotal = parseFloat($("#finalTotal").val()) || 0;
-    const discount = parseFloat($("#discount").val()) || 0;
-    const discountAmount = subTotal * (discount / 100);
-    const grandTotal = subTotal - discountAmount;
-    $("#grandTotal").val(grandTotal.toFixed(2));
-  }
 
   function resetDagInputs() {
     $("#vehicleNo, #barcode, #quantity").val("");
@@ -35,6 +70,7 @@ jQuery(document).ready(function () {
     const beltDesignText = $("#beltDesign option:selected").text();
     const barcode = $("#barcode").val().trim();
     const qty = parseFloat($("#quantity").val()) || 0;
+    const price = parseFloat($("#casingCost").val()) || 0;
 
     if (!vehicleNo || !beltDesignId || !barcode || qty <= 0) {
       swal("Error!", "Please fill all required fields correctly.", "error");
@@ -54,7 +90,7 @@ jQuery(document).ready(function () {
       return;
     }
 
-    $("#noDagItemRow").hide();
+
 
     const newRow = $(`
       <tr class="dag-item-row">
@@ -62,6 +98,7 @@ jQuery(document).ready(function () {
         <td>${beltDesignText}<input type="hidden" name="belt_design_id[]" class="belt_id" value="${beltDesignId}"></td>
         <td>${barcode}<input type="hidden" name="barcode[]" class="barcode" value="${barcode}"></td>
         <td>${qty}<input type="hidden" name="qty[]" class="qty" value="${qty}"></td>
+         
         <td>
           <button type="button" class="btn btn-warning btn-sm edit-item">Edit</button>
           <button type="button" class="btn btn-danger btn-sm remove-item">Remove</button>
@@ -71,9 +108,24 @@ jQuery(document).ready(function () {
 
     $("#dagItemsBody").append(newRow);
     resetDagInputs();
-    updateSubTotal(); // Can be simplified or removed if no totals
+    $("#noDagItemRow").hide();
+
+    const dagItems = [];
+    $(".dag-item-row").each(function () {
+      dagItems.push({
+        vehicle_no: $(this).find(".vehicle_no").val(),
+        belt_title: $(this).find(".belt_id option:selected").text() || $(this).find(".belt_id").val(), // if text not present
+        belt_id: $(this).find(".belt_id").val(),
+        barcode: $(this).find(".barcode").val(),
+        qty: parseFloat($(this).find(".qty").val()) || 0,
+        price: parseFloat($(this).find(".casing_cost").val()) || 0,
+      });
+    });
+
+    loadDagItemsToTable(dagItems);
     $("#vehicleNo").focus();
   }
+
 
 
   $("#addDagItemBtn").click(function (e) {
@@ -81,8 +133,6 @@ jQuery(document).ready(function () {
     addDagItem();
   });
 
-  $("#discount").on("input", calculateGrandTotal);
-  $("#casingCost, #quantity").on("input", calculateDagItemTotal);
 
   $("#vehicleNo, #beltDesign, #casingCost, #barcode, #quantity").on("keydown", function (e) {
     if (e.key === "Enter") {
@@ -93,7 +143,7 @@ jQuery(document).ready(function () {
 
   $(document).on("click", ".remove-item", function () {
     $(this).closest("tr").remove();
-    updateSubTotal();
+
   });
 
   $("#create").click(function (event) {
@@ -114,17 +164,6 @@ jQuery(document).ready(function () {
       swal({
         title: "Error!",
         text: "Please enter the Received Date to continue.",
-        type: "error",
-        timer: 2000,
-        showConfirmButton: false,
-      });
-      return;
-    }
-
-    if (!$("#delivery_date").val().trim()) {
-      swal({
-        title: "Error!",
-        text: "Delivery Date cannot be left empty.",
         type: "error",
         timer: 2000,
         showConfirmButton: false,
@@ -155,7 +194,6 @@ jQuery(document).ready(function () {
       });
     });
 
-    // ✅ Check if at least one DAG item is added
     if (dagItems.length === 0) {
       swal({
         title: "Error!",
@@ -221,16 +259,7 @@ jQuery(document).ready(function () {
       return;
     }
 
-    if (!$("#delivery_date").val().trim()) {
-      swal({
-        title: "Error!",
-        text: "Delivery Date cannot be left empty.",
-        type: "error",
-        timer: 2000,
-        showConfirmButton: false,
-      });
-      return;
-    }
+
 
     if (!$("#customer_request_date").val().trim()) {
       swal({
@@ -303,7 +332,6 @@ jQuery(document).ready(function () {
     $("#quantity").val(row.find(".qty").val());
 
     row.remove();
-    updateSubTotal();
 
     $("#vehicleNo").focus();
   });
@@ -312,8 +340,8 @@ jQuery(document).ready(function () {
   $(document).on("click", ".select-dag", function () {
     const data = $(this).data();
 
-    $("#form-data")[0].reset();
     $("#id").val(data.id);
+    $("#dag_id").val(data.id);
     $("#ref_no").val(data.ref_no);
     $("#department_id").val(data.department_id).trigger("change");
     $("#customer_id").val(data.customer_id).trigger("change");
@@ -334,6 +362,14 @@ jQuery(document).ready(function () {
 
     $("#create").hide();
     $("#dagModel").modal("hide");
+    $("#mainDagModel").modal("hide");
+
+    $("#noDagItemRow").hide();
+    $("#invoiceTable").hide();
+    $("#dagTableHide").show();
+    $("#addItemTable").hide();
+
+
     $("#dagItemsBody").empty();
     $("#print").data("dag-id", data.id);
     $("#print").show();
@@ -360,8 +396,27 @@ jQuery(document).ready(function () {
   </tr>`;
 
             $("#dagItemsBody").append(row);
+
+            const price = parseFloat(item.price) || 0;
+            const qty = parseFloat(item.qty) || 0;
+            const total = price * qty;
+
+            const invoiceRow = `
+              <tr class="dag-item-row clickable-row">
+                <td>${item.vehicle_no}</td>
+                <td>${item.belt_title}</td>
+                <td>${item.barcode}</td>
+                <td>${qty}</td>
+                <td><input type="number" class="form-control form-control-sm price"   value="${price}"  ></td>
+                <td><input type="text" class="form-control form-control-sm totalPrice"  value="${total.toFixed(2)}" readonly>
+                <input type="hidden" id="dag_item_id" value="${item.id}" />
+                </td>
+              </tr>`;
+            $("#dagItemsBodyInvoice").append(invoiceRow);
+            calculateTotals();
+
           });
-          updateSubTotal();
+
         } else {
           swal("Warning!", "No items returned for this DAG.", "warning");
         }
@@ -384,6 +439,61 @@ jQuery(document).ready(function () {
     // Redirect to print page
     window.open(`dag-receipt-print.php?id=${dagId}`, "_blank");
   });
+
+
+  function calculateTotals() {
+    let subTotal = 0;
+
+    $("#dagItemsBodyInvoice tr").each(function () {
+      const price = parseFloat($(this).find('.price').val()) || 0;
+      const qty = parseFloat($(this).find("td:eq(3)").text()) || 0;
+      const rowTotal = price * qty;
+
+
+      // Update totalPrice input (using class, not id)
+      $(this).find('input.totalPrice').val(rowTotal.toFixed(2));
+
+      subTotal += rowTotal;
+    });
+
+    const discountStr = $("#disTotal").val().replace(/,/g, '').trim();
+    const discountPercent = parseFloat(discountStr) || 0;
+    const discountAmount = (subTotal * discountPercent) / 100;
+
+    const finalTotal = subTotal - discountAmount;
+
+    $("#subTotal").val(subTotal.toFixed(2));
+    $("#finalTotal").val(finalTotal.toFixed(2));
+
+    if (finalTotal < subTotal) {
+      $("#finalTotal").css("color", "red");
+    } else {
+      $("#finalTotal").css("color", "");
+    }
+  }
+
+  // Handle price input changes dynamically
+  $(document).on('input', '.price', function () {
+    const row = $(this).closest('tr');
+    const price = parseFloat($(this).val()) || 0;
+    const qty = parseFloat(row.find("td:eq(3)").text()) || 0;
+
+    const total = price * qty;
+    row.find('.totalPrice').val(total.toFixed(2));
+
+    // Enable discount input if needed
+    $("#disTotal").prop("disabled", false);
+
+    calculateTotals();
+  });
+
+  // Discount input triggers recalculation
+  $(document).on("input", "#disTotal", function () {
+    setTimeout(() => {
+      calculateTotals();
+    }, 10);
+  });
+
 
 
 });

@@ -30,6 +30,7 @@ jQuery(document).ready(function () {
             { data: "brand", title: "Brand" },
             { data: "category", title: "Category" },
             { data: "list_price", title: "List Price" },
+            { data: "invoice_price", title: "Invoice Price" },
             { data: "qty", title: "Quantity" },
             { data: "discount", title: "Discount %" },
             { data: "status_label", title: "Status" }
@@ -43,22 +44,6 @@ jQuery(document).ready(function () {
         const data = table.row(this).data();
         if (!data) return;
 
-        // const salesType = $('#sales_type').val();
-        // const paymentType = $('#payment_type').val();
-
-        // if (salesType == 1) {
-        //     $('#itemPrice').val(data.cash_price.replace(/,/g, ''));
-        // } else if (salesType == 2) {
-        //     $('#itemPrice').val(data.credit_price.replace(/,/g, ''));
-        // }
-
-        // if (paymentType == 1) {
-        //     $('#itemDiscount').val(data.cash_discount);
-        // } else if (paymentType == 2) {
-        //     $('#itemDiscount').val(data.credit_discount);
-        // } else {
-        //     $('#itemDiscount').val(0);
-        // }
 
         $('#item_id').val(data.id);
         $('#itemCode').val(data.code);
@@ -66,6 +51,8 @@ jQuery(document).ready(function () {
         $('#itemQty').val(1);
         $('#available_qty').val(data.qty);
         $('#list_price').val(data.list_price);
+        $('#invoice_price').val(data.invoice_price);
+
         $('#dis_2').val(data.discount);
 
         // Match brand name to brand ID and set it
@@ -189,7 +176,7 @@ jQuery(document).ready(function () {
         const actualCost = parseFloat($('#actual_cost').val()) || 0;
         const unitTotal = parseFloat($('#unit_total').val()) || 0;
         const listPrice = parseFloat($('#list_price').val()) || 0;
-
+        const InvoicePrice = parseFloat($('#invoice_price').val()) || 0;
 
         // ─────── Validations ───────
         if (!code) {
@@ -216,6 +203,10 @@ jQuery(document).ready(function () {
             swal({ title: "Error!", text: "Please enter List Price", type: "error", timer: 2000, showConfirmButton: false });
             return;
         }
+        if (!InvoicePrice || InvoicePrice <= 0) {
+            swal({ title: "Error!", text: "Please enter Invoice Price", type: "error", timer: 2000, showConfirmButton: false });
+            return;
+        }
 
         if (actualCost > listPrice) {
             swal({ title: "Error!", text: "Actual Cost cannot exceed List Price", type: "error", timer: 2000, showConfirmButton: false });
@@ -240,6 +231,7 @@ jQuery(document).ready(function () {
             <td><input type="number" name="items[][actual_cost]" class="form-control form-control-sm" value="${actualCost.toFixed(2)}" readonly></td>
             <td><input type="number" name="items[][unit_total]" class="form-control form-control-sm" value="${unitTotal.toFixed(2)}" readonly></td>
             <td><input type="number" name="items[][list_price]" class="form-control form-control-sm" value="${listPrice.toFixed(2)}" readonly></td>
+            <td><input type="number" name="items[][invoice_price]" class="form-control form-control-sm" value="${InvoicePrice.toFixed(2)}" readonly></td>
             <td><button class="btn btn-danger btn-sm deleteRowBtn">Delete</button></td>
         </tr>
         `;
@@ -268,6 +260,7 @@ jQuery(document).ready(function () {
         $('#actual_cost').val('');
         $('#unit_total').val('');
         $('#list_price').val('');
+        $('#invoice_price').val('');
         updateSummaryValues();
     });
 
@@ -477,6 +470,7 @@ jQuery(document).ready(function () {
             const actualCost = parseFloat($(cols[7]).find('input').val()) || 0;
             const listPrice = parseFloat($(cols[9]).find('input').val()) || 0;
 
+
             // Validation: actualCost should not exceed listPrice
             if (actualCost > listPrice) {
                 hasInvalidItem = true;
@@ -503,6 +497,7 @@ jQuery(document).ready(function () {
                 actual_cost: parseFloat($(cols[9]).find("input").val()) || 0,
                 unit_total: parseFloat($(cols[10]).find("input").val()) || 0,
                 list_price: parseFloat($(cols[11]).find("input").val()) || 0,
+                invoice_price: parseFloat($(cols[12]).find("input").val()) || 0,
             });
         });
 

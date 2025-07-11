@@ -20,6 +20,7 @@ if (isset($_POST['create'])) {
     $DAG->company_delivery_date = $_POST['company_delivery_date'];
     $DAG->remark = $_POST['remark'];
     $DAG->receipt_no = $_POST['receipt_no'];
+    $DAG->status = $_POST['dag_status'];
 
     $dag_id = $DAG->create();
 
@@ -31,12 +32,10 @@ if (isset($_POST['create'])) {
             foreach ($items as $item) {
                 $DAG_ITEM = new DagItem(NULL);
                 $DAG_ITEM->dag_id = $dag_id;
-                $DAG_ITEM->vehicle_no = $item['vehicle_no'];
-                $DAG_ITEM->belt_id = $item['belt_id']; // JS uses 'belt_id'
+                $DAG_ITEM->vehicle_no = strtoupper($item['vehicle_no']);
+                $DAG_ITEM->belt_id = $item['belt_id'];
                 $DAG_ITEM->barcode = $item['barcode'];
-                $DAG_ITEM->casing_cost = $item['casing_cost'];
                 $DAG_ITEM->qty = $item['qty'];
-                $DAG_ITEM->total_amount = $item['total_amount'];
                 $DAG_ITEM->create();
             }
         }
@@ -79,6 +78,7 @@ if (isset($_POST['update'])) {
     $DAG->company_delivery_date = $_POST['company_delivery_date'];
     $DAG->remark = $_POST['remark'];
     $DAG->receipt_no = $_POST['receipt_no'];
+    $DAG->status = $_POST['dag_status'];
 
     if ($DAG->update()) {
         // Delete all old DAG items
@@ -94,9 +94,7 @@ if (isset($_POST['update'])) {
                 $DAG_ITEM->vehicle_no = $item['vehicle_no'];
                 $DAG_ITEM->belt_id = $item['belt_id'];
                 $DAG_ITEM->barcode = $item['barcode'];
-                $DAG_ITEM->casing_cost = $item['casing_cost'];
                 $DAG_ITEM->qty = $item['qty'];
-                $DAG_ITEM->total_amount = $item['total_amount'];
                 $DAG_ITEM->create();
             }
         }

@@ -31,6 +31,7 @@ jQuery(document).ready(function () {
             { data: "brand", title: "Brand" },
             { data: "category", title: "Category" },
             { data: "list_price", title: "List Price" },
+            { data: "invoice_price", title: "Invoice Price" },
             { data: "qty", title: "Quantity" },
             { data: "discount", title: "Discount %" },
             { data: "status_label", title: "Status" }
@@ -70,6 +71,7 @@ jQuery(document).ready(function () {
         $('#re_order_level').val(data.re_order_level);
         $('#re_order_qty').val(data.re_order_qty);
         $('#stock_type').val(data.stock_type);
+        $('#invoice_price').val(data.invoice_price);
 
         $('#note').val(data.note);
 
@@ -125,6 +127,22 @@ jQuery(document).ready(function () {
             swal({
                 title: "Error!",
                 text: "Please select item category",
+                type: 'error',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } else if (!$('#list_price').val() || $('#list_price').val().length === 0) {
+            swal({
+                title: "Error!",
+                text: "Please select item invoice price",
+                type: 'error',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } else if (!$('#invoice_price').val() || $('#invoice_price').val().length === 0) {
+            swal({
+                title: "Error!",
+                text: "Please select item invoice price",
                 type: 'error',
                 timer: 2000,
                 showConfirmButton: false
@@ -219,6 +237,22 @@ jQuery(document).ready(function () {
             swal({
                 title: "Error!",
                 text: "Please select item category",
+                type: 'error',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } else if (!$('#list_price').val() || $('#list_price').val().length === 0) {
+            swal({
+                title: "Error!",
+                text: "Please select item invoice price",
+                type: 'error',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } else if (!$('#invoice_price').val() || $('#invoice_price').val().length === 0) {
+            swal({
+                title: "Error!",
+                text: "Please select item invoice price",
                 type: 'error',
                 timer: 2000,
                 showConfirmButton: false

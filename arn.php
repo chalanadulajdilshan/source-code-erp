@@ -23,7 +23,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
 
     <style>
         .col-lg-1 {
-            width: 7.5% !important;
+            width: 6.9% !important;
         }
     </style>
 
@@ -431,11 +431,6 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
                                                         class="form-control form-control-sm ">
                                                 </div>
 
-                                                <div class="col-6 col-sm-4 col-md-2 col-lg-1" hidden>
-                                                    <label class="form-label">Tax</label>
-                                                    <input type="text" id="tax" class="form-control form-control-sm"
-                                                        oninput="calculatePayment()" readonly>
-                                                </div>
 
                                                 <div class="col-6 col-sm-4 col-md-2 col-lg-1">
                                                     <label class="form-label">List Price</label>
@@ -443,19 +438,14 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
                                                         class="form-control form-control-sm"
                                                         oninput="calculatePayment()" readonly>
                                                 </div>
-
-                                                <div class="col-6 col-sm-4 col-md-2 col-lg-1" hidden>
-                                                    <label class="form-label">Cash Price</label>
-                                                    <input type="text" class="form-control form-control-sm"
-                                                        oninput="calculatePayment()">
-                                                </div>
-
-                                                <div class="col-6 col-sm-4 col-md-2 col-lg-1" hidden>
-                                                    <label class="form-label">Credit Price</label>
-                                                    <input type="text" id="credit_price"
+                                                <div class="col-6 col-sm-4 col-md-2 col-lg-1">
+                                                    <label class="form-label">Invoice Price</label>
+                                                    <input type="text" id="invoice_price"
                                                         class="form-control form-control-sm"
                                                         oninput="calculatePayment()">
                                                 </div>
+
+
 
 
                                                 <div class="col-6 col-sm-4 col-md-2 col-lg-1">
@@ -487,6 +477,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
                                                         <th>Actual Cost</th>
                                                         <th>Unit Total</th>
                                                         <th>List Price</th>
+                                                        <th>Invoice Price</th>
                                                         <th>Action</th>
                                                     </tr>
                                                 </thead>
@@ -683,7 +674,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
                                 <tbody>
                                     <?php
                                     $ARN_MASTER = new ArnMaster(null);
-                                    foreach ($ARN_MASTER->all(0) as $key => $arn_master) {
+                                    foreach ($ARN_MASTER->all() as $key => $arn_master) {
                                         $CUSTOMER_MASTER = new CustomerMaster($arn_master['supplier_id']);
                                         $DEPARTMENT_MASTER = new DepartmentMaster($arn_master['department']);
                                         $key++;

@@ -72,6 +72,9 @@ if (isset($data['create'])) {
             $ARN_ITEM->discount_5 = $item['dis5'];
             $ARN_ITEM->final_cost = $item['actual_cost'];
             $ARN_ITEM->unit_total = $item['unit_total'];
+            $ARN_ITEM->list_price = $item['list_price'];
+            $ARN_ITEM->invoice_price = $item['invoice_price'];
+
             $ARN_ITEM->created_at = date("Y-m-d H:i:s");
             $ARN_ITEM->create();
 
@@ -84,6 +87,7 @@ if (isset($data['create'])) {
             $STOCK_ITEM_TMP->qty = $item['rec_qty'];
             $STOCK_ITEM_TMP->cost = $item['actual_cost'];
             $STOCK_ITEM_TMP->list_price = $item['list_price'];
+            $STOCK_ITEM_TMP->invoice_price = $item['invoice_price'];
             $STOCK_ITEM_TMP->department_id = $data['department_id'];
             $STOCK_ITEM_TMP->status = 1;
             $STOCK_ITEM_TMP->create();

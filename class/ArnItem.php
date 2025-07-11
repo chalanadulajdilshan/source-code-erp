@@ -14,10 +14,7 @@ class ArnItem
     public $final_cost;
     public $unit_total;
     public $list_price;
-    public $cash_price;
-    public $credit_price;
-    public $vat_percent;
-    public $vat_value;
+    public $invoice_price;
     public $margin_percent;
     public $created_at;
     public $updated_at;
@@ -41,11 +38,7 @@ class ArnItem
                 $this->final_cost = $row['final_cost'];
                 $this->unit_total = $row['unit_total'];
                 $this->list_price = $row['list_price'];
-                $this->cash_price = $row['cash_price'];
-                $this->credit_price = $row['credit_price'];
-                $this->vat_percent = $row['vat_percent'];
-                $this->vat_value = $row['vat_value'];
-                $this->margin_percent = $row['margin_percent'];
+                $this->invoice_price = $row['invoice_price'];
                 $this->created_at = $row['created_at'];
                 $this->updated_at = $row['updated_at'];
                 $this->is_cancelled = $row['is_cancelled'];
@@ -59,11 +52,11 @@ class ArnItem
         $query = "INSERT INTO `arn_items` (
             `arn_id`, `item_code`, `order_qty`, `received_qty`, `commercial_cost`,
             `discount_1`, `discount_2`, `discount_3`, `final_cost`, `unit_total`,
-            `list_price`,   `created_at`
+            `list_price`,`invoice_price`,   `created_at`
         ) VALUES (
             '{$this->arn_id}', '{$this->item_code}', '{$this->order_qty}', '{$this->received_qty}', '{$this->commercial_cost}',
             '{$this->discount_1}', '{$this->discount_2}', '{$this->discount_3}', '{$this->final_cost}', '{$this->unit_total}',
-            '{$this->list_price}',    NOW()
+            '{$this->list_price}', '{$this->invoice_price}',   NOW()
         )";
 
 
@@ -108,10 +101,7 @@ class ArnItem
             `final_cost` = '{$this->final_cost}',
             `unit_total` = '{$this->unit_total}',
             `list_price` = '{$this->list_price}',
-            `cash_price` = '{$this->cash_price}',
-            `credit_price` = '{$this->credit_price}',
-            `vat_percent` = '{$this->vat_percent}',
-            `vat_value` = '{$this->vat_value}',
+            `invoice_price` = '{$this->invoice_price}', 
             `margin_percent` = '{$this->margin_percent}',
             `updated_at` = NOW()
         WHERE `id` = '{$this->id}'";

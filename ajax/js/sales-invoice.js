@@ -55,8 +55,6 @@ jQuery(document).ready(function () {
     // Bind button click
     $('#addItemBtn').click(addItem);
 
-
-
     // ----------------------ITEM MASTER SECTION START ----------------------//
 
 
@@ -64,6 +62,7 @@ jQuery(document).ready(function () {
     let itemsPerPage = 1;
 
     function loadItems(page = 1) {
+
         let brand_id = $('#item_brand_id').val();
         let category_id = $('#item_category_id').val();
         let group_id = $('#item_group_id').val();
@@ -95,6 +94,7 @@ jQuery(document).ready(function () {
 
 
     function renderPaginatedItems(page = 1) {
+
         let start = (page - 1) * itemsPerPage;
         let end = start + itemsPerPage;
         let slicedItems = fullItemList.slice(start, end);
@@ -113,6 +113,7 @@ jQuery(document).ready(function () {
         });
 
         if (slicedItems.length > 0) {
+
             $.each(slicedItems, function (index, item) {
                 let rowIndex = start + index + 1;
 
@@ -124,15 +125,15 @@ jQuery(document).ready(function () {
                     <td>${item.total_available_qty}</td>
                     <td>${item.group}</td>
                     <td>${item.brand}</td>
-                    <td><strong class="text-danger">${Number(item.list_price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong></td>
-                    <td>${item.category}</td>
+                     <td>${item.category}</td>
                 </tr>`;
 
                 $('#available_qty').val(item.total_available_qty);
 
-                // 🔹 Render ARN rows
+                // Render ARN rows
                 let firstActiveAssigned = false;
                 $.each(item.stock_tmp, function (i, row) {
+
                     const totalQty = parseFloat(row.qty);
                     const arnId = row.arn_no;
                     const itemKey = `${item.code}_${arnId}`;
@@ -157,17 +158,32 @@ jQuery(document).ready(function () {
                         data-qty="${totalQty}" 
                         data-used="${usedQty}" 
                         data-arn-id="${arnId}">
+                        
                         <td colspan="2"><strong>ARN:</strong> ${arnId}</td>
+                        
                         <td>
                             <div><strong>Department:</strong></div>
                             <div>${row.department}</div>
                         </td>
-                        <td colspan="2">
-                            <strong>Available Qty:</strong> <span class="arn-qty">${remainingQty}</span>
+                        
+                        <td>
+                            <div><strong>Available Qty:</strong></div>
+                            <div class="arn-qty">${remainingQty}</div>
                         </td>
-                        <td><strong>Cost:</strong> ${row.cost}</td>
+                    
+                        <td>
+                            <div><strong>List Price:</strong></div>
+                            <div class='text-danger'><b>${Number(row.list_price).toLocaleString('en-US', { minimumFractionDigits: 2 })}</b></div>
+                        </td>
+                    
+                        <td>
+                            <div><strong>Invoice Price:</strong></div>
+                            <div class='text-danger'><b>${Number(row.invoice_price).toLocaleString('en-US', { minimumFractionDigits: 2 })}</b></div>
+                        </td>
+                    
                         <td colspan="2">${row.created_at}</td>
                     </tr>`;
+
                 });
             });
         } else {
@@ -241,11 +257,13 @@ jQuery(document).ready(function () {
     //clicka and append values
     $(document).on('click', '#itemMaster tbody tr.table-light', function () {
         let mainRow = $(this).prevAll('tr.table-primary').first();
+        let infoRow = $(this).prev('tr.table-info');
+
         let itemText = mainRow.find('td').eq(1).text().trim();
         let parts = itemText.split(' - ');
         let itemCode = parts[0] || '';
         let itemName = parts[1] || '';
-        let list_price = mainRow.find('td').eq(6).text().trim().replace(/,/g, '') || '0';
+
 
         // Extract available qty from .table-info row
         let qtyRow = $(this).find('td[colspan="2"]').parent().find('td').eq(3).html();
@@ -258,7 +276,8 @@ jQuery(document).ready(function () {
 
         $('#itemCode').val(itemCode);
         $('#itemName').val(itemName);
-        $('#itemPrice').val(parseFloat(list_price).toFixed(2));
+
+
         $('#itemQty').val('');
         $('#itemDiscount').val('');
         $('#itemPayment').val('');
@@ -283,7 +302,6 @@ jQuery(document).ready(function () {
         let parts = itemText.split(' - ');
         let itemCode = parts[0] || '';
         let itemName = parts[1] || '';
-        let list_price = mainRow.find('td').eq(6).text().replace(/,/g, '').trim(); // Column with price
         const tdHtml = $(this).find('td');
 
         // Extract Available Qty (in td:eq(3))
@@ -291,22 +309,23 @@ jQuery(document).ready(function () {
         let qtyMatch = availableQtyText.match(/Available Qty:\s*([\d.,]+)/i);
         let availableQty = qtyMatch ? parseFloat(qtyMatch[1].replace(/,/g, '')) : 0;
 
-        // Extract Cost (in td:eq(5))
-        let costText = tdHtml.eq(5).text();
-        let costMatch = costText.match(/Cost:\s*([\d.,]+)/i);
-        let cost = costMatch ? parseFloat(costMatch[1].replace(/,/g, '')) : 0;
+
 
         // Extract ARN (in td:eq(0))
         let arnText = tdHtml.eq(0).text();
         let arnMatch = arnText.match(/ARN:\s*(.+)/i);
         let arn = arnMatch ? arnMatch[1].trim() : '';
 
+        //Extract Invoice Price (now from td:eq(5))
+        let invoicePriceText = tdHtml.eq(4).text();
 
+        let invoiceMatch = invoicePriceText.match(/Invoice Price:\s*([\d.,]+)/i);
+        let invoicePrice = invoiceMatch ? parseFloat(invoiceMatch[1].replace(/,/g, '')) : 0;
 
         // Apply to inputs
         $('#itemCode').val(itemCode);
         $('#itemName').val(itemName);
-        $('#itemPrice').val(list_price); // Use cost instead of list_price
+        $('#itemPrice').val(invoicePrice); // Use cost instead of list_price
         $('#availableQty').val(availableQty);
         $('#arn_no').val(arn); // optiona 
 
@@ -400,14 +419,30 @@ jQuery(document).ready(function () {
     }
 
     // Open payment modal and pre-fill total
-    $('#create').on('click', function () {
-        const total = parseFloat($('#finalTotal').val().replace(/,/g, '')) || 0;
+    $('#payment').on('click', function () {
+        const totalRaw = $('#finalTotal').val();
+
+
+        const total = parseFloat(totalRaw.replace(/,/g, ''));
+
+        if (isNaN(total) || total <= 0) {
+            swal({
+                title: "Error!",
+                text: "Please enter a valid Final Total amount",
+                type: "error",
+                timer: 3000,
+                showConfirmButton: false,
+            });
+            return;
+        }
+
 
         $('#modalFinalTotal').val(total.toFixed(2));
         $('#amountPaid').val('');
         $('#balanceAmount').val('0.00').removeClass('text-danger');
         $('#paymentModal').modal('show');
     });
+
 
     // Calculate and display balance or show insufficient message
     $('#amountPaid').on('input', function () {
@@ -438,43 +473,50 @@ jQuery(document).ready(function () {
         }
 
         const invoiceNo = $('#invoice_no').val().trim();
+        const dag_id = $('#dag_id').val();
+        if (dag_id != 0) {
+            processDAGInvoiceCreation();
+        } else {
 
-        $.ajax({
-            url: 'ajax/php/sales-invoice.php',
-            method: 'POST',
-            data: {
-                action: 'check_invoice_id',
-                invoice_no: invoiceNo
-            },
-            dataType: 'json',
-            success: function (checkRes) {
-                if (checkRes.exists) {
+            $.ajax({
+                url: 'ajax/php/sales-invoice.php',
+                method: 'POST',
+                data: {
+                    action: 'check_invoice_id',
+                    invoice_no: invoiceNo
+                },
+                dataType: 'json',
+                success: function (checkRes) {
+                    if (checkRes.exists) {
+                        swal({
+                            title: "Duplicate!",
+                            text: "Invoice No <strong>" + invoiceNo + "</strong> already exists.",
+                            type: 'error',
+                            html: true,
+                            timer: 2500,
+                            showConfirmButton: false
+                        });
+                        return;
+                    }
+
+                    processInvoiceCreation();
+
+
+                },
+                error: function () {
                     swal({
-                        title: "Duplicate!",
-                        text: "Invoice No <strong>" + invoiceNo + "</strong> already exists.",
+                        title: "Error!",
+                        text: "Unable to verify Invoice No. right now.",
                         type: 'error',
-                        html: true,
-                        timer: 2500,
+                        timer: 3000,
                         showConfirmButton: false
                     });
-                    return;
                 }
-
-                processInvoiceCreation(); // move your creation logic into a function
-            },
-            error: function () {
-                swal({
-                    title: "Error!",
-                    text: "Unable to verify Invoice No. right now.",
-                    type: 'error',
-                    timer: 2500,
-                    showConfirmButton: false
-                });
-            }
-        });
+            });
+        }
     });
 
-
+    //item invoice proccess
     function processInvoiceCreation() {
         const total = parseFloat($('#modalFinalTotal').val());
         const paid = parseFloat($('#amountPaid').val()) || 0;
@@ -491,7 +533,9 @@ jQuery(document).ready(function () {
         }
 
         const items = [];
+        const dagItems = [];
 
+        //item invoice to send this php file
         $('#invoiceItemsBody tr').each(function () {
             const code = $(this).find('td:eq(0)').text().trim();
             const name = $(this).find('td:eq(1)').text().trim();
@@ -501,7 +545,7 @@ jQuery(document).ready(function () {
             const payment = parseFloat($(this).find('td:eq(5)').text()) || 0;
             const totalItem = parseFloat($(this).find('td:eq(6)').text()) || 0;
             const item_id = $(this).find('input[name="item_id[]"]').val();
-
+            const arn_no = $(this).find('input[name="arn_ids[]"]').val();
 
             if (code && !isNaN(totalItem)) {
                 items.push({
@@ -512,12 +556,16 @@ jQuery(document).ready(function () {
                     qty,
                     discount,
                     payment,
-                    total: totalItem
+                    total: totalItem,
+                    arn_no
                 });
             }
         });
 
-        if (items.length === 0) {
+
+
+
+        if (items.length === 0 && dagItems.length === 0) {
             swal({
                 title: "Error!",
                 text: "Please add at least one item.",
@@ -528,13 +576,12 @@ jQuery(document).ready(function () {
             return;
         }
 
-        const formData = new FormData($("#form-data")[0]);
+        const formData = new FormData($('#form-data')[0]);
         formData.append('create', true);
         formData.append('total', total);
         formData.append('paid', paid);
         formData.append('payment_type', $('input[name="payment_type"]:checked').val());
         formData.append('customer_id', $('#customer_id').val());
-        formData.append('items', JSON.stringify(items));
         formData.append('invoice_no', $('#invoice_no').val());
 
         $('.someBlock').preloader();
@@ -545,10 +592,41 @@ jQuery(document).ready(function () {
             data: formData,
             contentType: false,
             processData: false,
-            beforeSend: function () {
-                $('.someBlock').preloader('remove');
-            },
             success: function (res) {
+                const invoiceId = res.invoice_id;
+
+                // Save regular items
+                $.ajax({
+                    url: 'ajax/php/sales-invoice-item.php',
+                    type: 'POST',
+                    data: {
+                        invoice_id: invoiceId,
+                        items: JSON.stringify(items)
+                    },
+                    success: function () {
+                        console.log("Item invoice saved");
+                    },
+                    error: function () {
+                        console.error("Item invoice save failed");
+                    }
+                });
+
+                // Save DAG items
+                $.ajax({
+                    url: 'ajax/php/sales-invoice-dag.php',
+                    type: 'POST',
+                    data: {
+                        invoice_id: invoiceId,
+                        items: JSON.stringify(dagItems)
+                    },
+                    success: function () {
+                        console.log("DAG invoice saved");
+                    },
+                    error: function () {
+                        console.error("DAG invoice save failed");
+                    }
+                });
+
                 swal({
                     title: "Success!",
                     text: "Invoice saved successfully!",
@@ -556,9 +634,10 @@ jQuery(document).ready(function () {
                     timer: 3000,
                     showConfirmButton: false
                 });
+
                 $('#paymentModal').modal('hide');
-                location.reload();
-                window.open("invoice.php?invoice_no=" + res.invoice_id, "_blank");
+                window.open("invoice.php?invoice_no=" + invoiceId, "_blank");
+                setTimeout(() => location.reload(), 3000);
             },
             error: function (xhr) {
                 console.error(xhr.responseText);
@@ -572,6 +651,107 @@ jQuery(document).ready(function () {
             }
         });
     }
+
+    //dag item invoice process
+    function processDAGInvoiceCreation() {
+        const total = parseFloat($('#modalFinalTotal').val());
+        const paid = parseFloat($('#amountPaid').val()) || 0;
+
+        if (paid < total) {
+            swal({
+                title: "Error!",
+                text: "Paid amount cannot be less than Final Total",
+                type: 'error',
+                timer: 3000,
+                showConfirmButton: false
+            });
+            return;
+        }
+
+        const dagItems = [];
+
+        $('#dagItemsBodyInvoice tr.dag-item-row').each(function () {
+            const code = $(this).find('td:eq(0)').text().trim();
+            const name = $(this).find('td:eq(1)').text().trim();
+            const price = parseFloat($(this).find('td:eq(2)').text()) || 0;
+            const qty = parseFloat($(this).find('td:eq(3)').text()) || 0;
+            const payment = parseFloat($(this).find('input.price').val()) || 0;
+            const totalItem = parseFloat($(this).find('input.totalPrice').val()) || 0;
+            const dag_item_id = $(this).find('input#dag_item_id').val();
+
+
+
+            if (code && !isNaN(totalItem)) {
+                dagItems.push({
+                    dag_item_id,
+                    code,
+                    name,
+                    price,
+                    qty,
+                    payment,
+                    total: totalItem
+                });
+            }
+        });
+
+        if (dagItems.length === 0) {
+            swal({
+                title: "Error!",
+                text: "Please add at least one DAG item.",
+                type: 'error',
+                timer: 3000,
+                showConfirmButton: false
+            });
+            return;
+        }
+
+        const invoiceId = $('#invoice_no').val();
+        if (!invoiceId) {
+            swal("Error!", "Invoice ID is missing.", "error");
+            return;
+        }
+
+        $('.someBlock').preloader();
+
+        // Prepare FormData with all values
+        const formData = new FormData($('#form-data')[0]);
+        formData.append('create', true);
+        formData.append('total', total);
+        formData.append('paid', paid);
+        formData.append('invoice_id', invoiceId);
+        formData.append('payment_type', $('input[name="payment_type"]:checked').val());
+        formData.append('customer_id', $('#customer_id').val());
+        formData.append('invoice_no', $('#invoice_no').val());
+        formData.append('items', JSON.stringify(dagItems));
+        formData.append('dag_id', $('#dag_id').val());
+
+        $.ajax({
+            url: 'ajax/php/sales-invoice-dag.php',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function () {
+                swal({
+                    title: "Success!",
+                    text: "DAG Invoice saved successfully!",
+                    type: 'success',
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+
+                $('#paymentModal').modal('hide');
+                window.open("invoice.php?invoice_no=" + invoiceId, "_blank");
+                setTimeout(() => location.reload(), 3000);
+            },
+            error: function () {
+                swal("Error!", "Failed to save DAG invoice.", "error");
+            }
+        });
+    }
+
+
+
 
     // Add item to invoice table
     function addItem() {
@@ -707,6 +887,8 @@ jQuery(document).ready(function () {
 
         ;
     }
+
+
     function updateFinalTotal() {
 
         let subTotal = 0;

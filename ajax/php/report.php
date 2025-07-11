@@ -6,6 +6,7 @@ header('Content-Type: application/json');
 if (isset($_POST['action']) && $_POST['action'] == 'loard_price_Control') {
 
 
+
     $category_id = $_POST['category_id'] ?? 0;
     $brand_id = $_POST['brand_id'] ?? 0;
     $group_id = $_POST['group_id'] ?? 0;
@@ -64,7 +65,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'update_stock_tmp_price') {
     $AUDIT_LOG->user_id = $_SESSION['id'];
     $AUDIT_LOG->created_at = date("Y-m-d H:i:s");
     $AUDIT_LOG->create();
-    
+
     echo json_encode($response);
     exit;
 }

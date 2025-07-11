@@ -156,7 +156,7 @@ $item_id = 'ITM/0' . $lastId + 1;
                                             </div>
 
                                             <!-- Pattern -->
-                                            <div class="col-md-3">
+                                            <div class="col-md-2">
                                                 <div class="mb-3">
                                                     <label class="form-label" for="pattern">Item Pattern <span
                                                             class="text-danger">*</span></label>
@@ -166,7 +166,7 @@ $item_id = 'ITM/0' . $lastId + 1;
                                             </div>
 
                                             <!-- Group -->
-                                            <div class="col-md-3">
+                                            <div class="col-md-2">
                                                 <div class="mb-3">
                                                     <label class="form-label" for="group">Item Group <span
                                                             class="text-danger">*</span></label>
@@ -204,9 +204,18 @@ $item_id = 'ITM/0' . $lastId + 1;
                                                     <label class="form-label" for="list_price"> List Price <span
                                                             class="text-danger">*</span></label>
                                                     <input id="list_price" name="list_price" type="text"
-                                                        class="form-control" placeholder="Enter item  List Price">
+                                                        class="form-control" placeholder="Enter item List Price">
                                                 </div>
                                             </div>
+                                            <div class="col-md-2">
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="list_price"> Invoice Price <span
+                                                            class="text-danger">*</span></label>
+                                                    <input id="invoice_price" name="invoice_price" type="text"
+                                                        class="form-control" placeholder="Enter item Invoice Price">
+                                                </div>
+                                            </div>
+
                                             <div class="col-md-1">
                                                 <div class="mb-3">
                                                     <label class="form-label" for="discount"> Item Discount <span
