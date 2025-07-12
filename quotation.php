@@ -59,6 +59,13 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
                                 </a>
                             <?php endif; ?>
 
+                            <?php if ($PERMISSIONS['print_page']): ?>
+                                <a href="#" class="btn btn-info" id="print">
+                                    <i class="uil uil-print me-1"></i> Print
+                                </a>
+                            <?php endif; ?>
+
+
                             <?php if ($PERMISSIONS['delete_page']): ?>
                                 <a href="#" class="btn btn-danger delete-quotation  " style="display:none">
                                     <i class="uil uil-trash-alt me-1"></i> Delete
@@ -212,8 +219,7 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . $lastId +
                                                 <label for="department_id" class="form-label">Department</label>
                                                 <div class="input-group mb-3">
                                                     <select id="department_id" name="department_id" class="form-select">
-                                                        <option value=""> -- Select Department --
-                                                        </option>
+
                                                         <?php
                                                         $DEPARTMENT_MASTER = new DepartmentMaster(NUll);
                                                         foreach ($DEPARTMENT_MASTER->getActiveDepartment() as $departments) {

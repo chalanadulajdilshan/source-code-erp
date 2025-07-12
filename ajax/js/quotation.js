@@ -49,11 +49,44 @@ jQuery(document).ready(function () {
         loadItems();
     });
 
+    //payment type change
+    $('input[name="payment_type"]').on('change', function () {
+        getInvoiceData();
+    });
+
+    // Reset input fields
+    $("#new").click(function (e) {
+        e.preventDefault();
+        location.reload();
+    });
+    // Bind Enter key to add item
+    $('#itemCode, #itemName, #itemPrice, #itemQty, #itemDiscount, #itemPayment').on('keydown', function (e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            addItem();
+
+        }
+    });
+
+    // Call payment calculation on input change
+    $('#itemPrice, #itemQty, #itemDiscount').on('input', calculatePayment);
+
+    // Amount Paid focus
+    $('#paymentModal').on('shown.bs.modal', function () {
+        $('#amountPaid').focus();
+    });
+
+    // Bind button click
+    $('#addItemBtn').click(addItem);
+
+    // ----------------------ITEM MASTER SECTION START ----------------------//
+
 
     let fullItemList = []; // Global variable
     let itemsPerPage = 1;
 
     function loadItems(page = 1) {
+
         let brand_id = $('#item_brand_id').val();
         let category_id = $('#item_category_id').val();
         let group_id = $('#item_group_id').val();
@@ -83,52 +116,105 @@ jQuery(document).ready(function () {
         });
     }
 
-
+    //append to render data 
     function renderPaginatedItems(page = 1) {
+
         let start = (page - 1) * itemsPerPage;
         let end = start + itemsPerPage;
         let slicedItems = fullItemList.slice(start, end);
         let tbody = '';
 
+        let usedQtyMap = {};
+        $('#invoiceItemsBody tr').each(function () {
+            let rowCode = $(this).find('input[name="item_codes[]"]').val();
+            let rowArn = $(this).find('input[name="arn_ids[]"]').val();
+            let rowQty = parseFloat($(this).find('.item-qty').text()) || 0;
+            let key = `${rowCode}_${rowArn}`;
+
+
+            if (!usedQtyMap[key]) usedQtyMap[key] = 0;
+            usedQtyMap[key] += rowQty;
+        });
+
         if (slicedItems.length > 0) {
+
             $.each(slicedItems, function (index, item) {
                 let rowIndex = start + index + 1;
-                tbody += `<tr class="table-primary">
-                <td>${rowIndex}</td>
-                <td>${item.code} - ${item.name}</td> 
-                <td>${item.note}</td>
-                <td>${item.total_available_qty}</td>
-                <td>${item.group}</td>
-                <td>${item.brand}</td>
-                <td>${item.category}</td>
-                <td>
-                    ${item.is_active == 1
-                        ? '<span class="badge bg-soft-success font-size-12">Active</span>'
-                        : '<span class="badge bg-soft-danger font-size-12">InActive</span>'}
-                </td>
-            </tr>`;
 
-                if (Array.isArray(item.stock_tmp) && item.stock_tmp.length > 0) {
-                    $.each(item.stock_tmp, function (i, row) {
-                        tbody += `<tr class="table-light text-danger small">
-                        <td colspan="2"><strong>ARN:</strong> ${row.arn_no}<br><span style="color: green;">Department:</span> ${row.department}</td>
-                        <td><strong>Qty:</strong> ${row.qty}</td>
-                        <td><strong>Cost:</strong> ${parseFloat(row.cost).toFixed(2)}</td>
-                        <td><strong>Cash Price:</strong> ${parseFloat(row.cash_price).toFixed(2)}</td>
-                        <td><strong>Credit Price:</strong> ${parseFloat(row.credit_price).toFixed(2)}</td>
-                        <td><strong>Cash Dis:</strong> ${row.cash_dis}%</td>
-                        <td><strong>Credit Dis:</strong> ${row.credit_dis}%</td>
+                // 🔹 Main item row
+                tbody += `<tr class="table-primary">
+                    <td>${rowIndex}</td>
+                    <td>${item.code} - ${item.name}</td> 
+                    <td>${item.note}</td>
+                    <td>${item.total_available_qty}</td>
+                    <td>${item.group}</td>
+                    <td>${item.brand}</td>
+                     <td>${item.category}</td>
+                </tr>`;
+
+                $('#available_qty').val(item.total_available_qty);
+
+                // Render ARN rows
+                let firstActiveAssigned = false;
+                $.each(item.stock_tmp, function (i, row) {
+
+                    const totalQty = parseFloat(row.qty);
+                    const arnId = row.arn_no;
+                    const itemKey = `${item.code}_${arnId}`;
+                    const usedQty = parseFloat(usedQtyMap[itemKey]) || 0;
+                    const remainingQty = totalQty - usedQty;
+
+                    let rowClass = '';
+                    if (remainingQty <= 0) {
+                        rowClass = 'used-arn';
+                    } else if (!firstActiveAssigned) {
+                        $('.arn-row').removeClass('selected-arn');
+                        rowClass = 'active-arn selected-arn';
+                        firstActiveAssigned = true;
+                        $('#availableQty').val(remainingQty);
+                    } else {
+                        rowClass = 'disabled-arn';
+                    }
+
+                    tbody += `
+                    <tr class="table-info arn-row ${rowClass}" 
+                        data-arn-index="${i}" 
+                        data-qty="${totalQty}" 
+                        data-used="${usedQty}" 
+                        data-arn-id="${arnId}">
+                        
+                        <td colspan="2"><strong>ARN:</strong> ${arnId}</td>
+                        
+                        <td>
+                            <div><strong>Department:</strong></div>
+                            <div>${row.department}</div>
+                        </td>
+                        
+                        <td>
+                            <div><strong>Available Qty:</strong></div>
+                            <div class="arn-qty">${remainingQty}</div>
+                        </td>
+                    
+                        <td>
+                            <div><strong>List Price:</strong></div>
+                            <div class='text-danger'><b>${Number(row.list_price).toLocaleString('en-US', { minimumFractionDigits: 2 })}</b></div>
+                        </td>
+                    
+                        <td>
+                            <div><strong>Invoice Price:</strong></div>
+                            <div class='text-danger'><b>${Number(row.invoice_price).toLocaleString('en-US', { minimumFractionDigits: 2 })}</b></div>
+                        </td>
+                    
+                        <td colspan="2">${row.created_at}</td>
                     </tr>`;
-                    });
-                }
+
+                });
             });
         } else {
             tbody = `<tr><td colspan="8" class="text-center text-muted">No items found</td></tr>`;
         }
 
         $('#itemMaster tbody').html(tbody);
-
-        // Update pagination UI
         renderPaginationControls(page);
     }
 
@@ -168,58 +254,59 @@ jQuery(document).ready(function () {
 
 
     //clicka and append values
-    $(document).on('click', '#itemMaster tbody tr.table-light', function () {
+    $(document).on('click', '#itemMaster tbody tr.table-info', function () {
         // Get the main item row
         let mainRow = $(this).prevAll('tr.table-primary').first();
 
-        // Extract item code and name
         let itemText = mainRow.find('td').eq(1).text().trim();
         let parts = itemText.split(' - ');
         let itemCode = parts[0] || '';
         let itemName = parts[1] || '';
-        let qtyText = mainRow.find('td').eq(3).text().trim();
+        const tdHtml = $(this).find('td');
 
-        // Extract cash and credit price from this ARN row
-        let cashPriceText = $(this).find('td').eq(3).text().trim();
-        let creditPriceText = $(this).find('td').eq(4).text().trim();
+        // Extract Available Qty (in td:eq(3))
+        let availableQtyText = tdHtml.eq(2).text();
+        let qtyMatch = availableQtyText.match(/Available Qty:\s*([\d.,]+)/i);
+        let availableQty = qtyMatch ? parseFloat(qtyMatch[1].replace(/,/g, '')) : 0;
 
-        let cashPriceMatch = cashPriceText.match(/[\d,.]+/);
-        let creditPriceMatch = creditPriceText.match(/[\d,.]+/);
 
-        let cashPrice = cashPriceMatch ? cashPriceMatch[0] : '';
-        let creditPrice = creditPriceMatch ? creditPriceMatch[0] : '';
 
-        // Read selected payment type
-        let paymentType = $('#payment_type').val();
+        // Extract ARN (in td:eq(0))
+        let arnText = tdHtml.eq(0).text();
+        let arnMatch = arnText.match(/ARN:\s*(.+)/i);
+        let arn = arnMatch ? arnMatch[1].trim() : '';
 
-        let priceToSet = '';
+        //Extract Invoice Price (now from td:eq(5))
+        let invoicePriceText = tdHtml.eq(4).text();
 
-        if (paymentType == 1) {
-            priceToSet = cashPrice;
-        } else if (paymentType == 2) {
-            priceToSet = creditPrice;
-        } else {
-            priceToSet = '';
-        }
+        let invoiceMatch = invoicePriceText.match(/Invoice Price:\s*([\d.,]+)/i);
+        let invoicePrice = invoiceMatch ? parseFloat(invoiceMatch[1].replace(/,/g, '')) : 0;
 
-        // Set inputs
+        // Apply to inputs
         $('#itemCode').val(itemCode);
         $('#itemName').val(itemName);
-        $('#itemPrice').val(priceToSet);
-        $('#stock_level').val(qtyText);
-
+        $('#itemPrice').val(invoicePrice); // Use cost instead of list_price
+        $('#availableQty').val(availableQty);
+        $('#arn_no').val(arn); // optiona 
 
         // Clear qty, discount, payment
         $('#itemQty').val('');
         $('#itemDiscount').val('');
         $('#itemPayment').val('');
         $('#payment_type').prop('disabled', true);
-        // Close modal (Bootstrap 5)
+
+        calculatePayment();
+
         let itemMasterModal = bootstrap.Modal.getInstance(document.getElementById('item_master'));
         if (itemMasterModal) {
+            setTimeout(() => $('#itemQty').focus(), 200);
+
+
             itemMasterModal.hide();
         }
     });
+
+
 
     // ----------------------ITEM MASTER SECTION END ----------------------//
 
@@ -256,9 +343,23 @@ jQuery(document).ready(function () {
         const vatType = $('#vat_type').val(); // 2 = VAT applicable
 
         if (!code || !name || price <= 0 || qty <= 0) {
-            alert("Please fill valid item details.");
+            let message = "";
+
+            if (!code) message += "- Item code is required\n";
+            if (!name) message += "- Item name is required\n";
+            if (price <= 0) message += "- Price must be greater than 0\n";
+            if (qty <= 0) message += "- Quantity must be greater than 0\n";
+
+            swal({
+                title: "Invalid Item Details!",
+                text: message,
+                icon: "warning",
+                timer: 3000,
+                buttons: false
+            });
             return;
         }
+
 
         let isDuplicate = false;
         $('#quotationItemsBody tr').each(function () {
@@ -371,13 +472,6 @@ jQuery(document).ready(function () {
     // Bind button click
     $('#addItemBtn').click(addItem);
 
-    // Bind Enter key to add item
-    $('#itemCode, #itemName, #itemPrice, #itemQty, #itemDiscount, #itemPayment').on('keydown', function (e) {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            addItem();
-        }
-    });
 
     // Calculate payment
     function calculatePayment() {
@@ -1004,5 +1098,23 @@ jQuery(document).ready(function () {
         });
     });
 
+    $('#print').on('click', function (e) {
+        e.preventDefault();  // prevent default link action
+
+        let id = $('#id').val().trim();
+        if (!id) {
+            swal({
+                title: "Error!",
+                text: "Please Select quotation first..!",
+                type: "error",
+                timer: 3000,
+                showConfirmButton: false
+            });
+            return;
+        }
+
+        // Redirect with ID as query param
+        window.location.href = `quotation-print.php?id=${encodeURIComponent(id)}`;
+    });
 
 });
