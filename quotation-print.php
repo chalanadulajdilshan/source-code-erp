@@ -1,23 +1,23 @@
 <!doctype html>
 <?php
 include 'class/include.php';
- 
+
 if (!isset($_SESSION)) {
     session_start();
 }
 
-$invoice_id = $_GET['invoice_no'];
+$id = $_GET['id'];
 $US = new User($_SESSION['id']);
 $COMPANY_PROFILE = new CompanyProfile($US->company_id);
 
-$SALES_INVOICE = new SalesInvoice($invoice_id);
-$CUSTOMER_MASTER = new CustomerMaster($SALES_INVOICE->customer_id);
+$QUOTATION = new Quotation($id);
+$CUSTOMER_MASTER = new CustomerMaster($QUOTATION->customer_id);
 ?>
 <html lang="en">
 
 <head>
     <meta charset="utf-8" />
-    <title>Invoice Details   | <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
+    <title>Invoice Details | <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Unicons CDN -->
     <link href="https://unicons.iconscout.com/release/v4.0.8/css/line.css" rel="stylesheet">
@@ -81,7 +81,7 @@ $CUSTOMER_MASTER = new CustomerMaster($SALES_INVOICE->customer_id);
 
     <div class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-3 no-print">
-            <h4>Invoice</h4>
+            <h4>Quotation Print</h4>
             <div>
                 <select id="printFormat" class="form-select d-inline w-auto" onchange="setPrintFormat(this.value)">
                     <option value="a4" selected>A4</option>
@@ -101,9 +101,9 @@ $CUSTOMER_MASTER = new CustomerMaster($SALES_INVOICE->customer_id);
                 <div class="invoice-title">
 
                     <div class="col-sm-6 text-sm-end float-end">
-                        <p><strong>Invoice No:</strong> #<?php echo $SALES_INVOICE->invoice_no ?></p>
-                        <p><strong>Invoice Date:</strong>
-                            <?php echo date('d M, Y', strtotime($SALES_INVOICE->invoice_date)); ?></p>
+                        <p><strong>Quotation No:</strong> #<?php echo $QUOTATION->quotation_no ?></p>
+                        <p><strong>Quotation Date:</strong>
+                            <?php echo date('d M, Y', strtotime($QUOTATION->date)); ?></p>
                     </div>
                     <div class="mb-4">
                         <img src="./uploads/company-logos/<?php echo $COMPANY_PROFILE->image_name ?>" alt="logo">
@@ -136,28 +136,24 @@ $CUSTOMER_MASTER = new CustomerMaster($SALES_INVOICE->customer_id);
 
                 </div>
 
-                <hr>
-
-
-
-                <h5>Order Summary</h5>
                 <div class="table-responsive">
                     <table class="table table-centered">
                         <thead>
                             <tr>
                                 <th>No.</th>
-                                <th>Item</th>
-                                <th>List Price</th>
+                                <th>Item Code</th>
+                                <th>Name</th>
                                 <th>Dis % </th>
-                                <th>Selling Price</th>
+                                <th> Price</th>
                                 <th>Quantity</th>
+                                <th>Selling Price</th>
                                 <th class="text-end">Total</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php
-                            $TEMP_SALES_ITEM = new TempSalesItem(null);
-                            $temp_items_list = $TEMP_SALES_ITEM->getItemsByInvoiceId($invoice_id);
+                            $QUOTATION_ITEM = new QuotationItem(null);
+                            $temp_items_list = $QUOTATION_ITEM->getByQuotationId($id);
 
                             $subtotal = 0;
                             $total_discount = 0;
@@ -165,9 +161,10 @@ $CUSTOMER_MASTER = new CustomerMaster($SALES_INVOICE->customer_id);
                             foreach ($temp_items_list as $key => $temp_items) {
                                 $key++;
                                 $price = (float) $temp_items['price'];
-                                $quantity = (int) $temp_items['quantity'];
+                                $quantity = (int) $temp_items['qty'];
                                 $discount_percentage = isset($temp_items['discount']) ? (float) $temp_items['discount'] : 0;
 
+                                $ITEM_MASTER = new ItemMaster($temp_items['item_code']);
                                 // Calculate selling price after discount (per item)
                                 $discount_per_item = $price * ($discount_percentage / 100);
                                 $selling_price = $price - $discount_per_item;
@@ -182,24 +179,27 @@ $CUSTOMER_MASTER = new CustomerMaster($SALES_INVOICE->customer_id);
 
                                 <tr>
                                     <td>0<?php echo $key; ?></td>
-                                    <td><?php echo $temp_items['item_code'] . ' ' . $temp_items['item_name']; ?></td>
-                                    <td><?php echo number_format($price, 2); ?></td>
+                                    <td><?php echo $ITEM_MASTER->code ?></td>
+                                    <td><?php echo $temp_items['item_name']; ?></td>
                                     <td><?php echo $discount_percentage; ?>%</td>
-                                    <td><?php echo number_format($selling_price, 2); ?></td> <!-- Selling price per item -->
+                                    <td><?php echo number_format($price, 2); ?></td>
                                     <td><?php echo $quantity; ?></td>
+                                    <td><?php echo number_format($selling_price, 2); ?></td> <!-- Selling price per item -->
+
                                     <td class="text-end"><?php echo number_format($line_total, 2); ?></td>
                                 </tr>
                             <?php } ?>
 
                             <!-- Totals section -->
                             <tr>
-                                <td colspan="4" rowspan="3" style="vertical-align: top;">
+                                <td colspan="5" rowspan="3" style="vertical-align: top;">
                                     <!-- Terms & Conditions on the left -->
                                     <h6><strong>Terms & Conditions:</strong></h6>
                                     <ul style="padding-left: 20px; margin-bottom: 0;">
                                         <li>All goods once sold are non-refundable.</li>
-                                        <li>Warranty as per manufacturer policy.</li>
-                                        <li>Payment due within 15 days.</li>
+                                        <li>Warranty is provided as per the manufacturer's policy only.</li>
+                                        <li>This quotation is valid for <?php echo $QUOTATION->validity ?> calendar
+                                            days from the date of issue.</li>
                                     </ul>
                                 </td>
 
@@ -209,7 +209,7 @@ $CUSTOMER_MASTER = new CustomerMaster($SALES_INVOICE->customer_id);
                             </tr>
                             <tr>
                                 <td colspan="2" class="text-end">Discount:- </td>
-                                <td class="text-end">- <?php echo number_format($total_discount, 2); ?></td>
+                                <td class="text-end"> <?php echo number_format($total_discount, 2); ?></td>
 
                             </tr>
                             <tr>

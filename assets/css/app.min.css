@@ -1,5 +1,139 @@
 @import url(../../../../css2.css);
+ .ai-chat-button {
+        position: fixed;
+        top: 92%;
+        right: 0;
+        transform: translateY(-50%);
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(10, 15, 30, 0.9);
+        color: #00eaff;
+        border: 2px solid transparent;
+        border-radius: 50px 0 0 50px;
+        padding: 6px 12px;
+        font-size: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        overflow: hidden;
+        transition: all 0.4s ease;
+        box-shadow: 0 0 12px rgba(0, 234, 255, 0.5);
+        backdrop-filter: blur(6px);
+        z-index: 9999;
+    }
 
+    .ai-chat-button .ai-glow {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 50px 0 0 50px;
+        padding: 2px;
+        background: linear-gradient(45deg, #00eaff, #00cfff, #0056b3, #00eaff);
+        background-size: 400% 400%;
+        animation: borderFlow 5s linear infinite;
+        z-index: 0;
+    }
+
+    .ai-chat-button .ai-glow::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: rgba(10, 15, 30, 0.9);
+        border-radius: 50px 0 0 50px;
+        z-index: 1;
+    }
+
+    .ai-chat-button .ai-icon {
+        font-size: 20px;
+        z-index: 2;
+        animation: pulseIcon 2.5s infinite ease-in-out;
+    }
+
+    .ai-chat-button .ai-text {
+        z-index: 2;
+        font-size: 13px;
+        font-weight: bold;
+        animation: flicker 3s infinite;
+        white-space: nowrap;
+    }
+
+    .ai-chat-button:hover {
+        transform: translateY(-50%) scale(1.05);
+        box-shadow: 0 0 25px rgba(0, 234, 255, 0.8);
+    }
+
+
+
+
+    /* Animations */
+    @keyframes borderFlow {
+        0% {
+            background-position: 0% 50%;
+        }
+
+        100% {
+            background-position: 100% 50%;
+        }
+    }
+
+    @keyframes pulseIcon {
+
+        0%,
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        50% {
+            transform: scale(1.2);
+            opacity: 0.8;
+        }
+    }
+
+    @keyframes flicker {
+
+        0%,
+        19%,
+        21%,
+        23%,
+        25%,
+        54%,
+        56%,
+        100% {
+            opacity: 1;
+        }
+
+        20%,
+        24%,
+        55% {
+            opacity: 0.3;
+        }
+    }
+
+    @keyframes aiDots {
+
+        0%,
+        80%,
+        100% {
+            transform: scale(0.8);
+            opacity: 0.6;
+        }
+
+        40% {
+            transform: scale(1.2);
+            opacity: 1;
+        }
+    }
+
+    @keyframes glowBar {
+        0% {
+            transform: translateY(-100%);
+        }
+
+        100% {
+            transform: translateY(100%);
+        }
+    }
 #customerList {
     background-color: white;
     /* Set the white background */

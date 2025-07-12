@@ -92,7 +92,7 @@ jQuery(document).ready(function () {
         });
     }
 
-
+    //append to model to data in this funtion
     function renderPaginatedItems(page = 1) {
 
         let start = (page - 1) * itemsPerPage;
