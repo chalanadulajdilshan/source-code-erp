@@ -418,6 +418,18 @@ jQuery(document).ready(function () {
         });
     }
 
+    //----------------------------------------------
+    console.log('---- Payment Button Clicked ----');
+
+    const allRows = $('#quotationItemsBody tr');
+    console.log('All rows in quotationItemsBody:', allRows.length);
+
+    allRows.each(function (index, row) {
+        console.log(`Row ${index}:`, $(row).attr('id'), $(row).html());
+    });
+
+    //----------------------------------------------
+
     // Open payment modal and pre-fill total
     $('#payment').on('click', function () {
         const totalRaw = $('#finalTotal').val();
@@ -435,6 +447,10 @@ jQuery(document).ready(function () {
             });
             return;
         }
+
+
+        console.log("Collected Quotation Items:", items);
+
 
 
         $('#modalFinalTotal').val(total.toFixed(2));
@@ -474,9 +490,13 @@ jQuery(document).ready(function () {
 
         const invoiceNo = $('#invoice_no').val().trim();
         const dag_id = $('#dag_id').val();
+        const quotation_id = $('#quotation_id').val();
         if (dag_id != 0) {
             processDAGInvoiceCreation();
-        } else {
+        } else if (quotation_id != 0) {
+            processQuotationInvoiceCreation();
+        }
+        else {
 
             $.ajax({
                 url: 'ajax/php/sales-invoice.php',
@@ -534,6 +554,7 @@ jQuery(document).ready(function () {
 
         const items = [];
         const dagItems = [];
+        const quotationItems = [];
 
         //item invoice to send this php file
         $('#invoiceItemsBody tr').each(function () {
@@ -566,6 +587,17 @@ jQuery(document).ready(function () {
 
 
         if (items.length === 0 && dagItems.length === 0) {
+            swal({
+                title: "Error!",
+                text: "Please add at least one item.",
+                type: 'error',
+                timer: 3000,
+                showConfirmButton: false
+            });
+            return;
+        }
+
+        if (items.length === 0 && quotationItems.length === 0) {
             swal({
                 title: "Error!",
                 text: "Please add at least one item.",
@@ -626,6 +658,23 @@ jQuery(document).ready(function () {
                         console.error("DAG invoice save failed");
                     }
                 });
+
+                // Save Quotation items
+                $.ajax({
+                    url: 'ajax/php/sales-invoice-quotation.php',
+                    type: 'POST',
+                    data: {
+                        invoice_id: invoiceId,
+                        items: JSON.stringify(quotationItems)
+                    },
+                    success: function () {
+                        console.log("Quotation invoice saved");
+                    },
+                    error: function () {
+                        console.error("Quotation invoice save failed");
+                    }
+                });
+
 
                 swal({
                     title: "Success!",
@@ -749,6 +798,112 @@ jQuery(document).ready(function () {
             }
         });
     }
+
+
+
+    //---------------------------------------------------------------------------------------------
+
+
+
+    //quotation item invoice process
+    function processQuotationInvoiceCreation() {
+        const total = parseFloat($('#modalFinalTotal').val());
+        const paid = parseFloat($('#amountPaid').val()) || 0;
+
+        if (paid < total) {
+            swal({
+                title: "Error!",
+                text: "Paid amount cannot be less than Final Total",
+                type: 'error',
+                timer: 3000,
+                showConfirmButton: false
+            });
+            return;
+        }
+
+        const quotationItems = [];
+
+        $('#quotationItemsBody tr.quotation-item-row').each(function () {
+            const code = $(this).find('td:eq(0)').text().trim();
+            const name = $(this).find('td:eq(1)').text().trim();
+            const price = parseFloat($(this).find('td:eq(2)').text()) || 0;
+            const qty = parseFloat($(this).find('td:eq(3)').text()) || 0;
+            const payment = parseFloat($(this).find('input.price').val()) || 0;
+            const totalItem = parseFloat($(this).find('input.totalPrice').val()) || 0;
+            const quotation_item_id = $(this).find('input#quotation_item_id').val();
+
+
+
+            if (code && !isNaN(totalItem)) {
+                quotationItems.push({
+                    quotation_item_id,
+                    code,
+                    name,
+                    price,
+                    qty,
+                    payment,
+                    total: totalItem
+                });
+            }
+        });
+
+        let realRows = $('#quotationItemsBody tr').not('#noQuotationItemRow');
+        console.log('Quotation item rows (excluding placeholder):', realRows.length);
+
+        if (realRows.length === 0) {
+            alert("Please add at least one Quotation item.");
+            return;
+        }
+
+
+        const invoiceId = $('#invoice_no').val();
+        if (!invoiceId) {
+            swal("Error!", "Invoice ID is missing.", "error");
+            return;
+        }
+
+        $('.someBlock').preloader();
+
+        // Prepare FormData with all values
+        const formData = new FormData($('#form-data')[0]);
+        formData.append('create', true);
+        formData.append('total', total);
+        formData.append('paid', paid);
+        formData.append('invoice_id', invoiceId);
+        formData.append('payment_type', $('input[name="payment_type"]:checked').val());
+        formData.append('customer_id', $('#customer_id').val());
+        formData.append('invoice_no', $('#invoice_no').val());
+        formData.append('items', JSON.stringify(quotationItems));
+        formData.append('quotation_id', $('#quotation_id').val());
+
+        $.ajax({
+            url: 'ajax/php/sales-invoice-quotation.php',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function () {
+                swal({
+                    title: "Success!",
+                    text: "Quotation Invoice saved successfully!",
+                    type: 'success',
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+
+                $('#paymentModal').modal('hide');
+                window.open("invoice.php?invoice_no=" + invoiceId, "_blank");
+                setTimeout(() => location.reload(), 3000);
+            },
+            error: function () {
+                swal("Error!", "Failed to save Quotation invoice.", "error");
+            }
+        });
+    }
+
+
+
+    //---------------------------------------------------------------------------------------------
 
 
 
@@ -981,6 +1136,7 @@ jQuery(document).ready(function () {
 
 
 
+    console.log($('#quotationItemsBody').html());
 
 
 });
