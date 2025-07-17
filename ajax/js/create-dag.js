@@ -368,6 +368,8 @@ jQuery(document).ready(function () {
     $("#invoiceTable").hide();
     $("#dagTableHide").show();
     $("#addItemTable").hide();
+    $("#quotationTableHide").hide();
+
 
 
     $("#dagItemsBody").empty();

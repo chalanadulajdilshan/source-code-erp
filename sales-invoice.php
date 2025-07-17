@@ -253,7 +253,18 @@ include './auth.php';
                                                 <input type="hidden" id="dag_id" name="dag_id" />
                                             </div>
 
-
+                                            <div class="col-md-3">
+                                                <label for="quotationCode" class="form-label">Quotation ref No</label>
+                                                <div class="input-group mb-3">
+                                                    <input id="quotation_ref_no" name="quotation_ref_no" type="text"
+                                                        class="form-control" placeholder="Select Quotation ref No" readonly>
+                                                    <button class="btn btn-info" type="button" data-bs-toggle="modal"
+                                                        data-bs-target="#quotationModel">
+                                                        <i class="uil uil-search me-1"></i>
+                                                    </button>
+                                                </div>
+                                                <input type="hidden" id="quotation_id" name="quotation_id" />
+                                            </div>
 
 
                                             <hr class="my-4">
@@ -329,6 +340,36 @@ include './auth.php';
                                                 </table>
                                             </div>
 
+
+                                            <!-- Quotation item Table -->
+                                            <div class="table-responsive ">
+
+                                                <table class="table table-bordered" id="quotationTableHide"
+                                                    style="display:none">
+
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th>Code</th>
+                                                            <th>Name</th>
+                                                            <th>Price</th>
+                                                            <th>Qty</th>
+                                                            <th>Discount</th>
+                                                            <th>Amount</th>
+                                                            <th class="th_vat hidden">Vat Amount</th>
+                                                            <th>Total</th>
+                                                            <th>Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="quotationItemsBody">
+                                                        <tr id="noQuotationItemRow">
+                                                            <td colspan="6" class="text-center text-muted">No items
+                                                                added</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+
                                             <!-- Table -->
                                             <div class="table-responsive mt-4">
                                                 <table class="table table-bordered" id="invoiceTable">
@@ -345,7 +386,7 @@ include './auth.php';
                                                         </tr>
                                                     </thead>
                                                     <tbody id="invoiceItemsBody">
-                                                        <tr id="noItemRow">
+                                                        <tr id="noQuotationItemRow">
                                                             <td colspan="8" class="text-center text-muted">
                                                                 No items
                                                                 added</td>
@@ -551,6 +592,77 @@ include './auth.php';
 
 
 
+    <!-- model open here -->
+    <div class="modal fade bs-example-modal-xl" id="quotationModel" tabindex="-1" role="dialog"
+        aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myExtraLargeModalLabel">Manage Quotation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="col-12">
+
+                            <table id="quotation_table" class="table table-bordered dt-responsive nowrap"
+                                style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>#ID</th>
+                                        <th>Quotation No</th>
+                                        <th>Date</th>
+                                        <th>Customer Name</th>
+                                        <th>Company</th>
+                                        <th>Department</th>
+                                        <th>Final Total</th>
+
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <?php
+                                    $QUOTATION = new Quotation(null);
+                                    foreach ($QUOTATION->all() as $key => $quotation) {
+                                        $key++;
+                                        $CUSTOMER = new CustomerMaster($quotation['customer_id']);
+                                        $COMPANY = new CompanyProfile($quotation['company_id']);
+                                        $DEPARTMENT_MASTER = new DepartmentMaster($quotation['department_id']);
+                                        ?>
+                                        <tr class="select-model" data-id="<?php echo $quotation['id']; ?>"
+                                            data-quotation_no="<?php echo htmlspecialchars($quotation['quotation_no']); ?>"
+                                            data-date="<?php echo htmlspecialchars($quotation['date']); ?>"
+                                            data-customer_name="<?php echo htmlspecialchars($quotation['customer_id']); ?>"
+                                            data-company_id="<?php echo htmlspecialchars($quotation['company_id']); ?>"
+                                            data-department_id="<?php echo htmlspecialchars($quotation['department_id']); ?>"
+                                            data-sub_total="<?php echo htmlspecialchars($quotation['sub_total']); ?>"
+                                            data-discount="<?php echo htmlspecialchars($quotation['discount']); ?>"
+                                            data-grand_total="<?php echo htmlspecialchars($quotation['grand_total']); ?>">
+
+                                            <td><?php echo $key; ?></td>
+                                            <td><?php echo htmlspecialchars($quotation['quotation_no']); ?></td>
+                                            <td><?php echo htmlspecialchars($quotation['date']); ?></td>
+                                            <td><?php echo htmlspecialchars($CUSTOMER->name); ?></td>
+                                            <td><?php echo htmlspecialchars($COMPANY->name); ?></td>
+                                            <td><?php echo htmlspecialchars($DEPARTMENT_MASTER->name); ?></td>
+                                            <td><?php echo htmlspecialchars($quotation['grand_total']); ?></td>
+                                        </tr>
+                                    <?php } ?>
+                                </tbody>
+                            </table>
+
+
+                        </div> <!-- end col -->
+                    </div> <!-- end row -->
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+    <!-- model close here -->
+
+
     <!-- Right bar overlay-->
     <div class="rightbar-overlay"></div>
 
@@ -559,6 +671,7 @@ include './auth.php';
     <!-- /////////////////////////// -->
     <script src="ajax/js/sales-invoice.js"></script>
     <script src="ajax/js/create-dag.js"></script>
+    <script src="ajax/js/quotation.js"></script>
 
     <!-- include main js  -->
     <?php include 'main-js.php' ?>

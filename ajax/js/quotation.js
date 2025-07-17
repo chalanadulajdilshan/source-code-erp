@@ -902,6 +902,12 @@ jQuery(document).ready(function () {
         $('#company_id').val(companyId);
         $('#department_id').val(departmentId);
 
+        $("#noDagItemRow").hide();
+        $("#invoiceTable").hide();
+        $("#dagTableHide").hide();
+        $("#addItemTable").hide();
+        $("#quotationTableHide").show();
+
         // Get full quotation details from server
         $.ajax({
             url: 'ajax/php/quotation.php',
@@ -956,13 +962,13 @@ jQuery(document).ready(function () {
                             const row = `
                             <tr>
                                 <td>${item.item_code}                                
-                                 <input type="hidden" class="item-id" value="${item.item_id}"></td>
+                                <input type="hidden" class="item-id" value="${item.item_id}"></td>
                                 <td>${item.item_name}</td>
-                                <td>${price.toFixed(2)}</td>
+                                <td><input type="number" class="form-control form-control-sm price"   value="${price}"  ></td>
                                 <td>${qty}</td>
                                 <td>${discount}%</td>
                                 <td>${subtotal.toFixed(2)}</td>
-                                <td>${total.toFixed(2)}</td>
+                                <td><input type="text" class="form-control form-control-sm totalPrice"  value="${total.toFixed(2)}" readonly>
                                 <td><button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">Remove</button></td>
                             </tr>
                             `;
