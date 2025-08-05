@@ -117,7 +117,7 @@ jQuery(document).ready(function () {
             $.each(slicedItems, function (index, item) {
                 let rowIndex = start + index + 1;
 
-                // 🔹 Main item row
+                // Main item row
                 tbody += `<tr class="table-primary">
                     <td>${rowIndex}</td>
                     <td>${item.code} - ${item.name}</td> 
@@ -126,6 +126,7 @@ jQuery(document).ready(function () {
                     <td>${item.group}</td>
                     <td>${item.brand}</td>
                      <td>${item.category}</td>
+                     <td hidden >${item.id}</td>
                 </tr>`;
 
                 $('#available_qty').val(item.total_available_qty);
@@ -254,7 +255,9 @@ jQuery(document).ready(function () {
 
 
     let itemAvailableMap = {};
-    //clicka and append values
+
+
+    //click the and append values
     $(document).on('click', '#itemMaster tbody tr.table-light', function () {
         let mainRow = $(this).prevAll('tr.table-primary').first();
         let infoRow = $(this).prev('tr.table-info');
@@ -281,7 +284,9 @@ jQuery(document).ready(function () {
         $('#itemQty').val('');
         $('#itemDiscount').val('');
         $('#itemPayment').val('');
-        $('#item_id').val(mainRow.find('td').eq(0).data('item-id') || ''); // If you have it
+
+
+
 
         calculatePayment();
 
@@ -297,6 +302,9 @@ jQuery(document).ready(function () {
     $(document).on('click', '#itemMaster tbody tr.table-info', function () {
         // Get the main item row
         let mainRow = $(this).prevAll('tr.table-primary').first();
+        let lastColValue = mainRow.find('td').last().text();
+
+        $('#item_id').val(lastColValue);
 
         let itemText = mainRow.find('td').eq(1).text().trim();
         let parts = itemText.split(' - ');
@@ -418,18 +426,6 @@ jQuery(document).ready(function () {
         });
     }
 
-    //----------------------------------------------
-    console.log('---- Payment Button Clicked ----');
-
-    const allRows = $('#quotationItemsBody tr');
-    console.log('All rows in quotationItemsBody:', allRows.length);
-
-    allRows.each(function (index, row) {
-        console.log(`Row ${index}:`, $(row).attr('id'), $(row).html());
-    });
-
-    //----------------------------------------------
-
     // Open payment modal and pre-fill total
     $('#payment').on('click', function () {
         const totalRaw = $('#finalTotal').val();
@@ -447,10 +443,6 @@ jQuery(document).ready(function () {
             });
             return;
         }
-
-
-        console.log("Collected Quotation Items:", items);
-
 
 
         $('#modalFinalTotal').val(total.toFixed(2));
@@ -490,13 +482,10 @@ jQuery(document).ready(function () {
 
         const invoiceNo = $('#invoice_no').val().trim();
         const dag_id = $('#dag_id').val();
-        const quotation_id = $('#quotation_id').val();
+
         if (dag_id != 0) {
             processDAGInvoiceCreation();
-        } else if (quotation_id != 0) {
-            processQuotationInvoiceCreation();
-        }
-        else {
+        } else {
 
             $.ajax({
                 url: 'ajax/php/sales-invoice.php',
@@ -554,7 +543,6 @@ jQuery(document).ready(function () {
 
         const items = [];
         const dagItems = [];
-        const quotationItems = [];
 
         //item invoice to send this php file
         $('#invoiceItemsBody tr').each(function () {
@@ -567,8 +555,11 @@ jQuery(document).ready(function () {
             const totalItem = parseFloat($(this).find('td:eq(6)').text()) || 0;
             const item_id = $(this).find('input[name="item_id[]"]').val();
             const arn_no = $(this).find('input[name="arn_ids[]"]').val();
+            const arn_cost = parseFloat($(this).find('input[name="arn_costs[]"]').val()) || price;
 
-            if (code && !isNaN(totalItem)) {
+            console.log('Debug processInvoice - item_id:', item_id, 'code:', code, 'arn_cost:', arn_cost); // Debug log
+
+            if (code && !isNaN(totalItem) && item_id) {
                 items.push({
                     item_id,
                     code,
@@ -578,6 +569,7 @@ jQuery(document).ready(function () {
                     discount,
                     payment,
                     total: totalItem,
+                    cost: arn_cost, // Using ARN cost instead of price
                     arn_no
                 });
             }
@@ -597,17 +589,6 @@ jQuery(document).ready(function () {
             return;
         }
 
-        if (items.length === 0 && quotationItems.length === 0) {
-            swal({
-                title: "Error!",
-                text: "Please add at least one item.",
-                type: 'error',
-                timer: 3000,
-                showConfirmButton: false
-            });
-            return;
-        }
-
         const formData = new FormData($('#form-data')[0]);
         formData.append('create', true);
         formData.append('total', total);
@@ -615,6 +596,10 @@ jQuery(document).ready(function () {
         formData.append('payment_type', $('input[name="payment_type"]:checked').val());
         formData.append('customer_id', $('#customer_id').val());
         formData.append('invoice_no', $('#invoice_no').val());
+        formData.append('items', JSON.stringify(items));
+        formData.append('sales_type', $('input[name="payment_type"]:checked').val()); // Using payment_type as sales_type
+        formData.append('company_id', $('#company_id').val() || 1); // Default to 1 if not found
+        formData.append('department_id', $('#department_id').val() || 1); // Default to 1 if not found
 
         $('.someBlock').preloader();
 
@@ -658,23 +643,6 @@ jQuery(document).ready(function () {
                         console.error("DAG invoice save failed");
                     }
                 });
-
-                // Save Quotation items
-                $.ajax({
-                    url: 'ajax/php/sales-invoice-quotation.php',
-                    type: 'POST',
-                    data: {
-                        invoice_id: invoiceId,
-                        items: JSON.stringify(quotationItems)
-                    },
-                    success: function () {
-                        console.log("Quotation invoice saved");
-                    },
-                    error: function () {
-                        console.error("Quotation invoice save failed");
-                    }
-                });
-
 
                 swal({
                     title: "Success!",
@@ -801,112 +769,6 @@ jQuery(document).ready(function () {
 
 
 
-    //---------------------------------------------------------------------------------------------
-
-
-
-    //quotation item invoice process
-    function processQuotationInvoiceCreation() {
-        const total = parseFloat($('#modalFinalTotal').val());
-        const paid = parseFloat($('#amountPaid').val()) || 0;
-
-        if (paid < total) {
-            swal({
-                title: "Error!",
-                text: "Paid amount cannot be less than Final Total",
-                type: 'error',
-                timer: 3000,
-                showConfirmButton: false
-            });
-            return;
-        }
-
-        const quotationItems = [];
-
-        $('#quotationItemsBody tr.quotation-item-row').each(function () {
-            const code = $(this).find('td:eq(0)').text().trim();
-            const name = $(this).find('td:eq(1)').text().trim();
-            const price = parseFloat($(this).find('td:eq(2)').text()) || 0;
-            const qty = parseFloat($(this).find('td:eq(3)').text()) || 0;
-            const payment = parseFloat($(this).find('input.price').val()) || 0;
-            const totalItem = parseFloat($(this).find('input.totalPrice').val()) || 0;
-            const quotation_item_id = $(this).find('input#quotation_item_id').val();
-
-
-
-            if (code && !isNaN(totalItem)) {
-                quotationItems.push({
-                    quotation_item_id,
-                    code,
-                    name,
-                    price,
-                    qty,
-                    payment,
-                    total: totalItem
-                });
-            }
-        });
-
-        let realRows = $('#quotationItemsBody tr').not('#noQuotationItemRow');
-        console.log('Quotation item rows (excluding placeholder):', realRows.length);
-
-        if (realRows.length === 0) {
-            alert("Please add at least one Quotation item.");
-            return;
-        }
-
-
-        const invoiceId = $('#invoice_no').val();
-        if (!invoiceId) {
-            swal("Error!", "Invoice ID is missing.", "error");
-            return;
-        }
-
-        $('.someBlock').preloader();
-
-        // Prepare FormData with all values
-        const formData = new FormData($('#form-data')[0]);
-        formData.append('create', true);
-        formData.append('total', total);
-        formData.append('paid', paid);
-        formData.append('invoice_id', invoiceId);
-        formData.append('payment_type', $('input[name="payment_type"]:checked').val());
-        formData.append('customer_id', $('#customer_id').val());
-        formData.append('invoice_no', $('#invoice_no').val());
-        formData.append('items', JSON.stringify(quotationItems));
-        formData.append('quotation_id', $('#quotation_id').val());
-
-        $.ajax({
-            url: 'ajax/php/sales-invoice-quotation.php',
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function () {
-                swal({
-                    title: "Success!",
-                    text: "Quotation Invoice saved successfully!",
-                    type: 'success',
-                    timer: 3000,
-                    showConfirmButton: false
-                });
-
-                $('#paymentModal').modal('hide');
-                window.open("invoice.php?invoice_no=" + invoiceId, "_blank");
-                setTimeout(() => location.reload(), 3000);
-            },
-            error: function () {
-                swal("Error!", "Failed to save Quotation invoice.", "error");
-            }
-        });
-    }
-
-
-
-    //---------------------------------------------------------------------------------------------
-
-
-
 
     // Add item to invoice table
     function addItem() {
@@ -946,7 +808,7 @@ jQuery(document).ready(function () {
             return;
         }
 
-        const arnId = activeArn.data('arn-id'); // ✅ Now declared early
+        const arnId = activeArn.data('arn-id'); // Now declared early
         const arnQty = parseFloat(activeArn.data('qty'));
         const usedQty = parseFloat(activeArn.data('used')) || 0;
         const remainingQty = arnQty - usedQty;
@@ -971,7 +833,6 @@ jQuery(document).ready(function () {
                 activeArn.data('used', newUsed);
                 activeArn.find('.arn-qty').text((arnQty - newUsed).toFixed(2));
 
-                $(this).remove();
                 alreadyExists = true;
                 return false;
             }
@@ -999,7 +860,7 @@ jQuery(document).ready(function () {
                 <td>${payment.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                 <td>${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                 <td>
-                    <button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this, '${code}', ${qty}, '${arnId}')">Remove</button>
+                    <button type="button" class="btn btn-sm btn-danger btn-remove-item" data-code="${code}" data-qty="${qty}" data-arn-id="${arnId}">Remove</button>
                 </td>
             </tr>
         `;
@@ -1075,6 +936,16 @@ jQuery(document).ready(function () {
 
 
 
+    // Event delegation for remove buttons
+    $(document).on('click', '.btn-remove-item', function () {
+        const btn = this;
+        const code = $(btn).data('code');
+        const qty = parseFloat($(btn).data('qty'));
+        const arnId = $(btn).data('arn-id');
+
+        removeRow(btn, code, qty, arnId);
+    });
+
     // Remove item row
     function removeRow(btn, code, qty, arnId) {
         $(btn).closest('tr').remove();
@@ -1114,29 +985,6 @@ jQuery(document).ready(function () {
         $('#itemPayment').val(total.toFixed(2));
     }
 
-
-
-    // Global function to remove row
-    window.removeRow = function (button) {
-        $(button).closest('tr').remove();
-
-        // If no rows left, add no-item message
-        if ($('#invoiceItemsBody tr').length === 0) {
-            $('#invoiceItemsBody').append(`
-                <tr id="noItemRow">
-                    <td colspan="8" class="text-center text-muted">No items added</td>
-                </tr>
-            `);
-        }
-
-        updateFinalTotal();
-    };
-
-    // Function to calculate final total from all rows
-
-
-
-    console.log($('#quotationItemsBody').html());
 
 
 });

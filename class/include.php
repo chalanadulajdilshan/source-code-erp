@@ -24,7 +24,7 @@ include_once(dirname(__FILE__) . '/Province.php');
 include_once(dirname(__FILE__) . '/CustomerMaster.php');
 include_once(dirname(__FILE__) . '/PaymentType.php');
 include_once(dirname(__FILE__) . '/SalesInvoice.php');
-include_once(dirname(__FILE__) . '/TempSalesItem.php');
+include_once(dirname(__FILE__) . '/SalesInvoiceItem.php');
 include_once(dirname(__FILE__) . '/PageCategory.php');
 include_once(dirname(__FILE__) . '/Pages.php');
 include_once(dirname(__FILE__) . '/Permission.php');

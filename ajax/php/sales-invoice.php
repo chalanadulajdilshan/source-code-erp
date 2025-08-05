@@ -52,8 +52,11 @@ if (isset($_POST['create'])) {
     $USER = new User($_SESSION['id']);
     $COMPANY_PROFILE = new CompanyProfile($USER->company_id);
 
-    // VAT calculation (18% of net total)
-    $vat = round(($netTotal * $COMPANY_PROFILE->vat_percentage) / 100, 2);
+    // VAT calculation - only if company has VAT enabled
+    $vat = 0;
+    if ($COMPANY_PROFILE->is_vat == 1) {
+        $vat = round(($netTotal * $COMPANY_PROFILE->vat_percentage) / 100, 2);
+    }
 
     // Grand total = net total + VAT
     $grandTotal = $netTotal + $vat;
@@ -62,6 +65,7 @@ if (isset($_POST['create'])) {
     $SALES_INVOICE = new SalesInvoice(NULL);
 
     $SALES_INVOICE->invoice_no = $invoiceId;
+     $SALES_INVOICE->invoice_type = 'INV';
     $SALES_INVOICE->invoice_date = date("Y-m-d H:i:s");
     $SALES_INVOICE->company_id = $_POST['company_id'];
     $SALES_INVOICE->customer_id = $_POST['customer_id'];
@@ -89,16 +93,16 @@ if (isset($_POST['create'])) {
     }
 
     if ($invoiceResult) {
-        $invoiceId = $invoiceResult;
+        $invoiceTableId = $invoiceResult;
 
         foreach ($items as $item) {
 
             $item_discount = isset($item['discount']) ? $item['discount'] : 0;
-
+ 
             $ITEM_MASTER = new ItemMaster($item['item_id']);
 
-            $SALES_ITEM = new TempSalesItem(NULL);
-            $SALES_ITEM->invoice_id = $invoiceId;
+            $SALES_ITEM = new SalesInvoiceItem(NULL);
+            $SALES_ITEM->invoice_id = $invoiceTableId;
             $SALES_ITEM->item_code = $item['item_id'];
             $SALES_ITEM->item_name = $item['name'];
             $SALES_ITEM->price = $item['price'];
@@ -121,7 +125,7 @@ if (isset($_POST['create'])) {
             $STOCK_TRANSACTION->item_id = $item['item_id'];
 
             //stock transaction table update
-            $STOCK_TRANSACTION->type = 4;
+            $STOCK_TRANSACTION->type = 4; // get this id from stock adjustment type table PK
             $STOCK_TRANSACTION->date = date("Y-m-d");
             $STOCK_TRANSACTION->qty_in = 0;
             $STOCK_TRANSACTION->qty_out = $item['qty'];
@@ -135,7 +139,7 @@ if (isset($_POST['create'])) {
             $AUDIT_LOG->ref_id = $invoiceId;
             $AUDIT_LOG->ref_code = $_POST['invoice_no'];
             $AUDIT_LOG->action = 'CREATE';
-            $AUDIT_LOG->description = 'CREATE INVOICE NO #' . $invoiceId;
+            $AUDIT_LOG->description = 'CREATE INVOICE NO #' . $invoiceTableId;
             $AUDIT_LOG->user_id = $_SESSION['id'];
             $AUDIT_LOG->created_at = date("Y-m-d H:i:s");
             $AUDIT_LOG->create();
@@ -144,7 +148,7 @@ if (isset($_POST['create'])) {
 
         echo json_encode([
             "status" => 'success',
-            "invoice_id" => $invoiceId,
+            "invoice_id" => $invoiceTableId,
             "sub_total" => $totalSubTotal,
             "discount" => $totalDiscount,
             "vat" => $vat,
