@@ -117,7 +117,7 @@ jQuery(document).ready(function () {
             $.each(slicedItems, function (index, item) {
                 let rowIndex = start + index + 1;
 
-                // 🔹 Main item row
+                // Main item row
                 tbody += `<tr class="table-primary">
                     <td>${rowIndex}</td>
                     <td>${item.code} - ${item.name}</td> 
@@ -126,6 +126,7 @@ jQuery(document).ready(function () {
                     <td>${item.group}</td>
                     <td>${item.brand}</td>
                      <td>${item.category}</td>
+                     <td hidden >${item.id}</td>
                 </tr>`;
 
                 $('#available_qty').val(item.total_available_qty);
@@ -254,7 +255,9 @@ jQuery(document).ready(function () {
 
 
     let itemAvailableMap = {};
-    //clicka and append values
+
+
+    //click the and append values
     $(document).on('click', '#itemMaster tbody tr.table-light', function () {
         let mainRow = $(this).prevAll('tr.table-primary').first();
         let infoRow = $(this).prev('tr.table-info');
@@ -281,7 +284,9 @@ jQuery(document).ready(function () {
         $('#itemQty').val('');
         $('#itemDiscount').val('');
         $('#itemPayment').val('');
-        $('#item_id').val(mainRow.find('td').eq(0).data('item-id') || ''); // If you have it
+
+
+
 
         calculatePayment();
 
@@ -297,6 +302,9 @@ jQuery(document).ready(function () {
     $(document).on('click', '#itemMaster tbody tr.table-info', function () {
         // Get the main item row
         let mainRow = $(this).prevAll('tr.table-primary').first();
+        let lastColValue = mainRow.find('td').last().text();
+
+        $('#item_id').val(lastColValue);
 
         let itemText = mainRow.find('td').eq(1).text().trim();
         let parts = itemText.split(' - ');
@@ -474,6 +482,7 @@ jQuery(document).ready(function () {
 
         const invoiceNo = $('#invoice_no').val().trim();
         const dag_id = $('#dag_id').val();
+
         if (dag_id != 0) {
             processDAGInvoiceCreation();
         } else {
@@ -546,8 +555,11 @@ jQuery(document).ready(function () {
             const totalItem = parseFloat($(this).find('td:eq(6)').text()) || 0;
             const item_id = $(this).find('input[name="item_id[]"]').val();
             const arn_no = $(this).find('input[name="arn_ids[]"]').val();
+            const arn_cost = parseFloat($(this).find('input[name="arn_costs[]"]').val()) || price;
 
-            if (code && !isNaN(totalItem)) {
+            console.log('Debug processInvoice - item_id:', item_id, 'code:', code, 'arn_cost:', arn_cost); // Debug log
+
+            if (code && !isNaN(totalItem) && item_id) {
                 items.push({
                     item_id,
                     code,
@@ -557,6 +569,7 @@ jQuery(document).ready(function () {
                     discount,
                     payment,
                     total: totalItem,
+                    cost: arn_cost, // Using ARN cost instead of price
                     arn_no
                 });
             }
@@ -583,6 +596,10 @@ jQuery(document).ready(function () {
         formData.append('payment_type', $('input[name="payment_type"]:checked').val());
         formData.append('customer_id', $('#customer_id').val());
         formData.append('invoice_no', $('#invoice_no').val());
+        formData.append('items', JSON.stringify(items));
+        formData.append('sales_type', $('input[name="payment_type"]:checked').val()); // Using payment_type as sales_type
+        formData.append('company_id', $('#company_id').val() || 1); // Default to 1 if not found
+        formData.append('department_id', $('#department_id').val() || 1); // Default to 1 if not found
 
         $('.someBlock').preloader();
 
@@ -791,7 +808,7 @@ jQuery(document).ready(function () {
             return;
         }
 
-        const arnId = activeArn.data('arn-id'); // ✅ Now declared early
+        const arnId = activeArn.data('arn-id'); // Now declared early
         const arnQty = parseFloat(activeArn.data('qty'));
         const usedQty = parseFloat(activeArn.data('used')) || 0;
         const remainingQty = arnQty - usedQty;
@@ -816,7 +833,6 @@ jQuery(document).ready(function () {
                 activeArn.data('used', newUsed);
                 activeArn.find('.arn-qty').text((arnQty - newUsed).toFixed(2));
 
-                $(this).remove();
                 alreadyExists = true;
                 return false;
             }
@@ -844,7 +860,7 @@ jQuery(document).ready(function () {
                 <td>${payment.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                 <td>${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                 <td>
-                    <button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this, '${code}', ${qty}, '${arnId}')">Remove</button>
+                    <button type="button" class="btn btn-sm btn-danger btn-remove-item" data-code="${code}" data-qty="${qty}" data-arn-id="${arnId}">Remove</button>
                 </td>
             </tr>
         `;
@@ -920,6 +936,16 @@ jQuery(document).ready(function () {
 
 
 
+    // Event delegation for remove buttons
+    $(document).on('click', '.btn-remove-item', function () {
+        const btn = this;
+        const code = $(btn).data('code');
+        const qty = parseFloat($(btn).data('qty'));
+        const arnId = $(btn).data('arn-id');
+
+        removeRow(btn, code, qty, arnId);
+    });
+
     // Remove item row
     function removeRow(btn, code, qty, arnId) {
         $(btn).closest('tr').remove();
@@ -958,28 +984,6 @@ jQuery(document).ready(function () {
 
         $('#itemPayment').val(total.toFixed(2));
     }
-
-
-
-    // Global function to remove row
-    window.removeRow = function (button) {
-        $(button).closest('tr').remove();
-
-        // If no rows left, add no-item message
-        if ($('#invoiceItemsBody tr').length === 0) {
-            $('#invoiceItemsBody').append(`
-                <tr id="noItemRow">
-                    <td colspan="8" class="text-center text-muted">No items added</td>
-                </tr>
-            `);
-        }
-
-        updateFinalTotal();
-    };
-
-    // Function to calculate final total from all rows
-
-
 
 
 

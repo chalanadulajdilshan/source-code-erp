@@ -96,53 +96,48 @@ $CUSTOMER_MASTER = new CustomerMaster($SALES_INVOICE->customer_id);
 
         <div class="card">
             <div class="card-body">
-                <div class="invoice-title">
+               <div class="invoice-title">
+    <div class="row mb-4">
+        <!-- Column 1: Company Logo -->
+        <div class="col-md-3 col-sm-6 mb-3 mb-md-0 text-center">
+            <img src="./uploads/company-logos/<?php echo $COMPANY_PROFILE->image_name ?>" alt="logo" style="max-height: 80px;">
+        </div>
 
-                    <div class="col-sm-6 text-sm-end float-end">
-                        <p><strong>Invoice No:</strong> #<?php echo $SALES_INVOICE->invoice_no ?></p>
-                        <p><strong>Invoice Date:</strong>
-                            <?php echo date('d M, Y', strtotime($SALES_INVOICE->invoice_date)); ?></p>
-                    </div>
-                    <div class="mb-4">
-                        <img src="./uploads/company-logos/<?php echo $COMPANY_PROFILE->image_name ?>" alt="logo">
-                    </div>
+        <!-- Column 2: Company Info -->
+        <div class="col-md-3 col-sm-6 text-muted">
+            <p class="mb-1"><i class="uil uil-building me-1"></i><?php echo $COMPANY_PROFILE->name ?></p>
+            <p class="mb-1"><i class="uil uil-map-marker me-1"></i><?php echo $COMPANY_PROFILE->address ?></p>
+            <p class="mb-1"><i class="uil uil-envelope-alt me-1"></i><?php echo $COMPANY_PROFILE->email ?></p>
+            <p><i class="uil uil-phone me-1"></i><?php echo $COMPANY_PROFILE->mobile_number_1 ?></p>
+        </div>
 
-                    <div class="row mb-4">
-                        <!-- Left: Company Info -->
-                        <div class="col-sm-6">
-                            <div class="text-muted">
-                                <p class="mb-1"><i
-                                        class="uil uil-building me-1"></i><?php echo $COMPANY_PROFILE->name ?></p>
-                                <p class="mb-1"><i
-                                        class="uil uil-map-marker me-1"></i><?php echo $COMPANY_PROFILE->address ?></p>
-                                <p class="mb-1"><i
-                                        class="uil uil-envelope-alt me-1"></i><?php echo $COMPANY_PROFILE->email ?></p>
-                                <p><i class="uil uil-phone me-1"></i><?php echo $COMPANY_PROFILE->mobile_number_1 ?></p>
-                            </div>
-                        </div>
+        <!-- Column 3: Invoice Info -->
+        <div class="col-md-3 col-sm-6 text-sm-start text-md-end">
+            <p><strong>Invoice No:</strong> #<?php echo $SALES_INVOICE->invoice_no ?></p>
+            <p><strong>Invoice Date:</strong> <?php echo date('d M, Y', strtotime($SALES_INVOICE->invoice_date)); ?></p>
+        </div>
 
-                        <!-- Right: Billed To -->
-                        <div class="col-sm-6 text-sm-end">
+        <!-- Column 4: Customer Info -->
+        <div class="col-md-3 col-sm-6 text-sm-start text-md-end">
+            <p><?php echo $CUSTOMER_MASTER->name ?><br>
+                <?php echo $CUSTOMER_MASTER->address ?><br>
+                <?php echo $CUSTOMER_MASTER->mobile_number ?><br>
+                <?php echo $CUSTOMER_MASTER->email ?>
+            </p>
+        </div>
+    </div>
+</div>
 
-                            <p><?php echo $CUSTOMER_MASTER->name ?><br><?php echo $CUSTOMER_MASTER->address ?>
-                                <br><?php echo $CUSTOMER_MASTER->mobile_number ?><br>
-                                <?php echo $CUSTOMER_MASTER->email ?>
-                            </p>
-                        </div>
-                    </div>
-
-
-                </div>
 
                 <hr>
 
 
 
                 <!-- Dag item Invoice Print -->
-                <?php if ($SALES_INVOICE->invoice_type === 'DAG') { ?>
+                <?php if ($SALES_INVOICE->invoice_type == 'INV') { ?>
 
                     <!-- item invoice print -->
-                    <h5>Dag Invoice Summary</h5>
+                    <h5>Order Invoice Summary</h5>
                     <div class="table-responsive">
                         <table class="table table-centered">
 
@@ -159,7 +154,8 @@ $CUSTOMER_MASTER = new CustomerMaster($SALES_INVOICE->customer_id);
                             </thead>
                             <tbody>
                                 <?php
-                                $TEMP_SALES_ITEM = new TempSalesItem(null);
+                                
+                                $TEMP_SALES_ITEM = new SalesInvoiceItem(null);
                                 $temp_items_list = $TEMP_SALES_ITEM->getItemsByInvoiceId($invoice_id);
 
                                 $subtotal = 0;

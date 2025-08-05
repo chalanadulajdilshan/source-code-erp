@@ -1,6 +1,6 @@
 <?php
 
-class TempSalesItem
+class SalesInvoiceItem
 {
     public $id;
     public $invoice_id;
@@ -17,7 +17,7 @@ class TempSalesItem
     {
         if ($id) {
             $query = "SELECT  * 
-                      FROM `temp_sales_items` 
+                      FROM `sales_invoice_items` 
                       WHERE `id` = " . (int) $id;
             $db = new Database();
             $result = mysqli_fetch_array($db->readQuery($query));
@@ -41,7 +41,7 @@ class TempSalesItem
     {
 
 
-        $query = "INSERT INTO `temp_sales_items` 
+        $query = "INSERT INTO `sales_invoice_items` 
     (`invoice_id`, `item_code`, `item_name`,`cost`, `price`, `discount`,`quantity`, `total`, `created_at`) 
     VALUES (
         '{$this->invoice_id}', 
@@ -69,7 +69,7 @@ class TempSalesItem
 
     public function update()
     {
-        $query = "UPDATE `temp_sales_items` SET 
+        $query = "UPDATE `sales_invoice_items` SET 
              
             `item_code` = '{$this->item_code}', 
             `item_name` = '{$this->item_name}', 
@@ -90,7 +90,7 @@ class TempSalesItem
 
     public function delete()
     {
-        $query = "DELETE FROM `temp_sales_items` WHERE `id` = '{$this->id}'";
+        $query = "DELETE FROM `sales_invoice_items` WHERE `id` = '{$this->id}'";
         $db = new Database();
         return $db->readQuery($query);
     }
@@ -98,7 +98,7 @@ class TempSalesItem
     public function all()
     {
         $query = "SELECT  * 
-                  FROM `temp_sales_items` 
+                  FROM `sales_invoice_items` 
                   ORDER BY `id` DESC";
         $db = new Database();
         $result = $db->readQuery($query);
@@ -114,8 +114,9 @@ class TempSalesItem
     public function getItemsByInvoiceId($invoice_id)
     {
         $query = "SELECT  * 
-                  FROM `temp_sales_items` where `invoice_id` =  $invoice_id 
+                  FROM `sales_invoice_items` where `invoice_id` =  $invoice_id 
                   ORDER BY `id` DESC";
+          
         $db = new Database();
         $result = $db->readQuery($query);
         $array_res = array();
