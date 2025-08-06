@@ -118,16 +118,6 @@ $item_id = 'ITM/0' . $lastId + 1;
                                                 </div>
                                             </div>
 
-                                            <!-- Item Name -->
-                                            <div class="col-md-3">
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="name">Item Name <span
-                                                            class="text-danger">*</span></label>
-                                                    <input id="name" name="name" type="text" class="form-control"
-                                                        placeholder="Enter item name">
-                                                </div>
-                                            </div>
-
                                             <!-- Brand -->
                                             <div class="col-md-3">
                                                 <div class="mb-3">
@@ -162,6 +152,16 @@ $item_id = 'ITM/0' . $lastId + 1;
                                                             class="text-danger">*</span></label>
                                                     <input id="pattern" name="pattern" type="text" class="form-control"
                                                         placeholder="Enter item pattern">
+                                                </div>
+                                            </div>
+
+                                            <!-- Item Name -->
+                                            <div class="col-md-3">
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="name">Item Name <span
+                                                            class="text-danger">*</span></label>
+                                                    <input id="name" name="name" type="text" class="form-control"
+                                                        placeholder="Enter item name">
                                                 </div>
                                             </div>
 
@@ -204,26 +204,28 @@ $item_id = 'ITM/0' . $lastId + 1;
                                                     <label class="form-label" for="list_price"> List Price <span
                                                             class="text-danger">*</span></label>
                                                     <input id="list_price" name="list_price" type="text"
-                                                        class="form-control" placeholder="Enter item List Price">
+                                                        class="form-control list-price" placeholder="Enter item List Price">
                                                 </div>
                                             </div>
-                                            <div class="col-md-2">
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="list_price"> Invoice Price <span
-                                                            class="text-danger">*</span></label>
-                                                    <input id="invoice_price" name="invoice_price" type="text"
-                                                        class="form-control" placeholder="Enter item Invoice Price">
-                                                </div>
-                                            </div>
-
+                                            <!-- DIS Column -->
                                             <div class="col-md-1">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="discount"> Item Discount <span
+                                                    <label class="form-label" for="discount">DIS % <span
                                                             class="text-danger">*</span></label>
                                                     <input id="discount" name="discount" type="text"
-                                                        class="form-control" placeholder="Dis %">
+                                                        class="form-control discount" placeholder="%" value="0">
                                                 </div>
                                             </div>
+                                            <!-- Invoice Price -->
+                                            <div class="col-md-2">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Invoice Price <span
+                                                            class="text-danger">*</span></label>
+                                                    <input id="invoice_price" name="invoice_price" type="text"
+                                                        class="form-control invoice-price" placeholder="Auto-calculated" readonly>
+                                                </div>
+                                            </div>
+                                        
                                         </div>
 
                                         <hr class="my-4">
@@ -308,7 +310,47 @@ $item_id = 'ITM/0' . $lastId + 1;
     <script src="assets/libs/jquery/jquery.min.js"></script>
     <!-- /////////////////////////// -->
     <script src="ajax/js/item-master.js"></script>
-
+    
+    <script>
+        $(document).ready(function() {
+            // Function to update item name
+            function updateItemName() {
+                const brand = $('#brand option:selected').text().trim();
+                const size = $('#size').val().trim();
+                const pattern = $('#pattern').val().trim();
+                
+                // Combine the values with spaces, but only if they're not empty
+                const itemName = [brand, size, pattern].filter(Boolean).join(' ');
+                
+                // Update the item name field
+                $('#name').val(itemName);
+            }
+            
+            // Function to calculate invoice price
+            function calculateInvoicePrice() {
+                const listPrice = parseFloat($('#list_price').val()) || 0;
+                const discount = parseFloat($('#discount').val()) || 0;
+                
+                // Calculate discount amount
+                const discountAmount = listPrice * (discount / 100);
+                const invoicePrice = listPrice - discountAmount;
+                
+                // Update invoice price field with 2 decimal places
+                $('#invoice_price').val(invoicePrice.toFixed(2));
+            }
+            
+            // Add event listeners to the relevant fields
+            $('#brand, #size, #pattern').on('change keyup', updateItemName);
+            
+            // Add event listeners for price calculation
+            $('.list-price, .discount').on('change keyup', function() {
+                calculateInvoicePrice();
+            });
+            
+            // Initialize calculations on page load
+            calculateInvoicePrice();
+        });
+    </script>
 
     <!-- include main js  -->
     <?php include 'main-js.php' ?>
