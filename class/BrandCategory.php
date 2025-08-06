@@ -3,6 +3,7 @@
 class BrandCategory
 {
     public $id;
+    public $code;
     public $name;
     public $queue;
 
@@ -10,12 +11,13 @@ class BrandCategory
     public function __construct($id = null)
     {
         if ($id) {
-            $query = "SELECT `id`, `name`, `queue` FROM `brand_category` WHERE `id` = " . (int) $id;
+            $query = "SELECT `id`, `code`, `name`, `queue` FROM `brand_category` WHERE `id` = " . (int) $id;
             $db = new Database();
             $result = mysqli_fetch_array($db->readQuery($query));
 
             if ($result) {
                 $this->id = $result['id'];
+                $this->code = $result['code'];
                 $this->name = $result['name'];
                 $this->queue = $result['queue'];
             }
@@ -25,7 +27,8 @@ class BrandCategory
     // Create new brand category
     public function create()
     {
-        $query = "INSERT INTO `brand_category` (`name`, `queue`) VALUES (
+        $query = "INSERT INTO `brand_category` (`code`, `name`, `queue`) VALUES (
+            '" . $this->code . "',
             '" . $this->name . "',
             '" . (int) $this->queue . "'
         )";
@@ -44,6 +47,7 @@ class BrandCategory
     public function update()
     {
         $query = "UPDATE `brand_category` SET
+            `code` = '" . $this->code . "',
             `name` = '" . $this->name . "',
             `queue` = '" . (int) $this->queue . "'
             WHERE `id` = '" . (int) $this->id . "'";
@@ -52,7 +56,8 @@ class BrandCategory
         $result = $db->readQuery($query);
 
         if ($result) {
-            return $this->__construct($this->id);
+            $this->__construct($this->id); // Refresh the object with updated data
+            return true;
         } else {
             return false;
         }
@@ -88,5 +93,13 @@ class BrandCategory
         $db = new Database();
         $result = $db->readQuery($query);
         return mysqli_fetch_array($result);
+    }
+
+    public function getLastID()
+    {
+        $query = "SELECT * FROM `brand_category` ORDER BY `id` DESC LIMIT 1";
+        $db = new Database();
+        $result = mysqli_fetch_array($db->readQuery($query));
+        return $result['id'];
     }
 }
