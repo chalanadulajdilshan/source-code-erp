@@ -112,32 +112,39 @@ if (isset($_POST['update'])) {
 
 // Delete item
 if (isset($_POST['delete']) && isset($_POST['id'])) {
-    $item = new ItemMaster($_POST['id']);
-    $result = $item->delete(); // Ensure this method exists in the ItemMaster class
+    try {
+        $ITEM_MASTER = new ItemMaster($_POST['id']);
+        
+        if (!$ITEM_MASTER->id) {
+            throw new Exception('Item not found');
+        }
+        
+        $result = $ITEM_MASTER->delete();
 
-    if ($result) {
-        echo json_encode(['status' => 'success']);
-    } else {
-        echo json_encode(['status' => 'error']);
+        if ($result) {
+            // Add audit log
+            $AUDIT_LOG = new AuditLog(null);
+            $AUDIT_LOG->ref_id = $_POST['id'];
+            $AUDIT_LOG->ref_code = $ITEM_MASTER->code;
+            $AUDIT_LOG->action = 'DELETE';
+            $AUDIT_LOG->description = 'DELETED ITEM #' . $ITEM_MASTER->code;
+            $AUDIT_LOG->user_id = $_SESSION['id'];
+            $AUDIT_LOG->created_at = date('Y-m-d H:i:s');
+            $AUDIT_LOG->create();
+            
+            echo json_encode(['status' => 'success', 'message' => 'Item deleted successfully']);
+        } else {
+            throw new Exception('Failed to delete item');
+        }
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
     }
-}
-
-
-
-if (isset($_POST['filter'])) {
-
-
-    $ITEM_MASTER = new ItemMaster();
-    $response = $ITEM_MASTER->fetchForDataTable($_REQUEST);
-
-    echo json_encode($response);
-    exit;
+    exit();
 }
 
 //filter for item for invoices
 if (isset($_POST['filter_by_invoice'])) {
-
-
     $ITEM_MASTER = new ItemMaster();
     $response = $ITEM_MASTER->fetchForDataTable($_REQUEST);
 
@@ -145,20 +152,12 @@ if (isset($_POST['filter_by_invoice'])) {
     exit;
 }
 
-//delete item master 
-if (isset($_POST['delete']) && isset($_POST['id'])) {
-    $ITEM_MASTER = new ItemMaster($_POST['id']);
-    $result = $ITEM_MASTER->delete(); // Make sure this method exists
-    var_dump($result);
-    exit();
+if (isset($_POST['filter'])) {
+    $ITEM_MASTER = new ItemMaster();
+    $response = $ITEM_MASTER->fetchForDataTable($_REQUEST);
 
-    if ($result) {
-        echo json_encode(['status' => 'success']);
-    } else {
-        echo json_encode(['status' => 'error']);
-    }
+    echo json_encode($response);
+    exit;
 }
-
-
 
 ?>

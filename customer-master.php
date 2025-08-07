@@ -8,7 +8,7 @@ $CUSTOMER_MASTER = new CustomerMaster(NULL);
 
 // Get the last inserted package id
 $lastId = $CUSTOMER_MASTER->getLastID();
-$customer_id = 'CM/00/' . $lastId + 1;
+$customer_id = 'CM/0' . ($lastId + 1);
 ?>
 
 <head>

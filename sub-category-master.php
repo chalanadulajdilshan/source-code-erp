@@ -7,7 +7,7 @@ $SUBCATEGORY = new Subcategory();
 
 // Get the last inserted package id
 $lastId = $SUBCATEGORY->getLastID();
-$sub_category_id = 'SC/00/' . $lastId + 1;
+$sub_category_id = 'SC/0' . ($lastId + 1);
 
 ?>
 <html lang="en">
@@ -185,7 +185,7 @@ $sub_category_id = 'SC/00/' . $lastId + 1;
                     <div class="row">
                         <div class="col-12">
 
-                            <table id="sub_category_table" class="table table-bordered dt-responsive nowrap"
+                            <table  class="datatable table table-bordered dt-responsive nowrap"
                                 style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                 <thead>
                                     <tr>

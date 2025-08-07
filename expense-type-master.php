@@ -7,7 +7,7 @@ $EXPENSES = new Expenses();
 
 // Get the last inserted package id
 $lastId = $EXPENSES->getLastID();
-$expenses_id = 'EX/00/' . $lastId + 1;
+$expenses_id = 'EX/0' . ($lastId + 1);
 
 ?>
 <html lang="en">
@@ -110,7 +110,7 @@ $expenses_id = 'EX/00/' . $lastId + 1;
                                                 
                                                     <button class="btn btn-info" type="button"  data-bs-toggle="modal"
                                                     data-bs-target="#expense_type">
-                                                        <i class="uil uil-search me-1"></i> Find
+                                                        <i class="uil uil-search me-1"></i>
                                                     </button>
                                                 </div>
                                             </div>
@@ -167,7 +167,7 @@ $expenses_id = 'EX/00/' . $lastId + 1;
                     <div class="row">
                         <div class="col-12">
 
-                            <table id="datatable" class="table table-bordered dt-responsive nowrap"
+                            <table  class="datatable table table-bordered dt-responsive nowrap"
                                 style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                 <thead>
                                     <tr>

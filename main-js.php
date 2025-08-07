@@ -43,5 +43,5 @@
     ///data table loard
     $('#dagTable').DataTable();
     $('#maindagTable').DataTable();
-
+$('.datatable').DataTable();
 </script>

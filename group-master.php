@@ -7,7 +7,8 @@ $GROUP_MASTER = new GroupMaster(NULL);
 
 // Get the last inserted package id
 $lastId = $GROUP_MASTER->getLastID();
-$group_id = 'GR/00/' . $lastId + 1;
+$group_id = 'GR/0' . ($lastId + 1);
+
 ?>
 <html lang="en">
 
@@ -107,7 +108,7 @@ $group_id = 'GR/00/' . $lastId + 1;
                                                         readonly value="<?php echo $group_id ?>">
                                                     <button class="btn btn-info" type="button" data-bs-toggle="modal"
                                                         data-bs-target="#group_master">
-                                                        <i class="uil uil-search me-1"></i> Find Group
+                                                        <i class="uil uil-search me-1"></i>
                                                     </button>
                                                 </div>
                                             </div>
@@ -169,7 +170,7 @@ $group_id = 'GR/00/' . $lastId + 1;
                     <div class="row">
                         <div class="col-12">
                        
-                            <table id="group_master_table" class="table table-bordered dt-responsive nowrap"
+                            <table  class="datatable table table-bordered dt-responsive nowrap"
                                 style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                 <thead>
                                     <tr>

@@ -7,7 +7,7 @@ $BELT_MASTER = new BeltMaster();
 
 // Get the last inserted package id
 $lastId = $BELT_MASTER->getLastID();
-$belt_id = 'BM00' . $lastId + 1;
+$belt_id = 'BM/0' . ($lastId + 1);
 
 ?>
 <html lang="en">
@@ -114,7 +114,7 @@ $belt_id = 'BM00' . $lastId + 1;
                                                         <button class="btn btn-info" type="button"
                                                             data-bs-toggle="modal"
                                                             data-bs-target="#beltModel">
-                                                            <i class="uil uil-search me-1"></i> Find
+                                                            <i class="uil uil-search me-1"></i>
                                                         </button>
                                                     </div>
                                                 </div>
@@ -169,8 +169,8 @@ $belt_id = 'BM00' . $lastId + 1;
                     <div class="col-12">
   
 
-                        <table id="datatable" class="table table-bordered dt-responsive nowrap"
-                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                        <table  class="datatable table table-bordered dt-responsive nowrap"
+                                style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
                                     <th>#</th>
