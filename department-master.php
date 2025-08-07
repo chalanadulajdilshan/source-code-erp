@@ -7,7 +7,8 @@ $DEPARTMENT_MASTER = new DepartmentMaster(NULL);
 
 // Get the last inserted package id
 $lastId = $DEPARTMENT_MASTER->getLastID();
-$department_id = 'DP/00/' . $lastId + 1;
+$department_id = 'DP/0' . ($lastId + 1);
+
 ?>
 
 <html lang="en">
@@ -166,7 +167,7 @@ $department_id = 'DP/00/' . $lastId + 1;
                     <div class="row">
                         <div class="col-12">
 
-                            <table id="datatable" class="table table-bordered dt-responsive nowrap"
+                            <table  class="datatable table table-bordered dt-responsive nowrap"
                                 style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                 <thead>
                                     <tr>

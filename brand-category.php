@@ -7,7 +7,7 @@ $BRAND_CATEGORY = new BrandCategory();
 
 // Get the last inserted package id
 $lastId = $BRAND_CATEGORY->getLastID();
-$brand_category_id = 'BC00' . $lastId + 1;
+$brand_category_id = 'BC/0' . ($lastId + 1);
 
 ?>
 <html lang="en">
@@ -114,7 +114,7 @@ $brand_category_id = 'BC00' . $lastId + 1;
                                                         <button class="btn btn-info" type="button"
                                                             data-bs-toggle="modal"
                                                             data-bs-target="#brandCategoryModel">
-                                                            <i class="uil uil-search me-1"></i> Find
+                                                            <i class="uil uil-search me-1"></i>
                                                         </button>
                                                     </div>
                                                 </div>
@@ -160,8 +160,8 @@ $brand_category_id = 'BC00' . $lastId + 1;
                     <div class="col-12">
   
 
-                        <table id="datatable" class="table table-bordered dt-responsive nowrap"
-                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                        <table  class="datatable table table-bordered dt-responsive nowrap"
+                                style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
                                     <th>#</th>

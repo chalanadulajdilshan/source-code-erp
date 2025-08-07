@@ -7,7 +7,7 @@ $SUPLIER_DISCOUNT = new SuplierDiscount(NUll);
 
 // Get the last inserted package id
 $lastId = $SUPLIER_DISCOUNT->getLastID();
-$last_dis_id = 'SD/00/' . $lastId + 1;
+$last_dis_id = 'SD/0' . ($lastId + 1);
  
 
 ?>
@@ -113,7 +113,7 @@ $last_dis_id = 'SD/00/' . $lastId + 1;
                                                         class="form-control" readonly>
                                                     <button class="btn btn-info" type="button" data-bs-toggle="modal"
                                                         data-bs-target="#discountModel">
-                                                        <i class="uil uil-search me-1"></i> Find
+                                                        <i class="uil uil-search me-1"></i>
                                                     </button>
                                                 </div>
                                             </div>
@@ -160,7 +160,7 @@ $last_dis_id = 'SD/00/' . $lastId + 1;
                                                         placeholder="Select Code" class="form-control" readonly>
                                                     <button class="btn btn-info" type="button" data-bs-toggle="modal"
                                                         data-bs-target="#supplierModal">
-                                                        <i class="uil uil-search me-1"></i> Find
+                                                        <i class="uil uil-search me-1"></i>
                                                     </button>
                                                 </div>
                                             </div>
@@ -233,7 +233,7 @@ $last_dis_id = 'SD/00/' . $lastId + 1;
                         <div class="col-12">
 
 
-                            <table id="datatable" class="table table-bordered dt-responsive nowrap"
+                            <table  class="datatable table table-bordered dt-responsive nowrap"
                                 style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                 <thead>
                                     <tr>

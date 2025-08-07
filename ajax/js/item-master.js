@@ -379,7 +379,7 @@ jQuery(document).ready(function () {
                             if (response.status === "success") {
                                 swal({
                                     title: "Deleted!",
-                                    text: "Design Master has been deleted.",
+                                    text: "Item Master has been deleted.",
                                     type: "success",
                                     timer: 2000,
                                     showConfirmButton: false,

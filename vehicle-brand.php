@@ -7,7 +7,7 @@ $VEHICLE_BRAND = new VehicleBrand();
 
 // Get the last inserted package id
 $lastId = $VEHICLE_BRAND->getLastID();
-$vehiclebrand_id = 'VB00' . $lastId + 1;
+$vehiclebrand_id = 'VB/0' . ($lastId + 1);
 
 ?>
 <html lang="en">
@@ -113,7 +113,7 @@ $vehiclebrand_id = 'VB00' . $lastId + 1;
                                                         <button class="btn btn-info" type="button"
                                                             data-bs-toggle="modal"
                                                             data-bs-target="#vehicleBrand">
-                                                            <i class="uil uil-search me-1"></i> Find
+                                                            <i class="uil uil-search me-1"></i>
                                                         </button>
                                                     </div>
                                                 </div>
@@ -158,8 +158,8 @@ $vehiclebrand_id = 'VB00' . $lastId + 1;
                     <div class="col-12">
   
 
-                        <table id="datatable" class="table table-bordered dt-responsive nowrap"
-                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                        <table  class="datatable table table-bordered dt-responsive nowrap"
+                                style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
                                     <th>#</th>

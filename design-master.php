@@ -6,7 +6,7 @@ $DESIGN_MASTER = new DesignMaster();
 
 // Get the last inserted package id
 $lastId = $DESIGN_MASTER->getLastID();
-$design_id = 'DM/00/' . $lastId + 1;
+$design_id = 'DM/0' . ($lastId + 1);
 
 ?>
 <html lang="en">
@@ -16,7 +16,7 @@ $design_id = 'DM/00/' . $lastId + 1;
     <meta charset="utf-8" />
     <title>Design Master | <?php echo $COMPANY_PROFILE_DETAILS->name ?></title> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    meta content="<?php echo $COMPANY_PROFILE_DETAILS->name ?>" name="author" />
+    <meta content="<?php echo $COMPANY_PROFILE_DETAILS->name ?>" name="author" />
     <!-- include main CSS -->
     <?php include 'main-css.php' ?>
 
@@ -109,7 +109,7 @@ $design_id = 'DM/00/' . $lastId + 1;
                                                 
                                                     <button class="btn btn-info" type="button"  data-bs-toggle="modal"
                                                     data-bs-target="#designModel">
-                                                        <i class="uil uil-search me-1"></i> Find
+                                                        <i class="uil uil-search me-1"></i>
                                                     </button>
                                                 </div>
                                             </div>
@@ -166,7 +166,7 @@ $design_id = 'DM/00/' . $lastId + 1;
                     <div class="row">
                         <div class="col-12">
 
-                            <table id="datatable" class="table table-bordered dt-responsive nowrap"
+                            <table  class="datatable table table-bordered dt-responsive nowrap"
                                 style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                 <thead>
                                     <tr>
