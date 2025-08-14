@@ -239,16 +239,23 @@ class ItemMaster
         $start = isset($request['start']) ? (int) $request['start'] : 0;
         $length = isset($request['length']) ? (int) $request['length'] : 100;
         $search = $request['search']['value'] ?? '';
+        $searchTerm = $request['search_term'] ?? '';
 
         $status = $request['status'] ?? null;
         $stockOnly = isset($request['stock_only']) ? filter_var($request['stock_only'], FILTER_VALIDATE_BOOLEAN) : false;
+        $departmentId = isset($request['department_id']) ? (int)$request['department_id'] : 0;
 
         $where = "WHERE 1=1";
-        $having = "";
+        $join = "";
 
         // Search filter
         if (!empty($search)) {
             $where .= " AND (im.name LIKE '%$search%' OR im.code LIKE '%$search%')";
+        }
+
+        // Additional search term from custom search box
+        if (!empty($searchTerm)) {
+            $where .= " AND (im.name LIKE '%$searchTerm%' OR im.code LIKE '%$searchTerm%')";
         }
 
         $brandId = $request['brand'] ?? null;
@@ -272,6 +279,21 @@ class ItemMaster
             $where .= " AND im.stock_type = 1";
         }
 
+        // Department filter
+        if ($departmentId > 0) {
+            $join = " LEFT JOIN stock_master sm2 ON im.id = sm2.item_id";
+            $where .= " AND sm2.department_id = $departmentId";
+        }
+
+        // Check if we're on the stock transfer page and need to show all departments
+        $showAllDepartments = isset($request['show_all_departments']) ? (bool)$request['show_all_departments'] : false;
+        $fromDepartmentId = isset($request['from_department_id']) ? (int)$request['from_department_id'] : 0;
+
+        // If showing all departments but we have a from_department_id (stock transfer case)
+        if ($showAllDepartments && $fromDepartmentId > 0) {
+            $join = " LEFT JOIN stock_master sm2 ON im.id = sm2.item_id AND sm2.department_id = $fromDepartmentId";
+        }
+
         // Total records (no filter)
         $totalSql = "SELECT COUNT(*) as total FROM item_master";
         $totalQuery = $db->readQuery($totalSql);
@@ -282,9 +304,11 @@ class ItemMaster
         $filteredSql = "
         SELECT 
             im.*, 
-            IFNULL(SUM(sm.quantity), 0) as total_qty 
+            " . ($fromDepartmentId > 0 ? 
+               "IFNULL((SELECT SUM(sm.quantity) FROM stock_master sm WHERE sm.item_id = im.id AND sm.department_id = $fromDepartmentId), 0) as total_qty" : 
+               "IFNULL((SELECT SUM(quantity) FROM stock_master WHERE item_id = im.id), 0) as total_qty") . " 
         FROM item_master im
-        LEFT JOIN stock_master sm ON im.id = sm.item_id 
+        $join
         $where
         GROUP BY im.id ";
 
@@ -300,6 +324,17 @@ class ItemMaster
         while ($row = mysqli_fetch_assoc($dataQuery)) {
             $CATEGORY = new CategoryMaster($row['category']);
             $BRAND = new Brand($row['brand']);
+
+            // Get department stock information
+            $departmentStocks = [];
+            $stockQuery = "SELECT department_id, quantity FROM stock_master WHERE item_id = {$row['id']}";
+            $stockResult = $db->readQuery($stockQuery);
+            while ($stockRow = mysqli_fetch_assoc($stockResult)) {
+                $departmentStocks[] = [
+                    'department_id' => (int)$stockRow['department_id'],
+                    'quantity' => (float)$stockRow['quantity']
+                ];
+            }
 
             $nestedData = [
                 "key" => $key,
@@ -322,6 +357,7 @@ class ItemMaster
                 "note" => $row['note'],
                 "status" => $row['is_active'],
                 "qty" => $row['total_qty'],
+                "department_stock" => $departmentStocks, // Add department stock information
                 "status_label" => $row['is_active'] == 1
                     ? '<span class="badge bg-soft-success font-size-12">Active</span>'
                     : '<span class="badge bg-soft-danger font-size-12">Inactive</span>'

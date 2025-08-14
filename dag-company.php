@@ -7,7 +7,7 @@ $DAG_COMPANY = new DagCompany();
 
 // Get the last inserted package id
 $lastId = $DAG_COMPANY->getLastID();
-$company_id = 'DC00' . $lastId + 1;
+$company_id = 'DC00' . ($lastId + 1);
 
 ?>
 <html lang="en">
@@ -123,7 +123,7 @@ $company_id = 'DC00' . $lastId + 1;
                                                         class="form-control" readonly>
                                                     <button class="btn btn-info" type="button" data-bs-toggle="modal"
                                                         data-bs-target="#dagCompanyModel">
-                                                        <i class="uil uil-search me-1"></i> Find
+                                                        <i class="uil uil-search me-1"></i>
                                                     </button>
                                                 </div>
                                             </div>

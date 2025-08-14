@@ -105,7 +105,7 @@ include 'auth.php';
                                                             class="form-control" placeholder="Enter company code">
                                                         <button class="btn btn-info" type="button"
                                                             data-bs-toggle="modal"
-                                                            data-bs-target=".bs-example-modal-xl">
+                                                            data-bs-target="#companyProfileModel">
                                                             <i class="uil uil-search me-1"></i> 
                                                         </button>
                                                     </div>

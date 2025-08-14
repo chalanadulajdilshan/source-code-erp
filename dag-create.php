@@ -7,7 +7,7 @@ $DAG = new Dag(NULL);
 
 // Get the last inserted package id
 $lastId = $DAG->getLastID();
-$dag_id = 'CD/00/' . $lastId + 1;
+$dag_id = 'CD/00/' . ($lastId + 1);
 
 ?>
 <html lang="en">

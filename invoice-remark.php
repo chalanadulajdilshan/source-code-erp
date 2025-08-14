@@ -114,9 +114,9 @@ $remark_id = 'IR/0' . ($lastId + 1);
                                                     </div>
 
                                                     <!-- Remark Field  -->
-                                                    <div class="col-md-4">
+                                                    <div class="col-md-8">
                                                         <label for="remark" class="form-label">Remark</label>
-                                                        <textarea id="remark" name="remark" placeholder="Enter remark" class="form-control" rows="4"></textarea>
+                                                        <input type="text" id="remark" name="remark" placeholder="Enter remark" class="form-control">
                                                     </div>
 
                                                     <!-- Active Checkbox -->

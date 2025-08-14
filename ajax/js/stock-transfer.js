@@ -1,7 +1,6 @@
 jQuery(document).ready(function () {
 
-
-    // DataTable config
+    // DataTable config - Modified to show only office department items by default
     var table = $('#datatable').DataTable({
         processing: true,
         serverSide: true,
@@ -12,15 +11,29 @@ jQuery(document).ready(function () {
                 d.filter = true;
                 d.status = 1;
                 d.stock_only = 1;
+                d.department_id = $('#department_id').val(); // Filter by current department
+                d.search_term = $('#search_item').val();
             },
             dataSrc: function (json) {
-
-                return json.data;
+                // Ensure the quantity is properly set from the stock_master table
+                if (json.data) {
+                    json.data = json.data.map(item => {
+                        // If qty is not available, try to get it from available_qty or set to 0
+                        if (typeof item.qty === 'undefined' && typeof item.available_qty !== 'undefined') {
+                            item.qty = item.available_qty;
+                        } else if (typeof item.qty === 'undefined') {
+                            item.qty = 0;
+                        }
+                        return item;
+                    });
+                }
+                return json.data || [];
             },
             error: function (xhr) {
                 console.error("Server Error Response:", xhr.responseText);
             }
         },
+        // In the DataTable configuration, modify the columns definition to use the correct quantity
         columns: [
             { data: "key", title: "#ID" },
             { data: "code", title: "Code" },
@@ -28,32 +41,64 @@ jQuery(document).ready(function () {
             { data: "brand", title: "Brand" },
             { data: "category", title: "Category" },
             { data: "list_price", title: "List Price" },
-            { data: "qty", title: "Quantity" },
+            { data: "invoice_price", title: "Invoice Price" },
+            {
+                data: "department_stock", // This should be the key that contains the department-specific quantity
+                title: "Available Qty",
+                render: function (data, type, row) {
+                    // Find the stock for the current department
+                    const departmentId = $('#department_id').val();
+                    const stock = row.department_stock ? row.department_stock.find(s => s.department_id == departmentId) : null;
+                    return stock ? parseInt(stock.quantity) : 0;
+                }
+            },
             { data: "discount", title: "Discount %" },
-            { data: "status_label", title: "Status" }
+            {
+                data: "status_label",
+                title: "Status",
+                orderable: false,
+                searchable: false
+            }
         ],
         order: [[0, 'desc']],
         pageLength: 100
     });
 
+    // Search item handler with debounce
+    let searchTimeout;
+    $('#search_item').on('keyup', function () {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(function () {
+            table.ajax.reload();
+        }, 500);
+    });
 
-    // On row click, load selected item into input fields
+    // On row click, load selected item and close modal
     $('#datatable tbody').on('click', 'tr', function () {
-        var data = table.row(this).data();
+        const data = table.row(this).data();
         if (!data) return;
 
-
-
+        // Fill the form fields
         $('#item_id').val(data.id);
         $('#itemCode').val(data.code);
         $('#itemName').val(data.name);
         $('#itemQty').val(1);
 
-
         const departmentId = $('#department_id').val();
         const itemId = data.id;
 
+        // Close the modal immediately
+        var modal = bootstrap.Modal.getInstance(document.getElementById('department_stock'));
+        if (modal) {
+            modal.hide();
+        } else {
+            $('#department_stock').modal('hide');
+        }
 
+        // Focus on quantity field after a short delay
+        setTimeout(() => $('#itemQty').focus(), 200);
+
+        // Get available quantity after closing the modal
         $.ajax({
             url: 'ajax/php/stock-transfer.php',
             method: 'POST',
@@ -86,29 +131,24 @@ jQuery(document).ready(function () {
                     showConfirmButton: false
                 });
             }
-
         });
-
-
-        setTimeout(() => $('#itemQty').focus(), 200);
-
-        $('#main_item_master').modal('hide');
     });
 
+    // Modal focus handler
     $('#main_item_master').on('hidden.bs.modal', function () {
-        if (focusAfterModal) {
+        if (typeof focusAfterModal !== 'undefined' && focusAfterModal) {
             $('#itemQty').focus();
             focusAfterModal = false;
         }
     });
 
-
+    // Add item to table
     document.querySelector('#add_item').addEventListener('click', function () {
         const item_id = document.getElementById('item_id').value.trim();
         const itemCode = document.getElementById('itemCode').value.trim();
         const itemName = document.getElementById('itemName').value.trim();
         const itemQty = document.getElementById('itemQty').value.trim();
-        const availableQty = parseInt(document.getElementById('available_qty').value.trim());
+        const availableQty = parseInt(document.getElementById('available_qty').value.trim()) || 0;
 
         if (!itemCode || !itemName || !itemQty || parseInt(itemQty) <= 0) {
             swal({
@@ -121,10 +161,11 @@ jQuery(document).ready(function () {
             return;
         }
 
-        if (parseInt(itemQty) > availableQty) {
+        // Only validate against available quantity if it's greater than 0
+        if (availableQty > 0 && parseInt(itemQty) > availableQty) {
             swal({
                 title: "Error!",
-                text: "Transfer quantity cannot exceed available quantity!",
+                text: "Transfer quantity cannot exceed available quantity in source department!",
                 type: "error",
                 timer: 2000,
                 showConfirmButton: false,
@@ -194,11 +235,11 @@ jQuery(document).ready(function () {
         document.getElementById('itemCode').focus();
     });
 
-
+    // Enter key handler for quantity field
     document.getElementById('itemQty').addEventListener('keypress', function (e) {
         if (e.key === 'Enter') {
-            e.preventDefault(); // Prevent form submission if inside a form
-            document.getElementById('add_item').click(); // Trigger the same logic
+            e.preventDefault();
+            document.getElementById('add_item').click();
         }
     });
 
@@ -209,7 +250,7 @@ jQuery(document).ready(function () {
         }
     });
 
-    //remove all added items department change
+    // Clear added items when to_department changes
     $('#to_department_id').on('change', function () {
         const table = $('#show_table');
         table.html(`
@@ -222,15 +263,16 @@ jQuery(document).ready(function () {
         $('#item_id, #itemCode, #itemName, #itemQty, #available_qty').val('');
     });
 
+    // Create/Save stock transfer
     $('#create').on('click', function () {
         const fromDept = $('#department_id').val();
         const toDept = $('#to_department_id').val();
         const transferDate = $('#transfer_date').val();
 
-        // Check at least one item is added
-        const rowCount = $('#itemTable tbody tr').length;
+        // Check if at least one item is added
+        const hasItems = $('#itemTable tbody tr:not(#noItemRow)').length > 0;
 
-        if (!fromDept || !toDept || !transferDate || rowCount === 0) {
+        if (!fromDept || !toDept || !transferDate || !hasItems) {
             swal({
                 title: "Error!",
                 text: "Please complete all required fields and add at least one item.",
@@ -241,19 +283,19 @@ jQuery(document).ready(function () {
             return;
         }
 
-        const formData = new FormData($('#form_data')[0]);
+        const formData = new FormData();
         formData.append('action', 'create_stock_transfer');
         formData.append('department_id', fromDept);
         formData.append('to_department_id', toDept);
         formData.append('transfer_date', transferDate);
 
         // Collect item data from the table
-        $('#itemTable tbody tr').each(function () {
-            const code = $(this).find('input[name="item_codes[]"]').val();
-            const name = $(this).find('td:eq(1)').text().trim();
-            const qty = $(this).find('td:eq(3)').text().trim();
+        $('#itemTable tbody tr:not(#noItemRow)').each(function () {
+            const itemId = $(this).find('input[name="item_codes[]"]').val();
+            const name = $(this).find('input[name="item_names[]"]').val();
+            const qty = $(this).find('input[name="item_qtys[]"]').val();
 
-            formData.append('item_codes[]', code);
+            formData.append('item_codes[]', itemId);
             formData.append('item_names[]', name);
             formData.append('item_qtys[]', qty);
         });
@@ -320,6 +362,4 @@ jQuery(document).ready(function () {
             }
         });
     });
-
-
 });

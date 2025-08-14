@@ -15,6 +15,8 @@ include './auth.php';
     <!-- include main CSS -->
     <?php include 'main-css.php' ?>
 
+    <?php include 'department-stock-model.php' ?>
+
 </head>
 
 <body data-layout="horizontal" data-topbar="colored" class="someBlock">
@@ -149,7 +151,7 @@ include './auth.php';
                                                         placeholder="Item Code" class="form-control" readonly>
 
                                                     <button class="btn btn-info" type="button" data-bs-toggle="modal"
-                                                        data-bs-target="#main_item_master">
+                                                        data-bs-target="#department_stock">
                                                         <i class="uil uil-search me-1"></i>
                                                     </button>
 

@@ -7,7 +7,7 @@ $DOCUMENT_TRACKING = new DocumentTracking($doc_id);
 
 // Get the last inserted package id
 $lastId = $DOCUMENT_TRACKING->arn_id;
-$arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
+$arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
 ?>
 
 <html lang="en">
@@ -579,7 +579,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . $lastId + 1;
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-12">
-                            <table id="purchase_table" class="table table-bordered dt-responsive nowrap"
+                            <table  class="datatable table table-bordered dt-responsive nowrap"
                                 style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                 <thead>
                                     <tr>

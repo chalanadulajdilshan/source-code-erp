@@ -184,5 +184,17 @@ if (isset($_POST['action']) && $_POST['action'] === 'get_department_stock_status
     exit();
 }
 
+if (isset($_POST['action']) && $_POST['action'] === 'get_department_stock') {
+    $item_id = (int)$_POST['item_id'];
+
+    if ($item_id > 0) {
+        $departments = StockMaster::getDepartmentWiseStock($item_id);
+        echo json_encode(['status' => 'success', 'data' => $departments]);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Invalid item ID']);
+    }
+    exit();
+}
+
 
 ?>

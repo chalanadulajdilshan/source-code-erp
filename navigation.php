@@ -107,7 +107,17 @@
                         <?php
                         $PAGE_CATEGORY = new PageCategory(NULL);
                         foreach ($PAGE_CATEGORY->getActiveCategory() as $category):
-                            if ($category['id'] == 4): ?>
+                            if ($category['id'] == 1): ?>
+                                <!-- Dashboard as a direct link -->
+                                <?php $dashboardPage = (new Pages(null))->getPagesByCategory($category['id'])[0] ?? null; ?>
+                                <?php if ($dashboardPage): ?>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="<?php echo $dashboardPage['page_url'] . '?page_id=' . $dashboardPage['id']; ?>" target="_blank">
+                                            <i class="<?php echo $category['icon']; ?> me-2"></i> <?php echo $category['name']; ?>
+                                        </a>
+                                    </li>
+                                <?php endif;
+                            elseif ($category['id'] == 4): ?>
                                 <!-- Reports Category -->
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle arrow-none" href="#" role="button">

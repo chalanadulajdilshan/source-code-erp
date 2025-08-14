@@ -107,7 +107,7 @@ include './auth.php';
                                                     <input id="name" name="name" type="text" class="form-control"
                                                         placeholder="Enter user type name">
                                                     <button class="btn btn-info" type="button" data-bs-toggle="modal"
-                                                        data-bs-target=".bs-example-modal-xl">
+                                                        data-bs-target="#manageUserTypeModel">
                                                         <i class="uil uil-search me-1"></i> Find User Type
                                                     </button>
                                                 </div>
@@ -145,7 +145,7 @@ include './auth.php';
     </div>
 
     <!-- user type model start -->
-    <div class="modal fade bs-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel"
+    <div class="modal fade bs-example-modal-xl" id="manageUserTypeModel" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
@@ -160,7 +160,7 @@ include './auth.php';
 
                             </p>
 
-                            <table id="datatable" class="table table-bordered dt-responsive nowrap"
+                            <table  class="datatable table table-bordered dt-responsive nowrap"
                                 style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                 <thead>
                                     <tr>
