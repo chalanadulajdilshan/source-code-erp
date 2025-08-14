@@ -2,6 +2,10 @@
 <?php
 include 'class/include.php';
 include 'auth.php';
+
+// Fetch departments for the filter
+$DEPARTMENT_MASTER = new DepartmentMaster();
+$departments = $DEPARTMENT_MASTER->all();
 ?>
 
 <html lang="en">
@@ -13,7 +17,8 @@ include 'auth.php';
     <meta content="<?php echo $COMPANY_PROFILE_DETAILS->name ?>" name="author" />
     <!-- include main CSS -->
     <?php include 'main-css.php' ?>
-
+    <!-- Select2 CSS -->
+    <link href="assets/libs/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body data-layout="horizontal" data-topbar="colored">
@@ -30,81 +35,57 @@ include 'auth.php';
         <div class="main-content">
             <div class="page-content">
                 <div class="container-fluid">
+                    <!-- start page title -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="page-title-box d-flex align-items-center justify-content-between">
+                                <h4 class="mb-0">Live Stock</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end page title -->
 
                     <div class="row">
-                        <div class="col-lg-12">
+                        <div class="col-12">
                             <div class="card">
-                                <div class="p-4">
-                                    <form id="form-data">
-                                        <div class="row">
-
-                                            <!-- DataTable -->
-                                            <div class="table-responsive mt-4">
-                                                <table class="table table-bordered dt-responsive nowrap" id="stockTable"
-                                                    style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-                                                    <thead class="table-light">
-                                                        <tr>
-                                                            <th>Item Code</th>
-                                                            <th>Item Description</th>
-                                                            <th>Brand</th>
-                                                            <th>Pattern</th>
-                                                            <th>Category</th>
-                                                            <th>Cost</th>
-                                                            <th>Selling</th>
-                                                            <th>Dealer Price</th>
-                                                            <th>Quantity</th>
-                                                            <th>Stock Status</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <!-- Sample data - replace with your dynamic data -->
-                                                        <?php
-                                                        $ITEM_MASTER = new ItemMaster()
-                                                            ?>
-                                                        <tr>
-                                                            <td>ITM001</td>
-                                                            <td>Sample Item Description</td>
-                                                            <td>Brand A</td>
-                                                            <td>Pattern 1</td>
-                                                            <td>Category 1</td>
-                                                            <td>$10.00</td>
-                                                            <td>$15.00</td>
-                                                            <td>$12.00</td>
-                                                            <td>25</td>
-                                                            <td>
-                                                                <div
-                                                                    class="form-check form-switch d-flex justify-content-center">
-                                                                    <input class="form-check-input" type="checkbox"
-                                                                        checked>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-
-                                                        <tr>
-                                                            <td>ITM002</td>
-                                                            <td>Another Item Description</td>
-                                                            <td>Brand B</td>
-                                                            <td>Pattern 2</td>
-                                                            <td>Category 2</td>
-                                                            <td>$20.00</td>
-                                                            <td>$30.00</td>
-                                                            <td>$25.00</td>
-                                                            <td>50</td>
-                                                            <td>
-                                                                <div
-                                                                    class="form-check form-switch d-flex justify-content-center">
-                                                                    <input class="form-check-input" type="checkbox">
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-
-                                                        <!-- Add more sample rows as needed -->
-                                                    </tbody>
-                                                </table>
-                                            </div>
-
+                                <div class="card-body">
+                                    <!-- Department Filter -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label for="filter_department_id" class="form-label">Filter by Department</label>
+                                            <select class="form-control select2" id="filter_department_id" name="filter_department_id">
+                                                <option value="">All Departments</option>
+                                                <?php foreach ($departments as $department): ?>
+                                                    <option value="<?php echo $department['id']; ?>">
+                                                        <?php echo htmlspecialchars($department['name']); ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
                                         </div>
-                                    </form>
+                                    </div>
+
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered dt-responsive nowrap" id="stockTable"
+                                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Item Code</th>
+                                                    <th>Item Description</th>
+                                                    <th>Brand</th>
+                                                    <th>Pattern</th>
+                                                    <th>Category</th>
+                                                    <th>Cost</th>
+                                                    <th>Selling</th>
+                                                    <th>Dealer Price</th>
+                                                    <th>Quantity</th>
+                                                    <th>Stock Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Data will be loaded by DataTables -->
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -112,6 +93,7 @@ include 'auth.php';
                 </div>
                 <!-- container-fluid -->
             </div>
+            <!-- End Page-content -->
         </div>
         <!-- end main content-->
     </div>
@@ -120,34 +102,19 @@ include 'auth.php';
     <!-- JAVASCRIPT -->
     <script src="assets/libs/jquery/jquery.min.js"></script>
     <script src="assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
-
+    <!-- Select2 JS -->
+    <script src="assets/libs/select2/js/select2.min.js"></script>
+    <!-- Datatables -->
+    <script src="assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+    
     <!-- include main js  -->
     <?php include 'main-js.php' ?>
-
-    <!-- Datatable init js -->
-    <script>
-        $(document).ready(function () {
-            // Initialize DataTable
-            $('#stockTable').DataTable({
-                lengthChange: true,
-
-                responsive: true,
-                language: {
-                    paginate: {
-                        previous: "<i class='mdi mdi-chevron-left'>",
-                        next: "<i class='mdi mdi-chevron-right'>"
-                    }
-                },
-                drawCallback: function () {
-                    $('.dataTables_paginate > .pagination').addClass('pagination-rounded');
-                }
-            });
-
-            // Add buttons to DataTable
-            $('#stockTable').DataTable().buttons().container()
-                .appendTo('#stockTable_wrapper .col-md-6:eq(0)');
-        });
-    </script>
+    
+    <!-- Live Stock JS -->
+    <script src="ajax/js/live-stock.js"></script>
 
 </body>
 
