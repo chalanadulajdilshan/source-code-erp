@@ -219,10 +219,10 @@ $item_id = 'ITM/0' . ($lastId + 1);
                                             <!-- Invoice Price -->
                                             <div class="col-md-2">
                                                 <div class="mb-3">
-                                                    <label class="form-label">Invoice Price <span
+                                                    <label class="form-label">Selling Price <span
                                                             class="text-danger">*</span></label>
                                                     <input id="invoice_price" name="invoice_price" type="text"
-                                                        class="form-control invoice-price" placeholder="Auto-calculated" readonly>
+                                                        class="form-control invoice-price" placeholder="Auto-calculated">
                                                 </div>
                                             </div>
                                         
@@ -326,7 +326,7 @@ $item_id = 'ITM/0' . ($lastId + 1);
                 $('#name').val(itemName);
             }
             
-            // Function to calculate invoice price
+            // Function to calculate invoice price based on list price and discount
             function calculateInvoicePrice() {
                 const listPrice = parseFloat($('#list_price').val()) || 0;
                 const discount = parseFloat($('#discount').val()) || 0;
@@ -339,12 +339,31 @@ $item_id = 'ITM/0' . ($lastId + 1);
                 $('#invoice_price').val(invoicePrice.toFixed(2));
             }
             
+            // Function to calculate discount based on list price and invoice price
+            function calculateDiscount() {
+                const listPrice = parseFloat($('#list_price').val()) || 0;
+                const invoicePrice = parseFloat($('#invoice_price').val()) || 0;
+                
+                if (listPrice > 0 && invoicePrice > 0) {
+                    // Calculate discount percentage
+                    const discount = ((listPrice - invoicePrice) / listPrice) * 100;
+                    
+                    // Update discount field with 2 decimal places
+                    $('#discount').val(discount.toFixed(2));
+                }
+            }
+            
             // Add event listeners to the relevant fields
             $('#brand, #size, #pattern').on('change keyup', updateItemName);
             
-            // Add event listeners for price calculation
-            $('.list-price, .discount').on('change keyup', function() {
+            // When list price or discount changes, update invoice price
+            $('#list_price, #discount').on('change keyup', function() {
                 calculateInvoicePrice();
+            });
+            
+            // When invoice price changes, update discount
+            $('#invoice_price').on('change keyup', function() {
+                calculateDiscount();
             });
             
             // Initialize calculations on page load
