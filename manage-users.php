@@ -7,7 +7,7 @@ $USER = new User(NUll);
 
 // Get the last inserted package id
 $lastId = $USER->getLastID();
-$user_id = 'US00' . $lastId + 1;
+$user_id = 'US00' . ($lastId + 1);
 ?>
 <html lang="en">
 
@@ -249,7 +249,7 @@ $user_id = 'US00' . $lastId + 1;
                     <div class="row">
                         <div class="col-12">
 
-                            <table id="datatable" class="table table-bordered dt-responsive nowrap"
+                            <table  class="datatable table table-bordered dt-responsive nowrap"
                                 style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                 <thead>
                                     <tr>

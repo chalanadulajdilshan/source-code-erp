@@ -1,17 +1,17 @@
 <?php
 include '../../class/include.php';
 
-if (isset($_GET['userTypeId'])) {
-    $userTypeId = (int)$_GET['userTypeId'];
+if (isset($_GET['userId'])) { // Changed from 'userTypeId' to 'userId'
+    $userId = (int)$_GET['userId'];
 
-    // Get the pages and their permissions for the selected user type
-    $permissionsData = getPermissionsForUserType($userTypeId);
+    // Get the pages and their permissions for the selected user
+    $permissionsData = getPermissionsForUser($userId); // Changed function name
 
     echo json_encode($permissionsData);
     exit;
 }
 
-function getPermissionsForUserType($userTypeId)
+function getPermissionsForUser($userId) // Changed function name
 {
     $pages = [];
     $PAGES = new Pages(null);
@@ -20,8 +20,8 @@ function getPermissionsForUserType($userTypeId)
     foreach ($PAGES->all() as $page) {
         $PAGE_CATEGORY = new PageCategory($page['page_category']);
 
-        // Fetch permissions for the user type
-        $permissions = getPermissionsForPageAndUserType($page['id'], $userTypeId);
+        // Fetch permissions for the user
+        $permissions = getPermissionsForPageAndUser($page['id'], $userId); // Changed function name
 
         // Flatten permission values for frontend
         $pages[] = [
@@ -40,10 +40,10 @@ function getPermissionsForUserType($userTypeId)
     return ['pages' => $pages];
 }
 
-function getPermissionsForPageAndUserType($pageId, $userTypeId)
+function getPermissionsForPageAndUser($pageId, $userId) // Changed function name
 {
     $pageId = (int) $pageId;
-    $userTypeId = (int) $userTypeId;
+    $userId = (int) $userId;
 
     $permissions = [
         'add'    => false,
@@ -56,7 +56,7 @@ function getPermissionsForPageAndUserType($pageId, $userTypeId)
 
     $db = new Database();
     $query = "SELECT * FROM `user_permission` 
-              WHERE `user_id` = $userTypeId AND `page_id` = $pageId 
+              WHERE `user_id` = $userId AND `page_id` = $pageId 
               LIMIT 1";
 
     $result = $db->readQuery($query);

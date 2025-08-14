@@ -1,5 +1,4 @@
 jQuery(document).ready(function () {
-
     // DataTable config
     var table = $('#datatable').DataTable({
         processing: true,
@@ -11,9 +10,10 @@ jQuery(document).ready(function () {
                 d.filter = true;
                 d.status = 1;
                 d.stock_only = 1;
+                d.department_id = $('#filter_department_id').val();
+                d.search_term = $('#search_item').val();
             },
             dataSrc: function (json) {
-
                 return json.data;
             },
             error: function (xhr) {
@@ -21,39 +21,65 @@ jQuery(document).ready(function () {
             }
         },
         columns: [
-
             { data: "key", title: "#ID" },
             { data: "code", title: "Code" },
             { data: "name", title: "Name" },
             { data: "brand", title: "Brand" },
             { data: "category", title: "Category" },
             { data: "list_price", title: "List Price" },
-            { data: "qty", title: "Quantity" },
+            { data: "invoice_price", title: "Invoice Price" },
+            {
+                data: "department_stock",
+                title: "Available Qty",
+                render: function (data, type, row) {
+                    // Get the selected department ID
+                    const departmentId = $('#filter_department_id').val();
+                    // Find the stock for the current department
+                    const stock = data ? data.find(s => s.department_id == departmentId) : null;
+                    return stock ? parseInt(stock.quantity) : 0;
+                }
+            },
             { data: "discount", title: "Discount %" },
-            { data: "status_label", title: "Status" }
+            {
+                data: "status_label",
+                title: "Status",
+                orderable: false,
+                searchable: false
+            }
         ],
         order: [[0, 'desc']],
         pageLength: 100
     });
 
+    // Department filter change handler
+    $('#filter_department_id').on('change', function () {
+        table.ajax.reload();
+    });
+
+    // Search item handler with debounce
+    let searchTimeout;
+    $('#search_item').on('keyup', function () {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(function () {
+            table.ajax.reload();
+        }, 500);
+    });
 
     // On row click, load selected item into input fields
     $('#datatable tbody').on('click', 'tr', function () {
         var data = table.row(this).data();
         if (!data) return;
 
-
         $('#item_id').val(data.id);
         $('#itemCode').val(data.code);
         $('#itemName').val(data.name);
         $('#itemQty').val(1);
 
-
         const departmentId = $('#department_id').val();
         const itemId = data.id;
 
         $.ajax({
-            url: 'ajax/php/stock-transfer.php',
+            url: 'ajax/php/stock-adjustment.php',
             method: 'POST',
             data: {
                 action: 'get_available_qty',
@@ -84,21 +110,20 @@ jQuery(document).ready(function () {
                     showConfirmButton: false
                 });
             }
-
         });
 
-
         setTimeout(() => $('#itemQty').focus(), 200);
-
-        $('#main_item_master').modal('hide');
+        $('#department_stock').modal('hide');
     });
 
-    $('#main_item_master').on('hidden.bs.modal', function () {
+    // Rest of your existing code...
+    $('#department_stock').on('hidden.bs.modal', function () {
         if (focusAfterModal) {
             $('#itemQty').focus();
             focusAfterModal = false;
         }
     });
+
 
     //remove all added items department change
     $('#department_id').on('change', function () {
@@ -195,9 +220,6 @@ jQuery(document).ready(function () {
             document.getElementById('add_item').click(); // Trigger the same logic
         }
     });
-
-
-
 
     $('#create').on('click', function () {
 
@@ -305,6 +327,4 @@ jQuery(document).ready(function () {
             }
         });
     });
-
-
 });

@@ -1,15 +1,27 @@
-$('#userType').on('change', function () {
-    const userTypeId = $(this).val();
-    fetchPermissions(userTypeId);
+// Remove the user type change handler and add user selection handler
+$('#selectUser').on('change', function () {
+    const userId = $(this).val();
+    if (userId) {
+        fetchPermissions(userId);
+    } else {
+        $('#permissionsTable').hide();
+        $('#permissionsTableBody').empty();
+    }
 });
 
-function fetchPermissions(userTypeId) {
+// Remove or comment out the user type change handler
+// $('#userType').on('change', function () {
+//     const userTypeId = $(this).val();
+//     fetchPermissions(userTypeId);
+// });
+
+function fetchPermissions(userId) {
     $('.someBlock').preloader();
 
     $.ajax({
         url: 'ajax/php/get-permissions.php',
         method: 'GET',
-        data: { userTypeId: userTypeId },
+        data: { userId: userId }, // Changed from userTypeId to userId
         dataType: 'json',
         success: function (data) {
             $('.someBlock').preloader('remove');
@@ -35,13 +47,34 @@ function fetchPermissions(userTypeId) {
             });
         },
         error: function (xhr, status, error) {
+            $('.someBlock').preloader('remove');
             console.error('Error fetching permissions:', error);
+            swal({
+                title: "Error!",
+                text: "Failed to load permissions.",
+                type: 'error',
+                timer: 2000,
+                showConfirmButton: false
+            });
         }
     });
 }
 
 $('#create').on('click', function (e) {
     e.preventDefault();
+
+    // Check if a user is selected
+    const selectedUser = $('#selectUser').val();
+    if (!selectedUser) {
+        swal({
+            title: "Error!",
+            text: "Please select a user first.",
+            type: 'error',
+            timer: 2000,
+            showConfirmButton: false
+        });
+        return;
+    }
 
     $('.someBlock').preloader();
 
@@ -67,7 +100,7 @@ $('#create').on('click', function (e) {
             } else {
                 swal({
                     title: "Error!",
-                    text: "Something went wrong.",
+                    text: response.message || "Something went wrong.",
                     type: 'error',
                     timer: 2000,
                     showConfirmButton: false
@@ -75,6 +108,7 @@ $('#create').on('click', function (e) {
             }
         },
         error: function () {
+            $('.someBlock').preloader('remove');
             swal("Error", "Something went wrong while saving permissions.", "error");
         }
     });

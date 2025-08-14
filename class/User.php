@@ -454,4 +454,15 @@ class User
         return $result['id'];
     }
 
+    public function getActiveUsers() {
+        $query = "SELECT * FROM `user` WHERE `isActive` = 1";
+        $db = new Database();
+        $result = $db->readQuery($query);
+        $array_res = array();
+        while ($row = mysqli_fetch_array($result)) {
+            array_push($array_res, $row);
+        }
+        return $array_res;
+    }
+
 }

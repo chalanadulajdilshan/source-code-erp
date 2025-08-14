@@ -3,6 +3,27 @@
 include '../../class/include.php';
 header('Content-Type: application/json; charset=UTF8');
 
+if (isset($_POST['action']) && $_POST['action'] === 'get_available_qty') {
+    $department_id = isset($_POST['department_id']) ? (int) $_POST['department_id'] : 0;
+    $item_id = isset($_POST['item_id']) ? (int) $_POST['item_id'] : 0;
+
+    if ($department_id > 0 && $item_id > 0) {
+        $STOCK_MASTER = new StockMaster(null);
+        $available_qty = $STOCK_MASTER->getAvailableQuantity($department_id, $item_id);
+
+        echo json_encode([
+            'status' => 'success',
+            'available_qty' => $available_qty
+        ]);
+    } else {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Invalid department or item ID'
+        ]);
+    }
+    exit();
+}
+
 if (isset($_POST['action']) && $_POST['action'] === 'create_stock_adjustment') {
 
     $department_id = $_POST['department_id'];
@@ -24,7 +45,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'create_stock_adjustment') {
 
 
     //audit log
-    $AUDIT_LOG = new AuditLog(NUll);
+    $AUDIT_LOG = new AuditLog(null);
     $AUDIT_LOG->ref_id = 0;
     $AUDIT_LOG->ref_code = 'REF/STK/ADJ/00';
     $AUDIT_LOG->action = 'ADJ';

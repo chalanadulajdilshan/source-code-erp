@@ -1,4 +1,4 @@
-<div class="modal fade bs-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="sModalLabel"
+<div class="modal fade bs-example-modal-xl" id="companyProfileModel" tabindex="-1" role="dialog" aria-labelledby="sModalLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -11,8 +11,8 @@
                 <div class="row">
                     <div class="col-12">
 
-                        <table id="datatable" class="table table-bordered dt-responsive nowrap"
-                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                        <table  class="datatable table table-bordered dt-responsive nowrap"
+                                style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
                                     <th>Company Code</th>

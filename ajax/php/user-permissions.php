@@ -1,18 +1,18 @@
 <?php
 include '../../class/include.php';
 
-if (!isset($_POST['userType']) || !isset($_POST['permissions']) || empty($_POST['permissions'])) {
-    echo json_encode(['status' => 'error', 'message' => 'User type or permissions not provided.']);
+if (!isset($_POST['selectUser']) || !isset($_POST['permissions']) || empty($_POST['permissions'])) {
+    echo json_encode(['status' => 'error', 'message' => 'User or permissions not provided.']);
     exit();
 }
 
-$userTypeId = (int) $_POST['userType'];
+$userId = (int) $_POST['selectUser']; // Changed from userType to selectUser
 $permissions = $_POST['permissions'];
 
 $db = new Database();
 
-// Delete existing permissions for this user type
-$deleteQuery = "DELETE FROM `user_permission` WHERE `user_id` = $userTypeId";
+// Delete existing permissions for this user
+$deleteQuery = "DELETE FROM `user_permission` WHERE `user_id` = $userId";
 $db->readQuery($deleteQuery);
 
 // Insert new permissions per page
@@ -25,7 +25,7 @@ foreach ($permissions as $pageId => $permSet) {
     $other = isset($permSet['other']) ? 1 : 0;
 
     $userPermission = new UserPermission();
-    $userPermission->user_id = $userTypeId;
+    $userPermission->user_id = $userId;
     $userPermission->page_id = (int) $pageId;
     $userPermission->add_page = $add;
     $userPermission->edit_page = $edit;
@@ -45,6 +45,6 @@ foreach ($permissions as $pageId => $permSet) {
     }
 }
 
-echo json_encode(['status' => 'success', 'message' => 'Permissions saved successfully.']);
+echo json_encode(['status' => 'success', 'message' => 'User permissions saved successfully.']);
 exit();
 ?>

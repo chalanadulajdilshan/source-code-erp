@@ -329,6 +329,34 @@ class StockMaster
         return (int) $row['total_quantity'];
     }
 
+    public static function getDepartmentWiseStock($item_id) {
+    $query = "SELECT 
+                sm.department_id,
+                d.name AS department_name,
+                IFNULL(sm.quantity, 0) AS quantity
+              FROM department_master d
+              LEFT JOIN stock_master sm 
+                ON sm.department_id = d.id 
+                AND sm.item_id = " . (int) $item_id . " 
+                AND sm.is_active = 1
+              ORDER BY d.name ASC";
+
+    $db = new Database();
+    $result = $db->readQuery($query);
+
+    $departments = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $departments[] = [
+            'department_id'   => (int)$row['department_id'],
+            'department_name' => $row['department_name'],
+            'quantity'        => (int)$row['quantity']
+        ];
+    }
+
+    return $departments;
+}
+
+
 
 }
 

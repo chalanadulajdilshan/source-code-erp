@@ -56,7 +56,7 @@ $BANK_MASTER = new Bank();
 
                         </div>
 
-                        </div>
+                        
 
                         <div class="col-md-4 text-md-end text-start mt-3 mt-md-0">
                             <ol class="breadcrumb m-0 justify-content-md-end">
