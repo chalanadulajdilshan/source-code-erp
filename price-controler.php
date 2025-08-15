@@ -173,9 +173,9 @@ include './auth.php';
                                                         <tr>
                                                             <td>#Id</td>
                                                             <th>Item Code and Name</th>
-                                                            <th>Description</th>
-                                                            <th>All Qty</th>
-                                                            <th>Group</th>
+                                                            <th>Qty</th>
+                                                            <th>Discount %</th>
+                                                            <th>Sales Price</th>
                                                             <th>Brand</th>
                                                             <th>Category</th>
                                                             <th>Status</th>
