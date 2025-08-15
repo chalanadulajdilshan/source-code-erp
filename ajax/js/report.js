@@ -47,11 +47,16 @@ jQuery(document).ready(function () {
                         tbody += `<tr class="table-primary">
                         <td>${index}</td>
                         <td>${item.code} - ${item.name}</td> 
-                        <td>${item.note}</td>
                         <td>${item.total_available_qty}</td>
-                        <td><strong class="text-danger">${Number(item.list_price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 24 })}</strong></td>
-
-
+                        <td>${item.discount || '0'}</td>
+                        <td class="editable-price" data-item-id="${item.id}" data-original-price="${item.list_price}">
+                            <strong class="text-danger price-display">
+                                ${Number(item.list_price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            </strong>
+                            <input type="number" step="0.01" class="form-control form-control-sm price-edit d-none" 
+                                   value="${Number(item.list_price).toFixed(2)}" 
+                                   data-item-id="${item.id}" />
+                        </td>
                         <td>${item.brand}</td>
                         <td>${item.category}</td>
                         <td>
@@ -211,6 +216,103 @@ jQuery(document).ready(function () {
         });
     });
 
+    // Add this new event handler for double-click on price
+    $('#priceControl').on('dblclick', '.editable-price', function () {
+        const container = $(this);
+        const display = container.find('.price-display');
+        const input = container.find('.price-edit');
+
+        display.addClass('d-none');
+        input.removeClass('d-none').focus().select();
+    });
+
+    // Add event handler for price input blur/save
+    $('#priceControl').on('blur', '.price-edit', function () {
+        const input = $(this);
+        const container = input.closest('.editable-price');
+        const display = container.find('.price-display');
+        const itemId = input.data('item-id');
+        const newPrice = parseFloat(input.val()).toFixed(2);
+
+        // Validate price
+        if (isNaN(newPrice) || newPrice < 0) {
+            alert('Please enter a valid price');
+            input.val(container.data('original-price'));
+        } else {
+            // Update display
+            display.text(Number(newPrice).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+
+            // Make AJAX call to update the price
+            $.ajax({
+                url: 'ajax/php/report.php',
+                type: 'POST',
+                data: {
+                    action: 'update_item_price',
+                    item_id: itemId,
+                    new_price: newPrice
+                },
+                dataType: 'json',
+                success: function (response) {
+                    if (response.status === 'success') {
+                        container.data('original-price', newPrice);
+                        // Refresh the item master table if it exists
+                        if (typeof table !== 'undefined' && $.fn.DataTable.isDataTable('#datatable')) {
+                            table.ajax.reload(null, false);
+                        }
+
+                        // Show success message
+                        swal({
+                            title: "Success!",
+                            text: "Price updated successfully!",
+                            type: "success",
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        // Revert if update failed
+                        swal({
+                            title: "Error!",
+                            text: response.message || "Failed to update price",
+                            type: "error",
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                        input.val(container.data('original-price'));
+                    }
+                },
+                error: function () {
+                    swal({
+                        title: "Error!",
+                        text: "An error occurred while updating the price",
+                        type: "error",
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                    input.val(container.data('original-price'));
+                }
+            });
+        }
+
+        // Reset UI
+        input.addClass('d-none');
+        display.removeClass('d-none');
+    });
+
+    // Handle Enter key to save on press
+    $('#priceControl').on('keypress', '.price-edit', function (e) {
+        if (e.which === 13) { // Enter key
+            $(this).blur();
+        }
+    });
+
+    // Handle Escape key to cancel edit
+    $('#priceControl').on('keydown', '.price-edit', function (e) {
+        if (e.key === 'Escape') {
+            const container = $(this).closest('.editable-price');
+            container.find('.price-edit').addClass('d-none');
+            container.find('.price-display').removeClass('d-none');
+        }
+    });
 
     //profit report
     $('#view_profit_report').on('click', function (e) {

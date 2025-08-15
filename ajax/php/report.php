@@ -70,7 +70,63 @@ if (isset($_POST['action']) && $_POST['action'] === 'update_stock_tmp_price') {
     exit;
 }
 
-
-
+// Update item price
+if (isset($_POST['action']) && $_POST['action'] === 'update_item_price') {
+    try {
+        $item_id = (int)$_POST['item_id'];
+        $new_price = (float)$_POST['new_price'];
+        
+        if ($item_id <= 0 || $new_price < 0) {
+            throw new Exception('Invalid input parameters');
+        }
+        
+        // Load the item
+        $ITEM = new ItemMaster($item_id);
+        
+        if (!$ITEM->id) {
+            throw new Exception('Item not found');
+        }
+        
+        // Update the price
+        $ITEM->list_price = $new_price;
+        
+        // Recalculate invoice price if needed (based on discount)
+        if ($ITEM->discount > 0) {
+            $discount_amount = $new_price * ($ITEM->discount / 100);
+            $ITEM->invoice_price = $new_price - $discount_amount;
+        } else {
+            $ITEM->invoice_price = $new_price;
+        }
+        
+        // Save the changes
+        $result = $ITEM->update();
+        
+        if ($result) {
+            // Add audit log
+            $AUDIT_LOG = new AuditLog(null);
+            $AUDIT_LOG->ref_id = $item_id;
+            $AUDIT_LOG->ref_code = $ITEM->code;
+            $AUDIT_LOG->action = 'UPDATE';
+            $AUDIT_LOG->description = 'UPDATED ITEM PRICE TO ' . $new_price;
+            $AUDIT_LOG->user_id = $_SESSION['id'];
+            $AUDIT_LOG->created_at = date('Y-m-d H:i:s');
+            $AUDIT_LOG->create();
+            
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Price updated successfully'
+            ]);
+        } else {
+            throw new Exception('Failed to update item price');
+        }
+    } catch (Exception $e) {
+        http_response_code(400);
+        echo json_encode([
+            'status' => 'error',
+            'message' => $e->getMessage()
+        ]);
+    }
+    exit;
+}
 
 ?>
