@@ -25,8 +25,8 @@ if (isset($_POST['create'])) {
     $paid = $_POST['paid'];
     $paymentType = $_POST['payment_type'];
 
-   
- 
+
+
     $totalSubTotal = 0;
     $totalDiscount = 0;
     $final_cost = 0;
@@ -37,7 +37,7 @@ if (isset($_POST['create'])) {
         $qty = floatval($item['qty']);
         $discount = isset($item['discount']) ? floatval($item['discount']) : 0; // item-wise discount
 
-         //GET ARN ID BY ARN NO
+        //GET ARN ID BY ARN NO
         $ARN_MASTER = new ArnMaster(NULL);
         $arn_id = $ARN_MASTER->getArnIdByArnNo($item['arn_no']);
 
@@ -70,10 +70,13 @@ if (isset($_POST['create'])) {
     $SALES_INVOICE = new SalesInvoice(NULL);
 
     $SALES_INVOICE->invoice_no = $invoiceId;
-     $SALES_INVOICE->invoice_type = 'INV';
+    $SALES_INVOICE->invoice_type = 'INV';
     $SALES_INVOICE->invoice_date = date("Y-m-d H:i:s");
     $SALES_INVOICE->company_id = $_POST['company_id'];
     $SALES_INVOICE->customer_id = $_POST['customer_id'];
+    $SALES_INVOICE->customer_name = ucwords(strtolower(trim($_POST['customer_name'])));
+    $SALES_INVOICE->customer_mobile = $_POST['customer_mobile'];
+    $SALES_INVOICE->customer_address = ucwords(strtolower(trim($_POST['customer_address'])));
     $SALES_INVOICE->department_id = $_POST['department_id'];
     $SALES_INVOICE->sale_type = $_POST['sales_type'];
     $SALES_INVOICE->final_cost = $final_cost;
@@ -103,7 +106,7 @@ if (isset($_POST['create'])) {
         foreach ($items as $item) {
 
             $item_discount = isset($item['discount']) ? $item['discount'] : 0;
- 
+
             $ITEM_MASTER = new ItemMaster($item['item_id']);
 
             $SALES_ITEM = new SalesInvoiceItem(NULL);
@@ -118,8 +121,8 @@ if (isset($_POST['create'])) {
             $SALES_ITEM->created_at = date("Y-m-d H:i:s");
             $SALES_ITEM->create();
 
-          
-            
+
+
 
             //stock master update quantity
             $STOCK_MASTER = new StockMaster(NULL);
@@ -131,18 +134,17 @@ if (isset($_POST['create'])) {
             // Update stock transaction with ARN reference if available
             $STOCK_TRANSACTION = new StockTransaction(NULL);
             $STOCK_TRANSACTION->item_id = $item['item_id'];
-            $STOCK_TRANSACTION->arn_id = !empty($arn_id) ? $arn_id : null;
- 
-              // Update stock_item_tmp for ARN-based inventorysss           
-                $STOCK_ITEM_TMP = new StockItemTmp(NULL);
-                // Use negative qty to reduce stock
-                $qtyToDeduct = -abs($item['qty']);
-                $STOCK_ITEM_TMP->updateQtyByArnId(
-                    $arn_id,
-                    $item['item_id'],
-                    $_POST['department_id'],
-                    $qtyToDeduct
-                );
+
+            // Update stock_item_tmp for ARN-based inventorysss           
+            $STOCK_ITEM_TMP = new StockItemTmp(NULL);
+            // Use negative qty to reduce stock
+            $qtyToDeduct = -abs($item['qty']);
+            $STOCK_ITEM_TMP->updateQtyByArnId(
+                $arn_id,
+                $item['item_id'],
+                $_POST['department_id'],
+                $qtyToDeduct
+            );
 
 
             //stock transaction table update
@@ -163,7 +165,6 @@ if (isset($_POST['create'])) {
             $AUDIT_LOG->user_id = $_SESSION['id'];
             $AUDIT_LOG->created_at = date("Y-m-d H:i:s");
             $AUDIT_LOG->create();
-
         }
 
         echo json_encode([
@@ -175,7 +176,6 @@ if (isset($_POST['create'])) {
             "grand_total" => $grandTotal
         ]);
         exit();
-
     } else {
         echo json_encode(["status" => 'error']);
         exit();
@@ -222,8 +222,6 @@ if (isset($_POST['update'])) {
     }
 }
 
-
-
 if (isset($_POST['filter'])) {
 
     $SALES_INVOICE = new SalesInvoice();
@@ -247,4 +245,19 @@ if (isset($_POST['delete']) && isset($_POST['id'])) {
     }
 }
 
-?>
+
+
+if (isset($_POST['action']) && $_POST['action'] == 'latest') {
+    $SALES_INVOICE = new SalesInvoice();
+    $invoices = $SALES_INVOICE->latest();
+    echo json_encode(["data" => $invoices]);
+    exit();
+}
+
+if (isset($_POST['action']) && $_POST['action'] == 'search') {
+    $q = trim($_POST['q']);
+    $SALES_INVOICE = new SalesInvoice();
+    $invoices = $SALES_INVOICE->search($q);
+    echo json_encode(["data" => $invoices]);
+    exit();
+}

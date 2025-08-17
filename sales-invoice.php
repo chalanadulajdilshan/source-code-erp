@@ -163,10 +163,10 @@ include './auth.php';
 
 
                                             <div class="col-md-3">
-                                                <label for="customerName" class="form-label">Customer Name</label>
+                                                <label for="customerName" class="form-label">Customer Name <span class="text-danger">*</span></label>
                                                 <div class="input-group mb-3">
                                                     <input id="customer_name" name="customer_name" type="text"
-                                                        class="form-control" placeholder="Enter Customer Name" readonly>
+                                                        class="form-control" placeholder="Enter Customer Name"  >
                                                 </div>
                                             </div>
 
@@ -176,7 +176,7 @@ include './auth.php';
                                                 <div class="input-group mb-3">
                                                     <input id="customer_address" name="customer_address" type="text"
                                                         class="form-control" placeholder="Enter customer address"
-                                                        readonly>
+                                                         >
                                                 </div>
                                             </div>
 
@@ -184,7 +184,7 @@ include './auth.php';
                                                 <label for="mobileNumber" class="form-label">Mobile Number</label>
                                                 <div class="input-group mb-3">
                                                     <input id="customer_mobile" name="customer_mobile" type="text"
-                                                        class="form-control" placeholder="Enter Mobile Number" readonly>
+                                                        class="form-control" placeholder="Enter Mobile Number"  >
                                                 </div>
                                             </div>
 
@@ -237,7 +237,7 @@ include './auth.php';
                                                 <input type="hidden" id="dag_id" name="dag_id" />
                                             </div>
 
-                                            <div class="col-md-3">
+                                            <div class="col-md-3 hidden">
                                                 <label for="quotationCode" class="form-label">Quotation ref No</label>
                                                 <div class="input-group mb-3">
                                                     <input id="quotation_ref_no" name="quotation_ref_no" type="text"
@@ -370,7 +370,7 @@ include './auth.php';
                                                         </tr>
                                                     </thead>
                                                     <tbody id="invoiceItemsBody">
-                                                        <tr id="noQuotationItemRow">
+                                                        <tr id="noInvoiceItemRow">
                                                             <td colspan="8" class="text-center text-muted">
                                                                 No items
                                                                 added</td>
@@ -654,6 +654,7 @@ include './auth.php';
     <script src="assets/libs/jquery/jquery.min.js"></script>
     <!-- /////////////////////////// -->
     <script src="ajax/js/sales-invoice.js"></script>
+    <script src="ajax/js/common.js"></script>
     <!-- <script src="ajax/js/create-dag.js"></script>
     <script src="ajax/js/quotation.js"></script> -->
 

@@ -91,53 +91,72 @@ $CUSTOMER_MASTER = new CustomerMaster($SALES_INVOICE->customer_id);
                     <option value="dotmatrix">Dot Matrix</option>
                 </select>
                 <button onclick="window.print()" class="btn btn-success ms-2">Print</button>
+                <button onclick="downloadPDF()" class="btn btn-primary ms-2">PDF</button>
+
             </div>
         </div>
 
-        <div class="card">
+        <div class="card" id="invoice-content">
             <div class="card-body">
                <div class="invoice-title">
     <div class="row mb-4">
-        <!-- Column 1: Company Logo -->
-        <div class="col-md-3 col-sm-6 mb-3 mb-md-0 text-center">
-            <img src="./uploads/company-logos/<?php echo $COMPANY_PROFILE->image_name ?>" alt="logo" style="max-height: 80px;">
-        </div>
+        
 
         <!-- Column 2: Company Info -->
-        <div class="col-md-3 col-sm-6 text-muted">
-            <p class="mb-1"><i class="uil uil-building me-1"></i><?php echo $COMPANY_PROFILE->name ?></p>
-            <p class="mb-1"><i class="uil uil-map-marker me-1"></i><?php echo $COMPANY_PROFILE->address ?></p>
-            <p class="mb-1"><i class="uil uil-envelope-alt me-1"></i><?php echo $COMPANY_PROFILE->email ?></p>
-            <p><i class="uil uil-phone me-1"></i><?php echo $COMPANY_PROFILE->mobile_number_1 ?></p>
+        <div class="col-md-9 col-sm-9 text-muted">
+            <p class="mb-1" style="font-weight: bold;font-size: 20px;"> <?php echo $COMPANY_PROFILE->name ?></p>
+            <p class="mb-1" style="font-size: 14px;"> <?php echo $COMPANY_PROFILE->address ?></p>
+            <p class="mb-1" style="font-size: 14px;"> <?php echo $COMPANY_PROFILE->email ?> -   <?php
+function formatPhone($number) {
+    $number = preg_replace('/[^0-9]/', '', $number);
+    $number = ltrim($number, '0');  
+    $number = '94' . $number;  
+    return '(+94) ' . substr($number, 2, 2) . ' ' . substr($number, 4, 3) . ' ' . substr($number, 7);
+}
+
+$mobile1 = !empty($COMPANY_PROFILE->mobile_number_1) ? formatPhone($COMPANY_PROFILE->mobile_number_1) : '';
+$mobile2 = !empty($COMPANY_PROFILE->mobile_number_2) ? formatPhone($COMPANY_PROFILE->mobile_number_2) : '';
+echo $mobile1 . ($mobile1 && $mobile2 ? ' / ' : '') . $mobile2;
+?>
+</p>
+        </div>
+
+         
+
+        <!-- Column 4: Customer Info -->
+        <div class="col-md-3 col-sm-6 text-sm-start text-md-end">
+          <h3 style="font-weight: bold;font-size: 20px;"><?php echo strtoupper($SALES_INVOICE->payment_type) ?> SALES INVOICE</h3>    
+        </div>
+
+<hr>
+        <!-- Column 5: Customer Info -->
+         <div class="col-md-6 col-sm-6 text-muted">
+            <p class="mb-1" style="font-size: 14px;">  <span style="font-weight: bold;">Customer Name:</span> <?php echo $SALES_INVOICE->customer_name ?></p>
+             <p class="mb-1" style="font-size: 14px;"> <span style="font-weight: bold;">Customer Address:</span>  <?php echo !empty($SALES_INVOICE->customer_address) ? $SALES_INVOICE->customer_address : '.................................' ?></p>
+            <p class="mb-1" style="font-size: 14px;"> <span style="font-weight: bold;">Customer Mobile:</span><?php echo !empty($SALES_INVOICE->customer_mobile) ? $SALES_INVOICE->customer_mobile : '.................................' ?> </p>
+           
+             
         </div>
 
         <!-- Column 3: Invoice Info -->
         <div class="col-md-3 col-sm-6 text-sm-start text-md-end">
-            <p><strong>Invoice No:</strong> #<?php echo $SALES_INVOICE->invoice_no ?></p>
-            <p><strong>Invoice Date:</strong> <?php echo date('d M, Y', strtotime($SALES_INVOICE->invoice_date)); ?></p>
+              
         </div>
 
         <!-- Column 4: Customer Info -->
         <div class="col-md-3 col-sm-6 text-sm-start text-md-end">
-            <p><?php echo $CUSTOMER_MASTER->name ?><br>
-                <?php echo $CUSTOMER_MASTER->address ?><br>
-                <?php echo $CUSTOMER_MASTER->mobile_number ?><br>
-                <?php echo $CUSTOMER_MASTER->email ?>
-            </p>
+           <p class="mb-1" style="font-size: 14px;">  <span style="font-weight: bold;"> Invoice No  :</span> <?php echo $SALES_INVOICE->invoice_no  ?></p>
+             <p class="mb-1" style="font-size: 14px;"> <span style="font-weight: bold;">Invoice Date:</span>   <?php echo date('d M, Y', strtotime($SALES_INVOICE->invoice_date)); ?></p>
+              
         </div>
+
+
     </div>
 </div>
-
-
-                <hr>
-
-
-
-                <!-- Dag item Invoice Print -->
+     <!-- ITEM INVOICE PRINT -->
                 <?php if ($SALES_INVOICE->invoice_type == 'INV') { ?>
 
-                    <!-- item invoice print -->
-                    <h5>Order Invoice Summary</h5>
+                    <!-- item invoice print --> 
                     <div class="table-responsive">
                         <table class="table table-centered">
 
@@ -248,7 +267,7 @@ $CUSTOMER_MASTER = new CustomerMaster($SALES_INVOICE->customer_id);
                     </div>
                 <?php } else { ?>
 
-                    <!-- Normal Item Invoice Print -->
+                    <!-- BELT INVOICE PRINT -->
                     <h5>Order Summary</h5>
                     <div class="table-responsive">
                         <table class="table table-centered">
@@ -366,6 +385,23 @@ $CUSTOMER_MASTER = new CustomerMaster($SALES_INVOICE->customer_id);
     </div>
 
     <!-- JS -->
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+    function downloadPDF() {
+        const element = document.getElementById('invoice-content');
+
+        const opt = {
+            margin:       0.5,
+            filename:     'Invoice_<?php echo $SALES_INVOICE->invoice_no ?>.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'in', format: 'a3', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(element).save();
+    }
+</script>
+
     <script src="assets/js/bootstrap.bundle.min.js"></script>
     <script>
         // Apply print format on load

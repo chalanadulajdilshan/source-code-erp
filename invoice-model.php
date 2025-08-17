@@ -8,21 +8,33 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-12">
-                        <table id="invoiceTableData" class="table table-bordered dt-responsive nowrap" style="width: 100%;">
-                            <thead>
-                                <tr>
-                                    <th>#ID</th>
-                                    <th>Invoice No</th>
-                                    <th>Date</th>
-                                    <th>Department</th>
-                                    <th>Customer</th>
-                                    <th>Grand Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Data will be loaded here -->
-                            </tbody>
-                        </table>
+                        <!-- Search Bar -->
+                        <div class="input-group mb-2">
+                            <input type="text" id="invoiceSearch" class="form-control" placeholder="Search invoice no / customer / department">
+                            <button class="btn btn-primary" id="searchBtn">Search</button>
+                        </div>
+
+                        <!-- Invoice Table -->
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover" id="invoiceTable">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>#ID</th>
+                                        <th>Invoice No</th>
+                                        <th>Date</th>
+                                        <th>Department</th>
+                                        <th>Customer</th>
+                                        <th>Grand Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="invoiceTableBody">
+                                    <tr>
+                                        <td colspan="6" class="text-center">Loading...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
                     </div> <!-- end col -->
                 </div> <!-- end row -->
             </div>
