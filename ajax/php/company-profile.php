@@ -41,14 +41,39 @@ if (isset($_POST['create'])) {
     } else {
         $COMPANY->image_name = null;
     }
+// Add this helper function at the top of the file
+function formatMobileNumber($number) {
+    // Remove all non-numeric characters
+    $number = preg_replace('/[^0-9]/', '', $number);
+    
+    // If number starts with 94, ensure it's 12 digits (94 + 10 digits)
+    if (strpos($number, '94') === 0 && strlen($number) === 12) {
+        return $number;
+    }
+    
+    // If number starts with 0, remove it and add 94
+    if (strpos($number, '0') === 0 && strlen($number) === 10) {
+        return '94' . substr($number, 1);
+    }
+    
+    // If number is 9 digits, assume it's missing the 94 prefix
+    if (strlen($number) === 9) {
+        return '94' . $number;
+    }
+    
+    // Return as is if it doesn't match expected formats
+    return $number;
+}
 
+// Then modify the mobile number assignments:
+$COMPANY->mobile_number_1 = !empty($_POST['mobile_number_1']) ? formatMobileNumber($_POST['mobile_number_1']) : '';
+$COMPANY->mobile_number_2 = !empty($_POST['mobile_number_2']) ? formatMobileNumber($_POST['mobile_number_2']) : '';
+$COMPANY->mobile_number_3 = !empty($_POST['mobile_number_3']) ? formatMobileNumber($_POST['mobile_number_3']) : '';
     // Assign form data with fallback
     $COMPANY->company_code = $_POST['company_code'] ?? '';
     $COMPANY->name = isset($_POST['name']) ? ucwords(strtolower(trim($_POST['name']))) : '';
     $COMPANY->address = isset($_POST['address']) ? ucwords(strtolower(trim($_POST['address']))) : '';
-    $COMPANY->mobile_number_1 = $_POST['mobile_number_1'] ?? '';
-    $COMPANY->mobile_number_2 = $_POST['mobile_number_2'] ?? '';
-    $COMPANY->mobile_number_3 = $_POST['mobile_number_3'] ?? '';
+    
     $COMPANY->email = $_POST['email'] ?? '';
     $COMPANY->vat_number = $_POST['vat_number'] ?? '';
     $COMPANY->is_active = isset($_POST['is_active']) ? 1 : 0;

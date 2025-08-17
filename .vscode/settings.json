@@ -3,7 +3,7 @@
   "editor.formatOnSave": true,
   "editor.formatOnPaste": true,
   "[php]": {
-    "editor.defaultFormatter": "DEVSENSE.phptools-vscode"
+    "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
   },
   "[javascript]": {
     "editor.defaultFormatter": "vscode.typescript-language-features"

@@ -191,7 +191,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-2">
+                                            <div class="col-md-2 hidden">
                                                 <label for="CI_No" class="form-label">CI No</label>
                                                 <div class="input-group mb-3">
                                                     <input id="ci_no" name="ci_no" type="text" placeholder="Enter CI No"
@@ -252,7 +252,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-2">
+                                            <div class="col-md-2 hidden">
                                                 <label for="LC?TT_No" class="form-label">LC/TT No</label>
                                                 <div class="input-group mb-3">
                                                     <input id="lc_tt_no" name="lc_tt_no" type="text"
@@ -260,7 +260,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-2">
+                                            <div class="col-md-2 hidden">
                                                 <label for="PI_No" class="form-label">PI No</label>
                                                 <div class="input-group mb-3">
                                                     <input id="pi_no" name="pi_no" type="text" placeholder="Enter PI No"
@@ -268,7 +268,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-2">
+                                            <div class="col-md-2 hidden">
                                                 <label for="Order_By" class="form-label">Order By</label>
                                                 <div class="input-group mb-3">
                                                     <select id="order_by" name="order_by" class="form-select">
@@ -283,7 +283,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-2">
+                                            <div class="col-md-2 hidden">
                                                 <label for="Purchase_Type" class="form-label">Purchase Type</label>
                                                 <div class="input-group mb-3">
                                                     <select id="purchase_type" name="purchase_type" class="form-select">

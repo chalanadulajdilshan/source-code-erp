@@ -6,10 +6,12 @@ class SalesInvoice
     public $ref_id;
     public $invoice_no;
     public $invoice_type;
-
     public $invoice_date;
     public $company_id;
     public $customer_id;
+    public $customer_name;
+    public $customer_mobile;
+    public $customer_address;
     public $department_id;
     public $sale_type;
     public $discount_type;
@@ -38,6 +40,9 @@ class SalesInvoice
                 $this->invoice_date = $result['invoice_date'];
                 $this->company_id = $result['company_id'];
                 $this->customer_id = $result['customer_id'];
+                $this->customer_name = $result['customer_name'];
+                $this->customer_mobile = $result['customer_mobile'];
+                $this->customer_address = $result['customer_address'];
                 $this->department_id = $result['department_id'];
                 $this->sale_type = $result['sale_type'];
                 $this->discount_type = $result['discount_type'];
@@ -57,11 +62,11 @@ class SalesInvoice
     public function create()
     {
         $query = "INSERT INTO `sales_invoice` (
-            `ref_id`,`invoice_type`,`invoice_no`, `invoice_date`, `company_id`, `customer_id`, `department_id`, 
+            `ref_id`,`invoice_type`,`invoice_no`, `invoice_date`, `company_id`, `customer_id`, `customer_name`, `customer_mobile`, `customer_address`, `department_id`, 
             `sale_type`, `discount_type`,`final_cost`, `payment_type`, `sub_total`, `discount`, 
             `tax`, `grand_total`, `remark`
         ) VALUES (
-            '{$this->ref_id}','{$this->invoice_type}', '{$this->invoice_no}', '{$this->invoice_date}', '{$this->company_id}', '{$this->customer_id}', '{$this->department_id}', 
+            '{$this->ref_id}','{$this->invoice_type}', '{$this->invoice_no}', '{$this->invoice_date}', '{$this->company_id}', '{$this->customer_id}', '{$this->customer_name}', '{$this->customer_mobile}', '{$this->customer_address}', '{$this->department_id}', 
             '{$this->sale_type}', '{$this->discount_type}', '{$this->final_cost}','{$this->payment_type}', '{$this->sub_total}', '{$this->discount}', 
             '{$this->tax}', '{$this->grand_total}', '{$this->remark}'
         )";
@@ -85,6 +90,9 @@ class SalesInvoice
             `invoice_date` = '{$this->invoice_date}', 
             `company_id` = '{$this->company_id}', 
             `customer_id` = '{$this->customer_id}', 
+            `customer_name` = '{$this->customer_name}', 
+            `customer_mobile` = '{$this->customer_mobile}', 
+            `customer_address` = '{$this->customer_address}', 
             `department_id` = '{$this->department_id}', 
             `sale_type` = '{$this->sale_type}', 
             `discount_type` = '{$this->discount_type}', 
@@ -330,7 +338,6 @@ class SalesInvoice
         }
 
         return $data;
-
     }
 
     public function getCreditInvoicesByCustomerAndStatus($status, $customer_id)
@@ -347,5 +354,45 @@ class SalesInvoice
         return $array_res;
     }
 
+
+
+    public function latest()
+    {
+        $query = "SELECT * FROM `sales_invoice` ORDER BY `id` DESC LIMIT 10";
+        $db = new Database();
+        $result = $db->readQuery($query);
+        $array_res = array();
+
+        while ($row = mysqli_fetch_array($result)) {
+            $array_res[] = $row;
+        }
+
+        return $array_res;
+    }
+
+    // Search invoices (invoice_no, customer, department)
+    public function search($keyword)
+    {
+        $db = new Database();
+        $keyword = $db->escapeString($keyword);
+
+        $query = "SELECT si.* 
+                  FROM `sales_invoice` si
+                  LEFT JOIN `customer_master` c ON si.customer_id = c.id
+                  LEFT JOIN `department_master` d ON si.department_id = d.id
+                  WHERE si.invoice_no LIKE '%$keyword%'
+                     OR c.name LIKE '%$keyword%'
+                     OR d.name LIKE '%$keyword%'
+                  ORDER BY si.id DESC
+                  LIMIT 50";
+
+        $result = $db->readQuery($query);
+        $array_res = array();
+
+        while ($row = mysqli_fetch_array($result)) {
+            $array_res[] = $row;
+        }
+
+        return $array_res;
+    }
 }
-?>

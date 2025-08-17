@@ -1,7 +1,7 @@
 jQuery(document).ready(function () {
 
 
-    //windows loder
+    //WINDOWS LOADER
     loadCustomer();
     getInvoiceData();
 
@@ -10,32 +10,33 @@ jQuery(document).ready(function () {
         loadItems();
     });
 
-    //loard item master
+    //LOARD ITEM MASTER
     $('#item_brand_id, #item_category_id, #item_group_id,#item_department_id').on('change', function () {
         loadItems();
     });
 
-    //loard item master
+    //LOARD ITEM MASTER
     $('#item_item_code').on('keyup', function () {
         loadItems();
     });
 
-    //loard item master
+    //LOARD ITEM MASTER
     $('#item_master').on('shown.bs.modal', function () {
         loadItems();
     });
 
-    //payment type change
+    //PAYMENT TYPE CHANGE
     $('input[name="payment_type"]').on('change', function () {
         getInvoiceData();
     });
 
-    // Reset input fields
+    // RESET INPUT FIELDS
     $("#new").click(function (e) {
         e.preventDefault();
         location.reload();
     });
-    // Bind Enter key to add item
+
+    // BIND ENTER KEY TO ADD ITEM
     $('#itemCode, #itemName, #itemPrice, #itemQty, #itemDiscount, #itemPayment').on('keydown', function (e) {
         if (e.key === "Enter") {
             e.preventDefault();
@@ -44,19 +45,21 @@ jQuery(document).ready(function () {
         }
     });
 
-    // Call payment calculation on input change
+    // CALL PAYMENT CALCULATION ON INPUT CHANGE
     $('#itemPrice, #itemQty, #itemDiscount').on('input', calculatePayment);
 
-    // Amount Paid focus
+    // AMOUNT PAID FOCUS
     $('#paymentModal').on('shown.bs.modal', function () {
         $('#amountPaid').focus();
     });
 
-    // Bind button click
+    // BIND BUTTON CLICK
     $('#addItemBtn').click(addItem);
 
-    // ----------------------ITEM MASTER SECTION START ----------------------//
 
+
+
+    // ----------------------ITEM MASTER SECTION START ----------------------//
 
     let fullItemList = []; // Global variable
     let itemsPerPage = 20;
@@ -199,7 +202,7 @@ jQuery(document).ready(function () {
         renderPaginationControls(page);
     }
 
-
+    //GET DATA ARN VISE
     $(document).on('click', '.arn-row', function () {
         if ($(this).hasClass('disabled-arn') || $(this).hasClass('used-arn')) {
             return;
@@ -220,8 +223,6 @@ jQuery(document).ready(function () {
 
         $('#availableQty').val(remainingQty);
     });
-
-
 
     function renderPaginationControls(currentPage) {
         let totalPages = Math.ceil(fullItemList.length / itemsPerPage);
@@ -359,6 +360,8 @@ jQuery(document).ready(function () {
     // ----------------------ITEM MASTER SECTION END ----------------------//
 
 
+
+    //CHANGE THE DEPARTMENT VALUES EMPTY        
     $('#department_id').on('change', function () {
         $('#item_id').val('');
         $('#itemCode').val('');
@@ -370,7 +373,7 @@ jQuery(document).ready(function () {
 
     });
 
-
+    //ITEM MODEL HIDDEN SECTION 
     $('#item_master').on('hidden.bs.modal', function () {
         if (focusAfterModal) {
             $('#itemQty').focus();
@@ -405,7 +408,7 @@ jQuery(document).ready(function () {
     }
 
 
-    //get invoice id 
+    //GET INVOICE ID BY PAYMENT TYPE VISE
     function getInvoiceData() {
         const paymentType = $('input[name="payment_type"]:checked').val(); // 'cash' or 'credit'
 
@@ -430,7 +433,7 @@ jQuery(document).ready(function () {
         });
     }
 
-    // Open payment modal and pre-fill total
+    // OPEN PAYMENT MODEL AND PRE-FILL TOTAL
     $('#payment').on('click', function () {
         const totalRaw = $('#finalTotal').val();
 
@@ -456,7 +459,7 @@ jQuery(document).ready(function () {
     });
 
 
-    // Calculate and display balance or show insufficient message
+    // CALCULATE AND DISPLAY BALANCE OR SHOW INSUFFICIENT MESSAGE
     $('#amountPaid').on('input', function () {
         const paid = parseFloat($(this).val()) || 0;
         const total = parseFloat($('#modalFinalTotal').val()) || 0;
@@ -469,7 +472,7 @@ jQuery(document).ready(function () {
         }
     });
 
-    // Handle payment form submission
+    // HANDLE PAYMENT FORM SUBMISSION
     $('#paymentForm').on('submit', function (e) {
         e.preventDefault();
 
@@ -529,7 +532,7 @@ jQuery(document).ready(function () {
         }
     });
 
-    //item invoice proccess
+    //ITEM INVOICE PROCESS
     function processInvoiceCreation() {
         const total = parseFloat($('#modalFinalTotal').val());
         const paid = parseFloat($('#amountPaid').val()) || 0;
@@ -548,7 +551,7 @@ jQuery(document).ready(function () {
         const items = [];
         const dagItems = [];
 
-        //item invoice to send this php file
+        //  item invoice to send this php file
         $('#invoiceItemsBody tr').each(function () {
             const code = $(this).find('td:eq(0)').text().trim();
             const name = $(this).find('td:eq(1)').text().trim();
@@ -561,7 +564,6 @@ jQuery(document).ready(function () {
             const arn_no = $(this).find('input[name="arn_ids[]"]').val();
             const arn_cost = parseFloat($(this).find('input[name="arn_costs[]"]').val()) || price;
 
-            console.log('Debug processInvoice - item_id:', item_id, 'code:', code, 'arn_cost:', arn_cost); // Debug log
 
             if (code && !isNaN(totalItem) && item_id) {
                 items.push({
@@ -593,12 +595,28 @@ jQuery(document).ready(function () {
             return;
         }
 
+        const customerName = $('#customer_name').val().trim();
+        if (!customerName) {
+            swal({
+                title: "Error!",
+                text: "Please select a customer before creating an invoice.",
+                type: 'error',
+                timer: 3000,
+                showConfirmButton: false
+            });
+            $('#customer_name').focus();
+            return;
+        }
+
         const formData = new FormData($('#form-data')[0]);
         formData.append('create', true);
         formData.append('total', total);
         formData.append('paid', paid);
         formData.append('payment_type', $('input[name="payment_type"]:checked').val());
         formData.append('customer_id', $('#customer_id').val());
+        formData.append('customer_name', $('#customer_name').val());
+        formData.append('customer_mobile', $('#customer_mobile').val());
+        formData.append('customer_address', $('#customer_address').val());
         formData.append('invoice_no', $('#invoice_no').val());
         formData.append('items', JSON.stringify(items));
         formData.append('sales_type', $('input[name="payment_type"]:checked').val()); // Using payment_type as sales_type
@@ -673,7 +691,7 @@ jQuery(document).ready(function () {
         });
     }
 
-    //dag item invoice process
+    //PROCESS DAG INVOICE CREATION
     function processDAGInvoiceCreation() {
         const total = parseFloat($('#modalFinalTotal').val());
         const paid = parseFloat($('#amountPaid').val()) || 0;
@@ -772,9 +790,7 @@ jQuery(document).ready(function () {
     }
 
 
-
-
-    // Add item to invoice table
+    //ADD ITEM TO INVOICE TABLE
     function addItem() {
         const item_id = $('#item_id').val().trim();
         const code = $('#itemCode').val().trim();
@@ -784,6 +800,7 @@ jQuery(document).ready(function () {
         const discount = parseFloat($('#itemDiscount').val()) || 0;
         const payment = parseFloat($('#itemPayment').val()) || 0;
         let availableQty = parseFloat($('#availableQty').val()) || 0;
+
 
         if (!code || !name || price <= 0 || qty <= 0) {
             swal({
@@ -850,6 +867,7 @@ jQuery(document).ready(function () {
         const total = (price * qty) - ((price * qty) * (discount / 100));
         $('#noItemRow').remove();
         $('#noQuotationItemRow').remove();
+        $('#noInvoiceItemRow').remove();
 
         const row = `
             <tr>
@@ -910,6 +928,7 @@ jQuery(document).ready(function () {
     }
 
 
+    //UPDATE FINAL TOTAL
     function updateFinalTotal() {
 
         let subTotal = 0;
@@ -939,9 +958,7 @@ jQuery(document).ready(function () {
     }
 
 
-
-
-    // Event delegation for remove buttons
+    // EVENT DELEGATION FOR REMOVE BUTTONS
     $(document).on('click', '.btn-remove-item', function () {
         const btn = this;
         const code = $(btn).data('code');
@@ -951,7 +968,7 @@ jQuery(document).ready(function () {
         removeRow(btn, code, qty, arnId);
     });
 
-    // Remove item row
+    // REMOVE ITEM ROW
     function removeRow(btn, code, qty, arnId) {
         $(btn).closest('tr').remove();
 
@@ -977,7 +994,7 @@ jQuery(document).ready(function () {
     }
 
 
-    // Calculate payment
+    // CALCULATE PAYMENT
     function calculatePayment() {
         const price = parseFloat($('#itemPrice').val()) || 0;
         const qty = parseFloat($('#itemQty').val()) || 0;
@@ -990,6 +1007,16 @@ jQuery(document).ready(function () {
         $('#itemPayment').val(total.toFixed(2));
     }
 
+    // ADD CLICK EVENT LISTENER TO CUSTOMER NAME FIELD
+    $('#customer_name').on('click', function () {
+        // Clear customer-related fields
 
+        $('#customer_name').val('');
+        $('#customer_address').val('');
+        $('#customer_mobile').val('');
+
+        // Set focus back to customer name for better UX
+        $(this).val('').focus();
+    });
 
 });

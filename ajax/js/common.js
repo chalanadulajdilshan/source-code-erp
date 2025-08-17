@@ -28,7 +28,7 @@ jQuery(document).ready(function () {
         });
     });
 
-    //get district name
+    //GET DISTRICT NAME
     $('#province').change(function () {
 
         $('.someBlock').preloader(); // Show preloader
@@ -73,6 +73,7 @@ jQuery(document).ready(function () {
     $('#customerModal').on('shown.bs.modal', function () {
         loadCustomerTable();
     });
+
     //loard customers all
     function loadCustomerTable() {
         // Destroy if already initialized
@@ -300,68 +301,194 @@ jQuery(document).ready(function () {
         });
     }
 
-    //sales invoice get same formate for all
-    function initInvoiceTable() {
-        var table = $('#invoiceTableData').DataTable({
-            processing: true,
-            serverSide: true,
-            destroy: true, // Re-initializes cleanly when called again
-            ajax: {
-                url: "ajax/php/sales-invoice.php",
-                type: "POST",
-                data: function (d) {
-                    d.filter = true;  // You can adjust this if needed
-                },
-                dataSrc: function (json) {
-                    console.log("Response Data:", json); // Check the server response here
-                    return json.data || [];  // Ensure data is in the expected format
-                },
-                error: function (xhr, error, thrown) {
-                    console.error("Server Error:", xhr.responseText, error, thrown);
-                }
+
+
+    //-----------------SALES INVOICE LOARD DATA START---------------
+    // Load latest 10 invoices on page load
+    function loadLatestInvoices() {
+        $.ajax({
+            url: "ajax/php/sales-invoice.php",
+            type: "POST",
+            data: { action: "latest" }, // backend will handle this
+            dataType: "json",
+            success: function (response) {
+                renderInvoices(response.data);
             },
-            columns: [
-                { data: "id", title: "#ID" },
-                { data: "invoice_no", title: "Invoice No" },
-                { data: "invoice_date", title: "Date" },
-                { data: "department", title: "Department" },
-                { data: "customer", title: "Customer" },
-                { data: "grand_total", title: "Grand Total" }
-            ],
-            order: [[0, 'desc']], // Sort by #ID (Descending)
-            pageLength: 100
+            error: function (xhr) {
+                $("#invoiceTableBody").html(`<tr><td colspan="6" class="text-center text-danger">Error loading data</td></tr>`);
+                console.error(xhr.responseText);
+            }
         });
-
-        // Row click to populate form
-        $('#invoiceTableData tbody').off('click').on('click', 'tr', function () {
-            var data = table.row(this).data();
-            if (!data) return;
-
-            // Populate form fields safely
-            $('#invoice_id').val(data.id || '');
-            $('#invoice_no').val(data.invoice_no || '');
-            $('#invoice_date').val(data.invoice_date || '');
-            $('#department_id').val(data.department_id || '').trigger('change');
-            $('#customer_id').val(data.customer_id || '').trigger('change');
-            $('#sale_type').val(data.sale_type || '').trigger('change');
-            $('#discount_type').val(data.discount_type || '').trigger('change');
-            $('#payment_type').val(data.payment_type || '').trigger('change');
-            $('#sub_total').val(data.sub_total || '');
-            $('#discount').val(data.discount || '');
-            $('#tax').val(data.tax || '');
-            $('#grand_total').val(data.grand_total || '');
-            $('#remark').val(data.remark || '');
-
-            // Fetch items related to invoice
-            fetchInvoiceItems(data.id);
-
-            $("#create").hide();
-            $('#invoiceModal').modal('hide');
-        });
-
-
     }
 
+    // Search invoices
+    function searchInvoices(query) {
+        $.ajax({
+            url: "ajax/php/sales-invoice.php",
+            type: "POST",
+            data: { action: "search", q: query },
+            dataType: "json",
+            success: function (response) {
+                renderInvoices(response.data);
+            },
+            error: function (xhr) {
+                $("#invoiceTableBody").html(`<tr><td colspan="6" class="text-center text-danger">Error loading search results</td></tr>`);
+                console.error(xhr.responseText);
+            }
+        });
+    }
+
+    // Render table rows
+    function renderInvoices(invoices) {
+        let rows = "";
+        if (invoices.length > 0) {
+            invoices.forEach(inv => {
+                rows += `
+                <tr data-id="${inv.id}">
+                    <td>${inv.id}</td>
+                    <td>${inv.invoice_no}</td>
+                    <td>${inv.invoice_date}</td>
+                    <td>${inv.name}</td>
+                    <td>${inv.customer_name}</td>
+                    <td>${inv.grand_total}</td>
+                </tr>
+            `;
+            });
+        } else {
+            rows = `<tr><td colspan="6" class="text-center">No records found</td></tr>`;
+        }
+        $("#invoiceTableBody").html(rows);
+
+        // Row click → populate form
+        $("#invoiceTableBody tr").on("click", function () {
+            const id = $(this).data("id");
+            if (id) {
+                fetchInvoiceItems(id);
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        loadLatestInvoices(); // load 10 latest by default
+
+        // Search button click
+        $("#searchBtn").on("click", function () {
+            const query = $("#invoiceSearch").val().trim();
+            if (query.length > 0) {
+                searchInvoices(query);
+            } else {
+                loadLatestInvoices();
+            }
+        });
+
+        // Press Enter inside search box
+        $("#invoiceSearch").on("keydown", function (e) {
+            if (e.key === "Enter") {
+                e.preventDefault(); // stop form submit if inside form
+                $("#searchBtn").click(); // trigger search
+            }
+        });
+    });
+
+    // When the modal is shown, focus on the search input
+    $('#invoiceModal').on('shown.bs.modal', function () {
+        $('#invoiceSearch').focus();
+    });
+
+    //-----------------SALES INVOICE LOARD DATA END---------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //     //sales invoice get same formate for all
+    //     function initInvoiceTable() {
+
+
+    //         var table = $('#invoiceTableData').DataTable({
+    //             processing: true,
+    //             serverSide: true,
+    //             destroy: true, // Re-initializes cleanly when called again
+    //             ajax: {
+    //                 url: "ajax/php/sales-invoice.php",
+    //                 type: "POST",
+    //                 data: function (d) {
+    //                     d.filter = true;  // You can adjust this if needed
+    //                 },
+    //                 dataSrc: function (json) {
+    //                     console.log("Response Data:", json); // Check the server response here
+    //                     return json.data || [];  // Ensure data is in the expected format
+    //                 },
+    //                 error: function (xhr, error, thrown) {
+    //                     console.error("Server Error:", xhr.responseText, error, thrown);
+    //                 }
+    //             },
+    //             columns: [
+    //                 { data: "id", title: "#ID" },
+    //                 { data: "invoice_no", title: "Invoice No" },
+    //                 { data: "invoice_date", title: "Date" },
+    //                 { data: "department", title: "Department" },
+    //                 { data: "customer", title: "Customer" },
+    //                 { data: "grand_total", title: "Grand Total" }
+    //             ],
+    //             order: [[0, 'desc']], // Sort by #ID (Descending)
+    //             pageLength: 100
+    //         });
+
+    //         // Row click to populate form
+    //         $('#invoiceTableData tbody').off('click').on('click', 'tr', function () {
+    //             var data = table.row(this).data();
+    //             if (!data) return;
+
+    //             // Populate form fields safely
+    //             $('#invoice_id').val(data.id || '');
+    //             $('#invoice_no').val(data.invoice_no || '');
+    //             $('#invoice_date').val(data.invoice_date || '');
+    //             $('#department_id').val(data.department_id || '').trigger('change');
+    //             $('#customer_id').val(data.customer_id || '').trigger('change');
+    //             $('#sale_type').val(data.sale_type || '').trigger('change');
+    //             $('#discount_type').val(data.discount_type || '').trigger('change');
+    //             $('#payment_type').val(data.payment_type || '').trigger('change');
+    //             $('#sub_total').val(data.sub_total || '');
+    //             $('#discount').val(data.discount || '');
+    //             $('#tax').val(data.tax || '');
+    //             $('#grand_total').val(data.grand_total || '');
+    //             $('#remark').val(data.remark || '');
+
+    //             // Fetch items related to invoice
+    //             fetchInvoiceItems(data.id);
+
+    //             $("#create").hide();
+    //             $('#invoiceModal').modal('hide');
+    //         });
+
+
+    //     }
+
+    //     //  FETCH INVOICE ITEMS
     function fetchInvoiceItems(invoiceId) {
         $.ajax({
             url: 'ajax/php/temp-sales-items.php', // Replace with your PHP endpoint
@@ -375,25 +502,25 @@ jQuery(document).ready(function () {
                 if (response && response.length > 0) {
                     response.forEach(item => {
                         let row = `
-                        <tr>
-                            <td>${item.item_code}</td>
-                            <td>${item.item_name}</td>
-                            <td>${parseFloat(item.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                            <td>${item.quantity}</td>
-                            <td>${item.discount}%</td>
-                            <td>${parseFloat(item.price - (item.price * (item.discount / 100))).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                            <td>${parseFloat(item.total).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                            <td>
- -
-                            </td>
-                        </tr>
-                    `;
+                            <tr>
+                                <td>${item.item_code}</td>
+                                <td>${item.item_name}</td>
+                                <td>${parseFloat(item.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                <td>${item.quantity}</td>
+                                <td>${item.discount}%</td>
+                                <td>${parseFloat(item.price - (item.price * (item.discount / 100))).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                <td>${parseFloat(item.total).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                <td>
+     -
+                                </td>
+                            </tr>
+                        `;
                         tbody.append(row);
                     });
                 } else {
                     tbody.html(`<tr id="noItemRow">
-                                <td colspan="8" class="text-center text-muted">No items found</td>
-                            </tr>`);
+                                    <td colspan="8" class="text-center text-muted">No items found</td>
+                                </tr>`);
                 }
             },
             error: function (xhr, status, error) {
@@ -403,11 +530,9 @@ jQuery(document).ready(function () {
         });
     }
 
-    // Re-initialize when modal is shown
-    $('#invoiceModal').on('shown.bs.modal', function () {
-        initInvoiceTable();
-    });
 
+
+    //SHOW MORE AND LESS IN DASHBOARD NOTIFICATION 
     $('#show-more-btn').on('click', function () {
         $('.extra-message').removeClass('d-none');
         $('#show-more-btn').addClass('d-none');
