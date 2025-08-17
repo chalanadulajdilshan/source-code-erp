@@ -80,8 +80,9 @@
                                 <label for="department_id" class="form-label">Department</label>
                                 <div class="input-group mb-3">
                                     <select id="item_department_id" name="item_department_id" class="form-select">
-                                        <option value="0"> -- All Departments -- </option>
+                                     
                                         <?php
+                                      
                                         $DEPARTMENT_MASTER = new DepartmentMaster(NUll);
                                         foreach ($DEPARTMENT_MASTER->getActiveDepartment() as $departments) {
                                             if ($US->type != 1) {

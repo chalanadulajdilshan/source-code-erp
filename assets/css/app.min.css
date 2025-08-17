@@ -5124,4 +5124,18 @@ table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before {
     padding: 7px 0;
 }
 
+  .disabled-arn {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        .active-arn {
+            cursor: pointer;
+            background-color: #dff0d8 !important;
+        }
+
+        .used-arn {
+            background-color: #f2f2f2 !important;
+            color: #aaa;
+        }
 /*# sourceMappingURL=app.min.css.map */

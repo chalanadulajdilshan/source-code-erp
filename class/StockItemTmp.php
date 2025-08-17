@@ -165,10 +165,48 @@ class StockItemTmp
             return ['error' => 'Database update failed'];
         }
     }
+ 
+   public function updateQtyByArnId($arn_id, $item_id, $department_id, $qty_change)
+{
+    $db = new Database();
 
+    // 1. Get the current quantity
+    $selectQuery = "SELECT `qty` FROM `stock_item_tmp` 
+                    WHERE `arn_id` = '{$arn_id}' 
+                      AND `item_id` = '{$item_id}' 
+                      AND `department_id` = '{$department_id}' 
+                    LIMIT 1";
 
+    $result = $db->readQuery($selectQuery);
 
+    if ($row = mysqli_fetch_assoc($result)) {
+        $currentQty = (float)$row['qty'];
 
+        
+        $newQty = $currentQty + $qty_change;
+
+        
+        if ($newQty < 0) {
+            return false;
+        }
+
+        // 3. Update with new quantity
+        $updateQuery = "UPDATE `stock_item_tmp` SET 
+                            `qty` = '{$newQty}' 
+                        WHERE `arn_id` = '{$arn_id}' 
+                          AND `item_id` = '{$item_id}' 
+                          AND `department_id` = '{$department_id}'";
+
+        $updateResult = $db->readQuery($updateQuery);
+
+        return $updateResult ? true : false;
+    }
+
+    // Record not found
+    return false;
+}
+
+   
 }
 
 ?>

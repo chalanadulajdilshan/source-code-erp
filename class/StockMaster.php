@@ -80,9 +80,8 @@ class StockMaster
         $query = "UPDATE `stock_master` 
               SET `quantity` = '" . (float) $new_quantity . "'
               WHERE `item_id` = '" . (int) $item_id . "' 
-              AND `department_id` = '" . (int) $department_id . "' 
-              AND `is_active` = 1";
-
+              AND `department_id` = '" . (int) $department_id . "'";
+       
         return $db->readQuery($query);
     }
 

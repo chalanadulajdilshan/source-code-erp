@@ -9,7 +9,7 @@ $DOCUMENT_TRACKING = new DocumentTracking($doc_id);
 
 // Get the last inserted quotation
 $lastId = $DOCUMENT_TRACKING->item_id;
-$item_id = 'ITM/0' . ($lastId + 1);
+$item_id = 'TI/0' . ($lastId + 1);
 
 ?>
 <html lang="en">

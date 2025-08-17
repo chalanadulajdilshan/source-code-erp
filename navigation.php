@@ -87,11 +87,8 @@
                     <i class="uil-angle-down d-none d-xl-inline-block font-size-15"></i>
                 </button>
                 <div class="dropdown-menu dropdown-menu-end">
-                    <a class="dropdown-item" href="#"><i class="uil uil-user-circle me-1"></i> View Profile</a>
-                    <a class="dropdown-item" href="#"><i class="uil uil-wallet me-1"></i> My Wallet</a>
-                    <a class="dropdown-item" href="#"><i class="uil uil-cog me-1"></i> Settings <span
-                            class="badge bg-soft-success rounded-pill mt-1 ms-2">03</span></a>
-                    <a class="dropdown-item" href="#"><i class="uil uil-lock-alt me-1"></i> Lock screen</a>
+                    <a class="dropdown-item" href="#"><i class="uil uil-user-circle me-1"></i> View Profile</a>  
+                    <a class="dropdown-item" href="#"><i class="uil uil-lock-alt me-1"></i> Settings  </a>
                     <a class="dropdown-item" href="log-out.php"><i class="uil uil-sign-out-alt me-1"></i> Sign out</a>
                 </div>
             </div>
