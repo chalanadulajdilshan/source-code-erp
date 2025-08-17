@@ -13,23 +13,7 @@ include './auth.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="<?php echo $COMPANY_PROFILE_DETAILS->name ?>" name="author" />
     <!-- include main CSS -->
-    <?php include 'main-css.php' ?>
-    <style>
-        .disabled-arn {
-            opacity: 0.4;
-            pointer-events: none;
-        }
-
-        .active-arn {
-            cursor: pointer;
-            background-color: #dff0d8 !important;
-        }
-
-        .used-arn {
-            background-color: #f2f2f2 !important;
-            color: #aaa;
-        }
-    </style>
+    <?php include 'main-css.php' ?>  
 
 </head>
 
@@ -670,8 +654,8 @@ include './auth.php';
     <script src="assets/libs/jquery/jquery.min.js"></script>
     <!-- /////////////////////////// -->
     <script src="ajax/js/sales-invoice.js"></script>
-    <script src="ajax/js/create-dag.js"></script>
-    <script src="ajax/js/quotation.js"></script>
+    <!-- <script src="ajax/js/create-dag.js"></script>
+    <script src="ajax/js/quotation.js"></script> -->
 
     <!-- include main js  -->
     <?php include 'main-js.php' ?>

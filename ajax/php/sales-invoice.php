@@ -25,7 +25,8 @@ if (isset($_POST['create'])) {
     $paid = $_POST['paid'];
     $paymentType = $_POST['payment_type'];
 
-
+   
+ 
     $totalSubTotal = 0;
     $totalDiscount = 0;
     $final_cost = 0;
@@ -35,6 +36,10 @@ if (isset($_POST['create'])) {
         $price = floatval($item['price']);
         $qty = floatval($item['qty']);
         $discount = isset($item['discount']) ? floatval($item['discount']) : 0; // item-wise discount
+
+         //GET ARN ID BY ARN NO
+        $ARN_MASTER = new ArnMaster(NULL);
+        $arn_id = $ARN_MASTER->getArnIdByArnNo($item['arn_no']);
 
         $ITEM_MASTER = new ItemMaster($item['item_id']);
 
@@ -113,26 +118,41 @@ if (isset($_POST['create'])) {
             $SALES_ITEM->created_at = date("Y-m-d H:i:s");
             $SALES_ITEM->create();
 
+          
+            
+
             //stock master update quantity
             $STOCK_MASTER = new StockMaster(NULL);
-
             $currentQty = $STOCK_MASTER->getAvailableQuantity($_POST['department_id'], $item['item_id']);
             $newQty = $currentQty - $item['qty'];
             $STOCK_MASTER->quantity = $newQty;
             $STOCK_MASTER->updateQtyByItemAndDepartment($_POST['department_id'], $item['item_id'], $newQty);
 
+            // Update stock transaction with ARN reference if available
             $STOCK_TRANSACTION = new StockTransaction(NULL);
             $STOCK_TRANSACTION->item_id = $item['item_id'];
+            $STOCK_TRANSACTION->arn_id = !empty($arn_id) ? $arn_id : null;
+ 
+              // Update stock_item_tmp for ARN-based inventorysss           
+                $STOCK_ITEM_TMP = new StockItemTmp(NULL);
+                // Use negative qty to reduce stock
+                $qtyToDeduct = -abs($item['qty']);
+                $STOCK_ITEM_TMP->updateQtyByArnId(
+                    $arn_id,
+                    $item['item_id'],
+                    $_POST['department_id'],
+                    $qtyToDeduct
+                );
+
 
             //stock transaction table update
             $STOCK_TRANSACTION->type = 4; // get this id from stock adjustment type table PK
             $STOCK_TRANSACTION->date = date("Y-m-d");
             $STOCK_TRANSACTION->qty_in = 0;
             $STOCK_TRANSACTION->qty_out = $item['qty'];
-            $STOCK_TRANSACTION->remark = "INVOICE #$invoiceId Issued" . date("Y-m-d H:i:s");
+            $STOCK_TRANSACTION->remark = "INVOICE #$invoiceId " . (!empty($item['arn_id']) ? "(ARN: {$item['arn']}) " : "") . "Issued " . date("Y-m-d H:i:s");
             $STOCK_TRANSACTION->created_at = date("Y-m-d H:i:s");
             $STOCK_TRANSACTION->create();
-
 
             //audit log
             $AUDIT_LOG = new AuditLog(NUll);

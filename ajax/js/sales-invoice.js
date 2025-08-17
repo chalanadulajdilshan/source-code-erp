@@ -59,7 +59,7 @@ jQuery(document).ready(function () {
 
 
     let fullItemList = []; // Global variable
-    let itemsPerPage = 1;
+    let itemsPerPage = 20;
 
     function loadItems(page = 1) {
 
@@ -137,8 +137,12 @@ jQuery(document).ready(function () {
 
                     const totalQty = parseFloat(row.qty);
                     const arnId = row.arn_no;
+
                     const itemKey = `${item.code}_${arnId}`;
+
                     const usedQty = parseFloat(usedQtyMap[itemKey]) || 0;
+
+
                     const remainingQty = totalQty - usedQty;
 
                     let rowClass = '';
@@ -160,7 +164,7 @@ jQuery(document).ready(function () {
                         data-used="${usedQty}" 
                         data-arn-id="${arnId}">
                         
-                        <td colspan="2"><strong>ARN:</strong> ${arnId}</td>
+                        <td colspan="1"><strong>ARN:</strong> ${arnId}</td>
                         
                         <td>
                             <div><strong>Department:</strong></div>
@@ -178,7 +182,7 @@ jQuery(document).ready(function () {
                         </td>
                     
                         <td>
-                            <div><strong>Invoice Price:</strong></div>
+                            <div><strong>Sales Price:</strong></div>
                             <div class='text-danger'><b>${Number(row.invoice_price).toLocaleString('en-US', { minimumFractionDigits: 2 })}</b></div>
                         </td>
                     
@@ -327,7 +331,7 @@ jQuery(document).ready(function () {
         //Extract Invoice Price (now from td:eq(5))
         let invoicePriceText = tdHtml.eq(4).text();
 
-        let invoiceMatch = invoicePriceText.match(/Invoice Price:\s*([\d.,]+)/i);
+        let invoiceMatch = invoicePriceText.match(/Sales Price:\s*([\d.,]+)/i);
         let invoicePrice = invoiceMatch ? parseFloat(invoiceMatch[1].replace(/,/g, '')) : 0;
 
         // Apply to inputs
@@ -845,6 +849,7 @@ jQuery(document).ready(function () {
 
         const total = (price * qty) - ((price * qty) * (discount / 100));
         $('#noItemRow').remove();
+        $('#noQuotationItemRow').remove();
 
         const row = `
             <tr>

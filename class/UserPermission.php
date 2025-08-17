@@ -130,6 +130,8 @@ class UserPermission
               FROM `user_permission`
               WHERE `user_id` = $userId AND `page_id` = $pageId
               LIMIT 1";
+
+             
         $result = $db->readQuery($query);
 
         if ($row = mysqli_fetch_assoc($result)) {

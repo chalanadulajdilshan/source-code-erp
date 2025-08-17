@@ -46,6 +46,26 @@ class ArnMaster
         }
     }
 
+ 
+    public function getArnIdByArnNo($arn_no) {
+        if (empty($arn_no)) {
+            return false;
+        }
+        
+        $db = new Database();
+        $arn_no = $db->escapeString($arn_no);
+        
+        $query = "SELECT `id` FROM `arn_master` WHERE `arn_no` = '{$arn_no}' LIMIT 1";
+        $result = $db->readQuery($query);
+        
+        if ($result && mysqli_num_rows($result) > 0) {
+            $row = mysqli_fetch_assoc($result);
+            return (int)$row['id'];
+        }
+        
+        return false;
+    }
+
     public function create()
     {
         $query = "INSERT INTO `arn_master` (
