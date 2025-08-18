@@ -13,7 +13,7 @@ if (isset($_POST['create'])) {
     $CUSTOMER->mobile_number = $_POST['mobile_number'];
     $CUSTOMER->mobile_number_2 = $_POST['mobile_number_2'];
     $CUSTOMER->email = $_POST['email'];
-    $CUSTOMER->contact_person = $_POST['contact_person'];
+    $CUSTOMER->contact_person = ucwords(strtolower($_POST['contact_person']));
     $CUSTOMER->contact_person_number = $_POST['contact_person_number'];
     $CUSTOMER->credit_limit = $_POST['credit_limit'];
     $CUSTOMER->outstanding = $_POST['outstanding'];
@@ -57,18 +57,18 @@ if (isset($_POST['update'])) {
     $CUSTOMER = new CustomerMaster($_POST['customer_id']); // Load customer by ID
 
     $CUSTOMER->code = $_POST['code'];
-    $CUSTOMER->name = $_POST['name'];
+    $CUSTOMER->name = ucwords(strtolower($_POST['name']));
     $CUSTOMER->mobile_number = $_POST['mobile_number'];
     $CUSTOMER->mobile_number_2 = $_POST['mobile_number_2'];
     $CUSTOMER->email = $_POST['email'];
-    $CUSTOMER->contact_person = $_POST['contact_person'];
+    $CUSTOMER->contact_person = ucwords(strtolower($_POST['contact_person']));
     $CUSTOMER->contact_person_number = $_POST['contact_person_number'];
     $CUSTOMER->credit_limit = $_POST['credit_limit'];
     $CUSTOMER->outstanding = $_POST['outstanding'];
     $CUSTOMER->overdue = $_POST['overdue'];
     $CUSTOMER->vat_no = $_POST['vat_no'];
     $CUSTOMER->svat_no = $_POST['svat_no'];
-    $CUSTOMER->address = $_POST['address'];
+    $CUSTOMER->address = ucwords(strtolower($_POST['address']));
     $CUSTOMER->remark = $_POST['remark'];
     $CUSTOMER->category = $_POST['category'];
     $CUSTOMER->district = $_POST['district'];
@@ -164,4 +164,3 @@ if (isset($_POST['action']) && $_POST['action'] == 'get_first_customer') {
     echo json_encode($response);
     exit;
 }
-?>
