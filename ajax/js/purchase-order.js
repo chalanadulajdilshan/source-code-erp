@@ -26,14 +26,16 @@ jQuery(document).ready(function () {
             }
         },
         columns: [
-             { data: "key", title: "#ID" },
+            { data: "key", title: "#ID" },
             { data: "code", title: "Code" },
             { data: "name", title: "Name" },
             { data: "brand", title: "Brand" },
             { data: "category", title: "Category" },
+            { data: "list_price", title: "List Price" },
+            { data: "invoice_price", title: "Invoice Price" },
             { data: "qty", title: "Quantity" },
+            { data: "discount", title: "Discount" },
             { data: "status_label", title: "Status" }
-
         ],
         order: [[0, 'desc']],
         pageLength: 100
@@ -47,7 +49,7 @@ jQuery(document).ready(function () {
         $('#item_id').val(data.id);
         $('#itemCode').val(data.code);
         $('#qty').val(1);
-        $('#rate').val(data.cost);
+        $('#rate').val(data.invoice_price);
         $('#available_qty').val(data.id);
 
         calculatePayment();
@@ -756,4 +758,56 @@ jQuery(document).ready(function () {
     });
 
 
+});
+// Add this code at the end of purchase-order.js
+$(document).ready(function () {
+    // Initialize supplier table with filtering for suppliers only
+    var supplierTable = $('#supplierTable').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: "ajax/php/customer-master.php", // Make sure this is the correct endpoint
+            type: "POST",
+            data: function (d) {
+                d.filter = true;
+                d.supplier_only = true; // Filter suppliers only
+                d.category = [2, 3]; // Only show Supplier (2) or Both (3)
+            },
+            dataSrc: function (json) {
+                return json.data;
+            },
+            error: function (xhr) {
+                console.error("Server Error Response:", xhr.responseText);
+            }
+        },
+        columns: [
+            { data: "id", title: "#ID" },
+            { data: "code", title: "Code" },
+            { data: "name", title: "Name" },
+            { data: "mobile_number", title: "Mobile" },
+            { data: "email", title: "Email" },
+            { data: "category", title: "Category" },
+            { data: "province", title: "Province" },
+            { data: "credit_limit", title: "Credit Limit" },
+            { data: "vat_no", title: "Is Vat" },
+            { data: "status_label", title: "Status" }
+        ],
+        order: [[0, 'desc']],
+        pageLength: 100
+    });
+
+    // Handle row selection in supplier modal
+    $(document).on('click', '#supplierTable tbody tr', function () {
+        var data = supplierTable.row(this).data();
+        if (!data) return;
+
+        // Fill the supplier fields in your form
+        $('#supplier_id').val(data.id);
+        $('#supplier_code').val(data.code);
+        $('#supplier_name').val(data.name);
+        $('#supplier_address').val(data.address || '');
+
+        // Close the modal
+        $('#supplierModal').modal('hide');
+    });
 });

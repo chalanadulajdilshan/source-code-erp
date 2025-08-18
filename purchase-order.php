@@ -469,6 +469,9 @@ $po_id = $COMPANY_PROFILE_DETAILS->company_code . '/PO/00/0' . ($lastId + 1);
         </div><!-- /.modal-dialog -->
     </div>
 
+    <!-- Include Supplier Modal -->
+    <?php include 'supplier-master-model.php'; ?>
+
     <!-- Right bar overlay-->
     <div class="rightbar-overlay"></div>
 
