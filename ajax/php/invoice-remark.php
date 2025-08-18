@@ -10,19 +10,20 @@ if (isset($_POST['create'])) {
 
     // Set the belt Type details
     $REMARK->code = $_POST['code'];
+    $REMARK->payment_type = $_POST['payment_type'];
     $REMARK->remark = $_POST['remark'];
     $REMARK->is_active = isset($_POST['is_active']) ? 1 : 0;
 
     // Attempt to create the invoice remark
     $result = $REMARK->create();
 
-  
+
 
     if ($result) {
         $response['status'] = 'success';
     } else {
         $response['status'] = 'error';
-     }
+    }
     echo json_encode($response);
     exit();
 }
@@ -34,6 +35,7 @@ if (isset($_POST['update'])) {
 
     // Update belt Type details
     $REMARK->code = $_POST['code'];
+    $REMARK->payment_type = $_POST['payment_type'];
     $REMARK->remark = $_POST['remark'];
     $REMARK->is_active = isset($_POST['is_active']) ? 1 : 0;
 
@@ -65,5 +67,3 @@ if (isset($_POST['delete']) && isset($_POST['id'])) {
         echo json_encode(['status' => 'error']);
     }
 }
-
-?>

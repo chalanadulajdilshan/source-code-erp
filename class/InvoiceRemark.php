@@ -5,6 +5,7 @@ class InvoiceRemark
 
     public $id;
     public $code;
+    public $payment_type;
     public $remark;
     public $queue;
     public $is_active;
@@ -20,6 +21,7 @@ class InvoiceRemark
             if ($result) {
                 $this->id = $result['id'];
                 $this->code = $result['code'];
+                $this->payment_type = $result['payment_type'];
                 $this->remark = $result['remark'];
                 $this->queue = $result['queue'];
                 $this->is_active = $result['is_active'];
@@ -30,11 +32,11 @@ class InvoiceRemark
     public function create()
     {
         $query = "INSERT INTO `remark` (
-            `code`, `remark`, `queue`, `is_active`
+            `code`, `payment_type`, `remark`, `queue`, `is_active`
             ) VALUES (
-                '$this->code', '$this->remark', '$this->queue', '$this->is_active'
+                '$this->code', '$this->payment_type', '$this->remark', '$this->queue', '$this->is_active'
 )";
- 
+
 
         $db = new Database();
         $result = $db->readQuery($query);
@@ -50,11 +52,12 @@ class InvoiceRemark
     {
         $query = "UPDATE `remark` SET 
             `code` = '$this->code', 
+            `payment_type` = '$this->payment_type', 
             `remark` = '$this->remark',  
             `queue` = '$this->queue', 
             `is_active` = '$this->is_active'
             WHERE `id` = '$this->id'";
- 
+
 
         $db = new Database();
         $result = $db->readQuery($query);
@@ -113,21 +116,21 @@ class InvoiceRemark
     public function fetchForDataTable($request)
     {
         $db = new Database();
-    
+
         $start = isset($request['start']) ? (int)$request['start'] : 0;
         $length = isset($request['length']) ? (int)$request['length'] : 100;
         $search = $request['search']['value'] ?? '';
-    
+
         $status = $request['status'] ?? null;
         $stockOnly = isset($request['stock_only']) ? filter_var($request['stock_only'], FILTER_VALIDATE_BOOLEAN) : false;
-    
+
         $where = "WHERE 1=1";
-    
+
         // Search filter
         if (!empty($search)) {
             $where .= " AND (name LIKE '%$search%' OR code LIKE '%$search%')";
         }
-    
+
         // Status filter
         if (!empty($status)) {
             if ($status === 'active' || $status === '1' || $status === 1) {
@@ -136,12 +139,12 @@ class InvoiceRemark
                 $where .= " AND is_active = 0";
             }
         }
-    
+
         // Total records
         $totalSql = "SELECT * FROM remark";
         $totalQuery = $db->readQuery($totalSql);
         $totalData = mysqli_num_rows($totalQuery);
-    
+
         // Filtered records
         $filteredSql = "SELECT * FROM remark $where";
         $filteredQuery = $db->readQuery($filteredSql);
@@ -153,16 +156,11 @@ class InvoiceRemark
         $query = "SELECT `id` FROM `remark` WHERE `code` = '$code' LIMIT 1";
         $db = new Database();
         $result = $db->readQuery($query);
-    
+
         if ($row = mysqli_fetch_assoc($result)) {
             return $row['id'];
         }
-    
+
         return null;
     }
-    
-    
-
 }
-
-?>

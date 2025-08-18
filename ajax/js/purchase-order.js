@@ -14,7 +14,7 @@ jQuery(document).ready(function () {
             data: function (d) {
                 d.filter = true;
                 d.status = 1;
-                d.stock_only = 1;
+                d.stock_only = 0;
                 d.brand = $('#brand').val();
             },
             dataSrc: function (json) {
@@ -32,9 +32,9 @@ jQuery(document).ready(function () {
             { data: "brand", title: "Brand" },
             { data: "category", title: "Category" },
             { data: "list_price", title: "List Price" },
-            { data: "invoice_price", title: "Invoice Price" },
+            { data: "invoice_price", title: "Sales Price" },
             { data: "qty", title: "Quantity" },
-            { data: "discount", title: "Discount" },
+            { data: "discount", title: "Discount %" },
             { data: "status_label", title: "Status" }
         ],
         order: [[0, 'desc']],
