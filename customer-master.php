@@ -46,21 +46,21 @@ $customer_id = 'CM/0' . ($lastId + 1);
                             </a>
 
                             <?php if ($PERMISSIONS['add_page']): ?>
-                            <a href="#" class="btn btn-primary" id="create">
-                                <i class="uil uil-save me-1"></i> Save
-                            </a>
+                                <a href="#" class="btn btn-primary" id="create">
+                                    <i class="uil uil-save me-1"></i> Save
+                                </a>
                             <?php endif; ?>
 
                             <?php if ($PERMISSIONS['edit_page']): ?>
-                            <a href="#" class="btn btn-warning" id="update">
-                                <i class="uil uil-edit me-1"></i> Update
-                            </a>
+                                <a href="#" class="btn btn-warning" id="update">
+                                    <i class="uil uil-edit me-1"></i> Update
+                                </a>
                             <?php endif; ?>
 
                             <?php if ($PERMISSIONS['delete_page']): ?>
-                            <a href="#" class="btn btn-danger delete-customer">
-                                <i class="uil uil-trash-alt me-1"></i> Delete
-                            </a>
+                                <a href="#" class="btn btn-danger delete-customer">
+                                    <i class="uil uil-trash-alt me-1"></i> Delete
+                                </a>
                             <?php endif; ?>
 
                         </div>
@@ -227,22 +227,8 @@ $customer_id = 'CM/0' . ($lastId + 1);
                                                         placeholder="Enter SVAT number">
                                                 </div>
 
-                                                <!-- Category -->
-                                                <div class="col-md-4 mt-3">
-                                                    <label for="category" class="form-label">Customer Category
-                                                        <span class="text-danger">*</span></label>
-                                                    <select id="category" name="category" class="form-select select2">
-                                                        <option value=""> --Select category --</option>
-                                                        <?php
-                                                        $CUSTOMER_CATEGORY = new CustomerCategory(NULL);
-                                                        foreach ($CUSTOMER_CATEGORY->activeCategory() as $customer_category) {
-                                                            ?>
-                                                            <option value="<?php echo $customer_category['id'] ?>">
-                                                                <?php echo $customer_category['name'] ?>
-                                                            </option>
-                                                        <?php } ?>
-                                                    </select>
-                                                </div>
+                                                <!-- Hidden Customer Category with default value 'customer' -->
+                                                <input type="hidden" id="category" name="category" value="customer">
 
                                                 <div class="col-md-4 mt-3">
                                                     <label for="province" class="form-label">Province <span
@@ -252,7 +238,7 @@ $customer_id = 'CM/0' . ($lastId + 1);
                                                         <?php
                                                         $PROVINCE = new Province(null);
                                                         foreach ($PROVINCE->all() as $province) {
-                                                            ?>
+                                                        ?>
                                                             <option value="<?php echo $province['id'] ?>">
                                                                 <?php echo $province['name'] ?>
                                                             </option>
@@ -269,7 +255,7 @@ $customer_id = 'CM/0' . ($lastId + 1);
                                                         <?php
                                                         $DISTRICT = new District(null);
                                                         foreach ($DISTRICT->all() as $district) {
-                                                            ?>
+                                                        ?>
                                                             <option value="<?php echo $district['id'] ?>">
                                                                 <?php echo $district['name'] ?>
                                                             </option>
