@@ -103,73 +103,142 @@
                     <ul class="navbar-nav">
                         <?php
                         $PAGE_CATEGORY = new PageCategory(NULL);
+                        $USER_PERMISSION = new UserPermission();
+                        $user_id = isset($_SESSION['id']) ? (int)$_SESSION['id'] : 0;
+                        
                         foreach ($PAGE_CATEGORY->getActiveCategory() as $category):
-                            if ($category['id'] == 1): ?>
-                                <!-- Dashboard as a direct link -->
-                                <?php $dashboardPage = (new Pages(null))->getPagesByCategory($category['id'])[0] ?? null; ?>
-                                <?php if ($dashboardPage): ?>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="<?php echo $dashboardPage['page_url'] . '?page_id=' . $dashboardPage['id']; ?>" target="_blank">
-                                            <i class="<?php echo $category['icon']; ?> me-2"></i> <?php echo $category['name']; ?>
+                            $hasCategoryAccess = false;
+                            $categoryPages = [];
+                            
+                            // Get all pages for this category first to check permissions
+                            if ($category['id'] != 1) { // Skip dashboard for now
+                                $PAGES = new Pages(null);
+                                $categoryPages = $PAGES->getPagesByCategory($category['id']);
+                                
+                                // Check if user has any permission for any page in this category
+                                foreach ($categoryPages as $page) {
+                                    $permissions = $USER_PERMISSION->hasPermission($user_id, $page['id']);
+                                    if (in_array(true, $permissions, true)) {
+                                        $hasCategoryAccess = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            
+                            // Skip category if user has no permissions for any page in it
+                            if (!$hasCategoryAccess && $category['id'] != 1) {
+                                continue;
+                            }
+
+                            if ($category['id'] == 1): // Dashboard
+                                $dashboardPage = (new Pages(null))->getPagesByCategory($category['id'])[0] ?? null; 
+                                if ($dashboardPage): 
+                                    $permissions = $USER_PERMISSION->hasPermission($user_id, $dashboardPage['id']);
+                                    if (in_array(true, $permissions, true)): ?>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="<?php echo $dashboardPage['page_url'] . '?page_id=' . $dashboardPage['id']; ?>" target="_blank">
+                                                <i class="<?php echo $category['icon']; ?> me-2"></i> <?php echo $category['name']; ?>
+                                            </a>
+                                        </li>
+                                    <?php 
+                                    endif;
+                                endif;
+                            elseif ($category['id'] == 4): // Reports Category
+                                $hasReportAccess = false;
+                                $reportSubmenus = [];
+                                $DEFAULT_DATA = new DefaultData();
+                                
+                                // First check if user has any report access
+                                foreach ($DEFAULT_DATA->pagesSubCategory() as $key => $subCategoryTitle) {
+                                    $PAGES = new Pages(null);
+                                    $subPages = $PAGES->getPagesBySubCategory($key);
+                                    
+                                    foreach ($subPages as $page) {
+                                        $permissions = $USER_PERMISSION->hasPermission($user_id, $page['id']);
+                                        if (in_array(true, $permissions, true)) {
+                                            $hasReportAccess = true;
+                                            if (!isset($reportSubmenus[$key])) {
+                                                $reportSubmenus[$key] = [
+                                                    'title' => $subCategoryTitle,
+                                                    'pages' => []
+                                                ];
+                                            }
+                                            $reportSubmenus[$key]['pages'][] = $page;
+                                        }
+                                    }
+                                }
+                                
+                                if ($hasReportAccess): ?>
+                                    <li class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle arrow-none" href="#" role="button">
+                                            <i class="uil-layers me-2"></i> Reports <div class="arrow-down"></div>
                                         </a>
+                                        <div class="dropdown-menu">
+                                            <?php foreach ($reportSubmenus as $key => $submenu): 
+                                                if (!empty($submenu['pages'])): ?>
+                                                    <div class="dropdown">
+                                                        <a class="dropdown-item dropdown-toggle arrow-none" href="#">
+                                                            <?php echo $submenu['title']; ?>
+                                                            <div class="arrow-down"></div>
+                                                        </a>
+                                                        <div class="dropdown-menu">
+                                                            <?php foreach ($submenu['pages'] as $page): 
+                                                                $permissions = $USER_PERMISSION->hasPermission($user_id, $page['id']);
+                                                                if (in_array(true, $permissions, true)): ?>
+                                                                    <a class="dropdown-item"
+                                                                        href="<?php echo $page['page_url'] . '?page_id=' . $page['id']; ?>"
+                                                                        target="_blank">
+                                                                        - <?php echo $page['page_name']; ?>
+                                                                    </a>
+                                                                <?php endif; 
+                                                            endforeach; ?>
+                                                        </div>
+                                                    </div>
+                                                <?php endif; 
+                                            endforeach; ?>
+                                        </div>
                                     </li>
-                                <?php endif;
-                            elseif ($category['id'] == 4): ?>
-                                <!-- Reports Category -->
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle arrow-none" href="#" role="button">
-                                        <i class="uil-layers me-2"></i> Reports <div class="arrow-down"></div>
-                                    </a>
-                                    <div class="dropdown-menu">
-                                        <?php
-                                        $DEFAULT_DATA = new DefaultData();
-                                        foreach ($DEFAULT_DATA->pagesSubCategory() as $key=>$subCategoryTitle):
-                                            $PAGES = new Pages(null);
-                                            $subPages = $PAGES->getPagesBySubCategory($key);
-                                            if (!empty($subPages)): ?>
-                                                <div class="dropdown">
-                                                    <a class="dropdown-item dropdown-toggle arrow-none" href="#">
-                                                        <?php echo $subCategoryTitle; ?>
-                                                        <div class="arrow-down"></div>
-                                                    </a>
-                                                    <div class="dropdown-menu">
-                                                        <?php foreach ($subPages as $page): ?>
+                                <?php 
+                                endif;
+                            else: // Other Categories
+                                $hasAnyPermission = false;
+                                $visiblePages = [];
+                                
+                                // Filter pages to only those the user has permission for
+                                foreach ($categoryPages as $page) {
+                                    $permissions = $USER_PERMISSION->hasPermission($user_id, $page['id']);
+                                    if (in_array(true, $permissions, true)) {
+                                        $hasAnyPermission = true;
+                                        $visiblePages[] = $page;
+                                    }
+                                }
+                                
+                                if ($hasAnyPermission): ?>
+                                    <li class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle arrow-none" href="#" role="button">
+                                            <i class="<?php echo $category['icon']; ?> me-2"></i> <?php echo $category['name']; ?>
+                                            <div class="arrow-down"></div>
+                                        </a>
+                                        <div class="dropdown-menu mega-dropdown-menu px-2 dropdown-mega-menu-xl">
+                                            <div class="row">
+                                                <?php foreach ($visiblePages as $page): 
+                                                    $permissions = $USER_PERMISSION->hasPermission($user_id, $page['id']);
+                                                    if (in_array(true, $permissions, true)): ?>
+                                                        <div class="col-lg-3">
                                                             <a class="dropdown-item"
                                                                 href="<?php echo $page['page_url'] . '?page_id=' . $page['id']; ?>"
                                                                 target="_blank">
                                                                 - <?php echo $page['page_name']; ?>
                                                             </a>
-                                                        <?php endforeach; ?>
-                                                    </div>
-                                                </div>
-                                            <?php endif;
-                                        endforeach; ?>
-                                    </div>
-                                </li>
-                            <?php else: ?>
-                                <!-- Other Categories -->
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle arrow-none" href="#" role="button">
-                                        <i class="<?php echo $category['icon']; ?> me-2"></i> <?php echo $category['name']; ?>
-                                        <div class="arrow-down"></div>
-                                    </a>
-                                    <div class="dropdown-menu mega-dropdown-menu px-2 dropdown-mega-menu-xl">
-                                        <div class="row">
-                                            <?php
-                                            $PAGES = new Pages(null);
-                                            foreach ($PAGES->getPagesByCategory($category['id']) as $page): ?>
-                                                <div class="col-lg-3">
-                                                    <a class="dropdown-item"
-                                                        href="<?php echo $page['page_url'] . '?page_id=' . $page['id']; ?>"
-                                                        target="_blank">
-                                                        - <?php echo $page['page_name']; ?>
-                                                    </a>
-                                                </div>
-                                            <?php endforeach; ?>
+                                                        </div>
+                                                    <?php endif; 
+                                                endforeach; ?>
+                                            </div>
                                         </div>
-                                    </div>
-                                </li>
-                            <?php endif;
+                                    </li>
+                                <?php 
+                                endif;
+                            endif;
                         endforeach; ?>
                     </ul>
                 </div>
