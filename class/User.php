@@ -374,45 +374,29 @@ class User
         }
     }
 
-    public function GenerateCode($email)
-    {
-        // Generate a random 6-digit code
-        $resetCode = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
-        $expiry = date('Y-m-d H:i:s', strtotime('+15 minutes'));
-
-        $query = "INSERT INTO password_resets (email, reset_code, expiry) 
-                 VALUES ('" . $email . "', '" . $resetCode . "', '" . $expiry . "')
-                 ON DUPLICATE KEY UPDATE 
-                 reset_code = '" . $resetCode . "', 
-                 expiry = '" . $expiry . "', 
-                 created_at = NOW()";
-
-        $db = new Database();
-
-        $result = $db->readQuery($query);
-        return $result ? $resetCode : false;
-    }
-
     public function SelectForgetUser($email)
     {
-        // First check if email exists in user table
-        $userQuery = "SELECT `email`, `username`, `resetcode` FROM `user` WHERE `email`= '" . $email . "'";
-        $db = new Database();
-        $userResult = mysqli_fetch_array($db->readQuery($userQuery));
 
-        if ($userResult) {
-            // If user exists, check for reset code in password_resets table
-            $resetQuery = "SELECT reset_code as resetcode FROM password_resets 
-                      WHERE email = '" . $email . "' 
-                      AND expiry > NOW() 
-                      ORDER BY created_at DESC LIMIT 1";
-            $resetResult = mysqli_fetch_assoc($db->readQuery($resetQuery));
 
-            // Combine both results
-            return array_merge($userResult, $resetResult);
+
+        if ($email) {
+
+
+
+            $query = "SELECT `email`,`username`,`resetcode` FROM `user` WHERE `email`= '" . $email . "'";
+
+            $db = new Database();
+
+            $result = mysqli_fetch_array($db->readQuery($query));
+
+            $this->username = $result['username'];
+
+            $this->email = $result['email'];
+
+            $this->restCode = $result['resetcode'];
+
+            return $result;
         }
-
-        return false;
     }
 
     public function SelectResetCode($code)
