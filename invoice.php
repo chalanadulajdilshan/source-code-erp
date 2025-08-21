@@ -98,65 +98,66 @@ $CUSTOMER_MASTER = new CustomerMaster($SALES_INVOICE->customer_id);
 
         <div class="card" id="invoice-content">
             <div class="card-body">
-               <div class="invoice-title">
-    <div class="row mb-4">
-        
-
-        <!-- Column 2: Company Info -->
-        <div class="col-md-9 col-sm-9 text-muted">
-            <p class="mb-1" style="font-weight: bold;font-size: 20px;"> <?php echo $COMPANY_PROFILE->name ?></p>
-            <p class="mb-1" style="font-size: 14px;"> <?php echo $COMPANY_PROFILE->address ?></p>
-            <p class="mb-1" style="font-size: 14px;"> <?php echo $COMPANY_PROFILE->email ?> -   <?php
-function formatPhone($number) {
-    $number = preg_replace('/[^0-9]/', '', $number);
-    $number = ltrim($number, '0');  
-    $number = '94' . $number;  
-    return '(+94) ' . substr($number, 2, 2) . ' ' . substr($number, 4, 3) . ' ' . substr($number, 7);
-}
-
-$mobile1 = !empty($COMPANY_PROFILE->mobile_number_1) ? formatPhone($COMPANY_PROFILE->mobile_number_1) : '';
-$mobile2 = !empty($COMPANY_PROFILE->mobile_number_2) ? formatPhone($COMPANY_PROFILE->mobile_number_2) : '';
-echo $mobile1 . ($mobile1 && $mobile2 ? ' / ' : '') . $mobile2;
-?>
-</p>
-        </div>
-
-         
-
-        <!-- Column 4: Customer Info -->
-        <div class="col-md-3 col-sm-6 text-sm-start text-md-end">
-          <h3 style="font-weight: bold;font-size: 20px;"><?php echo strtoupper($SALES_INVOICE->payment_type) ?> SALES INVOICE</h3>    
-        </div>
-
-<hr>
-        <!-- Column 5: Customer Info -->
-         <div class="col-md-6 col-sm-6 text-muted">
-            <p class="mb-1" style="font-size: 14px;">  <span style="font-weight: bold;">Customer Name:</span> <?php echo $SALES_INVOICE->customer_name ?></p>
-             <p class="mb-1" style="font-size: 14px;"> <span style="font-weight: bold;">Customer Address:</span>  <?php echo !empty($SALES_INVOICE->customer_address) ? $SALES_INVOICE->customer_address : '.................................' ?></p>
-            <p class="mb-1" style="font-size: 14px;"> <span style="font-weight: bold;">Customer Mobile:</span><?php echo !empty($SALES_INVOICE->customer_mobile) ? $SALES_INVOICE->customer_mobile : '.................................' ?> </p>
-           
-             
-        </div>
-
-        <!-- Column 3: Invoice Info -->
-        <div class="col-md-3 col-sm-6 text-sm-start text-md-end">
-              
-        </div>
-
-        <!-- Column 4: Customer Info -->
-        <div class="col-md-3 col-sm-6 text-sm-start text-md-end">
-           <p class="mb-1" style="font-size: 14px;">  <span style="font-weight: bold;"> Invoice No  :</span> <?php echo $SALES_INVOICE->invoice_no  ?></p>
-             <p class="mb-1" style="font-size: 14px;"> <span style="font-weight: bold;">Invoice Date:</span>   <?php echo date('d M, Y', strtotime($SALES_INVOICE->invoice_date)); ?></p>
-              
-        </div>
+                <div class="invoice-title">
+                    <div class="row mb-4">
 
 
-    </div>
-</div>
-     <!-- ITEM INVOICE PRINT -->
+                        <!-- Column 2: Company Info -->
+                        <div class="col-md-9 col-sm-9 text-muted">
+                            <p class="mb-1" style="font-weight: bold;font-size: 20px;"> <?php echo $COMPANY_PROFILE->name ?></p>
+                            <p class="mb-1" style="font-size: 14px;"> <?php echo $COMPANY_PROFILE->address ?></p>
+                            <p class="mb-1" style="font-size: 14px;"> <?php echo $COMPANY_PROFILE->email ?> - <?php
+                                                                                                                function formatPhone($number)
+                                                                                                                {
+                                                                                                                    $number = preg_replace('/[^0-9]/', '', $number);
+                                                                                                                    $number = ltrim($number, '0');
+                                                                                                                    $number = '94' . $number;
+                                                                                                                    return '(+94) ' . substr($number, 2, 2) . ' ' . substr($number, 4, 3) . ' ' . substr($number, 7);
+                                                                                                                }
+
+                                                                                                                $mobile1 = !empty($COMPANY_PROFILE->mobile_number_1) ? formatPhone($COMPANY_PROFILE->mobile_number_1) : '';
+                                                                                                                $mobile2 = !empty($COMPANY_PROFILE->mobile_number_2) ? formatPhone($COMPANY_PROFILE->mobile_number_2) : '';
+                                                                                                                echo $mobile1 . ($mobile1 && $mobile2 ? ' / ' : '') . $mobile2;
+                                                                                                                ?>
+                            </p>
+                        </div>
+
+
+
+                        <!-- Column 4: Customer Info -->
+                        <div class="col-md-3 col-sm-6 text-sm-start text-md-end">
+                            <h3 style="font-weight: bold;font-size: 20px;"><?php echo strtoupper($SALES_INVOICE->payment_type) ?> SALES INVOICE</h3>
+                        </div>
+
+                        <hr>
+                        <!-- Column 5: Customer Info -->
+                        <div class="col-md-6 col-sm-6 text-muted">
+                            <p class="mb-1" style="font-size: 14px;"> <span style="font-weight: bold;">Customer Name:</span> <?php echo $SALES_INVOICE->customer_name ?></p>
+                            <p class="mb-1" style="font-size: 14px;"> <span style="font-weight: bold;">Customer Address:</span> <?php echo !empty($SALES_INVOICE->customer_address) ? $SALES_INVOICE->customer_address : '.................................' ?></p>
+                            <p class="mb-1" style="font-size: 14px;"> <span style="font-weight: bold;">Customer Mobile:</span><?php echo !empty($SALES_INVOICE->customer_mobile) ? $SALES_INVOICE->customer_mobile : '.................................' ?> </p>
+
+
+                        </div>
+
+                        <!-- Column 3: Invoice Info -->
+                        <div class="col-md-3 col-sm-6 text-sm-start text-md-end">
+
+                        </div>
+
+                        <!-- Column 4: Customer Info -->
+                        <div class="col-md-3 col-sm-6 text-sm-start text-md-end">
+                            <p class="mb-1" style="font-size: 14px;"> <span style="font-weight: bold;"> Invoice No :</span> <?php echo $SALES_INVOICE->invoice_no  ?></p>
+                            <p class="mb-1" style="font-size: 14px;"> <span style="font-weight: bold;">Invoice Date:</span> <?php echo date('d M, Y', strtotime($SALES_INVOICE->invoice_date)); ?></p>
+
+                        </div>
+
+
+                    </div>
+                </div>
+                <!-- ITEM INVOICE PRINT -->
                 <?php if ($SALES_INVOICE->invoice_type == 'INV') { ?>
 
-                    <!-- item invoice print --> 
+                    <!-- item invoice print -->
                     <div class="table-responsive">
                         <table class="table table-centered">
 
@@ -173,7 +174,7 @@ echo $mobile1 . ($mobile1 && $mobile2 ? ' / ' : '') . $mobile2;
                             </thead>
                             <tbody>
                                 <?php
-                                
+
                                 $TEMP_SALES_ITEM = new SalesInvoiceItem(null);
                                 $temp_items_list = $TEMP_SALES_ITEM->getItemsByInvoiceId($invoice_id);
 
@@ -196,7 +197,7 @@ echo $mobile1 . ($mobile1 && $mobile2 ? ' / ' : '') . $mobile2;
                                     // Totals
                                     $subtotal += $price * $quantity;
                                     $total_discount += $discount_per_item * $quantity;
-                                    ?>
+                                ?>
 
                                     <tr>
                                         <td>0<?php echo $key; ?></td>
@@ -215,9 +216,18 @@ echo $mobile1 . ($mobile1 && $mobile2 ? ' / ' : '') . $mobile2;
                                         <!-- Terms & Conditions on the left -->
                                         <h6><strong>Terms & Conditions:</strong></h6>
                                         <ul style="padding-left: 20px; margin-bottom: 0;">
-                                            <li>All goods once sold are non-refundable.</li>
-                                            <li>Warranty as per manufacturer policy.</li>
-                                            <li>Payment due within 15 days.</li>
+                                            <?php
+                                            // Add payment type specific remarks
+                                            $invoiceRemark = new InvoiceRemark();
+                                            $paymentRemarks = $invoiceRemark->getRemarkByPaymentType($SALES_INVOICE->payment_type);
+                                            if (!empty($paymentRemarks)) {
+                                                foreach ($paymentRemarks as $remark) {
+                                                    if (!empty($remark['remark'])) {
+                                                        echo '<li>' . htmlspecialchars($remark['remark']) . '</li>';
+                                                    }
+                                                }
+                                            }
+                                            ?>
                                         </ul>
                                     </td>
 
@@ -306,7 +316,7 @@ echo $mobile1 . ($mobile1 && $mobile2 ? ' / ' : '') . $mobile2;
                                     // Totals
                                     $subtotal += $price * $quantity;
                                     $total_discount += $discount_per_item * $quantity;
-                                    ?>
+                                ?>
 
                                     <tr>
                                         <td>0<?php echo $key; ?></td>
@@ -325,6 +335,18 @@ echo $mobile1 . ($mobile1 && $mobile2 ? ' / ' : '') . $mobile2;
                                         <!-- Terms & Conditions on the left -->
                                         <h6><strong>Terms & Conditions:</strong></h6>
                                         <ul style="padding-left: 20px; margin-bottom: 0;">
+                                            <?php
+                                            // Add payment type specific remarks
+                                            $invoiceRemark = new InvoiceRemark();
+                                            $paymentRemarks = $invoiceRemark->getRemarkByPaymentType($SALES_INVOICE->payment_type);
+                                            if (!empty($paymentRemarks)) {
+                                                foreach ($paymentRemarks as $remark) {
+                                                    if (!empty($remark['remark'])) {
+                                                        echo '<li>' . htmlspecialchars($remark['remark']) . '</li>';
+                                                    }
+                                                }
+                                            }
+                                            ?>
                                             <li>All goods once sold are non-refundable.</li>
                                             <li>Warranty as per manufacturer policy.</li>
                                             <li>Payment due within 15 days.</li>
@@ -375,7 +397,7 @@ echo $mobile1 . ($mobile1 && $mobile2 ? ' / ' : '') . $mobile2;
 
                         </table>
                     </div>
-                    <?php
+                <?php
 
                 }
                 ?>
@@ -385,27 +407,36 @@ echo $mobile1 . ($mobile1 && $mobile2 ? ' / ' : '') . $mobile2;
     </div>
 
     <!-- JS -->
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<script>
-    function downloadPDF() {
-        const element = document.getElementById('invoice-content');
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        function downloadPDF() {
+            const element = document.getElementById('invoice-content');
 
-        const opt = {
-            margin:       0.5,
-            filename:     'Invoice_<?php echo $SALES_INVOICE->invoice_no ?>.pdf',
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2 },
-            jsPDF:        { unit: 'in', format: 'a3', orientation: 'portrait' }
-        };
+            const opt = {
+                margin: 0.5,
+                filename: 'Invoice_<?php echo $SALES_INVOICE->invoice_no ?>.pdf',
+                image: {
+                    type: 'jpeg',
+                    quality: 0.98
+                },
+                html2canvas: {
+                    scale: 2
+                },
+                jsPDF: {
+                    unit: 'in',
+                    format: 'a3',
+                    orientation: 'portrait'
+                }
+            };
 
-        html2pdf().set(opt).from(element).save();
-    }
-</script>
+            html2pdf().set(opt).from(element).save();
+        }
+    </script>
 
     <script src="assets/js/bootstrap.bundle.min.js"></script>
     <script>
         // Apply print format on load
-        window.onload = function () {
+        window.onload = function() {
             setPrintFormat('a4');
         };
 
@@ -424,7 +455,7 @@ echo $mobile1 . ($mobile1 && $mobile2 ? ' / ' : '') . $mobile2;
             document.body.classList.add('print-' + format);
         }
 
-        document.addEventListener("keydown", function (e) {
+        document.addEventListener("keydown", function(e) {
             if (e.key === "Enter") {
                 window.print();
             }

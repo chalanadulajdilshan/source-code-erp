@@ -163,4 +163,36 @@ class InvoiceRemark
 
         return null;
     }
+
+    public function getRemarkByPaymentType($paymentType)
+    {
+        $array = array();
+
+        // Map text payment types to numeric values
+        $paymentTypeMap = [
+            'cash' => 1,
+            'credit' => 2
+            // Add more mappings if needed
+        ];
+
+        // Convert text payment type to numeric if needed
+        $paymentType = isset($paymentTypeMap[strtolower($paymentType)])
+            ? $paymentTypeMap[strtolower($paymentType)]
+            : (int)$paymentType;
+
+        // Get all active remarks for this payment type, ordered by queue
+        $query = "SELECT `remark` FROM `remark` WHERE `payment_type` = $paymentType AND `is_active` = 1 ORDER BY `queue` ASC";
+        $db = new Database();
+        $result = $db->readQuery($query);
+
+        if ($result) {
+            while ($row = mysqli_fetch_assoc($result)) {
+                if (!empty($row['remark'])) {
+                    $array[] = $row;
+                }
+            }
+        }
+
+        return $array;
+    }
 }
