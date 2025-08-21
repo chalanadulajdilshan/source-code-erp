@@ -1,8 +1,10 @@
 # Ignore admin-temp directory
 admin-temp/
+class/Database.php
 
 # Environment files
 .env
+.htaccess
 
 # IDE specific files
 .vscode/
