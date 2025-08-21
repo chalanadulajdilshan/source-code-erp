@@ -15,7 +15,7 @@ class Database
 {
 
     //  private $host = 'localhost';
-//    private $name = 'suhatdux_auroralanka';
+    //    private $name = 'suhatdux_auroralanka';
     //   private $user = 'suhatdux_auroralanka';
     //  private $password = 'iE,@lxE0HGWr';m
 
@@ -23,7 +23,7 @@ class Database
     private $name = 'chalcepi_erp';
     private $user = 'chalcepi_erp';
     private $password = '}v+kRGNUPxtr';
-    public $DB_CON = '';
+    public $DB_CON = '';
 
     public function __construct()
     {
@@ -41,5 +41,4 @@ class Database
     {
         return $this->DB_CON->real_escape_string($string);
     }
-
 }
