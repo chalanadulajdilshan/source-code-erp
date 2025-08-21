@@ -26,13 +26,11 @@ if (isset($_POST['action']) && $_POST['action'] == 'create_purchase_order') {
     $poNumber = $_POST['po_id'];
     $entryDate = $_POST['date'];
     $supplierId = $_POST['supplier_id'];
-    $piNo = $_POST['pi_no'];
-    $lcTtNo = $_POST['lc_tt_no'];
     $brand = $_POST['brand'];
-    $blNo = $_POST['bl_no'];
+    $invoice_no = $_POST['invoice_no'];
     $country = $_POST['country'];
-    $ci_no = $_POST['ci_no'];
     $department = $_POST['department'];
+    $purchase_date = $_POST['purchase_date'];
     $remarks = isset($_POST['remarks']) ? $_POST['remarks'] : null;
 
     $totalSubTotal = 0;
@@ -56,13 +54,11 @@ if (isset($_POST['action']) && $_POST['action'] == 'create_purchase_order') {
     $PURCHASE_ORDER->po_number = $poNumber;
     $PURCHASE_ORDER->order_date = $entryDate;
     $PURCHASE_ORDER->supplier_id = $supplierId;
-    $PURCHASE_ORDER->pi_no = $piNo;
-    $PURCHASE_ORDER->lc_tt_no = $lcTtNo;
     $PURCHASE_ORDER->brand = $brand;
-    $PURCHASE_ORDER->bl_no = $blNo;
+    $PURCHASE_ORDER->invoice_no = $invoice_no;
     $PURCHASE_ORDER->country = $country;
-    $PURCHASE_ORDER->ci_no = $ci_no;
     $PURCHASE_ORDER->department = $department;
+    $PURCHASE_ORDER->purchase_date = $purchase_date;
     $PURCHASE_ORDER->remarks = $remarks;
     $PURCHASE_ORDER->grand_total = $grandTotal;
     $PURCHASE_ORDER->created_at = date("Y-m-d H:i:s");;
@@ -131,13 +127,11 @@ if (isset($_POST['action']) && $_POST['action'] === 'update_purchase_order') {
     $PURCHASE_ORDER->po_number = $_POST['po_no'];
     $PURCHASE_ORDER->order_date = $_POST['order_date'];
     $PURCHASE_ORDER->supplier_id = $_POST['supplier_id'];
-    $PURCHASE_ORDER->pi_no = $_POST['pi_no'];
-    $PURCHASE_ORDER->lc_tt_no = $_POST['lc_tt_no'];
     $PURCHASE_ORDER->brand = $_POST['brand'];
-    $PURCHASE_ORDER->bl_no = $_POST['bl_no'];
+    $PURCHASE_ORDER->invoice_no = $_POST['invoice_no'];
     $PURCHASE_ORDER->country = $_POST['country'];
-    $PURCHASE_ORDER->ci_no = $_POST['ci_no'];
     $PURCHASE_ORDER->department_id = $_POST['department_id'];
+    $PURCHASE_ORDER->purchase_date = $_POST['purchase_date'];
     $PURCHASE_ORDER->remarks = $_POST['remarks'];
 
     $totalSubTotal = 0;

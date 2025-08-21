@@ -6,14 +6,12 @@ class PurchaseOrder
     public $po_number;
     public $order_date;
     public $supplier_id;
-    public $pi_no;
     public $address;
-    public $lc_tt_no;
     public $brand;
-    public $bl_no;
+    public $invoice_no;
     public $country;
-    public $ci_no;
     public $department;
+    public $purchase_date;
     public $grand_total;
     public $status;
     public $remarks;
@@ -34,14 +32,12 @@ class PurchaseOrder
                 $this->po_number = $result['po_number'];
                 $this->order_date = $result['order_date'];
                 $this->supplier_id = $result['supplier_id'];
-                $this->pi_no = $result['pi_no'];
                 $this->address = $result['address'];
-                $this->lc_tt_no = $result['lc_tt_no'];
                 $this->brand = $result['brand'];
-                $this->bl_no = $result['bl_no'];
-                $this->ci_no = $result['ci_no'];
+                $this->invoice_no = $result['invoice_no'];
                 $this->country = $result['country'];
                 $this->department = $result['department'];
+                $this->purchase_date = $result['purchase_date'];
                 $this->status = $result['status'];
                 $this->remarks = $result['remarks'];
                 $this->grand_total = $result['grand_total'];
@@ -55,11 +51,10 @@ class PurchaseOrder
     public function create()
     {
         $query = "INSERT INTO `purchase_orders` (
-            `po_number`, `order_date`, `supplier_id`, `pi_no`, `address`, `lc_tt_no`, 
-            `brand`, `bl_no`,`ci_no`, `country`, `department`, `status`, `remarks`, `grand_total`, `created_at`, `updated_at`
+            `po_number`, `order_date`, `supplier_id`, `address`, `brand`, `invoice_no`, `country`, `department`, `purchase_date`, `status`, `remarks`, `grand_total`, `created_at`, `updated_at`
         ) VALUES (
-            '{$this->po_number}', '{$this->order_date}', '{$this->supplier_id}', '{$this->pi_no}', '{$this->address}', '{$this->lc_tt_no}','{$this->brand}',
-            '{$this->bl_no}','{$this->ci_no}', '{$this->country}', '{$this->department}', '{$this->status}', '{$this->remarks}', '{$this->grand_total}', '{$this->created_at}', '{$this->updated_at}'
+            '{$this->po_number}', '{$this->order_date}', '{$this->supplier_id}', '{$this->address}', '{$this->brand}',
+            '{$this->invoice_no}', '{$this->country}', '{$this->department}', '{$this->purchase_date}', '{$this->status}', '{$this->remarks}', '{$this->grand_total}', '{$this->created_at}', '{$this->updated_at}'
         )";
 
 
@@ -80,14 +75,12 @@ class PurchaseOrder
             `po_number` = '{$this->po_number}', 
             `order_date` = '{$this->order_date}',
             `supplier_id` = '{$this->supplier_id}', 
-            `pi_no` = '{$this->pi_no}', 
             `address` = '{$this->address}', 
-            `lc_tt_no` = '{$this->lc_tt_no}', 
             `brand` = '{$this->brand}', 
-            `bl_no` = '{$this->bl_no}',
-            `ci_no` = '{$this->ci_no}',
+            `invoice_no` = '{$this->invoice_no}',
             `country` = '{$this->country}',
             `department` = '{$this->department}',
+            `purchase_date` = '{$this->purchase_date}',
             `status` = '{$this->status}',
             `remarks` = '{$this->remarks}', 
              `grand_total` = '{$this->grand_total}', 
@@ -162,6 +155,4 @@ class PurchaseOrder
         $result = mysqli_fetch_array($db->readQuery($query));
         return $result['id'];
     }
-
 }
-?>
