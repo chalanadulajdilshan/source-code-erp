@@ -1,0 +1,54 @@
+# Ignore admin-temp directory
+admin-temp/
+
+# Environment files
+.env
+
+# IDE specific files
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Dependency directories
+/vendor/
+/node_modules/
+
+# Logs
+*.log
+
+# Local configuration files
+config.local.php
+*.local.php
+
+# Cache directories
+/cache/
+/tmp/
+
+# Uploads directory (if it contains user-generated content)
+/uploads/
+
+# Composer
+composer.lock
+composer.phar
+
+# IDE specific files
+*.sublime-*
+*.komodoproject
+*.kdev4
+.project
+.settings/
+.buildpath
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
