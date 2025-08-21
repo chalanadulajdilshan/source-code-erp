@@ -6,7 +6,7 @@
         <meta charset="utf-8" />
         <title>Login | Admin & Dashboard  </title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
+        <meta content="#" name="description" />
         <meta content="Themesbrand" name="author" />
         <!-- App favicon -->
         <link rel="shortcut icon" href="assets/images/favicon.ico">
@@ -52,7 +52,7 @@
 
                                         <div class="mb-3">
                                             <div class="float-end">
-                                                <a href="#" class="text-muted">Forgot password?</a>
+                                                <a href="forget-password.php" class="text-muted">Forgot password?</a>
                                             </div>
                                             <label class="form-label" for="userpassword">Password</label>
                                             <input type="password" class="form-control" name="password" id="password" placeholder="Password">
@@ -75,7 +75,7 @@
                         </div>
 
                         <div class="mt-5 text-center">
-                            <p>© <script>document.write(new Date().getFullYear())</script> festi.lk. Development <i class="mdi mdi-heart text-danger"></i> by sourcecode.lk</p>
+                            <p>© <script>document.write(new Date().getFullYear())</script> AI ERP Development  <i class="mdi mdi-heart text-danger"></i> by sourcecode.lk</p>
                         </div>
 
                     </div>

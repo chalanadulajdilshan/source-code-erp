@@ -263,5 +263,65 @@ jQuery(document).ready(function () {
         $("#userModal").modal("hide");
     });
 
+    //check user forget password email
+    $("#forget-password").click(function (e) {
+        e.preventDefault();
+
+        if (!$('#email').val() || $('#email').val().length === 0) {
+            swal({
+                title: "Error!",
+                text: "Please enter email",
+                type: 'error',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } else {
+
+            // Preloader start (optional if you use preloader plugin)
+            $('.someBlock').preloader();
+
+            // Grab all form data
+            var formData = new FormData($("#form-data")[0]);
+            formData.append('forget-password', true);
+
+            $.ajax({
+                url: "ajax/php/user.php", // Adjust the URL based on your needs
+                type: 'POST',
+                data: formData,
+                async: false,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (result) {
+                    // Remove preloader
+                    $('.someBlock').preloader('remove');
+
+                    if (result.status === 'success') {
+                        swal({
+                            title: "Success!",
+                            text: "Password reset link sent to your email!",
+                            type: 'success',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+
+                        window.setTimeout(function () {
+                            window.location.reload();
+                        }, 2000);
+
+                    } else if (result.status === 'error') {
+                        swal({
+                            title: "Error!",
+                            text: "Something went wrong.",
+                            type: 'error',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    }
+                }
+            });
+        }
+        return false;
+    });
 
 });
