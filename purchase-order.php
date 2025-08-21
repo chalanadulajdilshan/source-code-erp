@@ -133,7 +133,7 @@ $po_id = $COMPANY_PROFILE_DETAILS->company_code . '/PO/00/0' . ($lastId + 1);
                                             </div>
 
                                             <div class="col-md-2">
-                                                <label for="name" class="form-label">Purchase Date</label>
+                                                <label for="name" class="form-label">PO Date</label>
                                                 <div class="input-group" id="datepicker2">
                                                     <input type="text" class="form-control date-picker" id="order_date"
                                                         name="order_date">
@@ -167,23 +167,6 @@ $po_id = $COMPANY_PROFILE_DETAILS->company_code . '/PO/00/0' . ($lastId + 1);
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-2">
-                                                <label for="PI_No" class="form-label">PI No</label>
-                                                <div class="input-group mb-3">
-                                                    <input id="pi_no" name="pi_no" type="text" placeholder="Enter PI No"
-                                                        class="form-control">
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-2">
-                                                <label for="LC_TT_No" class="form-label">LC / TT No</label>
-                                                <div class="input-group mb-3">
-                                                    <input id="lc_tt_no" name="lc_tt_no" type="text"
-                                                        placeholder="Enter LC / TT No" class="form-control">
-                                                </div>
-
-                                            </div>
-
                                             <div class="col-md-3">
                                                 <label for="brand" class="form-label">Brand</label>
                                                 <div class="input-group mb-3">
@@ -200,9 +183,9 @@ $po_id = $COMPANY_PROFILE_DETAILS->company_code . '/PO/00/0' . ($lastId + 1);
                                             </div>
 
                                             <div class="col-md-2">
-                                                <label for="BL_No" class="form-label">BL No</label>
+                                                <label for="Invoice_No" class="form-label">Invoice No</label>
                                                 <div class="input-group mb-3">
-                                                    <input id="bl_no" name="bl_no" type="text" placeholder="Enter BL No"
+                                                    <input id="invoice_no" name="invoice_no" type="text" placeholder="Enter Invoice No"
                                                         class="form-control">
                                                 </div>
 
@@ -224,15 +207,6 @@ $po_id = $COMPANY_PROFILE_DETAILS->company_code . '/PO/00/0' . ($lastId + 1);
                                             </div>
 
                                             <div class="col-md-2">
-                                                <label for="CI_no" class="form-label">CI No</label>
-                                                <div class="input-group mb-3">
-                                                    <input id="ci_no" name="ci_no" type="text" placeholder="Enter CI No"
-                                                        class="form-control">
-                                                </div>
-
-                                            </div>
-
-                                            <div class="col-md-2">
                                                 <label for="Department" class="form-label">Department</label>
                                                 <div class="input-group mb-3">
                                                     <select id="department_id" name="department_id" class="form-select">
@@ -241,7 +215,7 @@ $po_id = $COMPANY_PROFILE_DETAILS->company_code . '/PO/00/0' . ($lastId + 1);
                                                         foreach ($DEPARTMENT_MASTER->getActiveDepartment() as $departments) {
                                                             if ($US->type != 1) {
                                                                 if ($departments['id'] = $US->department_id) {
-                                                                    ?>
+                                                        ?>
                                                                     <option value="<?php echo $departments['id'] ?>">
                                                                         <?php echo $departments['name'] ?>
                                                                     </option>
@@ -251,7 +225,7 @@ $po_id = $COMPANY_PROFILE_DETAILS->company_code . '/PO/00/0' . ($lastId + 1);
                                                                 <option value="<?php echo $departments['id'] ?>">
                                                                     <?php echo $departments['name'] ?>
                                                                 </option>
-                                                                <?php
+                                                        <?php
                                                             }
                                                         } ?>
 
@@ -260,6 +234,13 @@ $po_id = $COMPANY_PROFILE_DETAILS->company_code . '/PO/00/0' . ($lastId + 1);
                                                 </div>
                                             </div>
 
+                                            <div class="col-md-2">
+                                                <label for="purchase_date" class="form-label">Purchase Date</label>
+                                                <div class="input-group" id="datepicker2">
+                                                    <input type="text" class="form-control date-picker" id="purchase_date"
+                                                        name="purchase_date">
+                                                </div>
+                                            </div>
 
                                             <div class="col-md-8 ">
                                                 <label for="remark" class="form-label">Remarks</label>
@@ -314,7 +295,7 @@ $po_id = $COMPANY_PROFILE_DETAILS->company_code . '/PO/00/0' . ($lastId + 1);
 
                                         <!-- Table -->
                                         <div class="table-responsive mt-4">
-                                            <table class="table table-bordered"  >
+                                            <table class="table table-bordered">
                                                 <thead class="table-light">
                                                     <tr>
                                                         <th>Code and Name </th>
@@ -381,7 +362,7 @@ $po_id = $COMPANY_PROFILE_DETAILS->company_code . '/PO/00/0' . ($lastId + 1);
         <!-- end main content-->
 
     </div>
-    
+
 
     <!-- Purchase Model Open-->
     <div class="modal fade bs-example-modal-xl" id="po_number_modal" tabindex="-1" role="dialog"
@@ -405,8 +386,6 @@ $po_id = $COMPANY_PROFILE_DETAILS->company_code . '/PO/00/0' . ($lastId + 1);
                                         <th>PO No</th>
                                         <th>Order Date</th>
                                         <th>Supplier Code and Name</th>
-                                        <th>PI No</th>
-                                        <th>LC/TT No</th>
                                         <th>Department</th>
                                         <th>Status</th>
                                         <th>Grand Total</th>
@@ -420,7 +399,7 @@ $po_id = $COMPANY_PROFILE_DETAILS->company_code . '/PO/00/0' . ($lastId + 1);
                                         $CUSTOMER_MASTER = new CustomerMaster($purchase_order['supplier_id']);
                                         $DEPARTMENT_MASTER = new DepartmentMaster($purchase_order['department']);
                                         $key++;
-                                        ?>
+                                    ?>
                                         <tr class="select-purchase-order" data-id="<?= $purchase_order['id']; ?>"
                                             data-po_number="<?= htmlspecialchars($purchase_order['po_number']); ?>"
                                             data-order_date="<?= htmlspecialchars($purchase_order['order_date']); ?>"
@@ -428,11 +407,9 @@ $po_id = $COMPANY_PROFILE_DETAILS->company_code . '/PO/00/0' . ($lastId + 1);
                                             data-supplier_code="<?= htmlspecialchars($CUSTOMER_MASTER->code); ?>"
                                             data-supplier_name="<?= htmlspecialchars($CUSTOMER_MASTER->name); ?>"
                                             data-supplier_address="<?= htmlspecialchars($CUSTOMER_MASTER->address); ?>"
-                                            data-pi_no="<?= htmlspecialchars($purchase_order['pi_no']); ?>"
                                             data-address="<?= htmlspecialchars($purchase_order['address']); ?>"
-                                            data-lc_tt_no="<?= htmlspecialchars($purchase_order['lc_tt_no']); ?>"
                                             data-brand="<?= htmlspecialchars($purchase_order['brand']); ?>"
-                                            data-bl_no="<?= htmlspecialchars($purchase_order['bl_no']); ?>"
+                                            data-invoice_no="<?= htmlspecialchars($purchase_order['invoice_no']); ?>"
                                             data-ci_no="<?= htmlspecialchars($purchase_order['ci_no']); ?>"
                                             data-country="<?= htmlspecialchars($purchase_order['country']); ?>"
                                             data-department="<?= htmlspecialchars($purchase_order['department']); ?>"
@@ -444,8 +421,6 @@ $po_id = $COMPANY_PROFILE_DETAILS->company_code . '/PO/00/0' . ($lastId + 1);
                                             <td><?= htmlspecialchars($purchase_order['order_date']); ?></td>
                                             <td><?= htmlspecialchars($CUSTOMER_MASTER->code . ' - ' . $CUSTOMER_MASTER->name); ?>
                                             </td>
-                                            <td><?= htmlspecialchars($purchase_order['pi_no']); ?></td>
-                                            <td><?= htmlspecialchars($purchase_order['lc_tt_no']); ?></td>
                                             <td><?= htmlspecialchars($DEPARTMENT_MASTER->name); ?></td>
 
                                             <td>
@@ -478,7 +453,7 @@ $po_id = $COMPANY_PROFILE_DETAILS->company_code . '/PO/00/0' . ($lastId + 1);
     <!-- JAVASCRIPT -->
     <script src="assets/libs/jquery/jquery.min.js"></script>
     <script src="ajax/js/purchase-order.js"></script>
- 
+
     <!-- /////////////////////////// -->
 
     <!-- include main js  -->
@@ -489,7 +464,7 @@ $po_id = $COMPANY_PROFILE_DETAILS->company_code . '/PO/00/0' . ($lastId + 1);
     <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
     <script>
         $('#purchase_table').DataTable();
-        $(function () {
+        $(function() {
             // Initialize the datepicker
             $(".date-picker").datepicker({
                 dateFormat: 'yy-mm-dd' // or 'dd-mm-yy' as per your format

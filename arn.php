@@ -172,7 +172,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
                                                         foreach ($DEPARTMENT_MASTER->getActiveDepartment() as $departments) {
                                                             if ($US->type != 1) {
                                                                 if ($departments['id'] = $US->department_id) {
-                                                                    ?>
+                                                        ?>
                                                                     <option value="<?php echo $departments['id'] ?>">
                                                                         <?php echo $departments['name'] ?>
                                                                     </option>
@@ -182,7 +182,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
                                                                 <option value="<?php echo $departments['id'] ?>">
                                                                     <?php echo $departments['name'] ?>
                                                                 </option>
-                                                                <?php
+                                                        <?php
                                                             }
                                                         } ?>
 
@@ -275,7 +275,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
                                                         <?php
                                                         $DEFAULT_DATA = new DefaultData();
                                                         foreach ($DEFAULT_DATA->getOrderByOptions() as $key => $order_by) {
-                                                            ?>
+                                                        ?>
                                                             <option value="<?php echo $key ?>"><?php echo $order_by ?>
                                                             </option>
                                                         <?php } ?>
@@ -290,7 +290,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
                                                         <?php
                                                         $PURCHASE_TYPE = new PurchaseType(NULL);
                                                         foreach ($PURCHASE_TYPE->all() as $purchase_type) {
-                                                            ?>
+                                                        ?>
                                                             <option value="<?php echo $purchase_type['id'] ?>">
                                                                 <?php echo $purchase_type['title'] ?>
                                                             </option>
@@ -331,7 +331,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
                                                         <?php
                                                         $VAT_TYPE = new VatType(NULL);
                                                         foreach ($VAT_TYPE->all() as $vat_type) {
-                                                            ?>
+                                                        ?>
                                                             <option value="<?php echo $vat_type['id'] ?>">
                                                                 <?php echo $vat_type['name'] ?>
                                                             </option>
@@ -390,23 +390,26 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
                                                         id="rec_quantity" oninput="calculatePayment(this)">
                                                 </div>
 
+
+
                                                 <div class="col-6 col-sm-4 col-md-2 col-lg-1">
-                                                    <label class="form-label">Com Cost</label>
+                                                    <label class="form-label">List Price</label>
                                                     <input type="text" id="cost" name="cost"
                                                         class="form-control form-control-sm"
                                                         oninput="calculatePayment()">
                                                 </div>
 
+
                                                 <div class="col-6 col-sm-4 col-md-2 col-lg-1">
                                                     <label class="form-label"> Brand Dis %</label>
                                                     <input type="number" id="dis_1" class="form-control form-control-sm"
-                                                        oninput="calculatePayment()" readonly>
+                                                        oninput="calculatePayment()">
                                                 </div>
 
                                                 <div class="col-6 col-sm-4 col-md-2 col-lg-1">
                                                     <label class="form-label">Item Dis %</label>
                                                     <input type="number" id="dis_2" class="form-control form-control-sm"
-                                                        oninput="calculatePayment()" readonly>
+                                                        oninput="calculatePayment()">
                                                 </div>
 
                                                 <!-- ────────── Second Line of Fields ────────── -->
@@ -431,13 +434,6 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
                                                         class="form-control form-control-sm ">
                                                 </div>
 
-
-                                                <div class="col-6 col-sm-4 col-md-2 col-lg-1">
-                                                    <label class="form-label">List Price</label>
-                                                    <input type="text" id="list_price"
-                                                        class="form-control form-control-sm"
-                                                        oninput="calculatePayment()" readonly>
-                                                </div>
                                                 <div class="col-6 col-sm-4 col-md-2 col-lg-1">
                                                     <label class="form-label">Invoice Price</label>
                                                     <input type="text" id="invoice_price"
@@ -468,7 +464,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
                                                         <th>Item Code</th>
                                                         <th>Ord Qty</th>
                                                         <th>Rec Qty</th>
-                                                        <th>Com Cost</th>
+                                                        <th>List Price</th>
                                                         <th>Brand Dis%</th>
                                                         <th>Item Dis%</th>
                                                         <th>Dis 3%</th>
@@ -476,7 +472,6 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
                                                         <th>Dis 5%</th>
                                                         <th>Actual Cost</th>
                                                         <th>Unit Total</th>
-                                                        <th>List Price</th>
                                                         <th>Invoice Price</th>
                                                         <th>Action</th>
                                                     </tr>
@@ -579,7 +574,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-12">
-                            <table  class="datatable table table-bordered dt-responsive nowrap"
+                            <table class="datatable table table-bordered dt-responsive nowrap"
                                 style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                 <thead>
                                     <tr>
@@ -587,8 +582,6 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
                                         <th>PO No</th>
                                         <th>Order Date</th>
                                         <th>Supplier Code and Name</th>
-                                        <th>PI No</th>
-                                        <th>LC/TT No</th>
                                         <th>Department</th>
                                         <th>Grand Total</th>
                                     </tr>
@@ -601,7 +594,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
                                         $CUSTOMER_MASTER = new CustomerMaster($purchase_order['supplier_id']);
                                         $DEPARTMENT_MASTER = new DepartmentMaster($purchase_order['department']);
                                         $key++;
-                                        ?>
+                                    ?>
                                         <tr class="select-purchase-order" data-id="<?= $purchase_order['id']; ?>"
                                             data-po_number="<?= htmlspecialchars($purchase_order['po_number']); ?>"
                                             data-order_date="<?= htmlspecialchars($purchase_order['order_date']); ?>"
@@ -609,12 +602,11 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
                                             data-supplier_code="<?= htmlspecialchars($CUSTOMER_MASTER->code); ?>"
                                             data-supplier_name="<?= htmlspecialchars($CUSTOMER_MASTER->name); ?>"
                                             data-supplier_address="<?= htmlspecialchars($CUSTOMER_MASTER->address); ?>"
-                                            data-pi_no="<?= htmlspecialchars($purchase_order['pi_no']); ?>"
+
                                             data-address="<?= htmlspecialchars($purchase_order['address']); ?>"
-                                            data-lc_tt_no="<?= htmlspecialchars($purchase_order['lc_tt_no']); ?>"
+
                                             data-brand="<?= htmlspecialchars($purchase_order['brand']); ?>"
-                                            data-bl_no="<?= htmlspecialchars($purchase_order['bl_no']); ?>"
-                                            data-ci_no="<?= htmlspecialchars($purchase_order['ci_no']); ?>"
+                                            data-bl_no="<?= htmlspecialchars($purchase_order['invoice_no']); ?>"
                                             data-country="<?= htmlspecialchars($purchase_order['country']); ?>"
                                             data-department="<?= htmlspecialchars($purchase_order['department']); ?>"
                                             data-grand_total="<?= htmlspecialchars($purchase_order['grand_total']); ?>"
@@ -625,8 +617,6 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
                                             <td><?= htmlspecialchars($purchase_order['order_date']); ?></td>
                                             <td><?= htmlspecialchars($CUSTOMER_MASTER->code . ' - ' . $CUSTOMER_MASTER->name); ?>
                                             </td>
-                                            <td><?= htmlspecialchars($purchase_order['pi_no']); ?></td>
-                                            <td><?= htmlspecialchars($purchase_order['lc_tt_no']); ?></td>
                                             <td><?= htmlspecialchars($DEPARTMENT_MASTER->name); ?></td>
 
                                             <td><?= htmlspecialchars($purchase_order['grand_total']); ?></td>
@@ -681,7 +671,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
 
                                         $is_cancelled = isset($arn_master['is_cancelled']) && $arn_master['is_cancelled'] == 1;
                                         $rowClass = $is_cancelled ? 'table-danger' : '';
-                                        ?>
+                                    ?>
 
                                         <tr class="select-arn-order <?= $rowClass ?>" data-id="<?= $arn_master['id']; ?>"
                                             data-is_cancelled="<?= $is_cancelled ? '1' : '0'; ?>"
@@ -749,7 +739,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
 
 
     <script>
-        $('#arn_table').DataTable();    
+        $('#arn_table').DataTable();
     </script>
 
 </body>

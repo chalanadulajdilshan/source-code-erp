@@ -50,7 +50,7 @@ jQuery(document).ready(function () {
         $('#itemName').val(data.name);
         $('#itemQty').val(1);
         $('#available_qty').val(data.qty);
-        $('#list_price').val(data.list_price);
+        $('#cost').val(data.list_price);
         $('#invoice_price').val(data.invoice_price);
 
         $('#dis_2').val(data.discount);
@@ -199,16 +199,16 @@ jQuery(document).ready(function () {
             return;
         }
 
-        if (!listPrice || listPrice <= 0) {
-            swal({ title: "Error!", text: "Please enter List Price", type: "error", timer: 2000, showConfirmButton: false });
-            return;
-        }
+        // if (!listPrice || listPrice <= 0) {
+        //     swal({ title: "Error!", text: "Please enter List Price", type: "error", timer: 2000, showConfirmButton: false });
+        //     return;
+        // }
         if (!InvoicePrice || InvoicePrice <= 0) {
             swal({ title: "Error!", text: "Please enter Invoice Price", type: "error", timer: 2000, showConfirmButton: false });
             return;
         }
 
-        if (actualCost > listPrice) {
+        if (actualCost > cost) {
             swal({ title: "Error!", text: "Actual Cost cannot exceed List Price", type: "error", timer: 2000, showConfirmButton: false });
             return;
         }
@@ -666,8 +666,6 @@ jQuery(document).ready(function () {
                            <td>${item.item_code}  </td>
                             <td><input type="number" name="items[][order_qty]" class="form-control form-control-sm" value="${item.order_qty}" readonly></td>
                             <td><input type="number" name="items[][rec_qty]" class="form-control form-control-sm" value="${item.received_qty}" readonly></td>
-                            <td><input type="number" name="items[][com_cost]" class="form-control form-control-sm" value="${item.commercial_cost}" readonly></td>
-                            <td><input type="number" name="items[][dis1]" class="form-control form-control-sm" value="${item.discount_1}" readonly></td>
                             <td><input type="number" name="items[][dis2]" class="form-control form-control-sm" value="${item.discount_2}" readonly></td>
                             <td><input type="number" name="items[][dis3]" class="form-control form-control-sm" value="${item.discount_3}" readonly></td>
                             <td><input type="number" name="items[][dis4]" class="form-control form-control-sm" value="${item.discount_4 || 0}" readonly></td>

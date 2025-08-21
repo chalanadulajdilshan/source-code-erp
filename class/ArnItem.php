@@ -7,13 +7,12 @@ class ArnItem
     public $item_code;
     public $order_qty;
     public $received_qty;
-    public $commercial_cost;
     public $discount_1;
     public $discount_2;
     public $discount_3;
     public $final_cost;
     public $unit_total;
-    public $list_price;
+    public $cost;
     public $invoice_price;
     public $margin_percent;
     public $created_at;
@@ -31,13 +30,12 @@ class ArnItem
                 $this->item_code = $row['item_code'];
                 $this->order_qty = $row['order_qty'];
                 $this->received_qty = $row['received_qty'];
-                $this->commercial_cost = $row['commercial_cost'];
                 $this->discount_1 = $row['discount_1'];
                 $this->discount_2 = $row['discount_2'];
                 $this->discount_3 = $row['discount_3'];
                 $this->final_cost = $row['final_cost'];
                 $this->unit_total = $row['unit_total'];
-                $this->list_price = $row['list_price'];
+                $this->cost = $row['cost'];
                 $this->invoice_price = $row['invoice_price'];
                 $this->created_at = $row['created_at'];
                 $this->updated_at = $row['updated_at'];
@@ -50,13 +48,13 @@ class ArnItem
     {
         $db = new Database();
         $query = "INSERT INTO `arn_items` (
-            `arn_id`, `item_code`, `order_qty`, `received_qty`, `commercial_cost`,
+            `arn_id`, `item_code`, `order_qty`, `received_qty`,
             `discount_1`, `discount_2`, `discount_3`, `final_cost`, `unit_total`,
-            `list_price`,`invoice_price`,   `created_at`
+            `cost`,`invoice_price`,   `created_at`
         ) VALUES (
-            '{$this->arn_id}', '{$this->item_code}', '{$this->order_qty}', '{$this->received_qty}', '{$this->commercial_cost}',
+            '{$this->arn_id}', '{$this->item_code}', '{$this->order_qty}', '{$this->received_qty}',
             '{$this->discount_1}', '{$this->discount_2}', '{$this->discount_3}', '{$this->final_cost}', '{$this->unit_total}',
-            '{$this->list_price}', '{$this->invoice_price}',   NOW()
+            '{$this->cost}', '{$this->invoice_price}',   NOW()
         )";
 
 
@@ -94,13 +92,12 @@ class ArnItem
         $query = "UPDATE `arn_items` SET 
             `order_qty` = '{$this->order_qty}',
             `received_qty` = '{$this->received_qty}',
-            `commercial_cost` = '{$this->commercial_cost}',
             `discount_1` = '{$this->discount_1}',
             `discount_2` = '{$this->discount_2}',
             `discount_3` = '{$this->discount_3}',
             `final_cost` = '{$this->final_cost}',
             `unit_total` = '{$this->unit_total}',
-            `list_price` = '{$this->list_price}',
+            `cost` = '{$this->cost}',
             `invoice_price` = '{$this->invoice_price}', 
             `margin_percent` = '{$this->margin_percent}',
             `updated_at` = NOW()
@@ -109,4 +106,3 @@ class ArnItem
         return $db->readQuery($query);
     }
 }
-?>

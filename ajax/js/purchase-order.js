@@ -329,15 +329,13 @@ jQuery(document).ready(function () {
                     action: 'create_purchase_order',
                     po_id: poId,
                     supplier_id: supplier_id,
-                    pi_no: $('#pi_no').val(),
                     brand: $('#brand').val(),
-                    lc_tt_no: $('#lc_tt_no').val(),
-                    lc_tt_no: $('#lc_tt_no').val(),
-                    bl_no: $('#bl_no').val(),
+                    invoice_no: $('#invoice_no').val(),
                     country: $('#country').val(),
-                    ci_no: $('#ci_no').val(),
+                    purchase_date: $('#purchase_date').val(),
                     date: $('#order_date').val(),
                     department: $('#department_id').val(),
+                    purchase_date: $('#purchase_date').val(),
                     remarks: $('#remark').val(),
                     grand_total: finalTotal,
                     items: JSON.stringify(items)
@@ -494,13 +492,11 @@ jQuery(document).ready(function () {
             po_no: poNo,
             order_date: orderDate,
             supplier_id: supplierId,
-            pi_no: $('#pi_no').val(),
-            lc_tt_no: $('#lc_tt_no').val(),
             brand: $('#brand').val(),
-            bl_no: $('#bl_no').val(),
+            invoice_no: $('#invoice_no').val(),
             country: $('#country').val(),
-            ci_no: $('#ci_no').val(),
             department_id: $('#department_id').val(),
+            purchase_date: $('#purchase_date').val(),
             order_by: $('#order_by').val(),
             remarks: $('#remark').val(),
             items: JSON.stringify(items),
@@ -564,13 +560,11 @@ jQuery(document).ready(function () {
         const supplierCode = $(this).data('supplier_code');
         const supplierName = $(this).data('supplier_name');
         const supplierAddress = $(this).data('supplier_address');
-        const piNo = $(this).data('pi_no');
-        const lcTtNo = $(this).data('lc_tt_no');
         const brand = $(this).data('brand');
-        const blNo = $(this).data('bl_no');
+        const invoice_no = $(this).data('invoice_no');
         const country = $(this).data('country');
-        const ciNo = $(this).data('ci_no');
         const department = $(this).data('department');
+        const purchase_date = $(this).data('purchase_date');
         const status = $(this).data('status');
         const remarks = $(this).data('remarks');
         const grandTotal = $(this).data('grand_total');
@@ -583,13 +577,11 @@ jQuery(document).ready(function () {
         $('#supplier_code').val(supplierCode);
         $('#supplier_name').val(supplierName);
         $('#supplier_address').val(supplierAddress);
-        $('#pi_no').val(piNo);
-        $('#lc_tt_no').val(lcTtNo);
         $('#brand').val(brand);
-        $('#bl_no').val(blNo);
+        $('#invoice_no').val(blNo);
         $('#country').val(country);
-        $('#ci_no').val(ciNo);
         $('#department_id').val(department);
+        $('#purchase_date').val(purchase_date);
         $('#status').val(status);
         $('#remarks').val(remarks);
         $('#grandTotal').val(grandTotal);
