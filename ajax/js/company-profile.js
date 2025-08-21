@@ -168,11 +168,11 @@ jQuery(document).ready(function () {
         $('#mobile_number_3').val($(this).data('mobile3'));
         $('#email').val($(this).data('email'));
         $('#vat_number').val($(this).data('vatnumber'));
-        $('#company_code').val($(this).data('companycode')).prop('readonly', true);
+        $('#company_code').val($(this).data('companycode')).prop('readonly', false);
         $('#image_name').val($(this).data('image'));
 
-        var imageUrl = 'uploads/company-logos/' + $(this).data('image'); 
-        $('#logo-preview-show').attr('src', imageUrl); 
+        var imageUrl = 'uploads/company-logos/' + $(this).data('image');
+        $('#logo-preview-show').attr('src', imageUrl);
 
         $('#is_active').prop('checked', $(this).data('active') == 1);
         $('#is_vat').prop('checked', $(this).data('isvat') == 1);
@@ -279,7 +279,7 @@ jQuery(document).ready(function () {
         const file = e.target.files[0];
         if (!file) return;
 
-        $('#logo-preview-show').hide(); 
+        $('#logo-preview-show').hide();
         const reader = new FileReader();
         reader.onload = function (event) {
             previewContainer.innerHTML = `<img id="crop-image" src="${event.target.result}" style="max-width: 100%;">`;
