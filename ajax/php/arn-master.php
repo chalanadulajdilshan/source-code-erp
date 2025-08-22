@@ -175,6 +175,3 @@ if (isset($_POST['brand_id'])) {
     echo json_encode(['discount' => $BRAND->discount]);
     exit();
 }
-
-
-?>
