@@ -13,7 +13,7 @@ include './auth.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="<?php echo $COMPANY_PROFILE_DETAILS->name ?>" name="author" />
     <!-- include main CSS -->
-    <?php include 'main-css.php' ?>  
+    <?php include 'main-css.php' ?>
 
 </head>
 
@@ -105,12 +105,12 @@ include './auth.php';
                                                     <label class="form-label fw-bold">Payment Type:</label><br />
                                                     <div class="form-check form-check-inline">
                                                         <input class="form-check-input" type="radio" name="payment_type"
-                                                            id="cash" value="cash" checked>
+                                                            id="cash" value="1" checked>
                                                         <label class="form-check-label" for="cash">Cash</label>
                                                     </div>
                                                     <div class="form-check form-check-inline">
                                                         <input class="form-check-input" type="radio" name="payment_type"
-                                                            id="credit" value="credit">
+                                                            id="credit" value="2">
                                                         <label class="form-check-label" for="credit">Credit</label>
                                                     </div>
                                                 </div>
@@ -137,7 +137,7 @@ include './auth.php';
                                                         <?php
                                                         $COMPANY = new CompanyProfile(NULL);
                                                         foreach ($COMPANY->getActiveCompany() as $company) {
-                                                            ?>
+                                                        ?>
                                                             <option value="<?php echo $company['id'] ?>">
                                                                 <?php echo $company['name'] ?>
                                                             </option>
@@ -166,7 +166,7 @@ include './auth.php';
                                                 <label for="customerName" class="form-label">Customer Name <span class="text-danger">*</span></label>
                                                 <div class="input-group mb-3">
                                                     <input id="customer_name" name="customer_name" type="text"
-                                                        class="form-control" placeholder="Enter Customer Name"  >
+                                                        class="form-control" placeholder="Enter Customer Name">
                                                 </div>
                                             </div>
 
@@ -175,8 +175,7 @@ include './auth.php';
                                                     Address</label>
                                                 <div class="input-group mb-3">
                                                     <input id="customer_address" name="customer_address" type="text"
-                                                        class="form-control" placeholder="Enter customer address"
-                                                         >
+                                                        class="form-control" placeholder="Enter customer address">
                                                 </div>
                                             </div>
 
@@ -184,7 +183,7 @@ include './auth.php';
                                                 <label for="mobileNumber" class="form-label">Mobile Number</label>
                                                 <div class="input-group mb-3">
                                                     <input id="customer_mobile" name="customer_mobile" type="text"
-                                                        class="form-control" placeholder="Enter Mobile Number"  >
+                                                        class="form-control" placeholder="Enter Mobile Number">
                                                 </div>
                                             </div>
 
@@ -197,7 +196,7 @@ include './auth.php';
                                                         <?php
                                                         $VAT_TYPE = new VatType(NULL);
                                                         foreach ($VAT_TYPE->getActiveTypes() as $vat_type) {
-                                                            ?>
+                                                        ?>
                                                             <option value="<?php echo $vat_type['id'] ?>">
                                                                 <?php echo $vat_type['name'] ?>
                                                             </option>
@@ -213,7 +212,7 @@ include './auth.php';
                                                         <?php
                                                         $DEPARTMENT_MASTER = new DepartmentMaster(NULL);
                                                         foreach ($DEPARTMENT_MASTER->getActiveDepartment() as $departments) {
-                                                            ?>
+                                                        ?>
                                                             <option value="<?php echo $departments['id'] ?>">
                                                                 <?php echo $departments['name'] ?>
                                                             </option>
@@ -411,7 +410,7 @@ include './auth.php';
                                                                     <?php
                                                                     $CREDIT_PERIOD = new CreditPeriod(NULL);
                                                                     foreach ($CREDIT_PERIOD->getCreditPeriodByStatus(1) as $Credit_period) {
-                                                                        ?>
+                                                                    ?>
                                                                         <option value="<?php echo $Credit_period['id'] ?>">
                                                                             <?php echo $Credit_period['days'] . ' ' . "Days" ?>
                                                                         </option>
@@ -430,7 +429,7 @@ include './auth.php';
                                                                     <?php
                                                                     $INVOICE_REMARK = new InvoiceRemark(null);
                                                                     foreach ($INVOICE_REMARK->all() as $remark) {
-                                                                        ?>
+                                                                    ?>
                                                                         <option value="<?php echo $remark['id'] ?>">
                                                                             <?php echo $remark['remark'] ?>
                                                                         </option>
@@ -614,7 +613,7 @@ include './auth.php';
                                         $CUSTOMER = new CustomerMaster($quotation['customer_id']);
                                         $COMPANY = new CompanyProfile($quotation['company_id']);
                                         $DEPARTMENT_MASTER = new DepartmentMaster($quotation['department_id']);
-                                        ?>
+                                    ?>
                                         <tr class="select-model" data-id="<?php echo $quotation['id']; ?>"
                                             data-quotation_no="<?php echo htmlspecialchars($quotation['quotation_no']); ?>"
                                             data-date="<?php echo htmlspecialchars($quotation['date']); ?>"
