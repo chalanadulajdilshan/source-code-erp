@@ -13,7 +13,7 @@ $USER_PERMISSION = new UserPermission();
 $page_id = $_GET['page_id'] ?? null;
 $current_page = basename($_SERVER['PHP_SELF']);
 
-$skipPages = ['common.php', 'help.php'];
+$skipPages = ['common.php', 'help.php', 'profile.php'];
 
 
 if (!in_array($current_page, $skipPages)) {
@@ -36,4 +36,3 @@ $DOCUMENT_TRACKINGS = new DocumentTracking(NULL);
 $doc_id = $DOCUMENT_TRACKINGS->getAllByCompanyAndYear($company_id, $year_start, $year_end);
 
 $PERMISSIONS = $USER_PERMISSION->hasPermission($_SESSION['id'], $page_id ?? 0);
-?>

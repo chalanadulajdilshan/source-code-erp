@@ -44,6 +44,7 @@ class User
             $this->name = $result['name'];
             $this->email = $result['email'];
             $this->phone = $result['phone'];
+            $this->image_name = $result['image_name'];
             $this->createdAt = $result['createdAt'];
             $this->type = $result['type'];
             $this->isActive = $result['isActive'];
@@ -249,6 +250,7 @@ class User
             . "`email` ='" . $this->email . "', "
             . "`company_id` ='" . $this->company_id . "', "
             . "`department_id` ='" . $this->department_id . "', "
+            . "`image_name` ='" . $this->image_name . "', "
             . "`phone` ='" . $this->phone . "'  "
             . "WHERE `id` = '" . $this->id . "'";
 
@@ -464,5 +466,14 @@ class User
             array_push($array_res, $row);
         }
         return $array_res;
+    }
+
+    public function verifyPassword($password)
+    {
+        $enPass = md5($password);
+        $query = "SELECT `id` FROM `user` WHERE `id` = " . $this->id . " AND `password` = '" . $enPass . "'";
+        $db = new Database();
+        $result = mysqli_fetch_array($db->readQuery($query));
+        return $result ? true : false;
     }
 }

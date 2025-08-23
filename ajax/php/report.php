@@ -5,8 +5,6 @@ header('Content-Type: application/json');
 //price control laord
 if (isset($_POST['action']) && $_POST['action'] == 'loard_price_Control') {
 
-
-
     $category_id = $_POST['category_id'] ?? 0;
     $brand_id = $_POST['brand_id'] ?? 0;
     $group_id = $_POST['group_id'] ?? 0;
@@ -21,7 +19,6 @@ if (isset($_POST['action']) && $_POST['action'] == 'loard_price_Control') {
 }
 
 //profit table loard
-
 if (isset($_POST['action']) && $_POST['action'] === 'load_profit_report') {
     // Collect filters into an array
     $filters = [
@@ -41,9 +38,22 @@ if (isset($_POST['action']) && $_POST['action'] === 'load_profit_report') {
     $salesInvoice = new SalesInvoice(NULL);
     $items = $salesInvoice->getProfitTable($filters);
 
+    // Calculate total expenses for the same date range
+    $totalExpenses = 0;
+    if (!empty($filters['from_date']) && !empty($filters['to_date'])) {
+        $expense = new Expense(NULL);
+        $totalExpenses = $expense->getTotalExpensesByDateRange($filters['from_date'], $filters['to_date']);
+    }
+
+    // Prepare response with both sales data and expense total
+    $response = [
+        'sales_data' => $items,
+        'total_expenses' => $totalExpenses
+    ];
+
     // Output JSON
     header('Content-Type: application/json');
-    echo json_encode($items);
+    echo json_encode($response);
     exit;
 }
 
@@ -75,21 +85,21 @@ if (isset($_POST['action']) && $_POST['action'] === 'update_item_price') {
     try {
         $item_id = (int)$_POST['item_id'];
         $new_price = (float)$_POST['new_price'];
-        
+
         if ($item_id <= 0 || $new_price < 0) {
             throw new Exception('Invalid input parameters');
         }
-        
+
         // Load the item
         $ITEM = new ItemMaster($item_id);
-        
+
         if (!$ITEM->id) {
             throw new Exception('Item not found');
         }
-        
+
         // Update the price
         $ITEM->list_price = $new_price;
-        
+
         // Recalculate invoice price if needed (based on discount)
         if ($ITEM->discount > 0) {
             $discount_amount = $new_price * ($ITEM->discount / 100);
@@ -97,10 +107,10 @@ if (isset($_POST['action']) && $_POST['action'] === 'update_item_price') {
         } else {
             $ITEM->invoice_price = $new_price;
         }
-        
+
         // Save the changes
         $result = $ITEM->update();
-        
+
         if ($result) {
             // Add audit log
             $AUDIT_LOG = new AuditLog(null);
@@ -111,7 +121,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'update_item_price') {
             $AUDIT_LOG->user_id = $_SESSION['id'];
             $AUDIT_LOG->created_at = date('Y-m-d H:i:s');
             $AUDIT_LOG->create();
-            
+
             echo json_encode([
                 'status' => 'success',
                 'message' => 'Price updated successfully'
@@ -128,5 +138,3 @@ if (isset($_POST['action']) && $_POST['action'] === 'update_item_price') {
     }
     exit;
 }
-
-?>

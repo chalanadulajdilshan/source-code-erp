@@ -139,6 +139,22 @@ include 'auth.php';
                         </div> <!-- end col-->
                     </div> <!-- end row-->
 
+                    <!-- Bar Chart -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">Sales Overview</h4>
+                                    <p class="card-title-desc">Monthly sales performance</p>
+                                </div>
+                                <div class="card-body">
+                                    <div id="sales-analytics-chart" style="height: 300px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Bar Chart -->
+
 
 
 
@@ -166,8 +182,14 @@ include 'auth.php';
     <script src="assets/libs/jquery/jquery.min.js"></script>
     <script src="ajax/js/common.js"></script>
 
+    <!-- ApexCharts -->
+    <script src="assets/libs/apexcharts/apexcharts.min.js"></script>
+
     <!-- include main js  -->
     <?php include 'main-js.php' ?>
+
+    <!-- Dashboard init -->
+    <script src="assets/js/pages/dashboard.init.js"></script>
 
 </body>
 
