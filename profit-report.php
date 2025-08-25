@@ -129,7 +129,7 @@ include './auth.php';
                                                             <?php
                                                             $COMPANY_PROFILE = new CompanyProfile();
                                                             foreach ($COMPANY_PROFILE->all() as $company_profile) {
-                                                                ?>
+                                                            ?>
                                                                 <option value="<?php echo $company_profile['id'] ?>">
                                                                     <?php echo $company_profile['name'] ?>
                                                                 </option>
@@ -163,7 +163,7 @@ include './auth.php';
                                                             foreach ($DEPARTMENT_MASTER->getActiveDepartment() as $departments) {
                                                                 if ($US->type != 1) {
                                                                     if ($departments['id'] = $US->department_id) {
-                                                                        ?>
+                                                            ?>
                                                                         <option value="<?php echo $departments['id'] ?>">
                                                                             <?php echo $departments['name'] ?>
                                                                         </option>
@@ -173,7 +173,7 @@ include './auth.php';
                                                                     <option value="<?php echo $departments['id'] ?>">
                                                                         <?php echo $departments['name'] ?>
                                                                     </option>
-                                                                    <?php
+                                                            <?php
                                                                 }
                                                             } ?>
 
@@ -201,6 +201,9 @@ include './auth.php';
 
                                         <hr class="my-4">
 
+                                        <!-- Add this section before the table for displaying profit summary -->
+                                        <div id="profitReportDateRange" class="mb-3"></div>
+
                                         <!-- Table -->
                                         <div class="table-responsive">
                                             <table class="table table-bordered" id="profitReport">
@@ -209,20 +212,18 @@ include './auth.php';
                                                         <td>#Id</td>
                                                         <th>Invoice No</th>
                                                         <th>Invoice Date</th>
-                                                        <th>Comapny</th>
+                                                        <th>Company</th>
                                                         <th>Customer</th>
                                                         <th>Department</th>
                                                         <th>Sales Type</th>
                                                         <th>Cost</th>
                                                         <th>Selling</th>
                                                         <th>Profit</th>
-                                                      
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     <tr>
-                                                        <td colspan="9" class="text-center text-muted">No items
-                                                            added</td>
+                                                        <td colspan="10" class="text-center text-muted">No items added</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -255,7 +256,7 @@ include './auth.php';
     <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
     <script>
         $('#quotation_table').DataTable();
-        $(function () {
+        $(function() {
             // Initialize the datepicker
             $(".date-picker").datepicker({
                 dateFormat: 'yy-mm-dd' // or 'dd-mm-yy' as per your format

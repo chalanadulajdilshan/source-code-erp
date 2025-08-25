@@ -169,10 +169,4 @@ class DocumentTracking
 
         return false;
     }
-
-
-
-
 }
-
-?>

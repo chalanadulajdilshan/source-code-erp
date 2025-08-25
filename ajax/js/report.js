@@ -1,6 +1,5 @@
 jQuery(document).ready(function () {
 
-
     //profit report
     $('#view_price_report').on('click', function (e) {
         e.preventDefault();
@@ -16,9 +15,6 @@ jQuery(document).ready(function () {
     $('#item_code').on('keyup', function () {
         loadPriceControlItems();
     });
-
-
-
 
     function loadPriceControlItems() {
         let brand_id = $('#brand_id').val();
@@ -66,43 +62,6 @@ jQuery(document).ready(function () {
                         </td>
                     </tr>`;
 
-                        // if (Array.isArray(item.stock_tmp) && item.stock_tmp.length > 0) {
-                        //     $.each(item.stock_tmp, function (i, row) {
-                        //         tbody += `<tr class="table-light" style="color: red;">
-                        //         <td colspan="2">
-                        //             <strong>ARN:</strong> ${row.arn_no} 
-                        //             <span style="display: inline-block; color: green; font-weight: 500;">
-                        //                 <div>Department: <span style="color: black;">${row.department}</span></div>
-                        //                 <div>Available Qty: ${row.qty}</div>
-                        //             </span>
-                        //         </td>
-
-                        //         <td>
-                        //         <span style="color: green; font-weight:500" >Cost: </span> 
-                        //             <input type="number" step="0.01" class="form-control form-control-sm cost-input" data-id="${row.id}" value="${parseFloat(row.cost).toFixed(2)}" />
-                        //         </td>
-                        //         <td>
-                        //         <span style="color: green; font-weight:500" >Cash Price: </span> 
-                        //             <input type="number" step="0.01" class="form-control form-control-sm cash-price-input" data-id="${row.id}" value="${parseFloat(row.cash_price).toFixed(2)}" />
-                        //         </td>
-                        //         <td>
-                        //         <span style="color: green; font-weight:500" >Credit Price: </span> 
-                        //             <input type="number" step="0.01" class="form-control form-control-sm credit-price-input" data-id="${row.id}" value="${parseFloat(row.credit_price).toFixed(2)}" />
-                        //         </td>
-                        //         <td>
-                        //         <span style="color: green; font-weight:500" >Cash Dis %: </span> 
-                        //             <input type="number" step="1" min="0" max="100" class="form-control form-control-sm cash-discount-input" data-id="${row.id}" value="${row.cash_dis}" /> 
-                        //         </td>
-                        //         <td>
-                        //         <span style="color: green; font-weight:500" >Credit Dis %: </span> 
-                        //             <input type="number" step="1" min="0" max="100" class="form-control form-control-sm credit-discount-input" data-id="${row.id}" value="${row.credit_dis}" /> 
-                        //         </td>
-                        //         <td>${row.created_at}</td>
-                        //     </tr>`;
-                        //     });
-                        // }
-
-
                         if (Array.isArray(item.stock_tmp) && item.stock_tmp.length > 0) {
                             $.each(item.stock_tmp, function (i, row) {
                                 tbody += `
@@ -138,8 +97,6 @@ jQuery(document).ready(function () {
                                 </tr>`;
                             });
                         }
-
-
 
                     });
                 } else {
@@ -321,7 +278,6 @@ jQuery(document).ready(function () {
         loadProfitReport();
     });
 
-
     //Reload on filter change
     $('#brand_id, #department_id, #group_id, #category_id, #filter_type').on('change', function () {
         loadProfitReport();
@@ -355,11 +311,15 @@ jQuery(document).ready(function () {
                 to_date,
                 filter_type
             },
-            success: function (data) {
+            success: function (response) {
                 let tbody = '';
                 let totalFinalCost = 0;
                 let totalGrandTotal = 0;
                 let totalProfit = 0;
+
+                // Handle the new response structure
+                const data = response.sales_data || response; // Fallback for backward compatibility
+                const totalExpenses = parseFloat(response.total_expenses) || 0;
 
                 if (data.length > 0) {
                     $.each(data, function (index, row) {
@@ -392,13 +352,32 @@ jQuery(document).ready(function () {
             </tr>`;
                     });
 
-                    // Add total row
-                    tbody += `<tr style="font-weight:bold; background-color:#f1f1f1;">
-            <td colspan="7" class="text-end">Total Profit</td>
+                    // Calculate final profit after expenses
+                    const finalProfit = totalProfit - totalExpenses;
+
+                    // Add summary rows
+                    tbody += `<tr style="font-weight:bold; background-color:#f8f9fa; border-top: 2px solid #dee2e6;">
+            <td colspan="7" class="text-end">Total Sales Profit</td>
             <td>${totalFinalCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
             <td>${totalGrandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-            <td style="color: red;">
+            <td style="color: #28a745;">
                 ${totalProfit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </td>
+        </tr>`;
+
+                    // Add expense row
+                    tbody += `<tr style="font-weight:bold; background-color:#fff3cd; border: 1px solid #ffeaa7;">
+            <td colspan="9" class="text-end">Total Expenses</td>
+            <td style="color: #e74c3c;">
+                (${totalExpenses.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })})
+            </td>
+        </tr>`;
+
+                    // Add final profit row
+                    tbody += `<tr style="font-weight:bold; background-color:#d1ecf1; border: 2px solid #bee5eb;">
+            <td colspan="9" class="text-end">Final Profit (After Expenses)</td>
+            <td style="color: ${finalProfit >= 0 ? '#155724' : '#721c24'}; font-size: 1.1em;">
+                ${finalProfit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </td>
         </tr>`;
                 } else {
@@ -407,17 +386,18 @@ jQuery(document).ready(function () {
 
                 $('#profitReport tbody').html(tbody);
 
-                // Optionally show date range above the table
+                // Show date range above the table
                 let fromDate = $('#from_date').val();
                 let toDate = $('#to_date').val();
                 if (fromDate && toDate) {
-                    $('#profitReportDateRange').html(`Profit Report from <strong>${fromDate}</strong> to <strong>${toDate}</strong>`);
+                    $('#profitReportDateRange').html(`
+                        <h6>Profit Report from <strong>${fromDate}</strong> to <strong>${toDate}</strong></h6>
+                    `);
                 }
-            }
-            ,
+            },
             error: function (xhr, status, error) {
                 console.error('Error loading profit report:', error);
-                $('#profitReport tbody').html(`<tr><td colspan="8" class="text-danger text-center">Error loading profit report</td></tr>`);
+                $('#profitReport tbody').html(`<tr><td colspan="10" class="text-danger text-center">Error loading profit report</td></tr>`);
             }
         });
     }

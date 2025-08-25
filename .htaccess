@@ -1,5 +1,5 @@
 RewriteEngine On
-RewriteBase /
+RewriteBase /source-code-erp/
 
 # Redirect requests without .php to the actual .php files
 RewriteCond %{REQUEST_FILENAME}.php -f
