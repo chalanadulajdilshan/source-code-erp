@@ -18,7 +18,7 @@
 
 # Configuration files
 .htaccess
-/class/Database.php
+# /class/Database.php
 
 # IDE specific files
 .idea/
