@@ -166,7 +166,7 @@ include 'auth.php';
                             <div class="card">
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-center mb-4">
-                                        <h4 class="card-title mb-0">ARN </h4>
+                                        <h4 class="card-title mb-0">ARN Barcodes Generator</h4>
                                         <div class="d-flex">
                                             <div class="input-group me-2" style="width: 300px;">
                                                 <input type="text" id="arnSearch" class="form-control" placeholder="Enter ARN Number...">
