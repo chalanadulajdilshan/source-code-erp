@@ -65,6 +65,7 @@ include_once(dirname(__FILE__) . '/DagItem.php');
 
 include_once(dirname(__FILE__) . '/StockItemTmp.php');
 include_once(dirname(__FILE__) . '/DagCompany.php');
+include_once(dirname(__FILE__) . '/ArnQrGenaretor.php');
  
 
 

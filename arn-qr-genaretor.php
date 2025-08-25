@@ -228,7 +228,7 @@ include 'auth.php';
     <script src="ajax/js/common.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
 
-    <script src="ajax/js/arn_qr_genarator.js"></script>
+    <script src="ajax/js/arn-qr-genarator.js"></script>
     <?php include 'main-js.php' ?>
 
 
