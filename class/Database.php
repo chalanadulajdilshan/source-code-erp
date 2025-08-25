@@ -14,16 +14,17 @@
 class Database
 {
 
-    //  private $host = 'localhost';
-    //    private $name = 'suhatdux_auroralanka';
-    //   private $user = 'suhatdux_auroralanka';
-    //  private $password = 'iE,@lxE0HGWr';m
-
     private $host = 'localhost';
-    private $name = 'source_code_erp';
-    private $user = 'root';
-    private $password = '';
+    private $name = 'chalcepi_erp';
+    private $user = 'chalcepi_erp';
+    private $password = '}v+kRGNUPxtr';
     public $DB_CON = '';
+
+    // private $host = 'localhost';
+    // private $name = 'source_code_erp';
+    // private $user = 'root';
+    // private $password = '';
+    // public $DB_CON = '';
 
     public function __construct()
     {
