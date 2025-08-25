@@ -1,5 +1,7 @@
 <?php
 
+
+
 class Brand
 {
     public $id;
@@ -55,7 +57,7 @@ class Brand
                     `remark` = '{$this->remark}'
                   WHERE `id` = '{$this->id}'";
 
-                   
+
 
         $db = new Database();
         return $db->readQuery($query);
@@ -95,6 +97,4 @@ class Brand
 
         return $array;
     }
-
 }
-?>
