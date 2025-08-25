@@ -1,56 +1,66 @@
-# Ignore admin-temp directory
-admin-temp/
-class/Database.php
-
-# Environment files
-.env
-.htaccess
-
-# IDE specific files
-.vscode/
-.idea/
-*.sublime-workspace
-*.sublime-project
-
-# System Files
-.DS_Store
-Thumbs.db
-
 # Dependency directories
 /vendor/
 /node_modules/
 
+# Environment files
+.env
+.env.*
+!.env.example
+
 # Logs
 *.log
+/storage/logs/*
 
-# Local configuration files
-config.local.php
-*.local.php
+# Cache
+/storage/framework/cache/*
+/storage/framework/views/*
+/storage/framework/sessions/*
 
-# Cache directories
-/cache/
-/tmp/
+# Configuration files
+.htaccess
+/class/Database.php
 
-# Uploads directory (if it contains user-generated content)
-/uploads/
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Local development
+*.local
 
 # Composer
 composer.lock
 composer.phar
 
-# IDE specific files
-*.sublime-*
-*.komodoproject
-*.kdev4
-.project
-.settings/
-.buildpath
+# PHPUnit
+/phpunit.xml
+/phpunit.xml.dist
 
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
+# Build directories
+/build/
+/dist/
+
+# WAMP specific
+/wamp/
+/wamp64/
+
+# User uploaded files
+/public/uploads/
+/storage/app/public/*
+!/storage/app/public/.gitkeep
+
+# Local configuration
+/config/*.local.php
+/config/*.local.yml
+
+# Debug bar
+/debugbar/
+
+# IDE specific
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
