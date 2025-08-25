@@ -124,6 +124,7 @@ function generateAllBarcodes() {
     container.innerHTML = '';
 
     let totalBarcodes = 0;
+    const barcodesToSave = [];
 
     allItems.forEach(item => {
         const dbId = item.id.toString().padStart(4, '0');
@@ -136,11 +137,63 @@ function generateAllBarcodes() {
             const barcodeId = dbId + randomPart + seq;
             createBarcode(item, container, barcodeId);
             totalBarcodes++;
+
+            // Add barcode data to save
+            barcodesToSave.push({
+                arn_id: item.arn_id || 0,
+                item_id: item.id,
+                item_code: item.item_code || '',
+                barcode_id: barcodeId,
+                commercial_cost: parseFloat(item.commercial_cost || item.cost || 0)
+            });
         }
     });
 
+    // Save all generated barcodes to the database
+    saveBarcodesToDatabase(barcodesToSave, totalBarcodes);
     $('#printAllBtn').removeClass('hidden');
-    showMessage(`Generated ${totalBarcodes} barcodes successfully for ${allItems.length} items!`, 'success');
+}
+
+function saveBarcodesToDatabase(barcodes, totalCount) {
+    if (!barcodes || barcodes.length === 0) {
+        showMessage('No barcodes to save.', 'error');
+        return;
+    }
+
+    // Show loading message
+    const loadingMessage = showMessage('Saving barcodes, please wait...', 'info', 0);
+
+    $.ajax({
+        url: 'ajax/php/arn-qr-genaretor.php',
+        method: 'POST',
+        data: {
+            action: 'save_barcodes',
+            barcodes: barcodes
+        },
+        dataType: 'json'
+    })
+        .done(function (response) {
+            if (response.status === 'success') {
+                // Remove the loading message
+                if (loadingMessage) {
+                    loadingMessage.remove();
+                }
+
+                // Show success message with count
+                const successMsg = `Successfully generated and saved ${response.saved_count || totalCount} barcodes!`;
+                if (response.warning) {
+                    showMessage(`${successMsg} ${response.warning}`, 'warning');
+                } else {
+                    showMessage(successMsg, 'success');
+                }
+            } else {
+                throw new Error(response.message || 'Failed to save barcodes');
+            }
+        })
+        .fail(function (xhr, status, error) {
+            console.error('Error saving barcodes:', error, xhr.responseText);
+            showMessage(`Error saving barcodes: ${error}`, 'error');
+        });
 }
 
 function printSingle(itemId) {
@@ -267,19 +320,28 @@ function createBarcode(item, container, barcodeId) {
     }
 }
 
-function showMessage(message, type = 'info') {
+
+
+// Update the showMessage function to return the created element for later removal
+function showMessage(message, type = 'info', autoHide = 3000) {
     const alertHtml = `
-                <div class="alert alert-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'info'} alert-dismissible fade show" role="alert">
-                    ${message}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            `;
+        <div class="alert alert-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'info'} 
+                    alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    `;
 
-    $('.container-fluid').prepend(alertHtml);
+    const $alert = $(alertHtml).prependTo('.container-fluid');
 
-    setTimeout(() => {
-        $('.alert').fadeOut(400, function () {
-            $(this).remove();
-        });
-    }, 3000);
+    // Auto-hide the message after delay if autoHide is greater than 0
+    if (autoHide > 0) {
+        setTimeout(() => {
+            $alert.fadeOut(400, function () {
+                $(this).remove();
+            });
+        }, autoHide);
+    }
+
+    return $alert;
 }
