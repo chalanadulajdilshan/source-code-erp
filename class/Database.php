@@ -39,11 +39,6 @@ class Database
             return true;
         }
 
-        // Method 2: Check server IP (useful for CLI or cron jobs)
-        // if (php_sapi_name() === 'cli' && in_array(gethostname(), ['your-local-machine-name'])) {
-        //     return true;
-        // }
-
         return false;
     }
 

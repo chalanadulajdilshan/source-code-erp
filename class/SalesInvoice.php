@@ -114,6 +114,22 @@ class SalesInvoice
         }
     }
 
+    public function cancel($invoiceId) {
+ 
+    // Use prepared statement to prevent SQL injection
+    $query = "UPDATE `sales_invoice` SET `is_cancel` = 1 WHERE `id` = $invoiceId";
+  
+    $db = new Database();
+    $result = $db->readQuery($query); // Assuming your Database class supports parameters
+    
+    if ($result) {
+       
+        return true; // Return boolean instead of calling constructor
+    } else {
+        return false;
+    }
+}
+
     // Delete a sales invoice record by ID
     public function delete()
     {
@@ -214,6 +230,20 @@ class SalesInvoice
             return 0; // Or null, depending on how you want to handle "no results"
         }
     }
+
+    public function getByID($id)
+    {
+        $query = "SELECT * FROM `sales_invoice` where `id` = '$id'";
+        $db = new Database();
+        $result = mysqli_fetch_array($db->readQuery($query));
+
+        if ($result && isset($result['id'])) {
+            return $result;
+        } else {
+            return 0; // Or null, depending on how you want to handle "no results"
+        }
+    }
+
 
     public function checkInvoiceIdExist($id)
     {
@@ -354,17 +384,21 @@ class SalesInvoice
         return $array_res;
     }
 
-
-
     public function latest()
     {
-        $query = "SELECT * FROM `sales_invoice` ORDER BY `id` DESC LIMIT 10";
+        $query = "SELECT si.*, dm.name as department_name 
+              FROM sales_invoice si
+              LEFT JOIN department_master dm ON si.department_id = dm.id
+              ORDER BY si.id DESC 
+        LIMIT 10";
         $db = new Database();
         $result = $db->readQuery($query);
         $array_res = array();
 
         while ($row = mysqli_fetch_array($result)) {
             $array_res[] = $row;
+            $DEPARTMENT_MASTER = new DepartmentMaster($row['department_id']);
+            $row['department_name'] = $DEPARTMENT_MASTER->name;
         }
 
         return $array_res;

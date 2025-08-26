@@ -53,8 +53,8 @@ include './auth.php';
                             </a>
 
                             <?php if ($PERMISSIONS['delete_page']): ?>
-                                <a href="#" class="btn btn-danger delete-category" style="display: none;">
-                                    <i class="uil uil-trash-alt me-1"></i> Delete
+                                <a href="#" class="btn btn-danger cancel-category" style="display: none;">
+                                    <i class="uil uil-ban me-1"></i> Cancel
                                 </a>
                             <?php endif; ?>
 
@@ -127,7 +127,8 @@ include './auth.php';
                                                     </button>
                                                 </div>
                                             </div>
-
+                                                    <!-- INVOICE ID HIDDEN -->
+                                                <input type="hidden" id="invoice_id" name="invoice_id" />
                                             <!-- company ID -->
                                             <div class="col-md-3">
                                                 <label for="bankId" class="form-label">Company</label>

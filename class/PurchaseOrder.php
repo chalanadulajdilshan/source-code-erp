@@ -41,8 +41,8 @@ class PurchaseOrder
                 $this->status = $result['status'];
                 $this->remarks = $result['remarks'];
                 $this->grand_total = $result['grand_total'];
+                $this->created_by = $result['created_by'];
                 $this->created_at = $result['created_at'];
-                $this->updated_at = $result['updated_at'];
             }
         }
     }
@@ -51,10 +51,10 @@ class PurchaseOrder
     public function create()
     {
         $query = "INSERT INTO `purchase_orders` (
-            `po_number`, `order_date`, `supplier_id`, `address`, `brand`, `invoice_no`, `country`, `department`, `purchase_date`, `status`, `remarks`, `grand_total`, `created_at`, `updated_at`
+            `po_number`, `order_date`, `supplier_id`, `address`, `brand`, `invoice_no`, `country`, `department`, `purchase_date`, `status`, `remarks`, `grand_total`, `created_by`, `created_at`
         ) VALUES (
             '{$this->po_number}', '{$this->order_date}', '{$this->supplier_id}', '{$this->address}', '{$this->brand}',
-            '{$this->invoice_no}', '{$this->country}', '{$this->department}', '{$this->purchase_date}', '{$this->status}', '{$this->remarks}', '{$this->grand_total}', '{$this->created_at}', '{$this->updated_at}'
+            '{$this->invoice_no}', '{$this->country}', '{$this->department}', '{$this->purchase_date}', 0, '{$this->remarks}', '{$this->grand_total}', '{$this->created_by}', '{$this->created_at}'
         )";
 
 
@@ -85,8 +85,7 @@ class PurchaseOrder
             `remarks` = '{$this->remarks}', 
              `grand_total` = '{$this->grand_total}', 
             `created_by` = '{$this->created_by}', 
-            `created_at` = '{$this->created_at}', 
-            `updated_at` = '{$this->updated_at}'
+            `created_at` = '{$this->created_at}'    
             WHERE `id` = '{$this->id}'";
 
         $db = new Database();

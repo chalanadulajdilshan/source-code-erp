@@ -61,7 +61,8 @@ if (isset($_POST['action']) && $_POST['action'] == 'create_purchase_order') {
     $PURCHASE_ORDER->purchase_date = $purchase_date;
     $PURCHASE_ORDER->remarks = $remarks;
     $PURCHASE_ORDER->grand_total = $grandTotal;
-    $PURCHASE_ORDER->created_at = date("Y-m-d H:i:s");;
+    $PURCHASE_ORDER->created_by = $_SESSION['id'];
+    $PURCHASE_ORDER->created_at = date("Y-m-d H:i:s");
 
     $poResult = $PURCHASE_ORDER->create();
 

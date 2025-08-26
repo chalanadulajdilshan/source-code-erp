@@ -95,5 +95,20 @@ class DepartmentMaster
         return $array;
     }
 
+    public function getByID($id)
+    {
+        $db = new Database();
+
+        $query = "SELECT * FROM `department_master` WHERE `id` = '$id'";
+        $result = $db->readQuery($query);
+        $array = [];
+
+        while ($row = mysqli_fetch_array($result)) {
+            array_push($array, $row);
+        }
+
+        return $array;
+    }   
+
 }
 ?>

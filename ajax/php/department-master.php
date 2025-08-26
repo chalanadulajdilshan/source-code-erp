@@ -59,4 +59,21 @@ if (isset($_POST['delete']) && isset($_POST['id'])) {
         echo json_encode(['status' => 'error']);
     }
 }
+
+// search by department
+if (isset($_POST['query'])) {
+    $search = $_POST['query'];
+
+    $DEPARTMENT_MASTER = new DepartmentMaster();
+    $departments = $DEPARTMENT_MASTER->searchDepartments($search);
+
+    if ($departments) {
+        echo json_encode($departments);  // Return the customers as a JSON string
+    } else {
+        echo json_encode([]);  // Return an empty array if no departments are found
+    }
+    exit;
+}
+
+
 ?>
