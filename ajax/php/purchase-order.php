@@ -198,15 +198,24 @@ if (isset($_POST['action']) && $_POST['action'] == 'get_purchase_order') {
 
     $PURCHASE_ORDER = new PurchaseOrder($_POST['id']);
     $PURCHASE_ORDER_ITEM = new PurchaseOrderItem(null);
+
+
     $items = $PURCHASE_ORDER_ITEM->getByPurchaseOrderId($_POST['id']);
 
     $enhancedItems = [];
 
     foreach ($items as $item) {
         $ITEM_MASTER = new ItemMaster($item['item_id']); // item_code must exist in item row
+        $BRAND_MASTER = new Brand($ITEM_MASTER->brand); // item_code must exist in item row
 
         $item['item_code'] = $ITEM_MASTER->code;
         $item['item_name'] = $ITEM_MASTER->name;
+
+        $item['item_discount'] = $ITEM_MASTER->discount;
+        $item['brand_discount'] = $BRAND_MASTER->discount;
+
+        $item['item_selling_price'] = $ITEM_MASTER->invoice_price;
+        $item['item_list_price'] = $ITEM_MASTER->list_price;
 
         $item['item_id'] = $ITEM_MASTER->id;
         $enhancedItems[] = $item;
@@ -218,6 +227,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'get_purchase_order') {
 
     echo json_encode(['status' => 'success', 'data' => $data]);
 }
+
 // Delete purchase order
 if (isset($_POST['action']) && $_POST['action'] == 'delete') {
 

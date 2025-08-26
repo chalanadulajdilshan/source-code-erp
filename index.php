@@ -14,6 +14,204 @@ include 'auth.php';
     <!-- include main CSS -->
     <?php include 'main-css.php' ?>
 
+    <style>
+        .chart-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+
+        .chart-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .chart-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #5b73e8, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .chart-subtitle {
+            font-size: 1.1rem;
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 500px;
+            margin: 30px 100px;
+            background: linear-gradient(145deg, #f8f9ff, #e8ecff);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: inset 0 2px 10px rgba(91, 115, 232, 0.1);
+        }
+
+        .bar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            height: 100%;
+            position: relative;
+        }
+
+        .bar-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            margin: 0 8px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .bar-wrapper:hover {
+            transform: translateY(-5px);
+        }
+
+        .bar {
+            width: 100%;
+            max-width: 50px;
+            background: linear-gradient(180deg, #5b73e8, #667eea);
+            border-radius: 8px 8px 4px 4px;
+            position: relative;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(91, 115, 232, 0.3);
+            transform-origin: bottom;
+            animation: barGrow 1.5s ease-out forwards;
+            animation-delay: calc(var(--index) * 0.1s);
+            height: 0;
+        }
+
+        @keyframes barGrow {
+            from {
+                height: 0;
+                transform: scaleY(0);
+            }
+
+            to {
+                height: var(--height);
+                transform: scaleY(1);
+            }
+        }
+
+        .bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #fff, #f0f2ff);
+            border-radius: 8px 8px 0 0;
+            opacity: 0.8;
+        }
+
+        .bar:hover {
+            background: linear-gradient(180deg, #6c82f0, #7589f2);
+            box-shadow: 0 6px 25px rgba(91, 115, 232, 0.4);
+            transform: scale(1.05);
+        }
+
+        .bar-value {
+            position: absolute;
+            top: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(91, 115, 232, 0.9);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .bar-wrapper:hover .bar-value {
+            opacity: 1;
+        }
+
+        .bar-label {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #495057;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .chart-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 60px;
+            pointer-events: none;
+        }
+
+        .grid-line {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: rgba(108, 117, 125, 0.15);
+        }
+
+        .grid-label {
+            position: absolute;
+            left: -50px;
+            transform: translateY(-50%);
+            font-size: 0.8rem;
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .chart-wrapper {
+                padding: 20px;
+                height: 400px;
+            }
+
+            .chart-title {
+                font-size: 2rem;
+            }
+
+            .bar {
+                max-width: 35px;
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 4px 15px rgba(91, 115, 232, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 6px 25px rgba(91, 115, 232, 0.5);
+            }
+
+            100% {
+                box-shadow: 0 4px 15px rgba(91, 115, 232, 0.3);
+            }
+        }
+    </style>
+
 </head>
 
 <body data-layout="horizontal" data-topbar="colored">
@@ -148,18 +346,17 @@ include 'auth.php';
                                     <p class="card-title-desc">Monthly sales performance</p>
                                 </div>
                                 <div class="card-body">
-                                    <div id="sales-analytics-chart" style="height: 300px;"></div>
+                                    <div class="chart-wrapper">
+                                        <div class="chart-grid" id="chart-grid"></div>
+                                        <div class="bar-container" id="bar-container">
+                                            <!-- Bars will be generated by JavaScript -->
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <!-- End Bar Chart -->
-
-
-
-
-
-
                 </div> <!-- container-fluid -->
             </div>
             <!-- End Page-content -->

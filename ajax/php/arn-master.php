@@ -100,6 +100,7 @@ if (isset($data['create'])) {
                 $stockMaster->department_id = $ARN->department;
                 $stockMaster->quantity = $item['rec_qty'];
                 $stockMaster->created_at = date("Y-m-d H:i:s");
+                $stockMaster->invoice_price = $item['invoice_price'];
                 $stockMaster->create();
             }
 

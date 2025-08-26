@@ -1,64 +1,165 @@
-var options1 = { series: [{ data: [25, 66, 41, 89, 63, 25, 44, 20, 36, 40, 54] }], fill: { colors: ["#5b73e8"] }, chart: { type: "bar", width: 70, height: 40, sparkline: { enabled: !0 } }, plotOptions: { bar: { columnWidth: "50%" } }, labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], xaxis: { crosshairs: { width: 1 } }, tooltip: { fixed: { enabled: !1 }, x: { show: !1 }, y: { title: { formatter: function (e) { return "" } } }, marker: { show: !1 } } }, chart1 = new ApexCharts(document.querySelector("#total-revenue-chart"), options1); chart1.render(); var options = { fill: { colors: ["#34c38f"] }, series: [70], chart: { type: "radialBar", width: 45, height: 45, sparkline: { enabled: !0 } }, dataLabels: { enabled: !1 }, plotOptions: { radialBar: { hollow: { margin: 0, size: "60%" }, track: { margin: 0 }, dataLabels: { show: !1 } } } }, chart = new ApexCharts(document.querySelector("#orders-chart"), options); chart.render(); options = { fill: { colors: ["#5b73e8"] }, series: [55], chart: { type: "radialBar", width: 45, height: 45, sparkline: { enabled: !0 } }, dataLabels: { enabled: !1 }, plotOptions: { radialBar: { hollow: { margin: 0, size: "60%" }, track: { margin: 0 }, dataLabels: { show: !1 } } } }; (chart = new ApexCharts(document.querySelector("#customers-chart"), options)).render(); var options2 = { series: [{ data: [25, 66, 41, 89, 63, 25, 44, 12, 36, 9, 54] }], fill: { colors: ["#f1b44c"] }, chart: { type: "bar", width: 70, height: 40, sparkline: { enabled: !0 } }, plotOptions: { bar: { columnWidth: "50%" } }, labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], xaxis: { crosshairs: { width: 1 } }, tooltip: { fixed: { enabled: !1 }, x: { show: !1 }, y: { title: { formatter: function (e) { return "" } } }, marker: { show: !1 } } }, chart2 = new ApexCharts(document.querySelector("#growth-chart"), options2); chart2.render();
+const salesData = [{
+    month: 'Jan',
+    value: 23000
+},
+{
+    month: 'Feb',
+    value: 11000
+},
+{
+    month: 'Mar',
+    value: 22000
+},
+{
+    month: 'Apr',
+    value: 27000
+},
+{
+    month: 'May',
+    value: 13000
+},
+{
+    month: 'Jun',
+    value: 22000
+},
+{
+    month: 'Jul',
+    value: 37000
+},
+{
+    month: 'Aug',
+    value: 21000
+},
+{
+    month: 'Sep',
+    value: 44000
+},
+{
+    month: 'Oct',
+    value: 22000
+},
+{
+    month: 'Nov',
+    value: 30000
+},
+{
+    month: 'Dec',
+    value: 45000
+}
+];
 
-// Sales Analytics Chart
-var options = {
-    chart: {
-        height: 339,
-        type: 'bar',
-        toolbar: {
-            show: false
-        }
-    },
-    plotOptions: {
-        bar: {
-            horizontal: false,
-            columnWidth: '45%',
-            endingShape: 'rounded'
-        },
-    },
-    dataLabels: {
-        enabled: false
-    },
-    colors: ["#5b73e8"],
-    series: [{
-        name: 'Sales Amount',
-        data: [23000, 11000, 22000, 27000, 13000, 22000, 37000, 21000, 44000, 22000, 30000, 45000]
-    }],
-    xaxis: {
-        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-        title: {
-            text: 'Months',
-            style: {
-                fontSize: '14px',
-                fontWeight: 'bold'
-            }
-        }
-    },
-    yaxis: {
-        title: {
-            text: 'Sales Amount (LKR)',
-            style: {
-                fontSize: '14px',
-                fontWeight: 'bold'
-            }
-        },
-        labels: {
-            formatter: function (value) {
-                return 'Rs. ' + value.toLocaleString();
-            }
-        }
-    },
-    tooltip: {
-        y: {
-            formatter: function (val) {
-                return 'Rs. ' + val.toLocaleString()
-            }
-        }
-    },
-    grid: {
-        borderColor: '#f1f1f1'
+function initChart() {
+    const barContainer = document.getElementById('bar-container');
+    const chartGrid = document.getElementById('chart-grid');
+
+    const maxValue = Math.max(...salesData.map(d => d.value));
+    const chartHeight = 420; // Available height for bars
+
+    // Create grid lines
+    for (let i = 0; i <= 5; i++) {
+        const gridLine = document.createElement('div');
+        gridLine.className = 'grid-line';
+        gridLine.style.bottom = `${(i / 5) * chartHeight}px`;
+
+        const gridLabel = document.createElement('div');
+        gridLabel.className = 'grid-label';
+        gridLabel.style.bottom = `${(i / 5) * chartHeight - 10}px`;
+        gridLabel.textContent = `Rs. ${((maxValue / 5) * i / 1000).toFixed(0)}K`;
+
+        chartGrid.appendChild(gridLine);
+        chartGrid.appendChild(gridLabel);
     }
-};
 
-var chart = new ApexCharts(document.querySelector("#sales-analytics-chart"), options);
-chart.render();
+    // Create bars
+    salesData.forEach((data, index) => {
+        const barWrapper = document.createElement('div');
+        barWrapper.className = 'bar-wrapper';
+
+        const bar = document.createElement('div');
+        bar.className = 'bar';
+        const barHeight = (data.value / maxValue) * chartHeight;
+        bar.style.setProperty('--height', `${barHeight}px`);
+        bar.style.setProperty('--index', index);
+
+        // Add pulse effect to highest bar
+        if (data.value === maxValue) {
+            bar.classList.add('pulse');
+        }
+
+        const barValue = document.createElement('div');
+        barValue.className = 'bar-value';
+        barValue.textContent = `Rs. ${data.value.toLocaleString()}`;
+
+        const barLabel = document.createElement('div');
+        barLabel.className = 'bar-label';
+        barLabel.textContent = data.month;
+
+        bar.appendChild(barValue);
+        barWrapper.appendChild(bar);
+        barWrapper.appendChild(barLabel);
+        barContainer.appendChild(barWrapper);
+
+        // Add click animation
+        barWrapper.addEventListener('click', () => {
+            bar.style.animation = 'none';
+            setTimeout(() => {
+                bar.style.animation = 'barGrow 0.6s ease-out';
+            }, 10);
+        });
+    });
+
+    // Calculate and display statistics
+    updateStatistics();
+}
+
+function updateStatistics() {
+    const totalSales = salesData.reduce((sum, data) => sum + data.value, 0);
+    const avgSales = totalSales / salesData.length;
+    const bestMonth = salesData.reduce((max, data) =>
+        data.value > max.value ? data : max, salesData[0]);
+
+    // Animate counting up
+    animateValue('total-sales', 0, totalSales, 2000, (val) => `Rs. ${val.toLocaleString()}`);
+    animateValue('avg-sales', 0, avgSales, 2000, (val) => `Rs. ${Math.round(val).toLocaleString()}`);
+
+    setTimeout(() => {
+        document.getElementById('best-month').textContent = bestMonth.month;
+    }, 1000);
+}
+
+function animateValue(elementId, start, end, duration, formatter) {
+    const element = document.getElementById(elementId);
+    const startTime = Date.now();
+
+    function update() {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const current = start + (end - start) * easeOutCubic(progress);
+
+        element.textContent = formatter ? formatter(current) : Math.round(current);
+
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        }
+    }
+
+    update();
+}
+
+function easeOutCubic(t) {
+    return 1 - Math.pow(1 - t, 3);
+}
+
+// Initialize the chart when the page loads
+document.addEventListener('DOMContentLoaded', initChart);
+
+// Add responsive behavior
+let resizeTimeout;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+        document.getElementById('bar-container').innerHTML = '';
+        document.getElementById('chart-grid').innerHTML = '';
+        initChart();
+    }, 300);
+});
