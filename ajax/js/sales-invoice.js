@@ -968,7 +968,7 @@ jQuery(document).ready(function () {
         removeRow(btn, code, qty, arnId);
     });
 
-    // REMOVE ITEM ROW
+    // REMOVE ITEM ROWinvoiceTable
     function removeRow(btn, code, qty, arnId) {
         $(btn).closest('tr').remove();
 
@@ -1006,6 +1006,57 @@ jQuery(document).ready(function () {
 
         $('#itemPayment').val(total.toFixed(2));
     }
+
+    // CANCEL INVOICE FUNCTION
+
+
+
+    $(document).on("click", ".cancel-category", function () {
+
+        const invoiceId = $('#invoice_id').val();
+
+        swal(
+            {
+                title: "Are you sure?",
+                text: "You will not be able to recover this approvel course request.!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, Cancel it!",
+                closeOnConfirm: false,
+            },
+            function () {
+                $.ajax({
+                    url: 'ajax/php/sales-invoice.php',
+                    type: "POST",
+                    data: {
+                        action: 'cancel',
+                        id: invoiceId
+                    },
+                    dataType: "JSON",
+                    success: function (jsonStr) {
+                        if (jsonStr.status) {
+                            swal({
+                                title: "Cancelled!",
+                                text: "Your approvel course request has been cancelled.",
+                                type: "success",
+                                timer: 2000,
+                                showConfirmButton: false,
+                            });
+
+                            $("#div" + id).remove();
+                            window.location.reload();
+                        }
+                    },
+                });
+            }
+        );
+    });
+
+
+
+
+
 
     // ADD CLICK EVENT LISTENER TO CUSTOMER NAME FIELD
     $('#customer_name').on('click', function () {

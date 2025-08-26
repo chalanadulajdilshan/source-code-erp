@@ -58,13 +58,13 @@ if (isset($_POST['create'])) {
     $COMPANY_PROFILE = new CompanyProfile($USER->company_id);
 
     // VAT calculation - only if company has VAT enabled
-    $vat = 0;
+    $tax = 0;
     if ($COMPANY_PROFILE->is_vat == 1) {
-        $vat = round(($netTotal * $COMPANY_PROFILE->vat_percentage) / 100, 2);
+        $tax = round(($netTotal * $COMPANY_PROFILE->vat_percentage) / 100, 2);
     }
 
     // Grand total = net total + VAT
-    $grandTotal = $netTotal + $vat;
+    $grandTotal = $netTotal + $tax;
 
     // Create invoice
     $SALES_INVOICE = new SalesInvoice(NULL);
@@ -83,7 +83,7 @@ if (isset($_POST['create'])) {
     $SALES_INVOICE->payment_type = $paymentType;
     $SALES_INVOICE->sub_total = $totalSubTotal;
     $SALES_INVOICE->discount = $totalDiscount;
-    $SALES_INVOICE->tax = $vat;
+    $SALES_INVOICE->tax = $tax;
     $SALES_INVOICE->grand_total = $grandTotal;
     $SALES_INVOICE->remark = !empty($_POST['remark']) ? $_POST['remark'] : null;
 
@@ -120,9 +120,6 @@ if (isset($_POST['create'])) {
 
             $SALES_ITEM->created_at = date("Y-m-d H:i:s");
             $SALES_ITEM->create();
-
-
-
 
             //stock master update quantity
             $STOCK_MASTER = new StockMaster(NULL);
@@ -172,7 +169,7 @@ if (isset($_POST['create'])) {
             "invoice_id" => $invoiceTableId,
             "sub_total" => $totalSubTotal,
             "discount" => $totalDiscount,
-            "vat" => $vat,
+            "vat" => $tax,
             "grand_total" => $grandTotal
         ]);
         exit();
@@ -232,6 +229,22 @@ if (isset($_POST['filter'])) {
     exit;
 }
 
+if (isset($_POST['get_by_id'])) {
+
+    $SALES_INVOICE = new SalesInvoice();
+    $response = $SALES_INVOICE->getByID($_POST['id']);
+
+    $CUSTOMER_MASTER = new CustomerMaster($response['customer_id']);
+    $response['customer_code'] = $CUSTOMER_MASTER->code;
+    $response['customer_name'] = $CUSTOMER_MASTER->name;
+    $response['customer_address'] = $CUSTOMER_MASTER->address;
+    $response['customer_mobile'] = $CUSTOMER_MASTER->mobile_number;
+
+    echo json_encode($response);
+    exit;
+}
+
+
 
 // Delete invoice
 if (isset($_POST['delete']) && isset($_POST['id'])) {
@@ -250,14 +263,69 @@ if (isset($_POST['delete']) && isset($_POST['id'])) {
 if (isset($_POST['action']) && $_POST['action'] == 'latest') {
     $SALES_INVOICE = new SalesInvoice();
     $invoices = $SALES_INVOICE->latest();
+
     echo json_encode(["data" => $invoices]);
     exit();
 }
 
-if (isset($_POST['action']) && $_POST['action'] == 'search') {
-    $q = trim($_POST['q']);
-    $SALES_INVOICE = new SalesInvoice();
-    $invoices = $SALES_INVOICE->search($q);
-    echo json_encode(["data" => $invoices]);
-    exit();
+
+// Handle cancel invoice action
+if (isset($_POST['action']) && $_POST['action'] == 'cancel') {
+
+
+    $items = json_decode($_POST['items'], true); // array of items 
+    $invoiceId = $_POST['id'];
+
+    $SALES_INVOICE = new SalesInvoice(NULL);
+
+
+    $result = $SALES_INVOICE->cancel($invoiceId);
+
+    if ($result) {
+        $data = array("status" => TRUE);
+        header('Content-type: application/json');
+        echo json_encode($data);
+
+        foreach ($items as $item) {
+            $STOCK_MASTER = new StockMaster(NULL);
+            $currentQty = $STOCK_MASTER->getAvailableQuantity($_POST['department_id'], $item['item_id']);
+            $newQty = $currentQty + $item['qty'];
+            $STOCK_MASTER->quantity = $newQty;
+            $STOCK_MASTER->updateQtyByItemAndDepartment($_POST['department_id'], $item['item_id'], $newQty);
+        }
+
+        // Update stock transaction with ARN reference if available
+        $STOCK_TRANSACTION = new StockTransaction(NULL);
+        $STOCK_TRANSACTION->item_id = $item['item_id'];
+
+        // Update stock_item_tmp for ARN-based inventorysss           
+        $STOCK_ITEM_TMP = new StockItemTmp(NULL);
+        // Use negative qty to Increase stock
+        $qtyToAdd = abs($item['qty']);
+        $STOCK_ITEM_TMP->updateQtyByArnId(
+            $arn_id,
+            $item['item_id'],
+            $_POST['department_id'],
+            $qtyToAdd
+        );
+
+        $STOCK_TRANSACTION->type = 14; // get this id from stock adjustment type table PK
+        $STOCK_TRANSACTION->date = date("Y-m-d");
+        $STOCK_TRANSACTION->qty_in = $item['qty'];
+        $STOCK_TRANSACTION->qty_out = 0;
+        $STOCK_TRANSACTION->remark = "INVOICE CANCELLED #$invoiceId " . (!empty($item['arn_id']) ? "(ARN: {$item['arn']}) " : "") . "Cancelled " . date("Y-m-d H:i:s");
+        $STOCK_TRANSACTION->created_at = date("Y-m-d H:i:s");
+        $STOCK_TRANSACTION->create();
+
+
+        //audit log
+        $AUDIT_LOG = new AuditLog(NUll);
+        $AUDIT_LOG->ref_id = $invoiceId;
+        $AUDIT_LOG->ref_code = $_POST['invoice_no'];
+        $AUDIT_LOG->action = 'CANCEL';
+        $AUDIT_LOG->description = 'CANCEL INVOICE NO #' . $invoiceTableId;
+        $AUDIT_LOG->user_id = $_SESSION['id'];
+        $AUDIT_LOG->created_at = date("Y-m-d H:i:s");
+        $AUDIT_LOG->create();
+    }
 }

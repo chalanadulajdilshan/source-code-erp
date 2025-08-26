@@ -340,6 +340,7 @@ jQuery(document).ready(function () {
 
     // Render table rows
     function renderInvoices(invoices) {
+        console.log(invoices);
         let rows = "";
         if (invoices.length > 0) {
             invoices.forEach(inv => {
@@ -348,7 +349,7 @@ jQuery(document).ready(function () {
                     <td>${inv.id}</td>
                     <td>${inv.invoice_no}</td>
                     <td>${inv.invoice_date}</td>
-                    <td>${inv.name}</td>
+                    <td>${inv.department_name}</td>
                     <td>${inv.customer_name}</td>
                     <td>${inv.grand_total}</td>
                 </tr>
@@ -363,7 +364,7 @@ jQuery(document).ready(function () {
         $("#invoiceTableBody tr").on("click", function () {
             const id = $(this).data("id");
             if (id) {
-                fetchInvoiceItems(id);
+                fetchInvoiceData(id);
             }
         });
     }
@@ -395,99 +396,6 @@ jQuery(document).ready(function () {
         $('#invoiceSearch').focus();
     });
 
-    //-----------------SALES INVOICE LOARD DATA END---------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    //     //sales invoice get same formate for all
-    //     function initInvoiceTable() {
-
-
-    //         var table = $('#invoiceTableData').DataTable({
-    //             processing: true,
-    //             serverSide: true,
-    //             destroy: true, // Re-initializes cleanly when called again
-    //             ajax: {
-    //                 url: "ajax/php/sales-invoice.php",
-    //                 type: "POST",
-    //                 data: function (d) {
-    //                     d.filter = true;  // You can adjust this if needed
-    //                 },
-    //                 dataSrc: function (json) {
-    //                     console.log("Response Data:", json); // Check the server response here
-    //                     return json.data || [];  // Ensure data is in the expected format
-    //                 },
-    //                 error: function (xhr, error, thrown) {
-    //                     console.error("Server Error:", xhr.responseText, error, thrown);
-    //                 }
-    //             },
-    //             columns: [
-    //                 { data: "id", title: "#ID" },
-    //                 { data: "invoice_no", title: "Invoice No" },
-    //                 { data: "invoice_date", title: "Date" },
-    //                 { data: "department", title: "Department" },
-    //                 { data: "customer", title: "Customer" },
-    //                 { data: "grand_total", title: "Grand Total" }
-    //             ],
-    //             order: [[0, 'desc']], // Sort by #ID (Descending)
-    //             pageLength: 100
-    //         });
-
-    //         // Row click to populate form
-    //         $('#invoiceTableData tbody').off('click').on('click', 'tr', function () {
-    //             var data = table.row(this).data();
-    //             if (!data) return;
-
-    //             // Populate form fields safely
-    //             $('#invoice_id').val(data.id || '');
-    //             $('#invoice_no').val(data.invoice_no || '');
-    //             $('#invoice_date').val(data.invoice_date || '');
-    //             $('#department_id').val(data.department_id || '').trigger('change');
-    //             $('#customer_id').val(data.customer_id || '').trigger('change');
-    //             $('#sale_type').val(data.sale_type || '').trigger('change');
-    //             $('#discount_type').val(data.discount_type || '').trigger('change');
-    //             $('#payment_type').val(data.payment_type || '').trigger('change');
-    //             $('#sub_total').val(data.sub_total || '');
-    //             $('#discount').val(data.discount || '');
-    //             $('#tax').val(data.tax || '');
-    //             $('#grand_total').val(data.grand_total || '');
-    //             $('#remark').val(data.remark || '');
-
-    //             // Fetch items related to invoice
-    //             fetchInvoiceItems(data.id);
-
-    //             $("#create").hide();
-    //             $('#invoiceModal').modal('hide');
-    //         });
-
-
-    //     }
-
     //     //  FETCH INVOICE ITEMS
     function fetchInvoiceItems(invoiceId) {
         $.ajax({
@@ -511,7 +419,7 @@ jQuery(document).ready(function () {
                                 <td>${parseFloat(item.price - (item.price * (item.discount / 100))).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                                 <td>${parseFloat(item.total).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                                 <td>
-     -
+                                    <button type="button" class="btn btn-sm btn-danger btn-remove-item" data-code="${item.item_code}" data-qty="${item.quantity}" data-arn-id="${item.id}">Remove</button>
                                 </td>
                             </tr>
                         `;
@@ -525,7 +433,75 @@ jQuery(document).ready(function () {
             },
             error: function (xhr, status, error) {
                 console.error('Failed to fetch items:', error);
-                $('#invoiceItemsBody').html(`<tr><td colspan="8" class="text-center text-danger">Error loading items</td></tr>`);
+                $('#invoiceItemsBody').html(`<tr><td colspan="8" class="text-center text-danger">Error loading items </td></tr>`);
+            }
+        });
+    }
+
+    function fetchInvoiceData(invoiceId) {
+        $.ajax({
+            url: 'ajax/php/sales-invoice.php',
+            type: 'POST',
+            data: {
+                get_by_id: true,
+                id: invoiceId
+            },
+            dataType: 'json',
+            success: function (response) {
+                console.log('API Response:', response);
+
+                // Close the modal first
+                $('#invoiceModal').modal('hide');
+
+                // Reset form first to clear any previous values
+                $('#form-data')[0].reset();
+
+                // Set payment type radio button
+                $('input[name="payment_type"]').prop('checked', false);
+                $('input[name="payment_type"][value="' + (response.payment_type || '1') + '"]').prop('checked', true);
+
+                // Set basic information
+                $('#invoice_id').val(response.id || '');
+                $('#invoice_no').val(response.invoice_no || '');
+                $('#company_id').val(response.company_id || '').trigger('change');
+
+                // Set customer information
+                $('#customer_code').val(response.customer_code || '');
+                $('#customer_name').val(response.customer_name || '');
+                $('#customer_address').val(response.customer_address || '');
+                $('#customer_mobile').val(response.customer_mobile || '');
+
+                // Set other fields
+                $('#vat_type').val(response.vat_type || '').trigger('change');
+                $('#subTotal').val(parseFloat(response.sub_total || 0).toFixed(2));
+                $('#disTotal').val(parseFloat(response.discount || 0).toFixed(2));
+                $('#tax').val(parseFloat(response.tax || 0).toFixed(2));
+                $('#finalTotal').val(parseFloat(response.grand_total || 0).toFixed(2));
+                $('#remark').val(response.remark || '');
+
+                // Trigger change events for any dependent fields
+                $('select').trigger('change');
+
+                // Load invoice items
+                fetchInvoiceItems(invoiceId);
+
+                // Show delete button if invoice is not cancelled
+                if (response.status !== 'cancelled') {
+                    $('.delete-category').show();
+                } else {
+                    $('.delete-category').hide();
+                }
+
+                // Show cancel button if invoice is not cancelled
+                if (response.status !== 'cancelled') {
+                    $('.cancel-category').show();
+                } else {
+                    $('.cancel-category').hide();
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Error fetching invoice data:', error);
+                alert('Failed to load invoice data. Please try again.');
             }
         });
     }

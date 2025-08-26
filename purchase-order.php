@@ -410,7 +410,6 @@ $po_id = $COMPANY_PROFILE_DETAILS->company_code . '/PO/00/0' . ($lastId + 1);
                                             data-address="<?= htmlspecialchars($purchase_order['address']); ?>"
                                             data-brand="<?= htmlspecialchars($purchase_order['brand']); ?>"
                                             data-invoice_no="<?= htmlspecialchars($purchase_order['invoice_no']); ?>"
-                                            data-ci_no="<?= htmlspecialchars($purchase_order['ci_no']); ?>"
                                             data-country="<?= htmlspecialchars($purchase_order['country']); ?>"
                                             data-department="<?= htmlspecialchars($purchase_order['department']); ?>"
                                             data-grand_total="<?= htmlspecialchars($purchase_order['grand_total']); ?>"
