@@ -231,8 +231,11 @@ jQuery(document).ready(function () {
             <td><input type="number" name="items[][actual_cost]" class="form-control form-control-sm" value="${actualCost.toFixed(2)}" readonly></td>
             <td><input type="number" name="items[][unit_total]" class="form-control form-control-sm" value="${unitTotal.toFixed(2)}" readonly></td>
             <td><input type="number" name="items[][list_price]" class="form-control form-control-sm" value="${listPrice.toFixed(2)}" readonly></td>
-            <td><input type="number" name="items[][invoice_price]" class="form-control form-control-sm" value="${InvoicePrice.toFixed(2)}" readonly></td>
-            <td><button class="btn btn-danger btn-sm deleteRowBtn">Delete</button></td>
+            <td>
+                <button class="btn btn-danger btn-sm deleteRowBtn">
+                    <i class="uil uil-trash-alt me-1"></i>
+                </button>
+            </td>
         </tr>
         `;
 
@@ -309,6 +312,17 @@ jQuery(document).ready(function () {
             loadSupplierById(supplierId);
         }
 
+
+        let discountedPrice = 0;
+
+        function applyDiscount(value, discount) {
+            const rate = parseFloat(discount);
+            if (!rate || rate <= 0) {
+                return value; // skip if 0, null, empty, or invalid
+            }
+            return value - (value * rate / 100);
+        }
+
         // Fetch item details
         $.ajax({
             url: 'ajax/php/purchase-order.php',
@@ -329,7 +343,17 @@ jQuery(document).ready(function () {
                         items.forEach((item, index) => {
                             const price = parseFloat(item.unit_price) || 0;
                             const qty = parseFloat(item.quantity) || 0;
+
+                            discountedPrice = applyDiscount(price, item.brand_discount);
+                            discountedPrice = applyDiscount(discountedPrice, item.item_discount);
+                            discountedPrice = applyDiscount(discountedPrice, item.dis3);
+                            discountedPrice = applyDiscount(discountedPrice, item.dis4);
+                            discountedPrice = applyDiscount(discountedPrice, item.dis5);
+
+                            const actualCost = discountedPrice;
+
                             const unitTotal = price * qty;
+
 
                             const row = `
                             <tr data-item-id="${item.item_id}">
@@ -340,14 +364,20 @@ jQuery(document).ready(function () {
                                 <td><input type="number" name="items[${index}][order_qty]" class="form-control form-control-sm" readonly value="${qty}"></td>
 
                                 <td><input type="number" name="items[${index}][rec_qty]" class="form-control form-control-sm" value="${item.rec_qty || 0}"></td>
-                                <td><input type="number" step="0.01" name="items[${index}][com_cost]" class="form-control form-control-sm" value="${item.com_cost || 0}"></td>
-                                <td><input type="number" step="0.01" name="items[${index}][dis1]" class="form-control form-control-sm me-1" value="${item.dis1 || 0}" placeholder="D1"></td>
-                                <td><input type="number" step="0.01" name="items[${index}][dis2]" class="form-control form-control-sm" value="${item.dis2 || 0}" placeholder="D2"></td>
+                                <td><input type="number" step="0.01" name="items[${index}][list_price]" class="form-control form-control-sm" value="${item.item_list_price || 0}"></td>
+                                <td><input type="number" step="0.01" name="items[${index}][brand_discount]" class="form-control form-control-sm me-1" value="${item.brand_discount || 0}" placeholder="D1"></td>
+                                <td><input type="number" step="0.01" name="items[${index}][item_discount]" class="form-control form-control-sm" value="${item.item_discount || 0}" placeholder="D2"></td>
                                 <td><input type="number" step="0.01" name="items[${index}][dis3]" class="form-control form-control-sm" value="${item.dis3 || 0}" placeholder="D3"></td>
-                                <td><input type="number" step="0.01" name="items[${index}][actual_cost]" class="form-control form-control-sm" value="${item.actual_cost || 0}"></td>
+                                <td><input type="number" step="0.01" name="items[${index}][dis4]" class="form-control form-control-sm" value="${item.dis4 || 0}" placeholder="D4"></td>
+                                <td><input type="number" step="0.01" name="items[${index}][dis5]" class="form-control form-control-sm" value="${item.dis5 || 0}" placeholder="D5"></td>
+                                <td><input type="number" step="0.01" name="items[${index}][actual_cost]" class="form-control form-control-sm" value="${actualCost.toFixed(2)}"></td>
                                 <td><input type="number" step="0.01" name="items[${index}][unit_total]" class="form-control form-control-sm" value="${unitTotal.toFixed(2)}" readonly></td>
-                                <td><input type="number" step="0.01" name="items[${index}][list_price]" class="form-control form-control-sm" value="${item.list_price || 0}"></td>
-                                <td><button type="button" class="btn btn-sm btn-danger delete-purchase-order-item" data-item-id="${item.id}"><i class="bi bi-trash"></i></button></td>
+                                <td><input type="number" step="0.01" name="items[${index}][list_price]" class="form-control form-control-sm" value="${item.item_selling_price}"></td>
+                               <td>
+                                <button class="btn btn-danger btn-sm deleteRowBtn">
+                                    <i class="uil uil-trash-alt me-1"></i>
+                                </button>
+                                </td>
                             </tr>
                         `;
                             $('#itemTableBody').append(row);

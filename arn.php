@@ -472,7 +472,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
                                                         <th>Dis 5%</th>
                                                         <th>Actual Cost</th>
                                                         <th>Unit Total</th>
-                                                        <th>Invoice Price</th>
+                                                        <th>Selling Price</th>
                                                         <th>Action</th>
                                                     </tr>
                                                 </thead>
