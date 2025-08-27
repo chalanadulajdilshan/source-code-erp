@@ -37,7 +37,7 @@ jQuery(document).ready(function () {
     });
 
     // BIND ENTER KEY TO ADD ITEM
-    $('#itemCode, #itemName, #itemPrice, #itemQty, #itemDiscount, #itemPayment').on('keydown', function (e) {
+    $('#itemCode, #itemName, #itemPrice, #itemQty, #itemDiscount').on('keydown', function (e) {
         if (e.key === "Enter") {
             e.preventDefault();
             addItem();
@@ -285,10 +285,8 @@ jQuery(document).ready(function () {
         $('#itemCode').val(itemCode);
         $('#itemName').val(itemName);
 
-
         $('#itemQty').val('');
         $('#itemDiscount').val('');
-        $('#itemPayment').val('');
 
 
 
@@ -345,7 +343,6 @@ jQuery(document).ready(function () {
         // Clear qty, discount, payment
         $('#itemQty').val('');
         $('#itemDiscount').val('');
-        $('#itemPayment').val('');
         $('#payment_type').prop('disabled', true);
 
         calculatePayment();
@@ -368,7 +365,6 @@ jQuery(document).ready(function () {
         $('#itemName').val('');
         $('#itemQty').val('');
         $('#itemPrice').val('');
-        $('#itemPayment').val('');
         $('#available_qty').val(0);
 
     });
@@ -436,7 +432,7 @@ jQuery(document).ready(function () {
     // OPEN PAYMENT MODEL AND PRE-FILL TOTAL
     $('#payment').on('click', function () {
         const totalRaw = $('#finalTotal').val();
-
+        const invoiceId = $('#invoice_id').val();
 
         const total = parseFloat(totalRaw.replace(/,/g, ''));
 
@@ -451,7 +447,7 @@ jQuery(document).ready(function () {
             return;
         }
 
-
+        $('#modal_invoice_id').val(invoiceId);
         $('#modalFinalTotal').val(total.toFixed(2));
         $('#amountPaid').val('');
         $('#balanceAmount').val('0.00').removeClass('text-danger');
@@ -558,7 +554,6 @@ jQuery(document).ready(function () {
             const price = parseFloat($(this).find('td:eq(2)').text()) || 0;
             const qty = parseFloat($(this).find('td:eq(3)').text()) || 0;
             const discount = parseFloat($(this).find('td:eq(4)').text()) || 0;
-            const payment = parseFloat($(this).find('td:eq(5)').text()) || 0;
             const totalItem = parseFloat($(this).find('td:eq(6)').text()) || 0;
             const item_id = $(this).find('input[name="item_id[]"]').val();
             const arn_no = $(this).find('input[name="arn_ids[]"]').val();
@@ -573,7 +568,6 @@ jQuery(document).ready(function () {
                     price,
                     qty,
                     discount,
-                    payment,
                     total: totalItem,
                     cost: arn_cost, // Using ARN cost instead of price
                     arn_no
@@ -798,7 +792,6 @@ jQuery(document).ready(function () {
         const price = parseFloat($('#itemPrice').val()) || 0;
         const qty = parseFloat($('#itemQty').val()) || 0;
         const discount = parseFloat($('#itemDiscount').val()) || 0;
-        const payment = parseFloat($('#itemPayment').val()) || 0;
         let availableQty = parseFloat($('#availableQty').val()) || 0;
 
 
@@ -880,7 +873,6 @@ jQuery(document).ready(function () {
                 <td class="item-price">${price.toFixed(2)}</td>
                 <td class="item-qty">${qty}</td>
                 <td class="item-discount">${discount}</td>
-                <td>${payment.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                 <td>${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                 <td>
                     <button type="button" class="btn btn-sm btn-danger btn-remove-item" data-code="${code}" data-qty="${qty}" data-arn-id="${arnId}">Remove</button>
@@ -892,7 +884,7 @@ jQuery(document).ready(function () {
 
         // Clear input fields
         updateFinalTotal()
-        $('#itemCode, #itemName, #itemPrice, #itemQty, #itemDiscount, #itemPayment, #item_id').val('');
+        $('#itemCode, #itemName, #itemPrice, #itemQty, #itemDiscount, #item_id').val('');
 
 
         const newUsedQty = usedQty + qty;
@@ -1009,8 +1001,6 @@ jQuery(document).ready(function () {
 
     // CANCEL INVOICE FUNCTION
 
-
-
     $(document).on("click", ".cancel-category", function () {
 
         const invoiceId = $('#invoice_id').val();
@@ -1053,11 +1043,6 @@ jQuery(document).ready(function () {
         );
     });
 
-
-
-
-
-
     // ADD CLICK EVENT LISTENER TO CUSTOMER NAME FIELD
     $('#customer_name').on('click', function () {
         // Clear customer-related fields
@@ -1069,5 +1054,6 @@ jQuery(document).ready(function () {
         // Set focus back to customer name for better UX
         $(this).val('').focus();
     });
+
 
 });

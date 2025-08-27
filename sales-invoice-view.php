@@ -2,6 +2,16 @@
 <?php
 include 'class/include.php';
 include './auth.php';
+
+$invoice_id = $_GET['invoice_id'] ?? null;
+
+$SALES_INVOICE = new SalesInvoice($invoice_id);
+
+$COMPANY_PROFILE_DETAILS = new CompanyProfile($SALES_INVOICE->company_id);
+$DEPARTMENT_MASTER = new DepartmentMaster($SALES_INVOICE->department_id);
+$SALES_INVOICE_ITEMS = new SalesInvoiceItem($invoice_id);
+$CUSTOMER = new CustomerMaster($SALES_INVOICE->customer_id);
+
 ?>
 
 <html lang="en">
@@ -32,7 +42,7 @@ include './auth.php';
                 <div class="container-fluid">
                     <div class="row mb-4">
                         <div class="col-md-8 d-flex align-items-center flex-wrap gap-2">
-                            <a href="#" class="btn btn-success" id="new">
+                            <!-- <a href="#" class="btn btn-success" id="new">
                                 <i class="uil uil-plus me-1"></i> New
                             </a>
 
@@ -56,7 +66,7 @@ include './auth.php';
                                 <a href="#" class="btn btn-danger cancel-category" style="display: none;">
                                     <i class="uil uil-ban me-1"></i> Cancel
                                 </a>
-                            <?php endif; ?>
+                            <?php endif; ?> -->
 
                         </div>
 
@@ -120,11 +130,11 @@ include './auth.php';
                                                 <label for="InvoiceCode" class="form-label">Invoice No</label>
                                                 <div class="input-group mb-3">
                                                     <input id="invoice_no" name="invoice_no" type="text"
-                                                        class="form-control" readonly>
-                                                    <button class="btn btn-info" type="button" data-bs-toggle="modal"
+                                                        class="form-control" value="<?php echo $SALES_INVOICE->invoice_no ?>" readonly>
+                                                    <!-- <button class="btn btn-info" type="button" data-bs-toggle="modal"
                                                         data-bs-target="#invoiceModal">
                                                         <i class="uil uil-search me-1"></i>
-                                                    </button>
+                                                    </button> -->
                                                 </div>
                                             </div>
                                             <!-- INVOICE ID HIDDEN -->
@@ -135,14 +145,9 @@ include './auth.php';
                                                 <div class="input-group mb-3">
                                                     <select id="company_id" name="company_id" class="form-select">
 
-                                                        <?php
-                                                        $COMPANY = new CompanyProfile(NULL);
-                                                        foreach ($COMPANY->getActiveCompany() as $company) {
-                                                        ?>
-                                                            <option value="<?php echo $company['id'] ?>">
-                                                                <?php echo $company['name'] ?>
-                                                            </option>
-                                                        <?php } ?>
+                                                        <option value="<?php echo $COMPANY_PROFILE_DETAILS->id ?>">
+                                                            <?php echo $COMPANY_PROFILE_DETAILS->name ?>
+                                                        </option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -152,12 +157,8 @@ include './auth.php';
                                             <div class="col-md-2">
                                                 <label for="customerCode" class="form-label">Customer Code</label>
                                                 <div class="input-group mb-3">
-                                                    <input id="customer_code" name="customer_code" type="text"
+                                                    <input id="customer_code" name="customer_code" value="<?php echo $CUSTOMER->code ?>" type="text"
                                                         class="form-control" readonly>
-                                                    <button class="btn btn-info" type="button" data-bs-toggle="modal"
-                                                        data-bs-target="#customerModal">
-                                                        <i class="uil uil-search me-1"></i>
-                                                    </button>
                                                 </div>
                                             </div>
 
@@ -166,7 +167,7 @@ include './auth.php';
                                             <div class="col-md-3">
                                                 <label for="customerName" class="form-label">Customer Name <span class="text-danger">*</span></label>
                                                 <div class="input-group mb-3">
-                                                    <input id="customer_name" name="customer_name" type="text"
+                                                    <input id="customer_name" name="customer_name" value="<?php echo $CUSTOMER->name ?>" type="text"
                                                         class="form-control" placeholder="Enter Customer Name">
                                                 </div>
                                             </div>
@@ -175,7 +176,7 @@ include './auth.php';
                                                 <label for="customerAddress" class="form-label">Customer
                                                     Address</label>
                                                 <div class="input-group mb-3">
-                                                    <input id="customer_address" name="customer_address" type="text"
+                                                    <input id="customer_address" name="customer_address" value="<?php echo $CUSTOMER->address ?>" type="text"
                                                         class="form-control" placeholder="Enter customer address">
                                                 </div>
                                             </div>
@@ -183,7 +184,7 @@ include './auth.php';
                                             <div class="col-md-2">
                                                 <label for="mobileNumber" class="form-label">Mobile Number</label>
                                                 <div class="input-group mb-3">
-                                                    <input id="customer_mobile" name="customer_mobile" type="text"
+                                                    <input id="customer_mobile" name="customer_mobile" value="<?php echo $CUSTOMER->mobile_number ?>" type="text"
                                                         class="form-control" placeholder="Enter Mobile Number">
                                                 </div>
                                             </div>
@@ -194,14 +195,8 @@ include './auth.php';
                                                 <label for="vat_type" class="form-label">Vat Type</label>
                                                 <div class="input-group mb-3">
                                                     <select id="vat_type" name="vat_type" class="form-select">
-                                                        <?php
-                                                        $VAT_TYPE = new VatType(NULL);
-                                                        foreach ($VAT_TYPE->getActiveTypes() as $vat_type) {
-                                                        ?>
-                                                            <option value="<?php echo $vat_type['id'] ?>">
-                                                                <?php echo $vat_type['name'] ?>
-                                                            </option>
-                                                        <?php } ?>
+                                                        <option value="1">VAT</option>
+                                                        <option value="2">Non-VAT</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -210,14 +205,9 @@ include './auth.php';
                                                 <label for="department" class="form-label">Department</label>
                                                 <div class="input-group mb-3">
                                                     <select id="department_id" name="department_id" class="form-select">
-                                                        <?php
-                                                        $DEPARTMENT_MASTER = new DepartmentMaster(NULL);
-                                                        foreach ($DEPARTMENT_MASTER->getActiveDepartment() as $departments) {
-                                                        ?>
-                                                            <option value="<?php echo $departments['id'] ?>">
-                                                                <?php echo $departments['name'] ?>
-                                                            </option>
-                                                        <?php } ?>
+                                                        <option value="<?php echo $DEPARTMENT_MASTER->id ?>">
+                                                            <?php echo $DEPARTMENT_MASTER->name ?>
+                                                        </option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -242,10 +232,7 @@ include './auth.php';
                                                 <div class="input-group mb-3">
                                                     <input id="quotation_ref_no" name="quotation_ref_no" type="text"
                                                         class="form-control" placeholder="Select Quotation ref No" readonly>
-                                                    <button class="btn btn-info" type="button" data-bs-toggle="modal"
-                                                        data-bs-target="#quotationModel">
-                                                        <i class="uil uil-search me-1"></i>
-                                                    </button>
+
                                                 </div>
                                                 <input type="hidden" id="quotation_id" name="quotation_id" />
                                             </div>
@@ -286,69 +273,16 @@ include './auth.php';
                                                     <input type="number" id="itemDiscount" class="form-control"
                                                         placeholder="Discount" oninput="calculatePayment()">
                                                 </div>
+                                                <div class="col-md-2">
+                                                    <label class="form-label">Payment</label>
+                                                    <input type="number" id="itemPayment" class="form-control"
+                                                        placeholder="Payment" readonly>
+                                                </div>
                                                 <div class="col-md-1">
                                                     <button type="button" class="btn btn-success w-100"
                                                         id="addItemBtn">Add</button>
                                                 </div>
                                             </div>
-
-
-
-                                            <!-- dag item Table -->
-                                            <div class="table-responsive ">
-
-                                                <table class="table table-bordered" id="dagTableHide"
-                                                    style="display:none">
-
-                                                    <thead class="table-light">
-                                                        <tr>
-                                                            <th>Vehicle No</th>
-                                                            <th>Belt Design</th>
-                                                            <th>Barcode</th>
-                                                            <th>Qty</th>
-                                                            <th>Price</th>
-                                                            <th>Total</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody id="dagItemsBodyInvoice">
-                                                        <tr id="noDagItemRow">
-                                                            <td colspan="6" class="text-center text-muted">No items
-                                                                added</td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-
-
-                                            <!-- Quotation item Table -->
-                                            <div class="table-responsive ">
-
-                                                <table class="table table-bordered" id="quotationTableHide"
-                                                    style="display:none">
-
-                                                    <thead class="table-light">
-                                                        <tr>
-                                                            <th>Code</th>
-                                                            <th>Name</th>
-                                                            <th>Price</th>
-                                                            <th>Qty</th>
-                                                            <th>Discount</th>
-                                                            <th>Amount</th>
-                                                            <th class="th_vat hidden">Vat Amount</th>
-                                                            <th>Total</th>
-                                                            <th>Action</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody id="quotationItemsBody">
-                                                        <tr id="noQuotationItemRow">
-                                                            <td colspan="6" class="text-center text-muted">No items
-                                                                added</td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-
-
                                             <!-- Table -->
                                             <div class="table-responsive mt-4">
                                                 <table class="table table-bordered" id="invoiceTable">
@@ -360,15 +294,20 @@ include './auth.php';
                                                             <th>Qty</th>
                                                             <th>Discount</th>
                                                             <th>Total</th>
-                                                            <th>Action</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody id="invoiceItemsBody">
-                                                        <tr id="noInvoiceItemRow">
-                                                            <td colspan="8" class="text-center text-muted">
-                                                                No items
-                                                                added</td>
-                                                        </tr>
+                                                        <?php foreach ($SALES_INVOICE_ITEMS->getItemsByInvoiceId($invoice_id) as $item) { ?>
+                                                            <tr>
+                                                                <td><?php echo $item['item_code'] ?></td>
+                                                                <td><?php echo $item['item_name'] ?></td>
+                                                                <td><?php echo $item['price'] ?></td>
+                                                                <td><?php echo $item['quantity'] ?></td>
+                                                                <td><?php echo $item['discount'] ?></td>
+                                                                <td><?php echo $item['total'] ?></td>
+
+                                                            </tr>
+                                                        <?php } ?>
                                                     </tbody>
 
                                                 </table>
@@ -379,61 +318,35 @@ include './auth.php';
                                             <hr>
                                             <div class="row">
                                                 <div class="col-md-5">
-                                                    <div class="  p-2 border rounded bg-light"
-                                                        style="max-width: 500px;">
-                                                        <div class="row mb-2">
-                                                            <div class="col-5">
-                                                                <input type="text" class="form-control text_purchase3"
-                                                                    value="Stock Level" disabled>
-                                                            </div>
-                                                            <div class="col-7">
-                                                                <input type="text"
-                                                                    class="form-control text-danger fw-bold"
-                                                                    id="available_qty" disabled>
-                                                            </div>
-                                                        </div>
+                                                    <div class="p-2 border rounded bg-light" style="max-width: 500px;">
 
-                                                        <div class="row mb-2">
+                                                        <div class="row mb-2 align-items-center">
                                                             <div class="col-5">
-                                                                <input type="text" class="form-control text_purchase3"
-                                                                    value="Credit Period  " disabled>
+                                                                <label class="form-label">Credit Period</label>
                                                             </div>
                                                             <div class="col-7">
                                                                 <select class="form-control select2">
-                                                                    <option> -- Select Credit Period --
-                                                                    </option>
-                                                                    <?php
-                                                                    $CREDIT_PERIOD = new CreditPeriod(NULL);
-                                                                    foreach ($CREDIT_PERIOD->getCreditPeriodByStatus(1) as $Credit_period) {
-                                                                    ?>
-                                                                        <option value="<?php echo $Credit_period['id'] ?>">
-                                                                            <?php echo $Credit_period['days'] . ' ' . "Days" ?>
-                                                                        </option>
-                                                                    <?php } ?>
+                                                                    <option>-- Select Credit Period --</option>
                                                                 </select>
                                                             </div>
                                                         </div>
-                                                        <div class="row mb-2">
+
+                                                        <div class="row mb-2 align-items-center">
                                                             <div class="col-5">
-                                                                <input type="text" class="form-control text_purchase3"
-                                                                    value="Invoice Remarks  " disabled>
+                                                                <label class="form-label">Invoice Remarks</label>
                                                             </div>
                                                             <div class="col-7">
                                                                 <select class="form-control">
-                                                                    <option> -- Select Remark -- </option>
-                                                                    <?php
-                                                                    $INVOICE_REMARK = new InvoiceRemark(null);
-                                                                    foreach ($INVOICE_REMARK->all() as $remark) {
-                                                                    ?>
-                                                                        <option value="<?php echo $remark['id'] ?>">
-                                                                            <?php echo $remark['remark'] ?>
-                                                                        </option>
+                                                                    <option>-- Select Remark --</option>
+                                                                    <?php if (!empty($SALES_INVOICE->remark)) { ?>
+                                                                        <option value="1"><?php echo $SALES_INVOICE->remark; ?></option>
                                                                     <?php } ?>
                                                                 </select>
                                                             </div>
                                                         </div>
 
                                                     </div>
+
                                                 </div>
 
 
@@ -449,7 +362,7 @@ include './auth.php';
                                                             </div>
                                                             <div class="col-5">
                                                                 <input type="text" class="form-control" id="subTotal"
-                                                                    value="0.00" disabled>
+                                                                    value="<?php echo $SALES_INVOICE->sub_total ?>" disabled>
                                                             </div>
                                                         </div>
 
@@ -460,7 +373,7 @@ include './auth.php';
                                                             </div>
                                                             <div class="col-5">
                                                                 <input type="text" class="form-control" id="disTotal"
-                                                                    value="0.00" disabled>
+                                                                    value="<?php echo $SALES_INVOICE->discount ?>" disabled>
                                                             </div>
                                                         </div>
 
@@ -471,7 +384,7 @@ include './auth.php';
                                                             </div>
                                                             <div class="col-5">
                                                                 <input type="text" class="form-control" id="tax"
-                                                                    value="0.00" disabled>
+                                                                    value="<?php echo $SALES_INVOICE->tax ?>" disabled>
                                                             </div>
                                                         </div>
                                                         <div class="row mb-2">
@@ -482,69 +395,8 @@ include './auth.php';
                                                             </div>
                                                             <div class="col-5">
                                                                 <input type="text" class="form-control  fw-bold"
-                                                                    id="finalTotal" value="0.00" disabled>
+                                                                    id="finalTotal" value="<?php echo $SALES_INVOICE->grand_total ?>" disabled>
                                                             </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                            <hr>
-                                            <div class="row">
-                                                <div class="  p-2 border rounded bg-light" style="max-width: 500px;">
-                                                    <div class="row mb-2">
-                                                        <div class="col-7">
-                                                            <input type="text" class="form-control text_purchase3"
-                                                                value="Outstanding Invoice Amount" disabled>
-                                                        </div>
-                                                        <div class="col-5">
-                                                            <input type="text" class="form-control" value="0.00"
-                                                                disabled>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="row mb-2">
-                                                        <div class="col-7">
-                                                            <input type="text" class="form-control text_purchase3"
-                                                                value="Return Cheque Amount" disabled>
-                                                        </div>
-                                                        <div class="col-5">
-                                                            <input type="text" class="form-control" value="0.00"
-                                                                disabled>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="row mb-2">
-                                                        <div class="col-7">
-                                                            <input type="text" class="form-control text_purchase3"
-                                                                value="Pending Cheque Amount" disabled>
-                                                        </div>
-                                                        <div class="col-5">
-                                                            <input type="text" class="form-control" value="0.00"
-                                                                disabled>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="row mb-2">
-                                                        <div class="col-7">
-                                                            <input type="text" class="form-control text_purchase3"
-                                                                value="PSD Cheque Settlements" disabled>
-                                                        </div>
-                                                        <div class="col-5">
-                                                            <input type="text" class="form-control" value="0.00"
-                                                                disabled>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="row border-top pt-2">
-                                                        <div class="col-7">
-                                                            <input type="text"
-                                                                class="form-control text_purchase3 fw-bold"
-                                                                value="Total" disabled>
-                                                        </div>
-                                                        <div class="col-5">
-                                                            <input type="text" class="form-control fw-bold" value="0.00"
-                                                                disabled>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -568,90 +420,12 @@ include './auth.php';
 
     </div>
 
-
-
-    <!-- model open here -->
-    <div class="modal fade bs-example-modal-xl" id="quotationModel" tabindex="-1" role="dialog"
-        aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="myExtraLargeModalLabel">Manage Quotation</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                    </button>
-                </div>
-                <div class="modal-body">
-
-                    <div class="row">
-                        <div class="col-12">
-
-                            <table id="quotation_table" class="table table-bordered dt-responsive nowrap"
-                                style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-                                <thead>
-                                    <tr>
-                                        <th>#ID</th>
-                                        <th>Quotation No</th>
-                                        <th>Date</th>
-                                        <th>Customer Name</th>
-                                        <th>Company</th>
-                                        <th>Department</th>
-                                        <th>Final Total</th>
-
-                                    </tr>
-                                </thead>
-
-                                <tbody>
-                                    <?php
-                                    $QUOTATION = new Quotation(null);
-                                    foreach ($QUOTATION->all() as $key => $quotation) {
-                                        $key++;
-                                        $CUSTOMER = new CustomerMaster($quotation['customer_id']);
-                                        $COMPANY = new CompanyProfile($quotation['company_id']);
-                                        $DEPARTMENT_MASTER = new DepartmentMaster($quotation['department_id']);
-                                    ?>
-                                        <tr class="select-model" data-id="<?php echo $quotation['id']; ?>"
-                                            data-quotation_no="<?php echo htmlspecialchars($quotation['quotation_no']); ?>"
-                                            data-date="<?php echo htmlspecialchars($quotation['date']); ?>"
-                                            data-customer_name="<?php echo htmlspecialchars($quotation['customer_id']); ?>"
-                                            data-company_id="<?php echo htmlspecialchars($quotation['company_id']); ?>"
-                                            data-department_id="<?php echo htmlspecialchars($quotation['department_id']); ?>"
-                                            data-sub_total="<?php echo htmlspecialchars($quotation['sub_total']); ?>"
-                                            data-discount="<?php echo htmlspecialchars($quotation['discount']); ?>"
-                                            data-grand_total="<?php echo htmlspecialchars($quotation['grand_total']); ?>">
-
-                                            <td><?php echo $key; ?></td>
-                                            <td><?php echo htmlspecialchars($quotation['quotation_no']); ?></td>
-                                            <td><?php echo htmlspecialchars($quotation['date']); ?></td>
-                                            <td><?php echo htmlspecialchars($CUSTOMER->name); ?></td>
-                                            <td><?php echo htmlspecialchars($COMPANY->name); ?></td>
-                                            <td><?php echo htmlspecialchars($DEPARTMENT_MASTER->name); ?></td>
-                                            <td><?php echo htmlspecialchars($quotation['grand_total']); ?></td>
-                                        </tr>
-                                    <?php } ?>
-                                </tbody>
-                            </table>
-
-
-                        </div> <!-- end col -->
-                    </div> <!-- end row -->
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div>
-    <!-- model close here -->
-
-
     <!-- Right bar overlay-->
     <div class="rightbar-overlay"></div>
 
     <!-- JAVASCRIPT -->
     <script src="assets/libs/jquery/jquery.min.js"></script>
     <!-- /////////////////////////// -->
-    <script src="ajax/js/sales-invoice.js"></script>
-    <script src="ajax/js/common.js"></script>
-    <!-- <script src="ajax/js/create-dag.js"></script>
-    <script src="ajax/js/quotation.js"></script> -->
-
     <!-- include main js  -->
     <?php include 'main-js.php' ?>
 
