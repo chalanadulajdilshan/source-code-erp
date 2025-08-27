@@ -123,12 +123,25 @@ jQuery(document).ready(function () {
     });
 
     // Reset input fields
+    // Reset input fields + clear table
     $("#new").click(function (e) {
         e.preventDefault();
+
+        // Reset form
         $('#form-data')[0].reset();
-        $('#category').prop('selectedIndex', 0); // Optional, if using dropdowns
-        $("#create").show();
+        $('#category').prop('selectedIndex', 0); // reset dropdown if needed
+
+        // Clear item table
+        $('#itemTableBody').empty();
+
+        // Optionally put a "no items" row
+        $('#itemTableBody').append(`
+        <tr id="noDataRow">
+            <td colspan="13" class="text-center text-muted">No items added</td>
+        </tr>
+    `);
     });
+
 
     function calculatePayment() {
 
@@ -232,9 +245,9 @@ jQuery(document).ready(function () {
             <td><input type="number" name="items[][unit_total]" class="form-control form-control-sm" value="${unitTotal.toFixed(2)}" readonly></td>
             <td><input type="number" name="items[][list_price]" class="form-control form-control-sm" value="${listPrice.toFixed(2)}" readonly></td>
             <td>
-                <button class="btn btn-danger btn-sm deleteRowBtn">
+                <div class="btn btn-danger btn-sm deleteRowBtn">
                     <i class="uil uil-trash-alt me-1"></i>
-                </button>
+                </div>
             </td>
         </tr>
         `;
@@ -265,6 +278,25 @@ jQuery(document).ready(function () {
         $('#list_price').val('');
         $('#invoice_price').val('');
         updateSummaryValues();
+    });
+
+    $(document).on('click', '.deleteRowBtn', function () {
+        const $row = $(this).closest('tr');// Remove row
+        $row.remove();
+
+        // If no rows left → show "no items" row
+        if ($('#itemTableBody tr').length === 0) {
+            $('#itemTableBody').append(`
+            <tr id="noDataRow">
+                <td colspan="13" class="text-center text-muted">No items added</td>
+            </tr>
+        `);
+        }
+
+        // Update summary
+        if (typeof updateSummaryValues === 'function') {
+            updateSummaryValues();
+        }
     });
 
 
@@ -312,17 +344,6 @@ jQuery(document).ready(function () {
             loadSupplierById(supplierId);
         }
 
-
-        let discountedPrice = 0;
-
-        function applyDiscount(value, discount) {
-            const rate = parseFloat(discount);
-            if (!rate || rate <= 0) {
-                return value; // skip if 0, null, empty, or invalid
-            }
-            return value - (value * rate / 100);
-        }
-
         // Fetch item details
         $.ajax({
             url: 'ajax/php/purchase-order.php',
@@ -344,15 +365,23 @@ jQuery(document).ready(function () {
                             const price = parseFloat(item.unit_price) || 0;
                             const qty = parseFloat(item.quantity) || 0;
 
-                            discountedPrice = applyDiscount(price, item.brand_discount);
-                            discountedPrice = applyDiscount(discountedPrice, item.item_discount);
-                            discountedPrice = applyDiscount(discountedPrice, item.dis3);
-                            discountedPrice = applyDiscount(discountedPrice, item.dis4);
-                            discountedPrice = applyDiscount(discountedPrice, item.dis5);
+                            const dis1 = item.brand_discount || 0;
+                            const dis2 = item.item_discount || 0;
+                            const dis3 = item.dis3 || 0;
+                            const dis4 = item.dis4 || 0;
+                            const dis5 = item.dis5 || 0;
 
-                            const actualCost = discountedPrice;
+                            // Calculate discounts
+                            let disAmount1 = price * (dis1 / 100);
+                            let disAmount2 = (price - disAmount1) * (dis2 / 100);
+                            let disAmount3 = (price - disAmount1 - disAmount2) * (dis3 / 100);
+                            let disAmount4 = (price - disAmount1 - disAmount2 - disAmount3) * (dis4 / 100);
+                            let disAmount5 = (price - disAmount1 - disAmount2 - disAmount3 - disAmount4) * (dis5 / 100);
+                            let finalCost = price - disAmount1 - disAmount2 - disAmount3 - disAmount4 - disAmount5;
 
-                            const unitTotal = price * qty;
+                            const actualCost = finalCost;
+
+                            const unitTotal = finalCost * qty;
 
 
                             const row = `
@@ -421,6 +450,47 @@ jQuery(document).ready(function () {
             }
         });
     });
+
+    // Function to recalculate row values
+    function recalcRow($row) {
+        const price = parseFloat($row.find('input[name*="[list_price]"]').val()) || 0;
+        const qty = parseFloat($row.find('input[name*="[rec_qty]"]').val()) || 0;
+
+        const dis1 = parseFloat($row.find('input[name*="[brand_discount]"]').val()) || 0;
+        const dis2 = parseFloat($row.find('input[name*="[item_discount]"]').val()) || 0;
+        const dis3 = parseFloat($row.find('input[name*="[dis3]"]').val()) || 0;
+        const dis4 = parseFloat($row.find('input[name*="[dis4]"]').val()) || 0;
+        const dis5 = parseFloat($row.find('input[name*="[dis5]"]').val()) || 0;
+
+        // Apply discounts step by step
+        let disAmount1 = price * (dis1 / 100);
+        let disAmount2 = (price - disAmount1) * (dis2 / 100);
+        let disAmount3 = (price - disAmount1 - disAmount2) * (dis3 / 100);
+        let disAmount4 = (price - disAmount1 - disAmount2 - disAmount3) * (dis4 / 100);
+        let disAmount5 = (price - disAmount1 - disAmount2 - disAmount3 - disAmount4) * (dis5 / 100);
+
+        let finalCost = price - disAmount1 - disAmount2 - disAmount3 - disAmount4 - disAmount5;
+
+        const actualCost = finalCost;
+        const unitTotal = actualCost * qty;
+
+        // Update fields
+        $row.find('input[name*="[actual_cost]"]').val(actualCost.toFixed(2));
+        $row.find('input[name*="[unit_total]"]').val(unitTotal.toFixed(2));
+
+        // Call summary update
+        if (typeof updateSummaryValues === "function") {
+            updateSummaryValues();
+        }
+    }
+
+    // Attach event listener to recalc whenever values change
+    $(document).on('input change', '#itemTableBody input', function () {
+        const $row = $(this).closest('tr');
+        recalcRow($row);
+    });
+
+
 
 
     $(document).on('input', '#itemTableBody input', function () {

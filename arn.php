@@ -403,13 +403,13 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
                                                 <div class="col-6 col-sm-4 col-md-2 col-lg-1">
                                                     <label class="form-label"> Brand Dis %</label>
                                                     <input type="number" id="dis_1" class="form-control form-control-sm"
-                                                        oninput="calculatePayment()">
+                                                        oninput="calculatePayment()" disabled>
                                                 </div>
 
                                                 <div class="col-6 col-sm-4 col-md-2 col-lg-1">
                                                     <label class="form-label">Item Dis %</label>
                                                     <input type="number" id="dis_2" class="form-control form-control-sm"
-                                                        oninput="calculatePayment()">
+                                                        oninput="calculatePayment()" disabled>
                                                 </div>
 
                                                 <!-- ────────── Second Line of Fields ────────── -->
