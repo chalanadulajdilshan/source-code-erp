@@ -66,7 +66,8 @@ include_once(dirname(__FILE__) . '/StockItemTmp.php');
 include_once(dirname(__FILE__) . '/DagCompany.php');
 include_once(dirname(__FILE__) . '/ArnQrGenaretor.php');
 include_once(dirname(__FILE__) . '/Expenses.php');
-
+include_once(dirname(__FILE__) . '/NonPermissionPage.php');
+include_once(dirname(__FILE__) . '/InvoicePayments.php');
 
 session_start();
 function dd($data)

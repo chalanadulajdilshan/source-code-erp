@@ -116,7 +116,7 @@ class SalesInvoiceItem
         $query = "SELECT  * 
                   FROM `sales_invoice_items` where `invoice_id` =  $invoice_id 
                   ORDER BY `id` DESC";
-          
+
         $db = new Database();
         $result = $db->readQuery($query);
         $array_res = array();
@@ -128,4 +128,3 @@ class SalesInvoiceItem
         return $array_res;
     }
 }
-?>

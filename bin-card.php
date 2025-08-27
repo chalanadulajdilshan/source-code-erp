@@ -25,7 +25,7 @@ include './auth.php';
 
         <!-- ============================================================== -->
         <!-- Start right Content here -->
-        <!-- ============================================================== -->
+        <!-- ==============================================================     -->
 
         <div class="main-content">
             <div class="page-content">
@@ -49,7 +49,7 @@ include './auth.php';
                                 <a href="#" class="btn btn-primary" id="create">
                                     <i class="uil uil-save me-1"></i> Print Po. Card
                                 </a> -->
-                            <?php endif; ?>
+                        <?php endif; ?>
 
 
                         </div>
@@ -133,7 +133,7 @@ include './auth.php';
                                                 foreach ($DEPARTMENT_MASTER->getActiveDepartment() as $departments) {
                                                     if ($US->type != 1) {
                                                         if ($departments['id'] = $US->department_id) {
-                                                            ?>
+                                                ?>
                                                             <option value="<?php echo $departments['id'] ?>">
                                                                 <?php echo $departments['name'] ?>
                                                             </option>
@@ -143,7 +143,7 @@ include './auth.php';
                                                         <option value="<?php echo $departments['id'] ?>">
                                                             <?php echo $departments['name'] ?>
                                                         </option>
-                                                        <?php
+                                                <?php
                                                     }
                                                 } ?>
                                             </select>
@@ -159,7 +159,7 @@ include './auth.php';
                                             <?php
                                             $DEFAULT_DATA = new DefaultData();
                                             foreach ($DEFAULT_DATA->Years() as $key => $year) {
-                                                ?>
+                                            ?>
                                                 <option value="<?php echo $year ?>"><?php echo $year ?></option>
                                             <?php } ?>
                                         </select>
@@ -171,7 +171,7 @@ include './auth.php';
                                             <?php
                                             $DEFAULT_DATA = new DefaultData();
                                             foreach ($DEFAULT_DATA->Days() as $key => $days) {
-                                                ?>
+                                            ?>
                                                 <option value="<?php echo $key ?>"><?php echo $days ?></option>
                                             <?php } ?>
                                         </select>
@@ -301,7 +301,7 @@ include './auth.php';
     <script src="assets/js/app.js"></script>
     <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
     <script>
-        $(function () {
+        $(function() {
             // Initialize the datepicker
             $(".date-picker").datepicker({
                 dateFormat: 'yy-mm-dd' // or 'dd-mm-yy' as per your format

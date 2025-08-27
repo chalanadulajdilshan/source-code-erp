@@ -10,9 +10,12 @@ include 'auth.php';
     <meta charset="utf-8" />
     <title>Home | <?php echo $COMPANY_PROFILE_DETAILS->name ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta content="<?php echo $COMPANY_PROFILE_DETAILS->name ?>" name="author" />
+    <meta content="<?php echo $COMPANY_PROFILE_DETAILS->name; ?>" name="author" />
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="assets/images/logo.png" type="image/x-icon">
     <!-- include main CSS -->
-    <?php include 'main-css.php' ?>
+    <?php include 'main-css.php'; ?>
+
 
     <style>
         .chart-container {

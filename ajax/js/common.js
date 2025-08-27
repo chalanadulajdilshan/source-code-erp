@@ -416,7 +416,6 @@ jQuery(document).ready(function () {
                                 <td>${parseFloat(item.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                                 <td>${item.quantity}</td>
                                 <td>${item.discount}%</td>
-                                <td>${parseFloat(item.price - (item.price * (item.discount / 100))).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                                 <td>${parseFloat(item.total).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                                 <td>
                                     <button type="button" class="btn btn-sm btn-danger btn-remove-item" data-code="${item.item_code}" data-qty="${item.quantity}" data-arn-id="${item.id}">Remove</button>

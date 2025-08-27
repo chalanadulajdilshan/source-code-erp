@@ -332,8 +332,9 @@ jQuery(document).ready(function () {
                         totalGrandTotal += grandTotal;
                         totalProfit += profit;
 
-                        tbody += `<tr>
+                        tbody += `<tr class="invoice-row" data-id="${row.id}">
                 <td>${index}</td>
+                <td style="display: none;">${row.id}</td>
                 <td>${row.invoice_no}</td>
                 <td>${row.invoice_date}</td>  
                 <td>${row.company_name}</td>
@@ -401,5 +402,11 @@ jQuery(document).ready(function () {
             }
         });
     }
+    $('#profitReport tbody').on('click', '.invoice-row', function () {
+        let invoiceId = $(this).data('id');
+        if (invoiceId) {
+            window.location.href = `sales-invoice-view.php?invoice_id=${invoiceId}`;
+        }
+    });
 
 });

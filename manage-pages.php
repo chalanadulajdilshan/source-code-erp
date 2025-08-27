@@ -43,6 +43,10 @@ include 'auth.php';
                             <a href="#" class="btn btn-warning" id="update">
                                 <i class="uil uil-edit me-1"></i> Update
                             </a>
+                            <button class="btn btn-info" type="button" data-bs-toggle="modal"
+                                data-bs-target="#non-permissionModal">
+                                <i class="uil uil-lock me-1"></i> Non Permission
+                            </button>
 
                             <!-- <a href="#" class="btn btn-danger delete-branch">
                                 <i class="uil uil-trash-alt me-1"></i> Delete
@@ -98,11 +102,11 @@ include 'auth.php';
                                                         <?php
                                                         $PAGE_CATEGORY = new PageCategory(NULL);
                                                         foreach ($PAGE_CATEGORY->getActiveCategory() as $key => $page_category) {
-                                                            ?>
+                                                        ?>
                                                             <option value="<?php echo $page_category['id']; ?>">
                                                                 <?php echo $page_category['name']; ?>
                                                             </option>
-                                                            <?php
+                                                        <?php
                                                         }
                                                         ?>
 
@@ -119,11 +123,11 @@ include 'auth.php';
                                                         <?php
                                                         $DEFAULT_DATA = new DefaultData();
                                                         foreach ($DEFAULT_DATA->pagesSubCategory() as $key => $page_category) {
-                                                            ?>
+                                                        ?>
                                                             <option value="<?php echo $key; ?>">
                                                                 <?php echo $page_category; ?>
                                                             </option>
-                                                            <?php
+                                                        <?php
                                                         }
                                                         ?>
 
@@ -201,7 +205,7 @@ include 'auth.php';
                                     foreach ($PAGES->all() as $key => $page) {
                                         $PAGE_CATEGORY = new PageCategory($page['page_category']);
                                         $key++;
-                                        ?>
+                                    ?>
                                         <tr class="select-pages" data-id="<?php echo $page['id']; ?>"
                                             data-category="<?php echo htmlspecialchars($page['page_category']); ?>"
                                             data-name="<?php echo htmlspecialchars($page['page_name']); ?>"
@@ -224,6 +228,58 @@ include 'auth.php';
     </div>
 
 
+    <div class="modal fade" id="non-permissionModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg"> <!-- bigger modal for table -->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Non Permission Required Pages</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <!-- Form to Add/Edit Page -->
+                    <form id="nonPermissionForm" class="mb-4">
+                        <input type="hidden" id="page_id" name="page_id">
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="page" class="form-label">Page</label>
+                                <input type="text" id="page" name="page" class="form-control" required>
+                            </div>
+                            <div class="col-md-3 d-flex align-items-end">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="is_active" name="is_active">
+                                </div>
+                            </div>
+                            <div class="col-md-3 d-flex align-items-end">
+                                <button type="submit" class="btn btn-success me-2" id="saveBtn">Save</button>
+                                <button type="button" class="btn btn-primary" id="updateBtn" style="display:none;">Update</button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Table to View Pages -->
+                    <table class="table table-bordered table-striped" id="pagesTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Page</th>
+                                <th>Is Active</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- dynamically filled -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
     <!-- Right bar overlay-->
     <div class="rightbar-overlay"></div>
 
@@ -231,6 +287,7 @@ include 'auth.php';
     <script src="assets/libs/jquery/jquery.min.js"></script>
     <!-- /////////////////////////// -->
     <script src="ajax/js/pages.js"></script>
+    <script src="ajax/js/non-permission-page.js"></script>
 
 
     <!-- include main js  -->
@@ -240,7 +297,7 @@ include 'auth.php';
     <!-- App js -->
     <script src="assets/js/app.js"></script>
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             $('#datatable2').DataTable({
                 responsive: true
             });

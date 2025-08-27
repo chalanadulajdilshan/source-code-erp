@@ -10,17 +10,22 @@ if (!$USER->authenticate()) {
 
 $USER_PERMISSION = new UserPermission();
 
-$page_id = $_GET['page_id'] ?? null;
+// Get the current page
 $current_page = basename($_SERVER['PHP_SELF']);
 
-$skipPages = ['common.php', 'help.php', 'profile.php'];
+// Add non-permission pages dynamically
+$NP = new NonPermissionPage();
+$nonPermissionPages = $NP->all(); // fetch all non-permission pages
 
+foreach ($nonPermissionPages as $page) {
+    $skipPages[] = $page['page']; // add page name to skipPages array
+}
 
+// Check access if current page is not in skipPages
 if (!in_array($current_page, $skipPages)) {
     $page_id = $_GET['page_id'] ?? null;
     $USER_PERMISSION->checkAccess($page_id);
 }
-
 
 // Get company details
 $US = new User($_SESSION['id']);
