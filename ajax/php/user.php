@@ -2,6 +2,8 @@
 
 include '../../class/include.php';
 header('Content-Type: application/json; charset=UTF8');
+define("SITE_NAME", "ERP Development");
+
 
 // Create a new user
 if (isset($_POST['create'])) {
@@ -19,8 +21,7 @@ if (isset($_POST['create'])) {
 
     $USER = new User(NULL);
 
-    // Removed duplicate password argument
-    $res = $USER->create($name, $code, $type, $company_id, $active, $email, $phone, $username, $password, $department_id);
+    $res = $USER->create($name, $code, $type, $company_id, $active, $email, $phone, $username, $password, $password, $department_id);
 
     echo json_encode([
         "status" => $res ? 'success' : 'error'
@@ -60,7 +61,7 @@ if (isset($_POST['forget-password'])) {
 
     if ($userData !== false && !empty($userData)) {
 
-        if ($USER->GenerateCode($email)) {
+        if ($USER->GenarateCode($email)) {
             $resetData = $USER->SelectForgetUser($email);
 
             // Ensure associative access
@@ -123,7 +124,7 @@ if (isset($_POST['forget-password'])) {
                     </div>
                     <div class='footer'>
                         <p>This is an automated message, please do not reply to this email.</p>
-                        <p>  " . date('Y') . " " . SITE_NAME . ". All rights reserved.</p>
+                        <p>© " . date('Y') . " " . SITE_NAME . ". All rights reserved.</p>
                     </div>
                 </div>
             </body>
@@ -133,7 +134,7 @@ if (isset($_POST['forget-password'])) {
             $headers   = [];
             $headers[] = 'MIME-Version: 1.0';
             $headers[] = 'Content-type: text/html; charset=UTF-8';
-            $headers[] = 'From: ' . SITE_NAME . ' <chalanadulaj98@gmail.com'; // FIXED
+            $headers[] = 'From: ' . SITE_NAME . ' <chalanadulaj98@gmail.com>';
             $headers[] = 'Reply-To: chalanadulaj98@gmail.com';
             $headers[] = 'X-Mailer: PHP/' . phpversion();
             $headers[] = 'X-Priority: 1';
@@ -166,7 +167,107 @@ if (isset($_POST['forget-password'])) {
     } else {
         echo json_encode([
             "status" => 'error',
-            "message" => 'If your email is not allowed in our system, check email again.'
+            "message" => 'If your email is registered in our system, you will receive a reset code.'
+        ]);
+    }
+    exit();
+}
+
+// Verify reset code
+if (isset($_POST['verify-reset-code'])) {
+
+    if (!isset($_POST['resetcode']) || empty(trim($_POST['resetcode']))) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Reset code is required.'
+        ]);
+        exit();
+    }
+
+    $code = trim($_POST['resetcode']);
+    $USER = new User(NULL);
+
+    try {
+        $user_id = $USER->SelectResetCode($code);
+        if ($user_id) {
+            echo json_encode([
+                'status' => 'success',
+                'code' => $code,
+                'user_id' => $user_id,
+                'message' => 'Code verified successfully.'
+            ]);
+        } else {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'The code you entered is invalid or has expired.'
+            ]);
+        }
+    } catch (Exception $e) {
+        error_log('Reset code verification error: ' . $e->getMessage());
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'An error occurred while verifying the reset code.'
+        ]);
+    }
+    exit();
+}
+
+// Update password with reset code
+if (isset($_POST['update-password'])) {
+
+    if (!isset($_POST['resetcode']) || empty(trim($_POST['resetcode']))) {
+        echo json_encode([
+            "status" => "error",
+            "message" => "Reset code is required."
+        ]);
+        exit();
+    }
+
+    if (!isset($_POST['password']) || empty(trim($_POST['password']))) {
+        echo json_encode([
+            "status" => "error",
+            "message" => "Password is required."
+        ]);
+        exit();
+    }
+
+    $code = trim($_POST['resetcode']);
+    $password = trim($_POST['password']);
+
+    // Validate password length
+    if (strlen($password) < 6) {
+        echo json_encode([
+            "status" => "error",
+            "message" => "Password must be at least 6 characters long."
+        ]);
+        exit();
+    }
+
+    $USER = new User(NULL);
+
+    // First verify that the reset code is still valid
+    $user_id = $USER->SelectResetCode($code);
+    if (!$user_id) {
+        echo json_encode([
+            "status" => "error",
+            "message" => "Invalid or expired reset code."
+        ]);
+        exit();
+    }
+
+    // Update the password and clear the reset code
+    if ($USER->updatePassword($password, $code)) {
+        // Clear the reset code after successful password update
+        $USER->clearResetCode($code);
+
+        echo json_encode([
+            "status" => "success",
+            "message" => "Password updated successfully. You can now login with your new password."
+        ]);
+    } else {
+        echo json_encode([
+            "status" => "error",
+            "message" => "Failed to update password. Please try again."
         ]);
     }
     exit();

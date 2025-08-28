@@ -263,7 +263,7 @@ jQuery(document).ready(function () {
         $("#userModal").modal("hide");
     });
 
-    //check user forget password email
+    // Forget password - send reset code to email
     $("#forget-password").click(function (e) {
         e.preventDefault();
 
@@ -285,13 +285,14 @@ jQuery(document).ready(function () {
             formData.append('forget-password', true);
 
             $.ajax({
-                url: "ajax/php/user.php", // Adjust the URL based on your needs
+                url: "ajax/php/user.php",
                 type: 'POST',
                 data: formData,
                 async: false,
                 cache: false,
                 contentType: false,
                 processData: false,
+                dataType: "JSON",
                 success: function (result) {
                     // Remove preloader
                     $('.someBlock').preloader('remove');
@@ -299,22 +300,197 @@ jQuery(document).ready(function () {
                     if (result.status === 'success') {
                         swal({
                             title: "Success!",
-                            text: "Password reset link sent to your email!",
+                            text: "Password reset code sent to your email!",
+                            type: 'success',
+                            timer: 3000,
+                            showConfirmButton: false
+                        });
+
+                        setTimeout(function () {
+                            window.location.href = "enter-reset-code.php";
+                        }, 3000);
+
+                    } else if (result.status === 'error') {
+                        swal({
+                            title: "Error!",
+                            text: result.message || "Something went wrong.",
+                            type: 'error',
+                            timer: 3000,
+                            showConfirmButton: false
+                        });
+                    }
+                }
+            });
+        }
+        return false;
+    });
+
+    // Verify reset code
+    $("#verify-code-btn").click(function (e) {
+        e.preventDefault();
+
+        if (!$('#resetcode').val() || $('#resetcode').val().length === 0) {
+            swal({
+                title: "Error!",
+                text: "Please enter the reset code",
+                type: 'error',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } else if ($('#resetcode').val().length !== 5) {
+            swal({
+                title: "Error!",
+                text: "Reset code must be 5 digits",
+                type: 'error',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } else {
+
+            var formData = new FormData();
+            formData.append('resetcode', $('#resetcode').val());
+            formData.append('verify-reset-code', true);
+
+            $.ajax({
+                url: "ajax/php/user.php",
+                type: 'POST',
+                data: formData,
+                async: false,
+                cache: false,
+                contentType: false,
+                processData: false,
+                dataType: "JSON",
+                success: function (result) {
+                    if (result.status === 'success') {
+                        swal({
+                            title: "Success!",
+                            text: "Code verified successfully!",
                             type: 'success',
                             timer: 2000,
                             showConfirmButton: false
                         });
 
-                        window.setTimeout(function () {
-                            window.location.reload();
+                        setTimeout(function () {
+                            window.location.href = "reset-password.php?code=" + encodeURIComponent(result.code);
                         }, 2000);
 
                     } else if (result.status === 'error') {
                         swal({
                             title: "Error!",
-                            text: "Something went wrong.",
+                            text: result.message || "Invalid reset code.",
                             type: 'error',
-                            timer: 2000,
+                            timer: 3000,
+                            showConfirmButton: false
+                        });
+                    }
+                }
+            });
+        }
+        return false;
+    });
+
+    // Password confirmation validation
+    $('#confirm_password').on('keyup', function () {
+        var password = $('#password').val();
+        var confirmPassword = $('#confirm_password').val();
+        var messageDiv = $('#password-match-message');
+
+        if (confirmPassword.length > 0) {
+            if (password === confirmPassword) {
+                messageDiv.html('<small class="text-success">Passwords match</small>').show();
+            } else {
+                messageDiv.html('<small class="text-danger">Passwords do not match</small>').show();
+            }
+        } else {
+            messageDiv.hide();
+        }
+    });
+
+    // Reset password with new password
+    $("#reset-password-btn").click(function (e) {
+        e.preventDefault();
+
+        var password = $('#password').val();
+        var confirmPassword = $('#confirm_password').val();
+        var resetCode = $('#resetcode').val();
+
+        // Validation
+        if (!password || password.length === 0) {
+            swal({
+                title: "Error!",
+                text: "Please enter a new password",
+                type: 'error',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } else if (password.length < 6) {
+            swal({
+                title: "Error!",
+                text: "Password must be at least 6 characters long",
+                type: 'error',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } else if (!confirmPassword || confirmPassword.length === 0) {
+            swal({
+                title: "Error!",
+                text: "Please confirm your password",
+                type: 'error',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } else if (password !== confirmPassword) {
+            swal({
+                title: "Error!",
+                text: "Passwords do not match",
+                type: 'error',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } else if (!resetCode || resetCode.length === 0) {
+            swal({
+                title: "Error!",
+                text: "Reset code is missing",
+                type: 'error',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } else {
+
+            var formData = new FormData();
+            formData.append('password', password);
+            formData.append('resetcode', resetCode);
+            formData.append('update-password', true);
+
+            $.ajax({
+                url: "ajax/php/user.php",
+                type: 'POST',
+                data: formData,
+                async: false,
+                cache: false,
+                contentType: false,
+                processData: false,
+                dataType: "JSON",
+                success: function (result) {
+                    if (result.status === 'success') {
+                        swal({
+                            title: "Success!",
+                            text: "Password updated successfully! You can now login.",
+                            type: 'success',
+                            timer: 3000,
+                            showConfirmButton: false
+                        });
+
+                        setTimeout(function () {
+                            window.location.href = "login.php";
+                        }, 3000);
+
+                    } else if (result.status === 'error') {
+                        swal({
+                            title: "Error!",
+                            text: result.message || "Failed to update password.",
+                            type: 'error',
+                            timer: 3000,
                             showConfirmButton: false
                         });
                     }

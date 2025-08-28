@@ -395,7 +395,7 @@ class User
 
             $this->email = $result['email'];
 
-            $this->restCode = $result['resetcode'];
+            $this->resetCode = $result['resetcode'];
 
             return $result;
         }
@@ -403,23 +403,15 @@ class User
 
     public function SelectResetCode($code)
     {
-
-
-
-        $query = "SELECT `id` FROM `user` WHERE `resetcode`= '" . $code . "'";
-
+        $query = "SELECT `id` FROM `user` WHERE `resetcode` = '" . $code . "' AND `resetcode` IS NOT NULL";
         $db = new Database();
+        $result = $db->readQuery($query);
 
-        $result = mysqli_fetch_array($db->readQuery($query));
-
-        if (!$result) {
-
-            return FALSE;
+        if ($result && mysqli_num_rows($result) > 0) {
+            $row = mysqli_fetch_assoc($result);
+            return $row['id'];
         } else {
-
-
-
-            return TRUE;
+            return false;
         }
     }
 
@@ -475,5 +467,20 @@ class User
         $db = new Database();
         $result = mysqli_fetch_array($db->readQuery($query));
         return $result ? true : false;
+    }
+
+    // Add this method to your User.php class
+
+    public function clearResetCode($code)
+    {
+        $query = "UPDATE `user` SET `resetcode` = NULL WHERE `resetcode` = '" . $code . "'";
+        $db = new Database();
+        $result = $db->readQuery($query);
+
+        if ($result) {
+            return TRUE;
+        } else {
+            return FALSE;
+        }
     }
 }
