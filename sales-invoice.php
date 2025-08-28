@@ -115,7 +115,18 @@ include './auth.php';
                                                     </div>
                                                 </div>
                                             </div>
-
+                                            <div class="col-md-2 ">
+                                                <label for="quotationCode" class="form-label">Quotation ref No</label>
+                                                <div class="input-group mb-3">
+                                                    <input id="quotation_ref_no" name="quotation_ref_no" type="text"
+                                                        class="form-control" placeholder="Select Quotation ref No" readonly>
+                                                    <button class="btn btn-info" id="quotationBtn" type="button" data-bs-toggle="modal"
+                                                        data-bs-target="#quotationModel">
+                                                        <i class="uil uil-search me-1"></i>
+                                                    </button>
+                                                </div>
+                                                <input type="hidden" id="quotation_id" name="quotation_id" />
+                                            </div>
                                             <div class="col-md-2">
                                                 <label for="InvoiceCode" class="form-label">Invoice No</label>
                                                 <div class="input-group mb-3">
@@ -147,7 +158,21 @@ include './auth.php';
                                                 </div>
                                             </div>
 
-
+                                            <div class="col-md-3">
+                                                <label for="department" class="form-label">Department</label>
+                                                <div class="input-group mb-3">
+                                                    <select id="department_id" name="department_id" class="form-select">
+                                                        <?php
+                                                        $DEPARTMENT_MASTER = new DepartmentMaster(NULL);
+                                                        foreach ($DEPARTMENT_MASTER->getActiveDepartment() as $departments) {
+                                                        ?>
+                                                            <option value="<?php echo $departments['id'] ?>">
+                                                                <?php echo $departments['name'] ?>
+                                                            </option>
+                                                        <?php } ?>
+                                                    </select>
+                                                </div>
+                                            </div>
 
                                             <div class="col-md-2">
                                                 <label for="customerCode" class="form-label">Customer Code</label>
@@ -190,7 +215,7 @@ include './auth.php';
 
 
 
-                                            <div class="col-md-2">
+                                            <div class="col-md-1">
                                                 <label for="vat_type" class="form-label">Vat Type</label>
                                                 <div class="input-group mb-3">
                                                     <select id="vat_type" name="vat_type" class="form-select">
@@ -206,24 +231,10 @@ include './auth.php';
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-3">
-                                                <label for="department" class="form-label">Department</label>
-                                                <div class="input-group mb-3">
-                                                    <select id="department_id" name="department_id" class="form-select">
-                                                        <?php
-                                                        $DEPARTMENT_MASTER = new DepartmentMaster(NULL);
-                                                        foreach ($DEPARTMENT_MASTER->getActiveDepartment() as $departments) {
-                                                        ?>
-                                                            <option value="<?php echo $departments['id'] ?>">
-                                                                <?php echo $departments['name'] ?>
-                                                            </option>
-                                                        <?php } ?>
-                                                    </select>
-                                                </div>
-                                            </div>
 
 
-                                            <div class="col-md-3">
+
+                                            <div class="col-md-2">
                                                 <label for="customerCode" class="form-label">Dag Ref No</label>
                                                 <div class="input-group mb-3">
                                                     <input id="ref_no" name="ref_no" type="text" class="form-control"
@@ -236,20 +247,6 @@ include './auth.php';
 
                                                 <input type="hidden" id="dag_id" name="dag_id" />
                                             </div>
-
-                                            <div class="col-md-3 hidden">
-                                                <label for="quotationCode" class="form-label">Quotation ref No</label>
-                                                <div class="input-group mb-3">
-                                                    <input id="quotation_ref_no" name="quotation_ref_no" type="text"
-                                                        class="form-control" placeholder="Select Quotation ref No" readonly>
-                                                    <button class="btn btn-info" type="button" data-bs-toggle="modal"
-                                                        data-bs-target="#quotationModel">
-                                                        <i class="uil uil-search me-1"></i>
-                                                    </button>
-                                                </div>
-                                                <input type="hidden" id="quotation_id" name="quotation_id" />
-                                            </div>
-
 
                                             <hr class="my-4">
                                             <div class="row align-items-end" id="addItemTable">
@@ -600,7 +597,7 @@ include './auth.php';
                                     </tr>
                                 </thead>
 
-                                <tbody>
+                                <tbody id="quotationTableBody">
                                     <?php
                                     $QUOTATION = new Quotation(null);
                                     foreach ($QUOTATION->all() as $key => $quotation) {
