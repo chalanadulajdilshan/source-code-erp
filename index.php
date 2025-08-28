@@ -2,6 +2,7 @@
 <?php
 include 'class/include.php';
 include 'auth.php';
+
 ?>
 <html lang="en">
 
@@ -11,9 +12,6 @@ include 'auth.php';
     <title>Home | <?php echo $COMPANY_PROFILE_DETAILS->name ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="<?php echo $COMPANY_PROFILE_DETAILS->name; ?>" name="author" />
-    <!-- Favicon -->
-    <link rel="shortcut icon" href="assets/images/logo.png" type="image/x-icon">
-    <!-- include main CSS -->
     <?php include 'main-css.php'; ?>
 
 
@@ -270,75 +268,87 @@ include 'auth.php';
                     ?>
 
                     <div class="row">
+                        <!-- Total Tire Sales -->
                         <div class="col-md-6 col-xl-3">
                             <div class="card">
                                 <div class="card-body">
                                     <div class="float-end mt-2">
-                                        <div id="total-revenue-chart"></div>
+                                        <div id="tire-sales-chart"></div>
                                     </div>
                                     <div>
-                                        <h4 class="mb-1 mt-1">$<span data-plugin="counterup">34,152</span></h4>
-                                        <p class="text-muted mb-0">Total Revenue</p>
+                                        <h4 class="mb-1 mt-1">LKR <span data-plugin="counterup">128,450</span></h4>
+                                        <p class="text-muted mb-0">Total Tire Sales</p>
                                     </div>
-                                    <p class="text-muted mt-3 mb-0"><span class="text-success me-1"><i
-                                                class="mdi mdi-arrow-up-bold me-1"></i>2.65%</span> since last week
+                                    <p class="text-muted mt-3 mb-0">
+                                        <span class="text-success me-1">
+                                            <i class="mdi mdi-arrow-up-bold me-1"></i>5.2%
+                                        </span> this month
                                     </p>
                                 </div>
                             </div>
-                        </div> <!-- end col-->
+                        </div>
 
+                        <!-- Stock Availability -->
                         <div class="col-md-6 col-xl-3">
                             <div class="card">
                                 <div class="card-body">
                                     <div class="float-end mt-2">
-                                        <div id="orders-chart"> </div>
+                                        <div id="stock-chart"></div>
                                     </div>
                                     <div>
-                                        <h4 class="mb-1 mt-1"><span data-plugin="counterup">5,643</span></h4>
-                                        <p class="text-muted mb-0">Orders</p>
+                                        <h4 class="mb-1 mt-1"><span data-plugin="counterup">2,450</span></h4>
+                                        <p class="text-muted mb-0">Tires in Stock</p>
                                     </div>
-                                    <p class="text-muted mt-3 mb-0"><span class="text-danger me-1"><i
-                                                class="mdi mdi-arrow-down-bold me-1"></i>0.82%</span> since last week
+                                    <p class="text-muted mt-3 mb-0">
+                                        <span class="text-danger me-1">
+                                            <i class="mdi mdi-arrow-down-bold me-1"></i>3.1%
+                                        </span> from last week
                                     </p>
                                 </div>
                             </div>
-                        </div> <!-- end col-->
+                        </div>
 
+                        <!-- Suppliers -->
                         <div class="col-md-6 col-xl-3">
                             <div class="card">
                                 <div class="card-body">
                                     <div class="float-end mt-2">
-                                        <div id="customers-chart"> </div>
+                                        <div id="suppliers-chart"></div>
                                     </div>
                                     <div>
-                                        <h4 class="mb-1 mt-1"><span data-plugin="counterup">45,254</span></h4>
-                                        <p class="text-muted mb-0">Customers</p>
+                                        <h4 class="mb-1 mt-1"><span data-plugin="counterup">18</span></h4>
+                                        <p class="text-muted mb-0">Active Suppliers</p>
                                     </div>
-                                    <p class="text-muted mt-3 mb-0"><span class="text-danger me-1"><i
-                                                class="mdi mdi-arrow-down-bold me-1"></i>6.24%</span> since last week
+                                    <p class="text-muted mt-3 mb-0">
+                                        <span class="text-success me-1">
+                                            <i class="mdi mdi-arrow-up-bold me-1"></i>2 New
+                                        </span> this month
                                     </p>
                                 </div>
                             </div>
-                        </div> <!-- end col-->
+                        </div>
 
+                        <!-- Revenue Growth -->
                         <div class="col-md-6 col-xl-3">
-
                             <div class="card">
                                 <div class="card-body">
                                     <div class="float-end mt-2">
-                                        <div id="growth-chart"></div>
+                                        <div id="revenue-growth-chart"></div>
                                     </div>
                                     <div>
-                                        <h4 class="mb-1 mt-1">+ <span data-plugin="counterup">12.58</span>%</h4>
-                                        <p class="text-muted mb-0">Growth</p>
+                                        <h4 class="mb-1 mt-1">+ <span data-plugin="counterup">15.75</span>%</h4>
+                                        <p class="text-muted mb-0">Revenue Growth</p>
                                     </div>
-                                    <p class="text-muted mt-3 mb-0"><span class="text-success me-1"><i
-                                                class="mdi mdi-arrow-up-bold me-1"></i>10.51%</span> since last week
+                                    <p class="text-muted mt-3 mb-0">
+                                        <span class="text-success me-1">
+                                            <i class="mdi mdi-arrow-up-bold me-1"></i>12.4%
+                                        </span> vs last quarter
                                     </p>
                                 </div>
                             </div>
-                        </div> <!-- end col-->
-                    </div> <!-- end row-->
+                        </div>
+                    </div>
+
 
                     <!-- Bar Chart -->
                     <div class="row">

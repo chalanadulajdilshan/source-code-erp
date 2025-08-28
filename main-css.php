@@ -1,4 +1,10 @@
-<link rel="shortcut icon" href="assets/images/favicon.ico">
+<?php
+// Get company profile for favicon
+if (!isset($COMPANY_PROFILE)) {
+    $COMPANY_PROFILE = new CompanyProfile(1);
+}
+?>
+<link rel="shortcut icon" href="<?php echo !empty($COMPANY_PROFILE->image_name) ? 'uploads/company-logos/' . $COMPANY_PROFILE->image_name : 'assets/images/logo.png'; ?>">
 
 <!-- Bootstrap Css -->
 <link href="assets/css/bootstrap.min.css" id="bootstrap-style" rel="stylesheet" type="text/css" />

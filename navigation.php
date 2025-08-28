@@ -1,7 +1,6 @@
 <header id="page-topbar">
     <div class="navbar-header">
         <div class="d-flex">
-            <!-- LOGO -->
             <div class="navbar-brand-box mt-3">
                 <a href="index.html" class="logo logo-dark">
                     <span class="logo-sm">

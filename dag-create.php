@@ -138,7 +138,7 @@ $dag_id = 'CD/00/' . ($lastId + 1);
                                                     <?php
                                                     $DEPARTMENT_MASTER = new DepartmentMaster(NULL);
                                                     foreach ($DEPARTMENT_MASTER->getActiveDepartment() as $department_master) {
-                                                        ?>
+                                                    ?>
                                                         <option value="<?php echo $department_master['id']; ?>">
                                                             <?php echo $department_master['name']; ?>
                                                         </option>
@@ -213,7 +213,7 @@ $dag_id = 'CD/00/' . ($lastId + 1);
                                                         $DAG_COMPANY = new DagCompany(null);
                                                         foreach ($DAG_COMPANY->getByStatusCompany(1) as $dag_company) {
 
-                                                            ?>
+                                                        ?>
                                                             <option value="<?php echo $dag_company['id'] ?>">
                                                                 <?php echo $dag_company['name'] ?>
                                                             </option>
@@ -223,15 +223,15 @@ $dag_id = 'CD/00/' . ($lastId + 1);
                                             </div>
 
                                             <div class="col-md-2">
-                                                <label for="name" class="form-label">Company Issued Date</label>
-                                                <div class="input-group" id="company_issued_date">
-
-                                                    <input type="text" class="form-control date-picker-date"
+                                                <label for="company_issued_date" class="form-label">Company Issued Date</label>
+                                                <div class="input-group" id="company_issued_date_group">
+                                                    <input type="text" class="form-control date-picker"
                                                         id="company_issued_date" name="company_issued_date"
-                                                        placeholder="Select Issued Date"> <span
-                                                        class="input-group-text"><i class="mdi mdi-calendar"></i></span>
+                                                        placeholder="Select Issued Date" data-provide="datepicker" data-date-autoclose="true" data-date-format="yyyy-mm-dd">
+                                                    <span class="input-group-text"><i class="mdi mdi-calendar"></i></span>
                                                 </div>
                                             </div>
+
                                             <div class="col-md-2">
                                                 <label for="name" class="form-label">Company Delivery Date</label>
                                                 <div class="input-group" id="delivery_date">
@@ -286,7 +286,7 @@ $dag_id = 'CD/00/' . ($lastId + 1);
                                                             <?php
                                                             $BELT_MASTER = new BeltMaster(NULL);
                                                             foreach ($BELT_MASTER->getActiveBelt() as $belt_master) {
-                                                                ?>
+                                                            ?>
                                                                 <option value="<?= $belt_master['id']; ?>">
                                                                     <?= $belt_master['name']; ?>
                                                                 </option>
@@ -440,8 +440,8 @@ $dag_id = 'CD/00/' . ($lastId + 1);
                                 $DEPARTMENT = new DepartmentMaster($dag['department_id']);
                                 $CUSTOMER = new CustomerMaster($dag['customer_id']);
                                 $DAG_COMPANY = new DagCompany($dag['dag_company_id']); // adjust if class name is different
-                            
-                                ?>
+
+                            ?>
 
                                 <tr class="select-dag" data-id="<?= $dag['id'] ?>"
                                     data-ref_no="<?= htmlspecialchars($dag['ref_no']) ?>"
