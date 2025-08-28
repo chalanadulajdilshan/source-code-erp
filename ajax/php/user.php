@@ -130,19 +130,21 @@ if (isset($_POST['forget-password'])) {
             </body>
             </html>";
 
-            // Headers
+
+            $fromEmail = "erp.sourcecode@chalana.xyz"; // your domain email
+
             $headers   = [];
             $headers[] = 'MIME-Version: 1.0';
             $headers[] = 'Content-type: text/html; charset=UTF-8';
-            $headers[] = 'From: ' . SITE_NAME . ' <chalanadulaj98@gmail.com>';
-            $headers[] = 'Reply-To: chalanadulaj98@gmail.com';
+            $headers[] = 'From: ' . SITE_NAME . ' <' . $fromEmail . '>';
+            $headers[] = 'Reply-To: ' . $fromEmail;
             $headers[] = 'X-Mailer: PHP/' . phpversion();
             $headers[] = 'X-Priority: 1';
             $headers[] = 'X-MSMail-Priority: High';
             $headers[] = 'Importance: High';
             $headers   = implode("\r\n", $headers);
 
-            $additional_parameters = "-f chalanadulaj98@gmail.com";
+            $additional_parameters = "-f " . $fromEmail;
 
             $mailSent = mail($to, $subject, $message, $headers, $additional_parameters);
 
