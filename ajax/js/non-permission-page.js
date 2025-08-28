@@ -30,6 +30,10 @@ jQuery(document).ready(function () {
         $("#saveBtn").show();
         $("#updateBtn").hide();
         $('#non-permissionModal').modal('show');
+    });
+
+    // Load items when modal is shown
+    $('#non-permissionModal').on('show.bs.modal', function () {
         loadPagesTable();
     });
 

@@ -8,7 +8,7 @@ $DOCUMENT_TRACKING = new DocumentTracking($doc_id);
 
 // Get the last inserted quotation
 $lastId = $DOCUMENT_TRACKING->payment_receipt_id;
-$payment_receipt_id = $COMPANY_PROFILE_DETAILS->company_code . '/PR/00/0' . $lastId + 1;
+$payment_receipt_id = $COMPANY_PROFILE_DETAILS->company_code . '/PR/00/0' . ($lastId + 1);
 
 ?>
 
@@ -56,21 +56,21 @@ $payment_receipt_id = $COMPANY_PROFILE_DETAILS->company_code . '/PR/00/0' . $las
                             </a>
 
                             <?php if ($PERMISSIONS['add_page']): ?>
-                            <a href="#" class="btn btn-primary" id="create">
-                                <i class="uil uil-save me-1"></i> Save
-                            </a>
+                                <a href="#" class="btn btn-primary" id="create">
+                                    <i class="uil uil-save me-1"></i> Save
+                                </a>
                             <?php endif; ?>
 
                             <?php if ($PERMISSIONS['edit_page']): ?>
-                            <a href="#" class="btn btn-warning" id="update">
-                                <i class="uil uil-edit me-1"></i> Update
-                            </a>
+                                <a href="#" class="btn btn-warning" id="update">
+                                    <i class="uil uil-edit me-1"></i> Update
+                                </a>
                             <?php endif; ?>
 
                             <?php if ($PERMISSIONS['delete_page']): ?>
-                            <a href="#" class="btn btn-danger delete-recipt  " style="display:none">
-                                <i class="uil uil-trash-alt me-1"></i> Delete
-                            </a>
+                                <a href="#" class="btn btn-danger delete-recipt  " style="display:none">
+                                    <i class="uil uil-trash-alt me-1"></i> Delete
+                                </a>
                             <?php endif; ?>
 
                         </div>
@@ -200,14 +200,6 @@ $payment_receipt_id = $COMPANY_PROFILE_DETAILS->company_code . '/PR/00/0' . $las
                                                     </div>
                                                 </div>
                                                 <div class="col-md-2">
-                                                    <label for="ref_no" class="form-label">T/T Ref No</label>
-                                                    <div class="input-group mb-3">
-                                                        <input id="ref_no" name="ref_no" type="text"
-                                                            placeholder="T/T Ref No" class="form-control">
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-2">
                                                     <label for="credit_account" class="form-label">Debit
                                                         Account</label>
                                                     <div class="input-group mb-3">
@@ -220,7 +212,7 @@ $payment_receipt_id = $COMPANY_PROFILE_DETAILS->company_code . '/PR/00/0' . $las
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-3">
+                                                <div class="col-md-2">
                                                     <label for="ref_no" class="form-label">Debit Acc Name</label>
                                                     <div class="input-group mb-3">
                                                         <input id="ref_no" name="ref_no" type="text"
@@ -249,7 +241,7 @@ $payment_receipt_id = $COMPANY_PROFILE_DETAILS->company_code . '/PR/00/0' . $las
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-6">
+                                                <div class="col-md-7">
                                                     <label for="creditName" class="form-label">#Remark</label>
                                                     <div class="input-group mb-3">
                                                         <input id="creditName" name="creditName" type="text"
@@ -433,7 +425,7 @@ $payment_receipt_id = $COMPANY_PROFILE_DETAILS->company_code . '/PR/00/0' . $las
                                                 <div class="d-inline-flex align-items-center">
                                                     <label for="cheque_total" class="form-label me-2 mb-0 text-danger"
                                                         style="white-space: nowrap;">Cash Available Balance:</label>
-                                                    <input   id="cash_balance" name="cash_balance" type="text"
+                                                    <input id="cash_balance" name="cash_balance" type="text"
                                                         placeholder="Cash Balance " class="form-control" readonly>
                                                 </div>
                                             </div>
@@ -557,7 +549,7 @@ $payment_receipt_id = $COMPANY_PROFILE_DETAILS->company_code . '/PR/00/0' . $las
                                             foreach ($BRANCH->getByStatus(1) as $key => $branch) {
                                                 $key++;
                                                 $BANK = new Bank($branch['bank_id']);
-                                                ?>
+                                            ?>
                                                 <tr class="select-branch" data-id="<?php echo $branch['id']; ?>"
                                                     data-bankid="<?php echo $branch['bank_id']; ?>"
                                                     data-code="<?php echo htmlspecialchars($branch['code']); ?>"
@@ -614,7 +606,7 @@ $payment_receipt_id = $COMPANY_PROFILE_DETAILS->company_code . '/PR/00/0' . $las
             <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
             <script>
                 $('#quotation_table').DataTable();
-                $(function () {
+                $(function() {
                     // Initialize the datepicker
                     $(".date-picker").datepicker({
                         dateFormat: 'yy-mm-dd',
