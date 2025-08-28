@@ -1055,5 +1055,93 @@ jQuery(document).ready(function () {
         $(this).val('').focus();
     });
 
+    $('#quotationBtn').on('click', function () {
+        $('#quotationModel').modal('show');
+    });
 
+
+    function fetchQuotationData(quotationId) {
+
+        $.ajax({
+            url: 'ajax/php/quotation.php',
+            type: 'POST',
+            data: {
+                action: 'get_quotation',
+                id: quotationId
+            },
+            dataType: 'json',
+            success: function (response) {
+                if (response.status === 'success') {
+                    console.log('Quotation Data:', response.data);
+                    const quotation = response.data.quotation;
+                    const customer = response.data.customer;
+                    const items = response.data.items;
+                    // console.log('Quotation:', quotation);
+                    console.log('Customer:', customer.customer_code);
+
+                    $('#quotationModal').modal('hide');
+
+                    $('#quotation_ref_no').val(quotation.quotation_no || '');
+
+                    // Set customer information
+                    $('#customer_code').val(customer.customer_code || '');
+                    $('#customer_name').val(customer.customer_name || '');
+                    $('#customer_address').val(customer.address || '');
+                    $('#customer_mobile').val(customer.mobile_number || '');
+
+                    $('#invoiceItemsBody').empty();
+
+                    // Add items to the table
+                    if (items.length > 0) {
+                        items.forEach(function (item) {
+
+                            const discount = parseFloat(item.discount) || 0;
+                            const price = parseFloat(item.price) || 0;
+                            const qty = parseFloat(item.qty) || 0;
+                            const total = parseFloat(item.sub_total) || 0;
+
+                            const row = `
+                            <tr>
+                                <td>${item.item_code}                                
+                                <input type="hidden" class="item-id" value="${item.item_id}"></td>
+                                <td>${item.item_name}</td>
+                                <td><input type="number" class="item-price form-control form-control-sm price"   value="${price}"  ></td>
+                                <td><input type="number" class="item-qty form-control form-control-sm qty" value="${qty}"></td>
+                                <td><input type="number" class="item-discount form-control form-control-sm discount" value="${discount}"></td>
+                                <td><input type="text" class="item-total form-control form-control-sm totalPrice"  value="${total.toFixed(2)}" readonly>
+                                <td><button type="button" class="btn btn-sm btn-danger btn-remove-item" onclick="removeRow(this)">Remove</button></td>
+                            </tr>
+                            `;
+
+                            $('#invoiceItemsBody').append(row);
+                        });
+                    } else {
+                        // Add "No items" row if no items found
+                        $('#invoiceItemsBody').append(`
+                            <tr id="noItemRow">
+                                <td colspan="8" class="text-center text-muted">No items added</td>
+                            </tr>
+                        `);
+                    }
+
+
+                } else {
+                    alert('No quotation data found');
+                }
+            }
+            ,
+            error: function (xhr, status, error) {
+                console.error('Error fetching quotation data:', error);
+                alert('Failed to load quotation data. Please try again.');
+            }
+        });
+        updateFinalTotal();
+    }
+    // Row click → populate form
+    $("#quotationTableBody tr").on("click", function () {
+        const id = $(this).data("id");
+        if (id) {
+            fetchQuotationData(id);
+        }
+    });
 });

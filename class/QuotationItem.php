@@ -93,7 +93,7 @@ class QuotationItem
         $query = "SELECT id FROM `quotation_item` WHERE `quotation_id` = '{$quotation_id}' AND `item_code` = '{$item_code}'";
         $result = mysqli_fetch_array($db->readQuery($query));
 
-        return ($result) ? $result['id'] : false;  
+        return ($result) ? $result['id'] : false;
     }
 
     public function getByQuotationId($quotation_id)
@@ -110,4 +110,3 @@ class QuotationItem
         return $array_res;
     }
 }
-?>

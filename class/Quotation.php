@@ -137,4 +137,3 @@ class Quotation
         return $result['id'];
     }
 }
-?>

@@ -389,6 +389,7 @@ jQuery(document).ready(function () {
                 $("#searchBtn").click(); // trigger search
             }
         });
+
     });
 
     // When the modal is shown, focus on the search input
@@ -504,6 +505,7 @@ jQuery(document).ready(function () {
             }
         });
     }
+
 
 
 

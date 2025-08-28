@@ -197,7 +197,6 @@ if (isset($_POST['action']) && $_POST['action'] == 'update_quotation') {
 
             $deleteQuery = "DELETE FROM quotation_item WHERE quotation_id = '{$QUOTATION_->id}' AND item_code = '{$itemCode}'";
             $db->readQuery($deleteQuery);
-
         }
 
         // Insert/update items
@@ -241,8 +240,6 @@ if (isset($_POST['action']) && $_POST['action'] == 'update_quotation') {
                 $QUOTATION_ITEM->sub_total = $subTotal;
                 $QUOTATION_ITEM->create();
             }
-
-
         }
         //audit log
         $AUDIT_LOG = new AuditLog(NUll);
@@ -299,6 +296,15 @@ if (isset($_POST['action']) && $_POST['action'] == 'get_quotation') {
     $quotationItems = new QuotationItem();
     $items = $quotationItems->getByQuotationId($_POST['id']);
 
+    $customerMaster = new CustomerMaster($quotation->customer_id);
+
+    $customerData = [
+        'customer_code'   => $customerMaster->code,
+        'customer_name'   => $customerMaster->name,
+        'address'         => $customerMaster->address,
+        'mobile_number'   => $customerMaster->mobile_number
+    ];
+
     $enhancedItems = [];
 
     foreach ($items as $item) {
@@ -311,7 +317,8 @@ if (isset($_POST['action']) && $_POST['action'] == 'get_quotation') {
 
     $data = [
         'quotation' => get_object_vars($quotation),
-        'items' => $enhancedItems
+        'items' => $enhancedItems,
+        'customer' => $customerData
     ];
 
     echo json_encode(['status' => 'success', 'data' => $data]);
@@ -342,4 +349,3 @@ if (isset($_POST['action']) && $_POST['action'] == 'get_customer_by_id') {
     }
     exit();
 }
-?>
