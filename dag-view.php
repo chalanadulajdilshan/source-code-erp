@@ -3,11 +3,11 @@
 include 'class/include.php';
 include 'auth.php';
 
-$BELT_MASTER = new BeltMaster();
+$DAG_VIEW = new Dag();
 
 // Get the last inserted package id
-$lastId = $BELT_MASTER->getLastID();
-$belt_id = 'BM/0' . ($lastId + 1);
+$lastId = $DAG_VIEW->getLastID();
+$company_id = 'DV00' . ($lastId + 1);
 
 ?>
 <html lang="en">
@@ -15,14 +15,12 @@ $belt_id = 'BM/0' . ($lastId + 1);
 <head>
 
     <meta charset="utf-8" />
-    <title>Belt Master | <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
+    <title>DAG View | <?php echo $COMPANY_PROFILE_DETAILS->name ?> </title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="<?php echo $COMPANY_PROFILE_DETAILS->name ?>" name="author" />
     <!-- include main CSS -->
     <?php include 'main-css.php' ?>
-
-
 
 </head>
 
@@ -39,40 +37,6 @@ $belt_id = 'BM/0' . ($lastId + 1);
         <div class="main-content">
             <div class="page-content">
                 <div class="container-fluid">
-                    <div class="row mb-4">
-                        <div class="col-md-8 d-flex align-items-center flex-wrap gap-2">
-                            <a href="#" class="btn btn-success" id="new">
-                                <i class="uil uil-plus me-1"></i> New
-                            </a>
-
-                            <?php if ($PERMISSIONS['add_page']): ?>
-                                <a href="#" class="btn btn-primary" id="create">
-                                    <i class="uil uil-save me-1"></i> Save
-                                </a>
-                            <?php endif; ?>
-
-                            <?php if ($PERMISSIONS['edit_page']): ?>
-                                <a href="#" class="btn btn-warning" id="update">
-                                    <i class="uil uil-edit me-1"></i> Update
-                                </a>
-                            <?php endif; ?>
-
-                            <?php if ($PERMISSIONS['delete_page']): ?>
-                                <a href="#" class="btn btn-danger delete-belt-master">
-                                    <i class="uil uil-trash-alt me-1"></i> Delete
-                                </a>
-                            <?php endif; ?>
-
-                        </div>
-
-                        <div class="col-md-4 text-md-end text-start mt-3 mt-md-0">
-                            <ol class="breadcrumb m-0 justify-content-md-end">
-                                <li class="breadcrumb-item"><a href="javascript: void(0);">Dashboard</a></li>
-                                <li class="breadcrumb-item active">BELT MASTER</li>
-                            </ol>
-                        </div>
-                    </div>
-
                     <!-- end page title -->
 
                     <div class="row">
@@ -90,7 +54,7 @@ $belt_id = 'BM/0' . ($lastId + 1);
                                             </div>
                                         </div>
                                         <div class="flex-grow-1 overflow-hidden">
-                                            <h5 class="font-size-16 mb-1">Belt Master</h5>
+                                            <h5 class="font-size-16 mb-1">DAG View</h5>
                                             <p class="text-muted text-truncate mb-0">Fill all information below</p>
                                         </div>
                                         <div class="flex-shrink-0">
@@ -105,35 +69,95 @@ $belt_id = 'BM/0' . ($lastId + 1);
                                     <form id="form-data" autocomplete="off">
                                         <div class="row">
 
+                                            <div class="col-md-3">
+                                                <label for="department_id" class="form-label">Department</label>
+                                                <div class="input-group mb-3">
+                                                    <select id="department_id" name="department_id" class="form-select">
+
+                                                        <?php
+                                                        $DEPARTMENT_MASTER = new DepartmentMaster(NUll);
+                                                        foreach ($DEPARTMENT_MASTER->getActiveDepartment() as $departments) {
+                                                            if ($US->type != 1) {
+                                                                if ($departments['id'] == $US->department_id) {
+                                                        ?>
+                                                                    <option value="<?php echo $departments['id'] ?>">
+                                                                        <?php echo $departments['name'] ?>
+                                                                    </option>
+                                                                <?php }
+                                                            } else {
+                                                                ?>
+                                                                <option value="<?php echo $departments['id'] ?>">
+                                                                    <?php echo $departments['name'] ?>
+                                                                </option>
+                                                        <?php
+                                                            }
+                                                        } ?>
+
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-3">
+                                                <label for="company_id" class="form-label">DAG Company</label>
+                                                <div class="input-group mb-3">
+                                                    <select id="company_id" name="company_id" class="form-select">
+
+                                                        <?php
+                                                        $DAG_COMPANY = new DagCompany(NUll);
+                                                        foreach ($DAG_COMPANY->getActiveDagCompany() as $dag_company) {
+                                                            if ($US->type != 1) {
+                                                                if ($dag_company['id'] == $US->id) {  // Changed to == and using id instead of dag_company_id
+                                                        ?>
+                                                                    <option value="<?php echo $dag_company['id'] ?>">
+                                                                        <?php echo $dag_company['name'] ?>
+                                                                    </option>
+                                                                <?php }
+                                                            } else {
+                                                                ?>
+                                                                <option value="<?php echo $dag_company['id'] ?>">
+                                                                    <?php echo $dag_company['name'] ?>
+                                                                </option>
+                                                        <?php
+                                                            }
+                                                        } ?>
+
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-3">
+                                                <label for="dag_status" class="form-label">DAG Status</label>
+                                                <div class="input-group mb-3">
+                                                    <select id="dag_status" name="dag_status" class="form-select">
+                                                        <option value="0">Inactive</option>
+                                                        <option value="1">Active</option>
+                                                    </select>
+                                                </div>
+                                            </div>
 
                                             <div class="col-md-2">
                                                 <label class="form-label" for="code">Ref No </label>
                                                 <div class="input-group mb-3">
-                                                    <input id="code" name="code" type="text" value="<?php echo $belt_id; ?>"
-                                                        placeholder="Ref No" class="form-control" readonly>
-                                                    <button class="btn btn-info" type="button"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#beltModel">
+                                                    <input id="code" name="code" type="text"
+                                                        value="<?php echo $company_id; ?>" placeholder="Ref No"
+                                                        class="form-control" readonly>
+                                                    <button class="btn btn-info" type="button" data-bs-toggle="modal"
+                                                        data-bs-target="#dagviewModel">
                                                         <i class="uil uil-search me-1"></i>
                                                     </button>
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-2">
-                                                <label for="name" class="form-label">Belt Name</label>
-                                                <div class="input-group mb-3">
-                                                    <input id="name" name="name" type="text"
-                                                        placeholder="Enter Name" class="form-control">
-                                                </div>
+                                            <div class="col-md-3">
+                                                <label for="invoice_no" class="form-label">Invoice No </label>
+                                                <input id="invoice_no" name="invoice_no" type="text" class="form-control"
+                                                    placeholder="Enter Invoice No">
                                             </div>
 
-                                            <div class="col-md-1 d-flex justify-content-center align-items-center">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="is_active"
-                                                        name="is_active">
-                                                    <label class="form-check-label" for="is_active">
-                                                        Active
-                                                    </label>
+                                            <div class="col-md-3">
+                                                <label for="dateInput" class="form-label">Date (YYYY-MM)</label>
+                                                <div class="input-group">
+                                                    <input type="month" class="form-control" id="dateInput" name="date" autocomplete="off">
                                                 </div>
                                             </div>
 
@@ -168,7 +192,6 @@ $belt_id = 'BM/0' . ($lastId + 1);
                     <div class="row">
                         <div class="col-12">
 
-
                             <table class="datatable table table-bordered dt-responsive nowrap"
                                 style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                 <thead>
@@ -180,7 +203,6 @@ $belt_id = 'BM/0' . ($lastId + 1);
 
                                     </tr>
                                 </thead>
-
 
                                 <tbody>
                                     <?php
@@ -224,6 +246,19 @@ $belt_id = 'BM/0' . ($lastId + 1);
     <!-- /////////////////////////// -->
     <script src="ajax/js/belt-master.js"></script>
 
+    <script>
+        $(document).ready(function() {
+            // Set current month as default
+            const now = new Date();
+            const currentMonth = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+            $('#dateInput').val(currentMonth);
+
+            // Clicking on the calendar icon should focus the input
+            $('.input-group-text').on('click', function() {
+                $('#dateInput').focus();
+            });
+        });
+    </script>
 
     <!-- include main js  -->
     <?php include 'main-js.php' ?>

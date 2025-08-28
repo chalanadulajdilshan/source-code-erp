@@ -43,7 +43,6 @@ class Dag
                 $this->receipt_no = $result['receipt_no'];
                 $this->status = $result['status'];
                 $this->is_print = $result['is_print'];
-
             }
         }
     }
@@ -67,7 +66,6 @@ class Dag
         $result = $db->readQuery($query);
         if ($result) {
             return mysqli_insert_id($db->DB_CON);
-
         } else {
             return false;
         }
@@ -160,6 +158,43 @@ class Dag
         return $array_res;
     }
 
+    public function getFilteredReports($from_date, $to_date, $status = '', $dag_no = '')
+    {
+        $query = "SELECT 
+                     d.*, 
+                     c.name as customer_name,
+                     dept.name as department_name,
+                     dc.name as company_name,
+                     b.name as belt_design,
+                     di.barcode as barcode,
+                     di.vehicle_no as vehicle_no,
+                     di.qty as qty,
+                     di.total_amount as total_amount
+              FROM dag d
+              LEFT JOIN customer_master c ON d.customer_id = c.id
+              LEFT JOIN department_master dept ON d.department_id = dept.id
+              LEFT JOIN dag_company dc ON d.dag_company_id = dc.id
+              LEFT JOIN dag_item di ON d.id = di.dag_id
+              LEFT JOIN belt_master b ON di.belt_id = b.id
+              WHERE d.received_date BETWEEN '$from_date' AND '$to_date'";
 
+        if (!empty($status)) {
+            $query .= " AND d.status = '$status'";
+        }
+        if (!empty($dag_no)) {
+            $query .= " AND d.ref_no LIKE '%$dag_no%'";
+        }
+
+        $query .= " ORDER BY d.received_date DESC";
+
+        $db = new Database();
+        $result = $db->readQuery($query);
+
+        $reports = array();
+        while ($row = mysqli_fetch_assoc($result)) {
+            $reports[] = $row;
+        }
+
+        return $reports;
+    }
 }
-?>
