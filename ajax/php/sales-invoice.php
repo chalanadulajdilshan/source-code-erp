@@ -153,9 +153,28 @@ if (isset($_POST['create'])) {
             $STOCK_TRANSACTION->created_at = date("Y-m-d H:i:s");
             $STOCK_TRANSACTION->create();
 
+
+            $payments = $_POST['payments']; // This is an array of payments
+
+
+            if ($payments == 'cash') {
+
+                foreach ($payments as $payment) {
+                    $payment = new InvoicePayment(NULL);
+                    $payment->invoice_id = $invoiceTableId;
+                    $payment->method_id = $payment['method_id'];
+                    $payment->amount = $payment['amount'];
+                    $payment->reference_no = isset($payment['reference_no']) ? $payment['reference_no'] : null;
+                    $payment->bank_name = isset($payment['bank_name']) ? $payment['bank_name'] : null;
+                    $payment->cheque_date = isset($payment['cheque_date']) ? $payment['cheque_date'] : null;
+
+                    $res = $payment->create();
+                }
+            }
+
             //audit log
             $AUDIT_LOG = new AuditLog(NUll);
-            $AUDIT_LOG->ref_id = $invoiceId;
+            $AUDIT_LOG->ref_id = 1;
             $AUDIT_LOG->ref_code = $_POST['invoice_no'];
             $AUDIT_LOG->action = 'CREATE';
             $AUDIT_LOG->description = 'CREATE INVOICE NO #' . $invoiceTableId;

@@ -25,10 +25,30 @@ jQuery(document).ready(function () {
         loadItems();
     });
 
+    $('#all_item_master').on('shown.bs.modal', function () {
+        loadAllItems();
+    });
+
     //PAYMENT TYPE CHANGE
     $('input[name="payment_type"]').on('change', function () {
         getInvoiceData();
+        togglePaymentButtons();
     });
+
+    // Initial button state
+    togglePaymentButtons();
+
+    // Function to toggle payment/save buttons based on payment type
+    function togglePaymentButtons() {
+        const paymentType = $('input[name="payment_type"]:checked').val();
+        if (paymentType === '1') { // Cash
+            $('#payment').show();
+            $('#save').hide();
+        } else { // Credit
+            $('#payment').hide();
+            $('#save').show();
+        }
+    }
 
     // RESET INPUT FIELDS
     $("#new").click(function (e) {
@@ -87,6 +107,37 @@ jQuery(document).ready(function () {
             success: function (data) {
                 fullItemList = data || [];
                 renderPaginatedItems(page);
+            },
+            error: function () {
+                $('#itemMaster tbody').html(`<tr><td colspan="8" class="text-danger text-center">Error loading data</td></tr>`);
+                $('#itemPagination').empty();
+            }
+        });
+    }
+
+    function loadAllItems(page = 1) {
+
+        let brand_id = $('#item_brand_id').val();
+        let category_id = $('#item_category_id').val();
+        let group_id = $('#item_group_id').val();
+        let department_id = $('#item_department_id').val();
+        let item_code = $('#item_item_code').val().trim();
+
+        $.ajax({
+            url: 'ajax/php/report.php',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                action: 'loard_price_Control',
+                brand_id,
+                category_id,
+                group_id,
+                department_id,
+                item_code
+            },
+            success: function (data) {
+                fullItemList = data || [];
+                renderPaginatedAllItems(page);
             },
             error: function () {
                 $('#itemMaster tbody').html(`<tr><td colspan="8" class="text-danger text-center">Error loading data</td></tr>`);
@@ -202,6 +253,52 @@ jQuery(document).ready(function () {
         renderPaginationControls(page);
     }
 
+    function renderPaginatedAllItems(page = 1) {
+
+        let start = (page - 1) * itemsPerPage;
+        let end = start + itemsPerPage;
+        let slicedItems = fullItemList.slice(start, end);
+        let tbody = '';
+
+        let usedQtyMap = {};
+        $('#invoiceItemsBody tr').each(function () {
+            let rowCode = $(this).find('input[name="item_codes[]"]').val();
+            let rowArn = $(this).find('input[name="arn_ids[]"]').val();
+            let rowQty = parseFloat($(this).find('.item-qty').text()) || 0;
+            let key = `${rowCode}_${rowArn}`;
+
+
+            if (!usedQtyMap[key]) usedQtyMap[key] = 0;
+            usedQtyMap[key] += rowQty;
+        });
+
+        if (slicedItems.length > 0) {
+
+            $.each(slicedItems, function (index, item) {
+                let rowIndex = start + index + 1;
+
+                // Main item row
+                tbody += `<tr class="table-primary">
+                    <td>${rowIndex}</td>
+                    <td>${item.code} - ${item.name}</td> 
+                    <td>${item.note}</td>
+                    <td>${item.total_available_qty}</td>
+                    <td>${item.group}</td>
+                    <td>${item.brand}</td>
+                     <td>${item.category}</td>
+                     <td hidden >${item.id}</td>
+                </tr>`;
+
+                $('#available_qty').val(item.total_available_qty);
+            });
+        } else {
+            tbody = `<tr><td colspan="8" class="text-center text-muted">No items found</td></tr>`;
+        }
+
+        $('#all_itemMaster tbody').html(tbody);
+        renderPaginationControls(page);
+    }
+
     //GET DATA ARN VISE
     $(document).on('click', '.arn-row', function () {
         if ($(this).hasClass('disabled-arn') || $(this).hasClass('used-arn')) {
@@ -296,6 +393,38 @@ jQuery(document).ready(function () {
         setTimeout(() => $('#itemQty').focus(), 200);
 
         let itemMasterModal = bootstrap.Modal.getInstance(document.getElementById('item_master'));
+        if (itemMasterModal) {
+            itemMasterModal.hide();
+        }
+    });
+
+    $(document).on('click', '#all_itemMaster tbody tr', function () {
+        let mainRow = $(this).prevAll('tr.table-primary').first();
+        let infoRow = $(this).prev('tr.table-info');
+
+        let itemText = mainRow.find('td').eq(1).text().trim();
+        let parts = itemText.split(' - ');
+        let itemCode = parts[0] || '';
+        let itemName = parts[1] || '';
+
+        // Store available qty in map and hidden field
+        itemAvailableMap[itemCode] = availableQty;
+        $('#availableQty').val(availableQty);
+
+        $('#itemCode').val(itemCode);
+        $('#itemName').val(itemName);
+
+        $('#itemQty').val('');
+        $('#itemDiscount').val('');
+
+
+
+
+        calculatePayment();
+
+        setTimeout(() => $('#itemQty').focus(), 200);
+
+        let itemMasterModal = bootstrap.Modal.getInstance(document.getElementById('all_item_master'));
         if (itemMasterModal) {
             itemMasterModal.hide();
         }
@@ -468,9 +597,12 @@ jQuery(document).ready(function () {
         }
     });
 
+
+
+
     // HANDLE PAYMENT FORM SUBMISSION
-    $('#paymentForm').on('submit', function (e) {
-        e.preventDefault();
+    $("#savePayment").click(function (event) {
+        event.preventDefault();
 
         if (!$('#customer_id').val()) {
             swal({
@@ -531,9 +663,9 @@ jQuery(document).ready(function () {
     //ITEM INVOICE PROCESS
     function processInvoiceCreation() {
         const total = parseFloat($('#modalFinalTotal').val());
-        const paid = parseFloat($('#amountPaid').val()) || 0;
+        let paid = parseFloat($('#amountPaid').val());
 
-        if (paid < total) {
+        if (paid <= total) {
             swal({
                 title: "Error!",
                 text: "Paid amount cannot be less than Final Total",

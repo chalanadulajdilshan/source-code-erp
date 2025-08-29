@@ -42,6 +42,12 @@ include './auth.php';
                                 </a>
                             <?php endif; ?>
 
+                            <?php if ($PERMISSIONS['add_page']): ?>
+                                <a href="#" class="btn btn-primary" id="save">
+                                    <i class="uil uil-save me-1"></i> Save
+                                </a>
+                            <?php endif; ?>
+
                             <?php if ($PERMISSIONS['edit_page']): ?>
                                 <a href="#" class="btn btn-warning" id="update">
                                     <i class="uil uil-edit me-1"></i> Update
@@ -259,6 +265,9 @@ include './auth.php';
                                                             placeholder="Item Code" readonly>
                                                         <button class="btn btn-info" type="button"
                                                             data-bs-toggle="modal" data-bs-target="#item_master">
+                                                            <i class="uil uil-search me-1"></i>
+                                                        </button>
+                                                        <button class="btn btn-danger" type="button" data-bs-toggle="modal" data-bs-target="#all_item_master">
                                                             <i class="uil uil-search me-1"></i>
                                                         </button>
                                                     </div>

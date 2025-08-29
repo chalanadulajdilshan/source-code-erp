@@ -46,6 +46,8 @@ class InvoicePayment
                       '" . $this->bank_name . "', 
                       NOW()
                   )";
+
+
         $db = new Database();
         $result = $db->readQuery($query);
 

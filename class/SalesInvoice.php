@@ -114,21 +114,22 @@ class SalesInvoice
         }
     }
 
-    public function cancel($invoiceId) {
- 
-    // Use prepared statement to prevent SQL injection
-    $query = "UPDATE `sales_invoice` SET `is_cancel` = 1 WHERE `id` = $invoiceId";
-  
-    $db = new Database();
-    $result = $db->readQuery($query); // Assuming your Database class supports parameters
-    
-    if ($result) {
-       
-        return true; // Return boolean instead of calling constructor
-    } else {
-        return false;
+    public function cancel($invoiceId)
+    {
+
+        // Use prepared statement to prevent SQL injection
+        $query = "UPDATE `sales_invoice` SET `is_cancel` = 1 WHERE `id` = $invoiceId";
+
+        $db = new Database();
+        $result = $db->readQuery($query); // Assuming your Database class supports parameters
+
+        if ($result) {
+
+            return true; // Return boolean instead of calling constructor
+        } else {
+            return false;
+        }
     }
-}
 
     // Delete a sales invoice record by ID
     public function delete()
