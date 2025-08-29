@@ -65,6 +65,30 @@ class CustomerMaster
             return false;
         }
     }
+    public function createInvoiceCustomer()
+    {
+        $query = "INSERT INTO `customer_master` (
+    `code`, `name`, `address`, `mobile_number`, `mobile_number_2`, `email`, 
+    `contact_person`, `contact_person_number`, `credit_limit`, `outstanding`, `overdue`, 
+    `is_vat`, `vat_no`, `svat_no`, `category`, `district`, `province`, 
+    `vat_group`, `remark`, `nic_front_img`, `nic_back_img`, `is_active`
+) VALUES (
+    '{$this->code}', '{$this->name}', '{$this->address}', '{$this->mobile_number}', '0', '0',
+    '0', '0', '0', '0', '0',
+    '0', '0', '0', '0', '0', '0',
+    '0', '0', '0', '0','0'
+)";
+
+
+        $db = new Database();
+        $result = $db->readQuery($query);
+
+        if ($result) {
+            return mysqli_insert_id($db->DB_CON);
+        } else {
+            return false;
+        }
+    }
 
     // Update existing customer
     public function update()
@@ -169,7 +193,7 @@ class CustomerMaster
         if (!empty($search)) {
             $sql .= "AND  name LIKE '%$search%' OR code LIKE '%$search%' OR mobile_number LIKE '%$search%'  and is_active !=0";
         }
- 
+
         $filteredQuery = $db->readQuery($sql);
         $filteredData = mysqli_num_rows($filteredQuery);
 
@@ -186,7 +210,7 @@ class CustomerMaster
             $DISTRICT = new District($row['district']);
 
             $nestedData = [
-                "key"=>$key,
+                "key" => $key,
                 "id" => $row['id'],
                 "code" => $row['code'],
                 "name" => $row['name'],
@@ -246,9 +270,4 @@ class CustomerMaster
 
         return $customers;
     }
-
-
-
 }
-
-?>

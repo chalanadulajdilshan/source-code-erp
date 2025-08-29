@@ -33,7 +33,7 @@ if (isset($_POST['create'])) {
 
     //audit log
     $AUDIT_LOG = new AuditLog(NUll);
-    $AUDIT_LOG->ref_id = $_POST['customer_id'];
+    $AUDIT_LOG->ref_id = $_POST['code'];
     $AUDIT_LOG->ref_code = $_POST['code'];
     $AUDIT_LOG->action = 'CREATE';
     $AUDIT_LOG->description = 'CREATE CUSTOMER NO #' . $_POST['code'];
@@ -44,6 +44,38 @@ if (isset($_POST['create'])) {
 
     if ($res) {
         echo json_encode(["status" => "success"]);
+        exit();
+    } else {
+        echo json_encode(["status" => "error"]);
+        exit();
+    }
+}
+
+if (isset($_POST['create-invoice-customer'])) {
+
+    $CUSTOMER = new CustomerMaster(NULL); // New customer object
+
+    $CUSTOMER->code = $_POST['code'];
+    $CUSTOMER->name = ucwords(strtolower($_POST['name']));
+    $CUSTOMER->mobile_number = $_POST['mobile_number'];
+    $CUSTOMER->address = ucwords(strtolower($_POST['address']));
+    $res = $CUSTOMER->createInvoiceCustomer();
+
+    //audit log
+    $AUDIT_LOG = new AuditLog(NUll);
+    $AUDIT_LOG->ref_id = $res;
+    $AUDIT_LOG->ref_code = $_POST['code'];
+    $AUDIT_LOG->action = 'CREATE';
+    $AUDIT_LOG->description = 'CREATE CUSTOMER NO #' . $_POST['code'];
+    $AUDIT_LOG->user_id = $_SESSION['id'];
+    $AUDIT_LOG->created_at = date("Y-m-d H:i:s");
+    $AUDIT_LOG->create();
+
+
+    if ($res) {
+
+        $CUSTOMER = new CustomerMaster($res);
+        echo json_encode(["status" => "success", "customer_id" => $CUSTOMER->code, "customer_name" => $CUSTOMER->name, "customer_address" => $CUSTOMER->address, "customer_mobile_number" => $CUSTOMER->mobile_number]);
         exit();
     } else {
         echo json_encode(["status" => "error"]);

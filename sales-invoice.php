@@ -115,18 +115,6 @@ include './auth.php';
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-md-2 ">
-                                                <label for="quotationCode" class="form-label">Quotation ref No</label>
-                                                <div class="input-group mb-3">
-                                                    <input id="quotation_ref_no" name="quotation_ref_no" type="text"
-                                                        class="form-control" placeholder="Select Quotation ref No" readonly>
-                                                    <button class="btn btn-info" id="quotationBtn" type="button" data-bs-toggle="modal"
-                                                        data-bs-target="#quotationModel">
-                                                        <i class="uil uil-search me-1"></i>
-                                                    </button>
-                                                </div>
-                                                <input type="hidden" id="quotation_id" name="quotation_id" />
-                                            </div>
                                             <div class="col-md-2">
                                                 <label for="InvoiceCode" class="form-label">Invoice No</label>
                                                 <div class="input-group mb-3">
@@ -180,8 +168,11 @@ include './auth.php';
                                                     <input id="customer_code" name="customer_code" type="text"
                                                         class="form-control" readonly>
                                                     <button class="btn btn-info" type="button" data-bs-toggle="modal"
-                                                        data-bs-target="#customerModal">
-                                                        <i class="uil uil-search me-1"></i>
+                                                        data-bs-target="#customerModal" title="Search Customer">
+                                                        <i class="uil uil-search"></i>
+                                                    </button>
+                                                    <button class="btn btn-danger" type="button" title="Add New Customer" data-bs-toggle="modal" data-bs-target="#customerAddModal">
+                                                        <i class="uil uil-plus"></i>
                                                     </button>
                                                 </div>
                                             </div>
@@ -231,9 +222,6 @@ include './auth.php';
                                                 </div>
                                             </div>
 
-
-
-
                                             <div class="col-md-2">
                                                 <label for="customerCode" class="form-label">Dag Ref No</label>
                                                 <div class="input-group mb-3">
@@ -246,6 +234,19 @@ include './auth.php';
                                                 </div>
 
                                                 <input type="hidden" id="dag_id" name="dag_id" />
+                                            </div>
+
+                                            <div class="col-md-2 ">
+                                                <label for="quotationCode" class="form-label">Quotation ref No</label>
+                                                <div class="input-group mb-3">
+                                                    <input id="quotation_ref_no" name="quotation_ref_no" type="text"
+                                                        class="form-control" placeholder="Select Quotation ref No" readonly>
+                                                    <button class="btn btn-info" id="quotationBtn" type="button" data-bs-toggle="modal"
+                                                        data-bs-target="#quotationModel">
+                                                        <i class="uil uil-search me-1"></i>
+                                                    </button>
+                                                </div>
+                                                <input type="hidden" id="quotation_id" name="quotation_id" />
                                             </div>
 
                                             <hr class="my-4">
@@ -263,7 +264,7 @@ include './auth.php';
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-2">
+                                                <div class="col-md-3">
                                                     <label class="form-label">Name</label>
                                                     <input type="text" id="itemName" class="form-control"
                                                         placeholder="Name" readonly>
@@ -283,7 +284,7 @@ include './auth.php';
                                                     <input type="number" id="itemDiscount" class="form-control"
                                                         placeholder="Discount" oninput="calculatePayment()">
                                                 </div>
-                                                <div class="col-md-1">
+                                                <div class="col-md-2">
                                                     <button type="button" class="btn btn-success w-100"
                                                         id="addItemBtn">Add</button>
                                                 </div>
@@ -646,8 +647,7 @@ include './auth.php';
     <!-- /////////////////////////// -->
     <script src="ajax/js/sales-invoice.js"></script>
     <script src="ajax/js/common.js"></script>
-    <!-- <script src="ajax/js/create-dag.js"></script>
-    <script src="ajax/js/quotation.js"></script> -->
+    <script src="ajax/js/customer-master.js"></script>
 
     <!-- include main js  -->
     <?php include 'main-js.php' ?>
