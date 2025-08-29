@@ -141,7 +141,7 @@
             });
         }
 
-        // Update totals
+        //  Upd ate totals
         function updateTotals() {
             let total = 0;
             document.querySelectorAll('.paymentAmount').forEach(input => {
