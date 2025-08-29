@@ -154,10 +154,7 @@ if (isset($_POST['create'])) {
             $STOCK_TRANSACTION->create();
 
 
-            $payments = $_POST['payment_type']; // This is an array of payments
-
-
-            if ($payments == 'cash') {
+            if ($paymentType == 1) {
 
                 foreach ($payments as $payment) {
                     $payment = new InvoicePayment(NULL);
