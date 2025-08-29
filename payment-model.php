@@ -120,7 +120,7 @@
 
             paymentRows.appendChild(row);
 
-            // Add event listeners
+            // Add event list  eners
             const paymentTypeSelect = row.querySelector('.paymentType');
             const chequeDetails = row.querySelector('.chequeDetails');
             const amountInput = row.querySelector('.paymentAmount');
