@@ -454,18 +454,18 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . ($lastId 
                                                                     value="Sub Total" disabled>
                                                             </div>
                                                             <div class="col-5">
-                                                                <input type="text" class="form-control" id="finalTotal"
+                                                                <input type="text" class="form-control" id="finalSubtotal"
                                                                     value="0.00" disabled>
                                                             </div>
                                                         </div>
 
                                                         <div class="row mb-2">
                                                             <div class="col-7">
-                                                                <input type="text" class="form-control  "
+                                                                <input type="text" class="form-control "
                                                                     value="Discount Total:" disabled>
                                                             </div>
                                                             <div class="col-5">
-                                                                <input type="text" class="form-control" id="disTotal"
+                                                                <input type="text" class="form-control" id="finalDiscountTotal"
                                                                     value="0.00" disabled>
                                                             </div>
                                                         </div>

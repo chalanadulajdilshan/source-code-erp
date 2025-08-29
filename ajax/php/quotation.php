@@ -2,7 +2,6 @@
 include '../../class/include.php';
 header('Content-Type: application/json; charset=UTF8');
 
-
 if (isset($_POST['action']) && $_POST['action'] == 'check_quotation_id') {
 
 
@@ -183,9 +182,9 @@ if (isset($_POST['action']) && $_POST['action'] == 'update_quotation') {
     $QUOTATION_->vat_type = $_POST['vat_type'];
     $QUOTATION_->payment_type = $_POST['payment_type'];
     $QUOTATION_->remarks = $_POST['remarks'] ?? $QUOTATION_->remarks;
-    $QUOTATION_->credit_period = $_POST['credit_period'] ?? $QUOTATION_->credit_period;
-    $QUOTATION_->payment_term = $_POST['payment_term'] ?? $QUOTATION_->payment_term;
-    $QUOTATION_->validity = $_POST['validity'] ?? $QUOTATION_->validity;
+    $QUOTATION_->credit_period = $_POST['credit_period'] ?: ($QUOTATION_->credit_period ?: 0);
+    $QUOTATION_->payment_term = $_POST['payment_term'] ?? ($QUOTATION_->payment_term ?: 0);
+    $QUOTATION_->validity = $_POST['validity'] ?? ($QUOTATION_->validity ?: 0);
     $QUOTATION_->sub_total = $totalSubTotal;
     $QUOTATION_->discount = $totalDiscount;
     $QUOTATION_->grand_total = $grandTotal;

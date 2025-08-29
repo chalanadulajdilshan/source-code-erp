@@ -605,10 +605,10 @@ jQuery(document).ready(function () {
 
                     const itemCode = $(this).find('td:eq(0)').text().trim();
                     const itemName = $(this).find('td:eq(1)').text().trim();
-                    const itemPrice = parseFloat($(this).find('td:eq(2)').text()) || 0;
-                    const itemQty = parseFloat($(this).find('td:eq(3)').text()) || 0;
-                    const itemDiscount = parseFloat($(this).find('td:eq(4)').text().replace('%', '')) || 0;
-                    const itemTotal = parseFloat($(this).find('td:eq(6)').text()) || 0;
+                    const itemPrice = parseFloat($(this).find('td:eq(2) .price').val()) || 0;
+                    const itemQty = parseFloat($(this).find('td:eq(3) .qty').val()) || 0;
+                    const itemDiscount = parseFloat($(this).find('td:eq(4) .discount').val()) || 0;
+                    const itemTotal = parseFloat($(this).find('td:eq(6) .total-price').val()) || 0;
 
                     if (!itemCode || !itemName || itemPrice <= 0 || itemQty <= 0) {
                         hasInvalidItem = true;
@@ -771,10 +771,10 @@ jQuery(document).ready(function () {
             if ($(this).attr('id') === 'noItemRow') return;
             const itemCode = $(this).find('td:eq(0)').text().trim();
             const itemName = $(this).find('td:eq(1)').text().trim();
-            const itemPrice = parseFloat($(this).find('td:eq(2)').text()) || 0;
-            const itemQty = parseFloat($(this).find('td:eq(3)').text()) || 0;
-            const itemDiscount = parseFloat($(this).find('td:eq(4)').text().replace('%', '')) || 0;
-            const itemTotal = parseFloat($(this).find('td:eq(6)').text()) || 0;
+            const itemPrice = parseFloat($(this).find('td:eq(2) .price').val()) || 0;
+            const itemQty = parseFloat($(this).find('td:eq(3) .qty').val()) || 0;
+            const itemDiscount = parseFloat($(this).find('td:eq(4) .discount').val()) || 0;
+            const itemTotal = parseFloat($(this).find('td:eq(6) .total-price').val()) || 0;
 
             if (!itemCode || !itemName || itemPrice <= 0 || itemQty <= 0) {
                 hasInvalidItem = true;
@@ -830,6 +830,7 @@ jQuery(document).ready(function () {
             payment_type: $('#payment_type').val(),
             remarks: $('#remark').val(),
             vat_type: $('#vat_type').val(),
+            vat_type: $('#validity').val(),
             sub_total: finalTotal,
             discount: 0,
             grand_total: finalTotal,
@@ -965,16 +966,17 @@ jQuery(document).ready(function () {
                                 <input type="hidden" class="item-id" value="${item.item_id}"></td>
                                 <td>${item.item_name}</td>
                                 <td><input type="number" class="form-control form-control-sm price"   value="${price}"  ></td>
-                                <td>${qty}</td>
-                                <td>${discount}%</td>
-                                <td>${subtotal.toFixed(2)}</td>
-                                <td><input type="text" class="form-control form-control-sm totalPrice"  value="${total.toFixed(2)}" readonly>
+                                <td><input type="number" class="form-control form-control-sm qty"   value="${qty}"  ></td>
+                                <td><input type="number" class="form-control form-control-sm discount"   value="${discount}"  >%</td>
+                                <td class="subtotal-price">${subtotal.toFixed(2)}</td>
+                                <td><input type="text" class="form-control form-control-sm total-price"  value="${total.toFixed(2)}" readonly>
                                 <td><button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">Remove</button></td>
                             </tr>
                             `;
 
                             $('#quotationItemsBody').append(row);
                         });
+                        calculateGrandTotal();
                     } else {
                         // Add "No items" row if no items found
                         $('#quotationItemsBody').append(`
@@ -1016,6 +1018,22 @@ jQuery(document).ready(function () {
                 });
             }
         });
+    });
+
+    $(document).on('keyup', '#quotationItemsBody .price, #quotationItemsBody .qty, #quotationItemsBody .discount', function () {
+        const $row = $(this).closest('tr');
+        const price = parseFloat($row.find('.price').val()) || 0;
+        const qty = parseFloat($row.find('.qty').val()) || 0;
+        const discount = parseFloat($row.find('.discount').val()) || 0;
+
+        const subtotal = price * qty;
+        const discountAmount = subtotal * (discount / 100);
+        const total = subtotal - discountAmount;
+
+        $row.find('.subtotal-price').text(subtotal.toFixed(2));
+        $row.find('.total-price').val(total.toFixed(2));
+
+        calculateGrandTotal();
     });
 
     function loadCustomerById(customerId) {
@@ -1122,5 +1140,25 @@ jQuery(document).ready(function () {
         // Redirect with ID as query param
         window.location.href = `quotation-print.php?id=${encodeURIComponent(id)}`;
     });
+
+    function calculateGrandTotal() {
+
+        var finalSubtotal = 0;
+        var finalTotal = 0;
+        var finalDiscount = 0;
+
+        $.each($('#quotationItemsBody tr .subtotal-price'), function () {
+            finalSubtotal += parseFloat($(this).text()) || 0;
+            $('#finalSubtotal').val(finalSubtotal.toFixed(2));
+        });
+
+        $.each($('#quotationItemsBody tr .total-price'), function () {
+            finalTotal += parseFloat($(this).val()) || 0;
+
+            finalDiscount = finalSubtotal - finalTotal;
+            $('#finalDiscountTotal').val(finalDiscount.toFixed(2));
+            $('#grandTotal').val(finalTotal.toFixed(2));
+        });
+    }
 
 });
