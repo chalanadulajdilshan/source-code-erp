@@ -2,7 +2,9 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-6">
-                <script>document.write(new Date().getFullYear())</script> © sourcecode.lk.
+                <script>
+                    document.write(new Date().getFullYear())
+                </script> © sourcecode.lk.
             </div>
             <div class="col-sm-6">
                 <div class="text-sm-end d-none d-sm-block">
@@ -35,3 +37,4 @@
 <?php include 'payment-model.php' ?>
 <?php include 'invoice-model.php' ?>
 <?php include 'dag-mode.php' ?>
+<?php include 'customer_model.php' ?>

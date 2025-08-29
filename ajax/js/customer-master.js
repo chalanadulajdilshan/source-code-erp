@@ -69,6 +69,79 @@ jQuery(document).ready(function () {
         return false;
     });
 
+
+    // Create Customer in Invoice
+    $("#create-invoice-customer").click(function (event) {
+        event.preventDefault();
+
+        // Validation
+        if (!$('#code').val()) {
+            swal({
+                title: "Error!",
+                text: "Please enter customer code",
+                type: 'error',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } else if (!$('#name').val()) {
+            swal({
+                title: "Error!",
+                text: "Please enter customer name",
+                type: 'error',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } else {
+
+            $('.someBlock').preloader();
+
+            var formData = new FormData($("#form-data-invoice")[0]);
+            formData.append('create-invoice-customer', true);
+
+            $.ajax({
+                url: "ajax/php/customer-master.php",
+                type: 'POST',
+                data: formData,
+                async: false,
+                cache: false,
+                contentType: false,
+                processData: false,
+                dataType: "JSON",
+                success: function (result) {
+                    $('.someBlock').preloader('remove');
+
+                    if (result.status === 'success') {
+                        swal({
+                            title: "Success!",
+                            text: "Customer added successfully!",
+                            type: 'success',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                        // Close modal
+                        $('#customerAddModal').modal('hide');
+
+                        $('#customer_code').val(result.customer_id);
+                        $('#customer_name').val(result.customer_name);
+                        $('#customer_address').val(result.customer_address);
+                        $('#customer_mobile').val(result.customer_mobile_number);
+
+                    } else {
+                        swal({
+                            title: "Error!",
+                            text: "Something went wrong.",
+                            type: 'error',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    }
+                }
+            });
+        }
+
+        return false;
+    });
+
     // Update Customer
     $("#update").click(function (event) {
         event.preventDefault();
