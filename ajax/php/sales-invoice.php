@@ -91,9 +91,9 @@ if (isset($_POST['create'])) {
 
     $DOCUMENT_TRACKING = new DocumentTracking(null);
 
-    if ($paymentType == 'cash') {
+    if ($paymentType == 1) {
         $DOCUMENT_TRACKING->incrementDocumentId('cash');
-    } else if ($paymentType == 'credit') {
+    } else if ($paymentType == 2) {
         $DOCUMENT_TRACKING->incrementDocumentId('credit');
     } else {
 
@@ -154,7 +154,7 @@ if (isset($_POST['create'])) {
             $STOCK_TRANSACTION->create();
 
 
-            $payments = $_POST['payments']; // This is an array of payments
+            $payments = $_POST['payment_type']; // This is an array of payments
 
 
             if ($payments == 'cash') {
