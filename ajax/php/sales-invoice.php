@@ -22,7 +22,7 @@ if (isset($_POST['create'])) {
 
     $invoiceId = $_POST['invoice_no'];
     $items = json_decode($_POST['items'], true); // array of items 
-    $paid = $_POST['paid'];
+
     $paymentType = $_POST['payment_type'];
 
 
@@ -153,21 +153,24 @@ if (isset($_POST['create'])) {
             $STOCK_TRANSACTION->created_at = date("Y-m-d H:i:s");
             $STOCK_TRANSACTION->create();
 
-
             if ($paymentType == 1) {
+                $payments = json_decode($_POST['payments'], true); // decode JSON → array
 
-                foreach ($payments as $payment) {
-                    $payment = new InvoicePayment(NULL);
-                    $payment->invoice_id = $invoiceTableId;
-                    $payment->method_id = $payment['method_id'];
-                    $payment->amount = $payment['amount'];
-                    $payment->reference_no = isset($payment['reference_no']) ? $payment['reference_no'] : null;
-                    $payment->bank_name = isset($payment['bank_name']) ? $payment['bank_name'] : null;
-                    $payment->cheque_date = isset($payment['cheque_date']) ? $payment['cheque_date'] : null;
+                if (is_array($payments)) {
+                    foreach ($payments as $payment) {
+                        $INVOICE_PAYMENT = new InvoicePayment(NULL);
+                        $INVOICE_PAYMENT->invoice_id  = $invoiceTableId;
+                        $INVOICE_PAYMENT->method_id   = $payment['method_id'];
+                        $INVOICE_PAYMENT->amount      = $payment['amount'];
+                        $INVOICE_PAYMENT->reference_no = $payment['reference_no'] ?? null;
+                        $INVOICE_PAYMENT->bank_name    = $pssayment['bank_name'] ?? null;
+                        $INVOICE_PAYMENT->cheque_date  = $payment['cheque_date'] ?? null;
 
-                    $res = $payment->create();
+                        $res = $INVOICE_PAYMENT->create();
+                    }
                 }
             }
+
 
             //audit log
             $AUDIT_LOG = new AuditLog(NUll);
@@ -289,8 +292,8 @@ if (isset($_POST['action']) && $_POST['action'] == 'latest') {
 if (isset($_POST['action']) && $_POST['action'] == 'cancel') {
 
 
-    $items = json_decode($_POST['items'], true); // array of items 
     $invoiceId = $_POST['id'];
+    $arnIds = $_POST['arnIds'];
 
     $SALES_INVOICE = new SalesInvoice(NULL);
 
@@ -298,36 +301,45 @@ if (isset($_POST['action']) && $_POST['action'] == 'cancel') {
     $result = $SALES_INVOICE->cancel($invoiceId);
 
     if ($result) {
-        $data = array("status" => TRUE);
-        header('Content-type: application/json');
-        echo json_encode($data);
+        $STOCK_TRANSACTION = new StockTransaction(NULL);
+        $SALES_INVOICE_ITEM = new SalesInvoiceItem(NULL);
+        $STOCK_ITEM_TMP = new StockItemTmp(NULL);
+
+        $items = $SALES_INVOICE_ITEM->getItemsByInvoiceId($invoiceId);
+
 
         foreach ($items as $item) {
             $STOCK_MASTER = new StockMaster(NULL);
-            $currentQty = $STOCK_MASTER->getAvailableQuantity($_POST['department_id'], $item['item_id']);
-            $newQty = $currentQty + $item['qty'];
+            $currentQty = $STOCK_MASTER->getAvailableQuantity($SALES_INVOICE->department_id, $item['item_code']);
+            $newQty = $currentQty + $item['quantity'];
             $STOCK_MASTER->quantity = $newQty;
-            $STOCK_MASTER->updateQtyByItemAndDepartment($_POST['department_id'], $item['item_id'], $newQty);
+            $STOCK_MASTER->updateQtyByItemAndDepartment($SALES_INVOICE->department_id, $item['item_code'], $newQty);
+
+
+            // Update stock transaction with ARN reference if available
+
+            $STOCK_TRANSACTION->item_id = $item['item_code'];
+
+            // Update stock_item_tmp for ARN-based inventorysss           
+
+            // Use negative qty to Increase stock
+            $qtyToAdd = abs($item['quantity']);
+
+            if (!empty($arnIds) && is_array($arnIds)) {
+                foreach ($arnIds as $arnId) {
+                    $STOCK_ITEM_TMP->updateQtyByArnId(
+                        $arnId,                       // single ARN ID
+                        $item['item_code'],
+                        $SALES_INVOICE->department_id,
+                        $qtyToAdd
+                    );
+                }
+            }
         }
-
-        // Update stock transaction with ARN reference if available
-        $STOCK_TRANSACTION = new StockTransaction(NULL);
-        $STOCK_TRANSACTION->item_id = $item['item_id'];
-
-        // Update stock_item_tmp for ARN-based inventorysss           
-        $STOCK_ITEM_TMP = new StockItemTmp(NULL);
-        // Use negative qty to Increase stock
-        $qtyToAdd = abs($item['qty']);
-        $STOCK_ITEM_TMP->updateQtyByArnId(
-            $arn_id,
-            $item['item_id'],
-            $_POST['department_id'],
-            $qtyToAdd
-        );
 
         $STOCK_TRANSACTION->type = 14; // get this id from stock adjustment type table PK
         $STOCK_TRANSACTION->date = date("Y-m-d");
-        $STOCK_TRANSACTION->qty_in = $item['qty'];
+        $STOCK_TRANSACTION->qty_in = $item['quantity'];
         $STOCK_TRANSACTION->qty_out = 0;
         $STOCK_TRANSACTION->remark = "INVOICE CANCELLED #$invoiceId " . (!empty($item['arn_id']) ? "(ARN: {$item['arn']}) " : "") . "Cancelled " . date("Y-m-d H:i:s");
         $STOCK_TRANSACTION->created_at = date("Y-m-d H:i:s");
@@ -337,9 +349,9 @@ if (isset($_POST['action']) && $_POST['action'] == 'cancel') {
         //audit log
         $AUDIT_LOG = new AuditLog(NUll);
         $AUDIT_LOG->ref_id = $invoiceId;
-        $AUDIT_LOG->ref_code = $_POST['invoice_no'];
+        $AUDIT_LOG->ref_code = $invoiceId;
         $AUDIT_LOG->action = 'CANCEL';
-        $AUDIT_LOG->description = 'CANCEL INVOICE NO #' . $invoiceTableId;
+        $AUDIT_LOG->description = 'CANCEL INVOICE NO #' . $SALES_INVOICE->invoice_no;
         $AUDIT_LOG->user_id = $_SESSION['id'];
         $AUDIT_LOG->created_at = date("Y-m-d H:i:s");
         $AUDIT_LOG->create();

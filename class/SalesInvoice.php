@@ -3,6 +3,7 @@
 class SalesInvoice
 {
     public $id;
+    public $is_cancel;
     public $ref_id;
     public $invoice_no;
     public $invoice_type;
@@ -34,6 +35,7 @@ class SalesInvoice
 
             if ($result) {
                 $this->id = $result['id'];
+                $this->is_cancel = $result['is_cancel'];
                 $this->ref_id = $result['ref_id'];
                 $this->invoice_type = $result['invoice_type'];
                 $this->invoice_no = $result['invoice_no'];

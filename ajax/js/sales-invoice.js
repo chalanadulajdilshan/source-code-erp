@@ -662,19 +662,7 @@ jQuery(document).ready(function () {
 
     //ITEM INVOICE PROCESS
     function processInvoiceCreation() {
-        const total = parseFloat($('#modalFinalTotal').val());
-        let paid = parseFloat($('#amountPaid').val());
 
-        if (paid <= total) {
-            swal({
-                title: "Error!",
-                text: "Paid amount cannot be less than Final Total",
-                type: 'error',
-                timer: 3000,
-                showConfirmButton: false
-            });
-            return;
-        }
 
         const items = [];
         const dagItems = [];
@@ -734,10 +722,79 @@ jQuery(document).ready(function () {
             return;
         }
 
+
+
+        let payments = [];
+        let finalTotal = parseFloat($('#modalFinalTotal').val()) || 0;
+        let totalAmount = 0;
+
+        // Collect all payment rows
+        $('#paymentRows .payment-row').each(function () {
+
+            let methodId = $(this).find('.paymentType').val();
+            let amount = parseFloat($(this).find('.paymentAmount').val()) || 0;
+            let paymentMethod = $(this).find('.paymentType option:selected').text().toLowerCase();
+
+            // Only include cheque details for cheque payments
+            let chequeNumber = null;
+            let chequeBank = null;
+            let chequeDate = '1000-01-01'; // Default valid MySQL date
+
+            if (paymentMethod.includes('cheque')) {
+                chequeNumber = $(this).find('input[name="chequeNumber[]"]').val() || null;
+                chequeBank = $(this).find('input[name="chequeBank[]"]').val() || null;
+                let dateInput = $(this).find('input[name="chequeDate[]"]').val();
+                chequeDate = dateInput ? dateInput : '1000-01-01'; // Use default date if not provided
+            }
+
+            if (!methodId) {
+                swal({
+                    title: "Error!",
+                    text: "Please select a payment method in all rows.",
+                    type: "error",
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+                return false; // break out of each
+            }
+
+            if (amount <= 0) {
+                swal({
+                    title: "Error!",
+                    text: "Please enter a valid amount in all rows.",
+                    type: "error",
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+                return false; // break out of each
+            }
+
+            totalAmount += amount;
+
+            payments.push({
+                method_id: methodId,
+                amount: amount,
+                reference_no: chequeNumber,
+                bank_name: chequeBank,
+                cheque_date: chequeDate || null
+            });
+        });
+
+
+        if (totalAmount !== finalTotal) {
+            swal({
+                title: "Error!",
+                text: "Total amount does not match the final total.",
+                type: "error",
+                timer: 2000,
+                showConfirmButton: false
+            });
+            return false;
+        }
+
+
         const formData = new FormData($('#form-data')[0]);
         formData.append('create', true);
-        formData.append('total', total);
-        formData.append('paid', paid);
         formData.append('payment_type', $('input[name="payment_type"]:checked').val());
         formData.append('customer_id', $('#customer_id').val());
         formData.append('customer_name', $('#customer_name').val());
@@ -748,6 +805,7 @@ jQuery(document).ready(function () {
         formData.append('sales_type', $('input[name="payment_type"]:checked').val()); // Using payment_type as sales_type
         formData.append('company_id', $('#company_id').val() || 1); // Default to 1 if not found
         formData.append('department_id', $('#department_id').val() || 1); // Default to 1 if not found
+        formData.append('payments', JSON.stringify(payments));
 
         $('.someBlock').preloader();
 
@@ -757,6 +815,7 @@ jQuery(document).ready(function () {
             data: formData,
             contentType: false,
             processData: false,
+            dataType: 'json',
             success: function (res) {
                 const invoiceId = res.invoice_id;
 
@@ -825,7 +884,7 @@ jQuery(document).ready(function () {
         if (paid < total) {
             swal({
                 title: "Error!",
-                text: "Paid amount cannot be less than Final Total",
+                text: "Paid amount cannot be less than Final Totalsss",
                 type: 'error',
                 timer: 3000,
                 showConfirmButton: false
@@ -881,8 +940,9 @@ jQuery(document).ready(function () {
         // Prepare FormData with all values
         const formData = new FormData($('#form-data')[0]);
         formData.append('create', true);
-        formData.append('total', total);
-        formData.append('paid', paid);
+        formData.append('total', finalTotal);
+        formData.append('paid', totalAmount);
+
         formData.append('invoice_id', invoiceId);
         formData.append('payment_type', $('input[name="payment_type"]:checked').val());
         formData.append('customer_id', $('#customer_id').val());
@@ -896,7 +956,8 @@ jQuery(document).ready(function () {
             data: formData,
             processData: false,
             contentType: false,
-            success: function () {
+            dataType: 'json',
+            success: function (res) {
                 swal({
                     title: "Success!",
                     text: "DAG Invoice saved successfully!",
@@ -1131,11 +1192,25 @@ jQuery(document).ready(function () {
         $('#itemPayment').val(total.toFixed(2));
     }
 
+    // Get all ARN IDs from the table
+    function getAllArnIds() {
+        let arnIds = [];
+
+        $("#invoiceItemsBody .btn-remove-item").each(function () {
+            let arnId = $(this).data("arn-id");
+            arnIds.push(arnId);
+        });
+
+        return arnIds;
+    }
+
     // CANCEL INVOICE FUNCTION
 
     $(document).on("click", ".cancel-category", function () {
 
         const invoiceId = $('#invoice_id').val();
+        let arnIds = getAllArnIds();
+
 
         swal(
             {
@@ -1153,7 +1228,8 @@ jQuery(document).ready(function () {
                     type: "POST",
                     data: {
                         action: 'cancel',
-                        id: invoiceId
+                        id: invoiceId,
+                        arnIds: arnIds
                     },
                     dataType: "JSON",
                     success: function (jsonStr) {

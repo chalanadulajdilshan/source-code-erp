@@ -134,6 +134,7 @@ include './auth.php';
                                             </div>
                                             <!-- INVOICE ID HIDDEN -->
                                             <input type="hidden" id="invoice_id" name="invoice_id" />
+
                                             <!-- company ID -->
                                             <div class="col-md-3">
                                                 <label for="bankId" class="form-label">Company</label>
