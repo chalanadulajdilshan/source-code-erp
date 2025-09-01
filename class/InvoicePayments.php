@@ -122,4 +122,19 @@ class InvoicePayment
         }
         return $array_res;
     }
+
+    // Get total paid amount for an invoice
+    public function getTotalPaidAmount($invoiceNo)
+    {
+        $db = new Database();
+        $query = "SELECT COALESCE(SUM(amount), 0) as total_paid 
+                 FROM invoice_payments ip
+                 INNER JOIN sales_invoice si ON ip.invoice_id = si.id
+                 WHERE si.invoice_no = '" . $db->escapeString($invoiceNo) . "'";
+
+        $result = $db->readQuery($query);
+        $row = mysqli_fetch_assoc($result);
+
+        return (float)$row['total_paid'];
+    }
 }

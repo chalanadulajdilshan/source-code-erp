@@ -128,7 +128,14 @@ $item_id = 'TI/0' . ($lastId + 1);
                                                         <?php
                                                         $BRAND = new Brand(NULL);
                                                         foreach ($BRAND->activeBrands() as $brand) {
-                                                            echo "<option value='{$brand['id']}'>{$brand['name']}</option>";
+                                                            // Get country name
+                                                            $country_name = '';
+                                                            if (!empty($brand['country_id'])) {
+                                                                $COUNTRY = new Country($brand['country_id']);
+                                                                $country_name = $COUNTRY->name;
+                                                            }
+                                                            $display_text = $brand['name'] . ($country_name ? " - " . $country_name : '');
+                                                            echo "<option value='{$brand['id']}'>" . htmlspecialchars($display_text) . "</option>";
                                                         }
                                                         ?>
                                                     </select>
@@ -310,7 +317,6 @@ $item_id = 'TI/0' . ($lastId + 1);
     <script src="assets/libs/jquery/jquery.min.js"></script>
     <!-- /////////////////////////// -->
     <script src="ajax/js/item-master.js"></script>
-    <script src="ajax/js/common.js"></script>
 
     <script>
         $(document).ready(function() {
