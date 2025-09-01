@@ -17,7 +17,7 @@
                                     <th>#ID</th>
                                     <th>Code</th>
                                     <th>Name</th>
-                                    <th>Mobile Number</th>
+                                    <th> Number</th>
                                     <th>Email</th>
                                     <th>Category</th>
                                     <th>Province</th>
