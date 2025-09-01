@@ -103,7 +103,7 @@ include 'auth.php';
                                             <div class="row">
 
                                                 <!-- Brand Category -->
-                                                <div class="col-md-4">
+                                                <div class="col-md-3">
                                                     <label for="category_id" class="form-label">Brand Category <span
                                                             class="text-danger">*</span></label>
                                                     <select id="category_id" name="category_id" class="form-select"
@@ -112,7 +112,7 @@ include 'auth.php';
                                                         <?php
                                                         $BRAND_CATEGORY = new BrandCategory(NULL);
                                                         foreach ($BRAND_CATEGORY->all() as $brand_category) {
-                                                            ?>
+                                                        ?>
                                                             <option value="<?php echo $brand_category['id']; ?>">
                                                                 <?php echo $brand_category['name']; ?>
                                                             </option>
@@ -129,8 +129,23 @@ include 'auth.php';
                                                         <button class="btn btn-info" type="button"
                                                             data-bs-toggle="modal"
                                                             data-bs-target="#brand_master">
-                                                            <i class="uil uil-search me-1"></i>  
+                                                            <i class="uil uil-search me-1"></i>
                                                         </button>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <label for="country_id" class="form-label">Country</label>
+                                                    <div class="input-group mb-3">
+                                                        <select id="country_id" name="country_id" class="form-select">
+                                                            <option value="">-- Select Country --</option>
+                                                            <?php
+                                                            $COUNTRY = new Country(NULL);
+                                                            foreach ($COUNTRY->activeCountry() as $country) {
+                                                                echo "<option value='{$country['id']}'>{$country['name']}</option>";
+                                                            }
+                                                            ?>
+                                                        </select>
                                                     </div>
                                                 </div>
 
@@ -196,13 +211,14 @@ include 'auth.php';
                     <div class="row">
                         <div class="col-12">
 
-                            <table  class="datatable table table-bordered dt-responsive nowrap"
+                            <table class="datatable table table-bordered dt-responsive nowrap"
                                 style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                 <thead>
                                     <tr>
                                         <th>#ID</th>
                                         <th>Category</th>
                                         <th>Brand</th>
+                                        <th>Country</th>
                                         <th>Discount %</th>
                                         <th>Status</th>
                                         <th>Remark</th>
@@ -215,10 +231,12 @@ include 'auth.php';
                                     foreach ($BRAND->all() as $key => $brand) {
                                         $key++;
                                         $CATEGORY = new BrandCategory($brand['category_id']);
-                                        ?>
+                                        $COUNTRY = new Country($brand['country_id']);
+                                    ?>
                                         <tr class="select-brand" data-id="<?php echo $brand['id']; ?>"
                                             data-category="<?php echo $brand['category_id']; ?>"
                                             data-name="<?php echo htmlspecialchars($brand['name']); ?>"
+                                            data-country="<?php echo $brand['country_id']; ?>"
                                             data-discount="<?php echo htmlspecialchars($brand['discount']); ?>"
                                             data-remark="<?php echo htmlspecialchars($brand['remark']); ?>"
                                             data-active="<?php echo $brand['is_active']; ?>">
@@ -226,6 +244,7 @@ include 'auth.php';
                                             <td><?php echo $key; ?></td>
                                             <td><?php echo htmlspecialchars($CATEGORY->name); ?></td>
                                             <td><?php echo htmlspecialchars($brand['name']); ?></td>
+                                            <td><?php echo htmlspecialchars($COUNTRY->name); ?></td>
                                             <td><?php echo htmlspecialchars($brand['discount']); ?>%</td>
                                             <td>
                                                 <?php if ($brand['is_active'] == 1): ?>
