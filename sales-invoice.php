@@ -196,7 +196,7 @@ include './auth.php';
 
                                             <div class="col-md-2">
                                                 <label for="customerAddress" class="form-label">Customer
-                                                    Address</label>
+                                                    Addr ess</label>
                                                 <div class="input-group mb-3">
                                                     <input id="customer_address" name="customer_address" type="text"
                                                         class="form-control" placeholder="Enter customer address">
