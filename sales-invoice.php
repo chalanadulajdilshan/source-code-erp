@@ -282,22 +282,22 @@ include './auth.php';
                                                 <div class="col-md-2">
                                                     <label class="form-label">List Price</label>
                                                     <input type="number" id="itemPrice" class="form-control"
-                                                        placeholder="Price" oninput="calculatePayment()">
+                                                        placeholder="Price" min="0">
                                                 </div>
                                                 <div class="col-md-1">
                                                     <label class="form-label">Qty</label>
                                                     <input type="number" id="itemQty" class="form-control"
-                                                        placeholder="Qty" oninput="calculatePayment()">
+                                                        placeholder="Qty">
                                                 </div>
                                                 <div class="col-md-2">
                                                     <label class="form-label">Discount (%)</label>
                                                     <input type="number" id="itemDiscount" class="form-control"
-                                                        placeholder="Discount" oninput="calculatePayment()">
+                                                        placeholder="Discount" min="0" max="100">
                                                 </div>
                                                 <div class="col-md-2">
                                                     <label class="form-label">Sale Price</label>
                                                     <input type="number" id="itemSalePrice" class="form-control"
-                                                        placeholder="Sale Price" oninput="calculatePayment()">
+                                                        placeholder="Sale Price" min="0">
                                                 </div>
                                                 <div class="col-md-1">
                                                     <button type="button" class="btn btn-success w-100"

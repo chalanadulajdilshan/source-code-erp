@@ -57,7 +57,7 @@ jQuery(document).ready(function () {
     });
 
     // BIND ENTER KEY TO ADD ITEM
-    $('#itemCode, #itemName, #itemPrice, #itemQty, #itemDiscount').on('keydown', function (e) {
+    $('#itemCode, #itemName, #itemPrice, #itemQty, #itemDiscount ,#itemSalePrice').on('keydown', function (e) {
         if (e.key === "Enter") {
             e.preventDefault();
             addItem();
@@ -65,12 +65,17 @@ jQuery(document).ready(function () {
         }
     });
 
-    // CALL PAYMENT CALCULATION ON INPUT CHANGE
-    $('#itemPrice, #itemQty, #itemDiscount').on('input', calculatePayment);
 
     // AMOUNT PAID FOCUS
     $('#paymentModal').on('shown.bs.modal', function () {
         $('#amountPaid').focus();
+        const firstAmountInput = document.querySelector('#amountPaid');
+        if (firstAmountInput) {
+            firstAmountInput.value = document.querySelector('#modalFinalTotal').value;
+            $('#totalPaid').val(document.querySelector('#modalFinalTotal').value);
+
+        }
+
     });
 
     // BIND BUTTON CLICK
@@ -457,20 +462,43 @@ jQuery(document).ready(function () {
 
         //Extract Invoice Price (now from td:eq(5))
         let invoicePriceText = tdHtml.eq(4).text();
-
         let invoiceMatch = invoicePriceText.match(/Sales Price:\s*([\d.,]+)/i);
         let invoicePrice = invoiceMatch ? parseFloat(invoiceMatch[1].replace(/,/g, '')) : 0;
+
+
+        let listPriceText = tdHtml.eq(3).text();
+        let listPriceMatch = listPriceText.match(/List Price:\s*([\d.,]+)/i);
+        let listPrice = listPriceMatch ? parseFloat(listPriceMatch[1].replace(/,/g, '')) : 0;
 
         // Apply to inputs
         $('#itemCode').val(itemCode);
         $('#itemName').val(itemName);
-        $('#itemPrice').val(invoicePrice); // Use cost instead of list_price
+        $('#itemPrice').val(parseFloat(listPrice).toFixed(2));
+        $('#itemSalePrice').val(parseFloat(invoicePrice).toFixed(2));
+
+
+
+        let invoice = parseFloat(invoicePrice);
+        let list = parseFloat(listPrice);
+
+        if (!isNaN(invoice) && !isNaN(list) && list > 0) {
+
+
+
+            // calculate percentage difference
+            let percentage = ((list - invoice) / list) * 100;
+
+            // show percentage (2 decimals)
+            $('#itemDiscount').val(percentage.toFixed(2));
+        } else {
+            $('#itemDiscount').val("0.00");
+        }
+
         $('#available_qty').val(availableQty);
         $('#arn_no').val(arn); // optiona 
 
         // Clear qty, discount, payment
-        $('#itemQty').val('');
-        $('#itemDiscount').val('');
+        $('#itemQty').val(1);
         $('#payment_type').prop('disabled', true);
 
         calculatePayment();
@@ -504,7 +532,6 @@ jQuery(document).ready(function () {
             focusAfterModal = false;
         }
     });
-
 
     //get first row cash sales customer
     function loadCustomer() {
@@ -984,7 +1011,7 @@ jQuery(document).ready(function () {
         const price = parseFloat($('#itemPrice').val()) || 0;
         const qty = parseFloat($('#itemQty').val()) || 0;
         const discount = parseFloat($('#itemDiscount').val()) || 0;
-
+        const sale_price = parseFloat($('#itemSalePrice').val()) || 0;
         let availableQty = parseFloat($('#available_qty').val()) || 0;
 
 
@@ -1176,18 +1203,43 @@ jQuery(document).ready(function () {
     }
 
 
-    // CALCULATE PAYMENT
-    function calculatePayment() {
+    function calculatePayment(changedField) {
+
         const price = parseFloat($('#itemPrice').val()) || 0;
         const qty = parseFloat($('#itemQty').val()) || 0;
         const discount = parseFloat($('#itemDiscount').val()) || 0;
+        const salePrice = parseFloat($('#itemSalePrice').val()) || 0;
 
-        const subtotal = price * qty;
-        const discountedAmount = subtotal * (discount / 100);
-        const total = subtotal - discountedAmount;
+        let finalSalePrice = salePrice;
+        let finalDiscount = discount;
 
+        if (changedField === 'price' || changedField === 'discount') {
+            // Recalculate Sale Price
+            finalSalePrice = price - (price * (discount / 100));
+            $('#itemSalePrice').val(finalSalePrice.toFixed(2));
+        }
+        else if (changedField === 'salePrice') {
+            // Recalculate Discount
+            if (price > 0) {
+                finalDiscount = ((price - salePrice) / price) * 100;
+                $('#itemDiscount').val(finalDiscount.toFixed(2));
+            }
+        }
+
+        // Always recalc payment
+        const total = (parseFloat($('#itemSalePrice').val()) || 0) * qty;
         $('#itemPayment').val(total.toFixed(2));
     }
+
+    // 🔗 Event bindings
+    $('#itemPrice').on('input', function () { calculatePayment('price'); });
+    $('#itemQty').on('input', function () { calculatePayment('qty'); });
+    $('#itemDiscount').on('input', function () { calculatePayment('discount'); });
+    $('#itemSalePrice').on('input', function () { calculatePayment('salePrice'); });
+
+
+
+
 
     // Get all ARN IDs from the table
     function getAllArnIds() {
