@@ -10,6 +10,7 @@ if (isset($_POST['create'])) {
 
     $BRAND->category_id = $_POST['category_id'];
     $BRAND->name = $_POST['name'];
+    $BRAND->country_id = $_POST['country_id'];
     $BRAND->discount = $_POST['discount'];
     $BRAND->is_active = isset($_POST['activeStatus']) ? 1 : 0;
     $BRAND->remark = $_POST['remark'];
@@ -31,6 +32,7 @@ if (isset($_POST['update'])) {
 
     $BRAND->category_id = $_POST['category_id'];
     $BRAND->name = $_POST['name'];
+    $BRAND->country_id = $_POST['country_id'];
     $BRAND->discount = $_POST['discount'];
     $BRAND->is_active = isset($_POST['activeStatus']) ? 1 : 0;
     $BRAND->remark = $_POST['remark'];
@@ -57,4 +59,3 @@ if (isset($_POST['delete']) && isset($_POST['id'])) {
     }
     exit();
 }
-?>

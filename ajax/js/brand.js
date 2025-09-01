@@ -21,6 +21,14 @@ jQuery(document).ready(function () {
                 timer: 2000,
                 showConfirmButton: false
             });
+        } else if (!$('#country_id').val() || $('#country_id').val().length === 0) {
+            swal({
+                title: "Error!",
+                text: "Please select a country",
+                type: 'error',
+                timer: 2000,
+                showConfirmButton: false
+            });
         } else {
 
             $('.someBlock').preloader();
@@ -87,6 +95,14 @@ jQuery(document).ready(function () {
                 timer: 2000,
                 showConfirmButton: false
             });
+        } else if (!$('#country_id').val() || $('#country_id').val().length === 0) {
+            swal({
+                title: "Error!",
+                text: "Please select a country",
+                type: 'error',
+                timer: 2000,
+                showConfirmButton: false
+            });
         } else {
 
             $('.someBlock').preloader();
@@ -141,13 +157,14 @@ jQuery(document).ready(function () {
         $('#category_id').prop('selectedIndex', 0);
         $("#create").show();
     });
- 
+
 
     // Populate form from modal click
     $(document).on('click', '.select-brand', function () {
         $('#brand_id').val($(this).data('id'));
         $('#category_id').val($(this).data('category'));
         $('#name').val($(this).data('name'));
+        $('#country_id').val($(this).data('country'));
         $('#discount').val($(this).data('discount'));
         $('#remark').val($(this).data('remark'));
 
