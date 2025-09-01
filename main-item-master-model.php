@@ -17,7 +17,6 @@
                                     <th>#ID</th>
                                     <th>Code</th>
                                     <th>Name</th>
-                                    <th>Brand</th>
                                     <th>Category</th>
                                     <th>List Price</th>
                                     <th>Invoice Price</th>

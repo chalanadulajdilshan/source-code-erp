@@ -206,7 +206,7 @@ jQuery(document).ready(function () {
                         $('.arn-row').removeClass('selected-arn');
                         rowClass = 'active-arn selected-arn';
                         firstActiveAssigned = true;
-                        $('#availableQty').val(remainingQty);
+                        $('#available_qty').val(remainingQty);
                     } else {
                         rowClass = 'disabled-arn';
                     }
@@ -281,12 +281,12 @@ jQuery(document).ready(function () {
                 tbody += `<tr class="table-primary">
                     <td>${rowIndex}</td>
                     <td>${item.code} - ${item.name}</td> 
-                    <td>${item.note}</td>
-                    <td>${item.total_available_qty}</td>
-                    <td>${item.group}</td>
                     <td>${item.brand}</td>
-                     <td>${item.category}</td>
-                     <td hidden >${item.id}</td>
+                    <td>${item.category}</td>
+                    <td>${item.total_available_qty}</td>
+                    <td>${item.list_price}</td>
+                    <td>${item.invoice_price}</td>
+                    <td hidden >${item.id}</td>
                 </tr>`;
 
                 $('#available_qty').val(item.total_available_qty);
@@ -318,7 +318,7 @@ jQuery(document).ready(function () {
             return;
         }
 
-        $('#availableQty').val(remainingQty);
+        $('#available_qty').val(remainingQty);
     });
 
     function renderPaginationControls(currentPage) {
@@ -377,7 +377,7 @@ jQuery(document).ready(function () {
 
         // Store available qty in map and hidden field
         itemAvailableMap[itemCode] = availableQty;
-        $('#availableQty').val(availableQty);
+        $('#available_qty').val(availableQty);
 
         $('#itemCode').val(itemCode);
         $('#itemName').val(itemName);
@@ -399,26 +399,24 @@ jQuery(document).ready(function () {
     });
 
     $(document).on('click', '#all_itemMaster tbody tr', function () {
-        let mainRow = $(this).prevAll('tr.table-primary').first();
-        let infoRow = $(this).prev('tr.table-info');
+        let mainRow = $(this).closest('tr.table-primary'); // ✅ pick the clicked row
 
         let itemText = mainRow.find('td').eq(1).text().trim();
         let parts = itemText.split(' - ');
         let itemCode = parts[0] || '';
         let itemName = parts[1] || '';
-
+        let itemPrice = mainRow.find('td').eq(6).text().trim();
+        let availableQty = mainRow.find('td').eq(4).text().trim();
+        let item_id = mainRow.find('td').eq(7).text().trim();
         // Store available qty in map and hidden field
-        itemAvailableMap[itemCode] = availableQty;
-        $('#availableQty').val(availableQty);
+
+        $('#available_qty').val(availableQty);
 
         $('#itemCode').val(itemCode);
         $('#itemName').val(itemName);
 
-        $('#itemQty').val('');
-        $('#itemDiscount').val('');
-
-
-
+        $('#item_id').val(item_id);
+        $('#itemPrice').val(itemPrice);
 
         calculatePayment();
 
@@ -429,6 +427,7 @@ jQuery(document).ready(function () {
             itemMasterModal.hide();
         }
     });
+
 
 
     $(document).on('click', '#itemMaster tbody tr.table-info', function () {
@@ -466,7 +465,7 @@ jQuery(document).ready(function () {
         $('#itemCode').val(itemCode);
         $('#itemName').val(itemName);
         $('#itemPrice').val(invoicePrice); // Use cost instead of list_price
-        $('#availableQty').val(availableQty);
+        $('#available_qty').val(availableQty);
         $('#arn_no').val(arn); // optiona 
 
         // Clear qty, discount, payment
@@ -985,7 +984,7 @@ jQuery(document).ready(function () {
         const price = parseFloat($('#itemPrice').val()) || 0;
         const qty = parseFloat($('#itemQty').val()) || 0;
         const discount = parseFloat($('#itemDiscount').val()) || 0;
-        let availableQty = parseFloat($('#availableQty').val()) || 0;
+        let availableQty = parseFloat($('#available_qty').val()) || 0;
 
 
         if (!code || !name || price <= 0 || qty <= 0) {
@@ -1010,10 +1009,10 @@ jQuery(document).ready(function () {
 
         // Find the active ARN row
         const activeArn = $('.arn-row.active-arn').first();
-        if (!activeArn.length) {
-            swal("Error!", "No active ARN available for item issue.", "error");
-            return;
-        }
+        // if (!activeArn.length) {
+        //     swal("Error!", "No active ARN available for item issue.", "error");
+        //     return;
+        // }
 
         const arnId = activeArn.data('arn-id'); // Now declared early
         const arnQty = parseFloat(activeArn.data('qty'));
@@ -1280,7 +1279,7 @@ jQuery(document).ready(function () {
             dataType: 'json',
             success: function (response) {
                 if (response.status === 'success') {
-                    console.log('Quotation Data:', response.data);
+
                     const quotation = response.data.quotation;
                     const customer = response.data.customer;
                     const items = response.data.items;
@@ -1345,6 +1344,8 @@ jQuery(document).ready(function () {
         });
         updateFinalTotal();
     }
+
+
     // Row click → populate form
     $("#quotationTableBody tr").on("click", function () {
         const id = $(this).data("id");
@@ -1352,4 +1353,27 @@ jQuery(document).ready(function () {
             fetchQuotationData(id);
         }
     });
+
+
+    //PRINT INVOICE 
+    $(document).on("click", "#print", function () {
+        const invoiceId = $('#invoice_id').val();
+
+
+        if (invoiceId === "") {
+            swal({
+                title: "Warning!",
+                text: "Please enter a valid Invoice ID before printing.",
+                type: "warning",
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } else {
+            window.location.href = "invoice.php?invoice_no=" + invoiceId;
+        }
+
+
+    });
+
+
 });
