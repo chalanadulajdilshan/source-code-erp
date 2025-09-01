@@ -83,7 +83,7 @@ include './auth.php';
                                                         <?php
                                                         $USER_TYPE = new UserType(null);
                                                         foreach ($USER_TYPE->getActiveUserType() as $user_type) {
-                                                            ?>
+                                                        ?>
                                                             <option value="<?php echo $user_type['id']; ?>">
                                                                 <?php echo $user_type['name']; ?>
                                                             </option>
@@ -98,7 +98,7 @@ include './auth.php';
                                                         $USER = new User(null);
                                                         $users = $USER->getActiveUsers();
                                                         foreach ($users as $user) {
-                                                            ?>
+                                                        ?>
                                                             <option value="<?php echo $user['id']; ?>" data-user-type="<?php echo $user['type']; ?>">
                                                                 <?php echo $user['name'] . ' (' . $user['email'] . ')'; ?>
                                                             </option>
@@ -108,6 +108,11 @@ include './auth.php';
                                                 <div class="mb-3 col-md-3">
                                                     <label for="searchInput" class="form-label">Search pages</label>
                                                     <input type="text" id="searchInput" class="form-control" placeholder="Search pages...">
+                                                </div>
+                                                <div class="mb-3 col-md-3 d-flex align-items-end">
+                                                    <button type="button" id="BtnSpecialPermissionModal" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#permissionModal">
+                                                        <i class="ri-settings-4-line align-bottom me-1"></i> Special Permissions
+                                                    </button>
                                                 </div>
                                             </div>
 
@@ -179,19 +184,19 @@ include './auth.php';
             $('#userType').on('change', function() {
                 const selectedUserType = $(this).val();
                 const userSelect = $('#selectUser');
-                
+
                 // Clear current selection
                 userSelect.val('');
                 $('#permissionsTable').hide();
                 $('#permissionsTableBody').empty();
-                
+
                 // Show/hide users based on selected user type
                 userSelect.find('option').each(function() {
                     if ($(this).val() === '') {
                         $(this).show(); // Always show the default option
                         return;
                     }
-                    
+
                     if (selectedUserType === '' || $(this).data('user-type') == selectedUserType) {
                         $(this).show();
                     } else {

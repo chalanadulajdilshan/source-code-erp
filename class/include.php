@@ -68,6 +68,7 @@ include_once(dirname(__FILE__) . '/ArnQrGenaretor.php');
 include_once(dirname(__FILE__) . '/Expenses.php');
 include_once(dirname(__FILE__) . '/NonPermissionPage.php');
 include_once(dirname(__FILE__) . '/InvoicePayments.php');
+include_once(dirname(__FILE__) . '/SpecialPermission.php');
 
 session_start();
 function dd($data)

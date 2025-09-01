@@ -160,7 +160,7 @@ $item_id = 'TI/0' . ($lastId + 1);
                                                 <div class="mb-3">
                                                     <label class="form-label" for="name">Item Name <span
                                                             class="text-danger">*</span></label>
-                                                    <input id="name" name="name" type="text" class="form-control"
+                                                    <input id="name" name="name" onkeyup="toUpperCaseInput(this)" type="text" class="form-control"
                                                         placeholder="Enter item name">
                                                 </div>
                                             </div>
@@ -225,7 +225,7 @@ $item_id = 'TI/0' . ($lastId + 1);
                                                         class="form-control invoice-price" placeholder="Auto-calculated">
                                                 </div>
                                             </div>
-                                        
+
                                         </div>
 
                                         <hr class="my-4">
@@ -310,7 +310,8 @@ $item_id = 'TI/0' . ($lastId + 1);
     <script src="assets/libs/jquery/jquery.min.js"></script>
     <!-- /////////////////////////// -->
     <script src="ajax/js/item-master.js"></script>
-    
+    <script src="ajax/js/common.js"></script>
+
     <script>
         $(document).ready(function() {
             // Function to update item name
@@ -318,54 +319,54 @@ $item_id = 'TI/0' . ($lastId + 1);
                 const brand = $('#brand option:selected').text().trim();
                 const size = $('#size').val().trim();
                 const pattern = $('#pattern').val().trim();
-                
+
                 // Combine the values with spaces, but only if they're not empty
                 const itemName = [brand, size, pattern].filter(Boolean).join(' ');
-                
+
                 // Update the item name field
                 $('#name').val(itemName);
             }
-            
+
             // Function to calculate invoice price based on list price and discount
             function calculateInvoicePrice() {
                 const listPrice = parseFloat($('#list_price').val()) || 0;
                 const discount = parseFloat($('#discount').val()) || 0;
-                
+
                 // Calculate discount amount
                 const discountAmount = listPrice * (discount / 100);
                 const invoicePrice = listPrice - discountAmount;
-                
+
                 // Update invoice price field with 2 decimal places
                 $('#invoice_price').val(invoicePrice.toFixed(2));
             }
-            
+
             // Function to calculate discount based on list price and invoice price
             function calculateDiscount() {
                 const listPrice = parseFloat($('#list_price').val()) || 0;
                 const invoicePrice = parseFloat($('#invoice_price').val()) || 0;
-                
+
                 if (listPrice > 0 && invoicePrice > 0) {
                     // Calculate discount percentage
                     const discount = ((listPrice - invoicePrice) / listPrice) * 100;
-                    
+
                     // Update discount field with 2 decimal places
                     $('#discount').val(discount.toFixed(2));
                 }
             }
-            
+
             // Add event listeners to the relevant fields
             $('#brand, #size, #pattern').on('change keyup', updateItemName);
-            
+
             // When list price or discount changes, update invoice price
             $('#list_price, #discount').on('change keyup', function() {
                 calculateInvoicePrice();
             });
-            
+
             // When invoice price changes, update discount
             $('#invoice_price').on('change keyup', function() {
                 calculateDiscount();
             });
-            
+
             // Initialize calculations on page load
             calculateInvoicePrice();
         });

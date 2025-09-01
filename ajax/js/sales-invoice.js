@@ -984,6 +984,7 @@ jQuery(document).ready(function () {
         const price = parseFloat($('#itemPrice').val()) || 0;
         const qty = parseFloat($('#itemQty').val()) || 0;
         const discount = parseFloat($('#itemDiscount').val()) || 0;
+
         let availableQty = parseFloat($('#available_qty').val()) || 0;
 
 
@@ -1009,10 +1010,6 @@ jQuery(document).ready(function () {
 
         // Find the active ARN row
         const activeArn = $('.arn-row.active-arn').first();
-        // if (!activeArn.length) {
-        //     swal("Error!", "No active ARN available for item issue.", "error");
-        //     return;
-        // }
 
         const arnId = activeArn.data('arn-id'); // Now declared early
         const arnQty = parseFloat(activeArn.data('qty'));
@@ -1065,6 +1062,7 @@ jQuery(document).ready(function () {
                 <td class="item-price">${price.toFixed(2)}</td>
                 <td class="item-qty">${qty}</td>
                 <td class="item-discount">${discount}</td>
+                <td class="item-sell-price">${sale_price.toFixed(2)}</td>
                 <td>${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                 <td>
                     <button type="button" class="btn btn-sm btn-danger btn-remove-item" data-code="${code}" data-qty="${qty}" data-arn-id="${arnId}">Remove</button>
