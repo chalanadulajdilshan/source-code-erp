@@ -82,7 +82,7 @@ jQuery(document).ready(function () {
     // ----------------------ITEM MASTER SECTION START ----------------------//
 
 
-    let fullItemList = []; // Global variable
+    let fullItemList = [];
     let itemsPerPage = 1;
 
     function loadItems(page = 1) {
