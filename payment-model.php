@@ -16,7 +16,7 @@
                     <!-- Final Total -->
                     <div class="mb-3">
                         <label class="fw-bold">Final Total</label>
-                        <input type="text" id="modalFinalTotal" class="form-control form-control-lg text-end fw-bold border-primary" value="100000" readonly>
+                        <input type="text" id="modalFinalTotal" class="form-control form-control-lg text-end fw-bold border-primary" readonly>
                     </div>
 
 
@@ -83,7 +83,7 @@
             row.dataset.id = rowId;
 
             // Get the final total value and clean it (remove any non-numeric characters except decimal point)
-            const finalTotalValue = parseFloat(finalTotal.value.replace(/[^0-9.-]+/g,"")) || 0;
+            const finalTotalValue = parseFloat(finalTotal.value.replace(/[^0-9.-]+/g, "")) || 0;
 
             row.innerHTML = `
                 <div class="card-body">
@@ -103,7 +103,7 @@
                         </div>
                         <div class="col-md-3">
                             <label class="fw-semibold">Amount</label>
-                            <input type="number" name="amount[]" class="form-control paymentAmount text-end fw-bold" min="0" step="0.01" 
+                            <input type="number" name="amount[]" id="amountPaid" class="form-control paymentAmount text-end fw-bold" min="0" step="0.01" 
                                    value="${finalTotalValue.toFixed(2)}" required>
                         </div>
                         <div class="col-md-4 chequeDetails d-none">
@@ -157,17 +157,17 @@
         function updateTotals() {
             let totalPaidValue = 0;
             const amountInputs = document.querySelectorAll('.paymentAmount');
-            
+
             amountInputs.forEach(input => {
                 totalPaidValue += parseFloat(input.value) || 0;
             });
-            
-            const finalTotalValue = parseFloat(finalTotal.value.replace(/[^0-9.-]+/g,"")) || 0;
+
+            const finalTotalValue = parseFloat(finalTotal.value.replace(/[^0-9.-]+/g, "")) || 0;
             const balance = finalTotalValue - totalPaidValue;
-            
+
             totalPaid.value = totalPaidValue.toFixed(2);
             balanceAmount.value = balance.toFixed(2);
-            
+
             // Style the balance amount based on value
             if (balance > 0) {
                 balanceAmount.classList.add('text-danger');
@@ -185,7 +185,7 @@
 
         // Add first payment row on page load
         createPaymentRow();
-        
+
         // Update totals when the page loads
         updateTotals();
     });

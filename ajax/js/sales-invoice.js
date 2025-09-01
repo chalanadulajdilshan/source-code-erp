@@ -73,7 +73,6 @@ jQuery(document).ready(function () {
         if (firstAmountInput) {
             firstAmountInput.value = document.querySelector('#modalFinalTotal').value;
             $('#totalPaid').val(document.querySelector('#modalFinalTotal').value);
-
         }
 
     });
