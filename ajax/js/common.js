@@ -545,9 +545,8 @@ jQuery(document).ready(function () {
             expanded = !expanded;
         });
     });
-
-
-
-
 });
 
+function toUpperCaseInput(element) {
+    element.value = element.value.toUpperCase();
+}

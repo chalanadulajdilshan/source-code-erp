@@ -39,3 +39,4 @@
 <?php include 'dag-mode.php' ?>
 <?php include 'customer_model.php' ?>
 <?php include 'all_item-master-model.php' ?>
+<?php include 'special-permission-model.php' ?>

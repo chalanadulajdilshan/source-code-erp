@@ -167,7 +167,7 @@ $item_id = 'TI/0' . ($lastId + 1);
                                                 <div class="mb-3">
                                                     <label class="form-label" for="name">Item Name <span
                                                             class="text-danger">*</span></label>
-                                                    <input id="name" name="name" type="text" class="form-control"
+                                                    <input id="name" name="name" onkeyup="toUpperCaseInput(this)" type="text" class="form-control"
                                                         placeholder="Enter item name">
                                                 </div>
                                             </div>

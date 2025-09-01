@@ -82,6 +82,9 @@
             row.classList.add('payment-row', 'card', 'shadow-sm', 'mb-3');
             row.dataset.id = rowId;
 
+            // Get the final total value and clean it (remove any non-numeric characters except decimal point)
+            const finalTotalValue = parseFloat(finalTotal.value.replace(/[^0-9.-]+/g,"")) || 0;
+
             row.innerHTML = `
                 <div class="card-body">
                     <div class="row g-3 align-items-end">
@@ -92,14 +95,16 @@
                                 <?php
                                 $PAYMENT_TYPE = new PaymentType(NULL);
                                 foreach ($PAYMENT_TYPE->getActivePaymentType() as $type) {
-                                    echo "<option value='{$type['id']}'>{$type['name']}</option>";
+                                    $selected = (strtolower($type['name']) === 'cash') ? 'selected' : '';
+                                    echo "<option value='{$type['id']}' $selected>{$type['name']}</option>";
                                 }
                                 ?>
                             </select>
                         </div>
                         <div class="col-md-3">
                             <label class="fw-semibold">Amount</label>
-                            <input type="number" name="amount[]" class="form-control paymentAmount text-end fw-bold" id="amountPaid" min="0" step="0.01" required>
+                            <input type="number" name="amount[]" class="form-control paymentAmount text-end fw-bold" min="0" step="0.01" 
+                                   value="${finalTotalValue.toFixed(2)}" required>
                         </div>
                         <div class="col-md-4 chequeDetails d-none">
                             <label class="fw-semibold">Cheque No</label>
@@ -120,7 +125,7 @@
 
             paymentRows.appendChild(row);
 
-            // Add event list  eners
+            // Add event listeners
             const paymentTypeSelect = row.querySelector('.paymentType');
             const chequeDetails = row.querySelector('.chequeDetails');
             const amountInput = row.querySelector('.paymentAmount');
@@ -141,19 +146,47 @@
             });
         }
 
-        //  Upd ate totals
+        // Update totals when amount changes
+        document.addEventListener('input', (e) => {
+            if (e.target.classList.contains('paymentAmount')) {
+                updateTotals();
+            }
+        });
+
+        // Function to update payment totals
         function updateTotals() {
-            let total = 0;
-            document.querySelectorAll('.paymentAmount').forEach(input => {
-                total += parseFloat(input.value) || 0;
+            let totalPaidValue = 0;
+            const amountInputs = document.querySelectorAll('.paymentAmount');
+            
+            amountInputs.forEach(input => {
+                totalPaidValue += parseFloat(input.value) || 0;
             });
-            totalPaid.value = total.toFixed(2);
-            balanceAmount.value = (parseFloat(finalTotal.value) - total).toFixed(2);
+            
+            const finalTotalValue = parseFloat(finalTotal.value.replace(/[^0-9.-]+/g,"")) || 0;
+            const balance = finalTotalValue - totalPaidValue;
+            
+            totalPaid.value = totalPaidValue.toFixed(2);
+            balanceAmount.value = balance.toFixed(2);
+            
+            // Style the balance amount based on value
+            if (balance > 0) {
+                balanceAmount.classList.add('text-danger');
+                balanceAmount.classList.remove('text-success');
+            } else if (balance < 0) {
+                balanceAmount.classList.add('text-warning');
+                balanceAmount.classList.remove('text-danger');
+            } else {
+                balanceAmount.classList.remove('text-danger', 'text-warning');
+                balanceAmount.classList.add('text-success');
+            }
         }
 
         addPaymentRowBtn.addEventListener('click', createPaymentRow);
 
-        // Initialize with one row
+        // Add first payment row on page load
         createPaymentRow();
+        
+        // Update totals when the page loads
+        updateTotals();
     });
 </script>
